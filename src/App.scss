@@ -1,0 +1,72 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #d30004;
+}
+
+canvas {
+}
+
+.canvasLayers {
+  & > .mainCanvas {
+    border: 1px solid red;
+  }
+  & > .canvasLayer {
+    display: flex;
+    border: 1px solid rebeccapurple;
+    position: absolute;
+    left: 0;
+    top: 0;
+
+    .vertex {
+
+      cursor: pointer;
+      fill: white;
+      stroke: black;
+      stroke-width: 1;
+
+      &.red-vertex {
+        fill: red;
+      }
+    }
+  }
+}
+
+
+.selected-button {
+  border: 1px solid red;
+}
+
+.value-button {
+  user-select: none;
+  border: 1px solid black;
+  width: 50px;
+  overflow: hidden;
+  .value-button-value {
+    width: 100%;
+    background: yellow;
+    white-space: nowrap;
+    overflow: visible;
+  }
+
+  &.value-button-selected {
+    border: 1px solid red;
+  }
+}
