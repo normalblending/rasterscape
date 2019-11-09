@@ -1,12 +1,11 @@
 import {Action} from "redux";
-import {SelectionValue} from "../../utils/types";
-import {ESelectionMode} from "../../components/_shared/CanvasSelector";
+import {SelectionValue} from "../../../utils/types";
 
 export interface ImageAction extends Action {
     imageData: ImageData
 }
 
-export interface UpdateMainImageAction extends ImageAction {
+export interface UpdateImageAction extends ImageAction {
 }
 
 export interface SetWidthAction extends Action {
@@ -19,10 +18,6 @@ export interface SetHeightAction extends Action {
 
 export interface SetSelectionAction extends Action {
     selection: SelectionValue
-}
-
-export interface SetSelectionModeAction extends Action {
-    mode: ESelectionMode
 }
 
 export interface SetSelectionParamsAction extends Action {

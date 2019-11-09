@@ -1,22 +1,21 @@
 import {createSelector} from "reselect";
-import {MainCanvasState} from "./reducer";
-import {CurveValueName} from "../../components/_shared/CanvasSelector";
+import {MainWindowState} from "./reducer";
+import {CurveValueName} from "../../components/_shared/CanvasSelection";
 
 const getMainCanvasState = state => state.mainCanvas;
-
 
 export const MainCanvasSelector = {
     getMainCanvasState,
     getSelectionValue: createSelector(
         [getMainCanvasState],
-        (state: MainCanvasState) => state.selection.value),
+        (state: MainWindowState) => state.selection.value),
     getSelectionParams: createSelector(
         [getMainCanvasState],
-        (state: MainCanvasState) => ({
+        (state: MainWindowState) => ({
             ...state.selection.params,
             curveValue: state.selection.params[CurveValueName[state.selection.params.curveType]]})),
     getSelectionParamsConfig: createSelector(
         [getMainCanvasState],
-        (state: MainCanvasState) => state.selection.paramsConfig),
+        (state: MainWindowState) => state.selection.paramsConfig),
 
 };

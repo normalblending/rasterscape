@@ -1,24 +1,32 @@
 import * as React from "react";
-import {Button} from "./Button";
+import {ButtonSelect} from "./ButtonSelect";
 
-export interface SelectButtonsProps {
+export interface SelectButtonsLineProps {
     name?: string
     items: any[]
     value?: any
+
     onChange?(value: any, name?: string, item?: any)
+
+    getValue?(item?: any)
+
+    getText?(item?: any)
 }
 
-export const SelectButtons: React.FC<SelectButtonsProps> = ({items, value, name, onChange}) => {
+const defaultGetValue = (item: any) => item;
+const defaultGetText = (item: any) => item;
+
+export const SelectButtons: React.FC<SelectButtonsLineProps> = ({items, value, name, onChange, getValue = defaultGetValue, getText = defaultGetText}) => {
     return (
-        <>
-            {items.map((item, i) => (
-                <Button
-                    className={item.value === value ? "selected-button" : ""}
-                    key={i}
-                    onClick={() => onChange(item.value, name, item)}>
-                    {item.text}
-                </Button>
+        <span className={"select-buttons"}>
+            {items.map((item) => (
+                <ButtonSelect
+                    key={getValue(item)}
+                    selected={getValue(item) === value}
+                    onClick={() => onChange(getValue(item), name, item)}>
+                    {getText(item)}
+                </ButtonSelect>
             ))}
-        </>
+        </span>
     );
 };

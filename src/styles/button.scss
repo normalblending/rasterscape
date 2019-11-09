@@ -1,0 +1,40 @@
+.button {
+  background: lightgoldenrodyellow;
+
+
+
+  height: 20px;
+  width: 70px;
+}
+
+.button-select {
+  background: lightgoldenrodyellow;
+  &.button-select-selected {
+    background: lightpink;
+  }
+}
+
+
+.button-number {
+
+  padding: 0;
+  position: relative;
+
+  & > .button-number-value {
+    width: 0;
+    background: lightslategray;
+    white-space: nowrap;
+    overflow: visible;
+    height: 100%;
+  }
+
+
+  &.button-number-active {
+
+  }
+
+}
+
+.select-buttons {
+
+}

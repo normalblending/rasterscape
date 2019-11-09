@@ -1,0 +1,21 @@
+.pattern {
+  .pattern-controls {
+    height: 100px;
+    padding-top: 1px;
+    visibility: hidden;
+    border-top: 1px solid rebeccapurple;
+    font-size: 12px;
+  }
+
+  &:hover .pattern-controls {
+    visibility: visible;
+  }
+
+
+  //@keyframes spin { 100% {
+  //  transform:rotate(360deg); } }
+  //
+  //& > .canvas {
+  //  animation:spin 4s linear infinite;
+  //}
+}

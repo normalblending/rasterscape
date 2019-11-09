@@ -1,6 +1,6 @@
 import {createSelector} from "reselect";
-import {WindowState} from "../../mainCanvas/reducer";
-import {CurveValueName} from "../../../components/_shared/CanvasSelector";
+import {WindowState} from "../../mainWindow/reducer";
+import {CurveValueName} from "../../../components/_shared/CanvasSelection";
 import {AppState} from "../../index";
 
 export const CanvasSelectors = {

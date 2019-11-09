@@ -1,48 +1,56 @@
 import * as React from "react";
 import {Canvas, CanvasProps} from "./Canvas";
 import {circle} from "../../utils/canvas";
-import {pathDataToString} from "../../utils/path";
-import {AppState, store} from "../../store";
-import {Size} from "../../utils/types";
-import {WindowState} from "../../store/mainCanvas/reducer";
-import {windowSelectors} from "../../store/_shared/canvas/selectors";
+import {AppState} from "../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {BrushState} from "../../store/brush/reducer";
+import {EToolType} from "../../store/tool/types";
 
-export interface CanvasDrawStateProps extends CanvasProps {
-    size?: Size
-    value?: ImageData
+export interface CanvasDrawStateProps {
+    brush: BrushState
+    tool: EToolType
 }
 
-export interface CanvasDrawActionProps extends CanvasProps {
-    onChange?(imageData?: ImageData)
-
+export interface CanvasDrawActionProps {
 }
 
 export interface CanvasDrawOwnProps extends CanvasProps {
-    children?: React.ReactNode
-    className?: string
-    style?: any
 }
 
-export interface CanvasDrawProps extends CanvasProps {
+export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps {
 }
 
 export interface CanvasDrawState {
 }
 
-export class CanvasDraw extends React.PureComponent<CanvasDrawProps, CanvasDrawState> {
+class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDrawState> {
 
     drawProcess = (e, pre, ctx, canvas) => {
+
+
+
+
+
+
+
+
+
+
+        // воттут
+
+
+
+
+
+
+
+
+
+
+
+
         ctx.fillStyle = '#000';
         circle(ctx, e.offsetX, e.offsetY, 10);
-
-        ctx.strokeStyle = '#f00';
-        ctx.lineWidth = 1;
-        ctx.fillStyle = '#fff0';
-
-        var p = new Path2D(pathDataToString(store.getState().mainCanvas.selection));
-        ctx.stroke(p);
-        ctx.fill(p);
     };
 
     clickProcess = (e, ctx, canvas) => {
@@ -60,18 +68,14 @@ export class CanvasDraw extends React.PureComponent<CanvasDrawProps, CanvasDrawS
     }
 }
 
-export const canvasDrawConnect = (getWindowState: (state: AppState) => WindowState, changeAction) => {
-    const WindowSelectors = windowSelectors(state => state.mainCanvas);
-    const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = state => ({
-        value: WindowSelectors.getImageValue(state),
-        size: WindowSelectors.getSize(state)
-    });
+const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = state => ({
+    brush: state.brush,
+    tool: state.tool.current
+});
 
-    const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
-        onChange: changeAction
-    };
-
-    return connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(
-        mapStateToProps, mapDispatchToProps
-    )(CanvasDraw)
+const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
 };
+
+export const CanvasDraw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(
+    mapStateToProps, mapDispatchToProps
+)(CanvasDrawComponent);

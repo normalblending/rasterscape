@@ -22,10 +22,11 @@
 }
 
 canvas {
+  border: 1px solid lightgrey;
 }
 
 .canvasLayers {
-  & > .mainCanvas {
+  & > .mainWindow {
     border: 1px solid red;
   }
   & > .canvasLayer {

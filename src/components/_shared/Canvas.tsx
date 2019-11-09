@@ -1,15 +1,7 @@
 import React from 'react';
 import {canvasToImageData} from "../../utils/canvas";
-import {AppState} from "../../store";
-import {WindowState} from "../../store/mainCanvas/reducer";
-import {windowSelectors} from "../../store/_shared/canvas/selectors";
-import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {
-    CanvasSelector,
-    CanvasSelectorActionProps,
-    CanvasSelectorOwnProps,
-    CanvasSelectorStateProps
-} from "./CanvasSelector";
+import "../../styles/canvas.scss";
+import * as classNames from "classnames";
 
 export interface CanvasProps {
     value?: ImageData
@@ -65,19 +57,29 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     }
 
     componentWillUnmount() {
+
+        this.canvasRef.current.removeEventListener("mousedown", this.mouseDownHandler);
+        document.removeEventListener("mouseup", this.mouseUpHandler);
+        this.canvasRef.current.removeEventListener("mousemove", this.mouseMoveHandler);
         // listeners
     }
 
     componentDidUpdate(prevProps) {
-        console.log(Object.keys(this.props).reduce((res, key) => ({
-            ...res,
-            [key]: prevProps[key] !== this.props[key]
-        }), {}));
+        // console.log(Object.keys(this.props).reduce((res, key) => ({
+        //     ...res,
+        //     [key]: prevProps[key] !== this.props[key]
+        // }), {}));
+        //
+        // console.log(prevProps.value !== this.props.value ||
+        //     prevProps.width !== this.props.width ||
+        //     prevProps.height !== this.props.height);
         if ((
             prevProps.value !== this.props.value ||
             prevProps.width !== this.props.width ||
             prevProps.height !== this.props.height
         ) && this.props.value instanceof ImageData) {
+            this.ctx = this.canvasRef.current.getContext("2d");
+            console.log()
             this.ctx.putImageData(this.props.value, 0, 0);
         }
     }
@@ -133,11 +135,10 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     render() {
         const {value, width, height, className, style, children} = this.props;
         return (
-            <div className="canvasLayers">
+            <div className={classNames("canvas", className)}>
                 <canvas
                     style={style}
                     ref={this.canvasRef}
-                    className={className}
                     width={width || (value ? value.width : 300)}
                     height={height || (value ? value.height : 300)}/>
                 {React.Children.map(children, child =>
@@ -146,21 +147,3 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         )
     }
 }
-
-export const canvasConnect = (getSelectionState: (state: AppState) => WindowState, changeAction) => {
-
-    const WindowSelectors = windowSelectors(state => state.mainCanvas);
-    const mapStateToProps: MapStateToProps<CanvasSelectorStateProps, CanvasSelectorOwnProps, AppState> = state => ({
-        value: WindowSelectors.getSelectionValue(state),
-        size: WindowSelectors.getSize(state),
-        params: WindowSelectors.getSelectionParams(state)
-    });
-
-    const mapDispatchToProps: MapDispatchToProps<CanvasSelectorActionProps, CanvasSelectorOwnProps> = {
-        onChange: changeAction
-    };
-
-    return connect<CanvasSelectorStateProps, CanvasSelectorActionProps, CanvasSelectorOwnProps, AppState>(
-        mapStateToProps, mapDispatchToProps
-    )(CanvasSelector)
-};

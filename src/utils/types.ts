@@ -1,5 +1,5 @@
 import {Segment} from "./path";
-import {ECurveType, ESelectionMode} from "../components/_shared/CanvasSelector";
+import {ECurveType, ESelectionMode} from "../components/_shared/CanvasSelection";
 import {Param} from "../components/_shared/Params";
 
 export interface CanvasState {

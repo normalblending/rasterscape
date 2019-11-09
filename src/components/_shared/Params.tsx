@@ -1,7 +1,6 @@
 import * as React from "react";
-import {ButtonBoolean} from "./ButtonBoolean";
+import {ButtonSelect} from "./ButtonSelect";
 import {ButtonNumber} from "./ButtonNumber";
-import {SelectButtons} from "./SelectButtons";
 
 export interface Param {
     type: EParamType
@@ -16,9 +15,8 @@ export enum EParamType {
 }
 
 export const ParamComponents = {
-    [EParamType.Boolean]: ButtonBoolean,
+    [EParamType.Boolean]: ButtonSelect,
     [EParamType.Number]: ButtonNumber,
-    [EParamType.Select]: SelectButtons,
 };
 
 export interface ParamsProps {
@@ -46,15 +44,15 @@ export class Params extends React.PureComponent<ParamsProps, ParamsState> {
             <div className={"params"}>
                 {data.map(paramConfig => {
                     const {type, name, props} = paramConfig;
-                    const Component = ParamComponents[type] || ButtonBoolean;
+                    const Component = ParamComponents[type] || ButtonSelect;
                     return (
-                        <>
-                            <Component
-                                {...props}
-                                value={value[name]}
-                                name={name}
-                                onChange={this.handleChange}/>
-                        </>);
+                        <Component
+                            {...props}
+                            value={value[name]}
+                            name={name}
+                            onChange={this.handleChange}
+                            key={name}/>
+                    );
                 })}
             </div>
         );

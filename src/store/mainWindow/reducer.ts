@@ -1,20 +1,19 @@
 import {handleActions} from "redux-actions";
-import {EMainCanvasAction} from "./actions";
+import {EMainWindowAction} from "./actions";
 import {CanvasState, SelectionState} from '../../utils/types';
 import {createCleanCanvasState, resizeImageData} from "../../utils/canvas";
 import {
-    SetHeightAction,
-    SetSelectionAction,
-    SetSelectionModeAction,
-    SetSelectionParamsAction,
-    SetWidthAction,
+    SetMainWindowHeightAction,
+    SetMainWindowSelectionAction,
+    SetMainWindowSelectionParamsAction,
+    SetMainWindowWidthAction,
     UpdateMainImageAction
 } from "./types";
 import {
     ESelectionMode,
     getParamsConfig,
     ECurveType
-} from "../../components/_shared/CanvasSelector";
+} from "../../components/_shared/CanvasSelection";
 
 const HISTORY_L = 23;
 
@@ -28,10 +27,10 @@ export interface WindowState {
     selection?: SelectionState
 }
 
-export interface MainCanvasState extends WindowState {
+export interface MainWindowState extends WindowState {
 }
 
-const updateCurrent = (state: MainCanvasState, nextCurrent) => {
+const updateCurrent = (state: MainWindowState, nextCurrent) => {
     const {history: {before}, current: currentPrev} = state;
 
     const beforeNext = [...before, currentPrev];
@@ -53,24 +52,24 @@ const updateCurrent = (state: MainCanvasState, nextCurrent) => {
     }
 };
 
-export const mainCanvasReducer = handleActions<MainCanvasState>({
-    [EMainCanvasAction.UPDATE_IMAGE]: (state: MainCanvasState, action: UpdateMainImageAction) =>
+export const mainWindowReducer = handleActions<MainWindowState>({
+    [EMainWindowAction.UPDATE_IMAGE]: (state: MainWindowState, action: UpdateMainImageAction) =>
         updateCurrent(state, {imageData: action.imageData}),
-    [EMainCanvasAction.UNSTORE_IMAGE]: (state: MainCanvasState) => ({
+    [EMainWindowAction.UNSTORE_IMAGE]: (state: MainWindowState) => ({
         ...updateCurrent(state, state.stored),
         stored: null
     }),
-    [EMainCanvasAction.SET_WIDTH]: (state: MainCanvasState, action: SetWidthAction) =>
+    [EMainWindowAction.SET_WIDTH]: (state: MainWindowState, action: SetMainWindowWidthAction) =>
         updateCurrent(state, {
             width: action.width,
             imageData: resizeImageData(state.current.imageData, action.width, state.current.height)
         }),
-    [EMainCanvasAction.SET_HEIGHT]: (state: MainCanvasState, action: SetHeightAction) =>
+    [EMainWindowAction.SET_HEIGHT]: (state: MainWindowState, action: SetMainWindowHeightAction) =>
         updateCurrent(state, {
             height: action.height,
             imageData: resizeImageData(state.current.imageData, state.current.width, action.height)
         }),
-    [EMainCanvasAction.UNDO]: (state) => {
+    [EMainWindowAction.UNDO]: (state) => {
         const {history: {before, after}, current} = state;
 
         if (before.length === 0) return state;
@@ -89,7 +88,7 @@ export const mainCanvasReducer = handleActions<MainCanvasState>({
             }
         }
     },
-    [EMainCanvasAction.REDO]: (state) => {
+    [EMainWindowAction.REDO]: (state) => {
 
         const {history: {before, after}, current} = state;
 
@@ -109,11 +108,11 @@ export const mainCanvasReducer = handleActions<MainCanvasState>({
             }
         }
     },
-    [EMainCanvasAction.STORE_IMAGE]: (state) => ({
+    [EMainWindowAction.STORE_IMAGE]: (state) => ({
         ...state,
         stored: state.current ? {...state.current} : null
     }),
-    [EMainCanvasAction.SET_SELECTION]: (state, action: SetSelectionAction) => {
+    [EMainWindowAction.SET_SELECTION]: (state, action: SetMainWindowSelectionAction) => {
         localStorage.setItem("sel", JSON.stringify(action.selection));
         return ({
             ...state,
@@ -123,7 +122,7 @@ export const mainCanvasReducer = handleActions<MainCanvasState>({
             }
         })
     },
-    [EMainCanvasAction.SET_SELECTION_PARAMS]: (state: MainCanvasState, action: SetSelectionParamsAction) => {
+    [EMainWindowAction.SET_SELECTION_PARAMS]: (state: MainWindowState, action: SetMainWindowSelectionParamsAction) => {
         const params = {
             ...state.selection.params,
             ...action.params

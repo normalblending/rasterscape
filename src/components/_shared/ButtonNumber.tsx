@@ -1,27 +1,38 @@
 import * as React from "react";
 import * as classNames from "classnames";
+import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "./ButtonSelect";
+import {ButtonEventData} from "./Button";
+import {Key} from "./Key";
 
 export const ValueD = {
     VerticalLinear: (step: number) => (oldValue: any, dx: number, dy) => oldValue - dy / step,
 };
 
-export interface ButtonNumberProps {
-    name?: string
+export interface ButtonNumberEventData extends ButtonSelectEventData {
+}
+
+export interface ButtonNumberProps extends ButtonSelectProps {
     text?: string
-    className?: string
-    classNameSelected?: string
-    selected?: boolean
-    width?: number
+
+    getText?(value?: any): string
 
     range?: [number, number]
 
-    value?: any
+    shortcut?: string | string[]
+
 
     valueD?(oldValue: any, dx: number, dy: number): any
 
-    onChange?(value: any, name?: string)
+    onChange?(data?: ButtonNumberEventData)
 
-    onClick?(value: any, name?: string)
+    onMouseDown?(data?: ButtonNumberEventData)
+
+    onClick?(data?: ButtonNumberEventData)
+
+    onPress?(data?: ButtonNumberEventData)
+
+    onRelease?(data?: ButtonNumberEventData)
+
 
 }
 
@@ -36,33 +47,37 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     constructor(props) {
         super(props);
 
-        console.log(props);
+        const {range} = props;
 
         this.state = {
+            value: props.value || range[0],
             startPoint: null,
-            value: props.value || props.range[0]
+            startValue: null,
         };
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return nextState.value !== this.state.value
-            || nextProps.selected !== this.props.selected
-            || nextProps.value !== this.props.value;
+        return nextState.value !== this.state.value;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        console.log("U P D ", prevProps.value, this.props.value);
-        if (prevProps.value !== this.props.value) {
-            this.setState({value: this.props.value || 0})
+    static getDerivedStateFromProps(nextProps, prevState) {
+        return !prevState.startPoint && nextProps.value !== prevState.value ? {
+            value: nextProps.value
+        } : null
+    }
+
+    handleDown = data => {
+        if (this.state.startValue) {
+            return;
         }
-    }
 
-    handleDown = (e) => {
+        const {e} = data;
         e.persist();
 
-        const {onClick, name} = this.props;
+        const {onMouseDown, name, selected} = this.props;
+        const {value} = this.state;
 
-        onClick && onClick(this.state.value, name);
+        onMouseDown && onMouseDown({e, value, name, selected});
 
         this.setState(({value}) => ({
             startValue: value,
@@ -73,23 +88,20 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         });
     };
 
-    handleMove = (e) => {
-        const {onChange, name} = this.props;
+    handleMove = e => {
+        const {onChange, name, selected} = this.props;
         const value = this.calcValue(e);
 
-        onChange && onChange(value, name);
+        onChange && onChange({e, value, name, selected});
 
-        this.setState({
-            value
-        }, () =>
-            console.log(this.state.value));
+        this.setState({value});
     };
 
     handleUp = (e) => {
-        const {onClick, name} = this.props;
+        const {onClick, name, selected} = this.props;
         const value = this.calcValue(e);
 
-        onClick && onClick(value, name);
+        onClick && onClick({value, name, e, selected});
 
         this.setState({
             value,
@@ -99,10 +111,61 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             document.removeEventListener("mousemove", this.handleMove);
             document.removeEventListener("mouseup", this.handleUp);
         });
+
     };
 
+
+    handlePress = e => {
+        if (this.state.startValue) {
+            return;
+        }
+
+        const {onPress, name, selected} = this.props;
+        const {value} = this.state;
+
+        onPress && onPress({e, value, name, selected});
+
+        this.setState(({value}) => ({
+            startValue: value,
+            startPoint: null
+        }), () => {
+            document.addEventListener("mousemove", this.handlePressed);
+        });
+    };
+
+    handlePressed = e => {
+        if (!this.state.startPoint) {
+            this.setState({
+                startPoint: [e.clientX, e.clientY]
+            });
+        } else {
+            const {onChange, name, selected} = this.props;
+            const value = this.calcValue(e);
+
+            onChange && onChange({e, value, name, selected});
+
+            this.setState({value});
+        }
+    };
+
+    handleRelease = e => {
+        const {onRelease, name, selected} = this.props;
+        const {value} = this.state;
+
+        onRelease && onRelease({value, name, e, selected});
+
+        this.setState({
+            value,
+            startValue: null,
+            startPoint: null
+        }, () => {
+            document.removeEventListener("mousemove", this.handlePressed);
+        });
+    };
+
+
     calcValue = e => {
-        const {range = [0, 1], valueD = ValueD.VerticalLinear(100)} = this.props;
+        const {range, valueD = ValueD.VerticalLinear(100)} = this.props;
 
         let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
         nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
@@ -110,22 +173,29 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     render() {
-        const {range = [0, 1], className, classNameSelected, selected, text} = this.props;
-        const {value = 0} = this.state;
-        console.log("number button render");
+        const {range, className, getText, text, shortcut, ...otherProps} = this.props;
+        const {value = 0, startValue} = this.state;
+
+        // console.log("number button render", value);
+
         return (
-            <div
-                className={classNames(
-                    "value-button",
-                    className,
-                    {["value-button-selected"]: selected, [classNameSelected]: selected})}
+            <ButtonSelect
+                {...otherProps}
+                className={classNames("button-number", className, {
+                    ["button-number-active"]: !!startValue
+                })}
                 onMouseDown={this.handleDown}>
                 <div
-                    className={"value-button-value"}
+                    className={"button-number-value"}
                     style={{width: (value - range[0]) / (range[1] - range[0]) * 100 + "%"}}>
-                    {text}
+                    {getText ? getText(value) : text}
                 </div>
-            </div>
+                {shortcut &&
+                <Key
+                    keys={shortcut}
+                    onPress={this.handlePress}
+                    onRelease={this.handleRelease}/>}
+            </ButtonSelect>
         );
     }
 }

@@ -15,10 +15,10 @@ import {
 import {EParamType, Param} from "./Params";
 import {arrayToSelectItems} from "../../utils/utils";
 import {SelectionParams, Size} from "../../utils/types";
-import {WindowState} from "../../store/mainCanvas/reducer";
+import {WindowState} from "../../store/mainWindow/reducer";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {windowSelectors} from "../../store/_shared/canvas/selectors";
+import {windowSelectors} from "../../store/_shared/window/selectors";
 
 const lineFunction = d3
     .line<Segment>()
@@ -94,7 +94,7 @@ export const selectionModesSelectItems = arrayToSelectItems(
 
 export const curveTypesSelectItems = arrayToSelectItems(Object.values(ECurveType));
 
-export interface CanvasSelectorStateProps {
+export interface CanvasSelectionStateProps {
     size: Size
 
     value?: any
@@ -105,19 +105,19 @@ export interface CanvasSelectorStateProps {
     // curveValue?: number
 }
 
-export interface CanvasSelectorActionProps {
+export interface CanvasSelectionActionProps {
     onChange?(value?: any)
 }
 
-export interface CanvasSelectorOwnProps {
+export interface CanvasSelectionOwnProps {
     className?: string
 }
 
-export interface CanvasSelectorProps extends CanvasSelectorStateProps, CanvasSelectorActionProps, CanvasSelectorOwnProps {
+export interface CanvasSelectionProps extends CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps {
 
 }
 
-export interface CanvasSelectorState {
+export interface CanvasSelectionState {
 
     startX: number
     startY: number
@@ -130,7 +130,7 @@ export interface CanvasSelectorState {
     currentSliceN: number
 }
 
-export class CanvasSelector extends React.PureComponent<CanvasSelectorProps, CanvasSelectorState> {
+export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, CanvasSelectionState> {
 
     canvasRef;
     pathRef;
@@ -166,13 +166,13 @@ export class CanvasSelector extends React.PureComponent<CanvasSelectorProps, Can
         })
     }
 
-    componentDidUpdate(prevProps: CanvasSelectorProps) {
+    componentDidUpdate(prevProps: CanvasSelectionProps) {
         if (prevProps.params.mode !== this.props.params.mode) {
             this.handlers[prevProps.params.mode].exit(this.props.params.mode)
         }
     }
 
-    static getDerivedStateFromState(nextProps: CanvasSelectorProps) {
+    static getDerivedStateFromState(nextProps: CanvasSelectionProps) {
         const {value} = nextProps;
         return Array.isArray(value) ? {
             path: value,
@@ -399,7 +399,7 @@ export class CanvasSelector extends React.PureComponent<CanvasSelectorProps, Can
 
         return (
             <SVG
-                className={"canvasSelector"}
+                className={"canvasSelection"}
                 width={width}
                 height={height}
                 onDown={this.handlers[mode].down}
@@ -423,20 +423,20 @@ export class CanvasSelector extends React.PureComponent<CanvasSelectorProps, Can
     }
 }
 
-export const canvasSelectorConnect = (getWindowState: (state: AppState) => WindowState, changeAction) => {
+export const canvasSelectionConnect = (getWindowState: (state: AppState) => WindowState, changeAction) => {
 
-    const WindowSelectors = windowSelectors(state => state.mainCanvas);
-    const mapStateToProps: MapStateToProps<CanvasSelectorStateProps, CanvasSelectorOwnProps, AppState> = state => ({
+    const WindowSelectors = windowSelectors(getWindowState);
+    const mapStateToProps: MapStateToProps<CanvasSelectionStateProps, CanvasSelectionOwnProps, AppState> = state => ({
         value: WindowSelectors.getSelectionValue(state),
         size: WindowSelectors.getSize(state),
         params: WindowSelectors.getSelectionParams(state)
     });
 
-    const mapDispatchToProps: MapDispatchToProps<CanvasSelectorActionProps, CanvasSelectorOwnProps> = {
+    const mapDispatchToProps: MapDispatchToProps<CanvasSelectionActionProps, CanvasSelectionOwnProps> = {
         onChange: changeAction
     };
 
-    return connect<CanvasSelectorStateProps, CanvasSelectorActionProps, CanvasSelectorOwnProps, AppState>(
+    return connect<CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps, AppState>(
         mapStateToProps, mapDispatchToProps
-    )(CanvasSelector)
+    )(CanvasSelection)
 };
