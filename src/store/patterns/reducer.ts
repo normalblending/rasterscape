@@ -15,7 +15,7 @@ import {
     UpdatePatternImageAction, UpdatePatternSelectionAction
 } from "./types";
 import {CanvasState, FunctionState, SelectionValue} from "../../utils/types";
-import {resizeImageData} from "../../utils/canvas";
+import {resizeImageData} from "../../utils/imageData";
 
 
 export interface HistoryValue {

@@ -1,10 +1,7 @@
 import {
     AddPatternAction, EditPatternConfigAction,
-    EPatternType,
-    PatternRedoAction, PatternStoreAction, PatternUndoAction, PatternUnstoreAction, RemovePatternAction,
+    PatternRedoAction, PatternUndoAction, RemovePatternAction,
     SetPatternHeightAction,
-    SetPatternSelectionAction,
-    SetPatternSelectionParamsAction,
     SetPatternWidthAction, UpdatePatternImageAction, UpdatePatternSelectionAction
 } from "./types";
 import {SelectionValue} from "../../utils/types";

@@ -1,13 +1,9 @@
 import {
-    SetHeightAction,
-    SetSelectionAction,
-    SetSelectionParamsAction,
-    SetWidthAction,
-    UpdateImageAction
-} from "../_shared/window/types";
+    WidthAction,
+} from "../../utils/types";
 import {Action} from "redux";
 import {PatternConfig} from "./helpers";
-import {SelectionValue} from "../../utils/types";
+import {ImageAction, SelectionValue, HeightAction} from "../../utils/types";
 
 export enum EPatternType {
     Canvas = "Canvas",
@@ -25,7 +21,7 @@ export interface PatternAction extends Action {
 export interface RemovePatternAction extends PatternAction {
 }
 
-export interface UpdatePatternImageAction extends UpdateImageAction, PatternAction {
+export interface UpdatePatternImageAction extends ImageAction, PatternAction {
 }
 
 export interface UpdatePatternSelectionAction extends PatternAction {
@@ -42,32 +38,10 @@ export interface PatternUndoAction extends PatternAction {
 export interface PatternRedoAction extends PatternAction {
 }
 
-
-
-
-
-export interface SetPatternWidthAction extends SetWidthAction {
+export interface SetPatternWidthAction extends WidthAction {
     id: number
 }
 
-export interface SetPatternHeightAction extends SetHeightAction {
-    id: number
-}
-
-
-
-export interface PatternStoreAction extends Action {
-    id: number
-}
-
-export interface PatternUnstoreAction extends Action {
-    id: number
-}
-
-export interface SetPatternSelectionAction extends SetSelectionAction {
-    id: number
-}
-
-export interface SetPatternSelectionParamsAction extends SetSelectionParamsAction {
+export interface SetPatternHeightAction extends HeightAction {
     id: number
 }

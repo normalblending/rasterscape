@@ -1,30 +1,33 @@
 import {handleActions} from "redux-actions";
-import {EBrushType, SetOpacityAction, SetSizeAction, SetTypeAction} from "./types";
+import {BrushParams, EBrushType, SetBrushParamsAction} from "./types";
 import {EBrushAction} from "./actions";
+import {ParamConfig} from "../../components/_shared/Params";
+import {getBrushParamsConfig} from "./helpers";
 
 export interface BrushState {
-    size: number
-    opacity: number
-    type: EBrushType
+    params: BrushParams
+    paramsConfig: ParamConfig[]
 }
 
 export const brushReducer = handleActions<BrushState>({
-    [EBrushAction.SET_SIZE]: (state: BrushState, action: SetSizeAction) => ({
-        ...state,
-        size: action.size
-    }),
-    [EBrushAction.SET_OPACITY]: (state: BrushState, action: SetOpacityAction) => ({
-        ...state,
-        opacity: action.opacity
-    }),
-    [EBrushAction.SET_TYPE]: (state: BrushState, action: SetTypeAction) => ({
-        ...state,
-        type: action.brushType
-    }),
+    [EBrushAction.SET_PARAMS]: (state: BrushState, action: SetBrushParamsAction) => {
+        const params = {
+            ...state.params,
+            ...action.params
+        };
+        const paramsConfig = getBrushParamsConfig(params);
+        return {
+            paramsConfig,
+            params
+        }
+    }
 }, {
-    size: 0.4,
-    opacity: 0,
-    type: EBrushType.Square
+    params: {
+        size: 5,
+        opacity: 1,
+        type: EBrushType.Square
+    },
+    paramsConfig: getBrushParamsConfig()
 });
 
 

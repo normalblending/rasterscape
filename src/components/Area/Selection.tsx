@@ -1,5 +1,5 @@
 import * as React from "react";
-import {pointsDistance} from "../../utils/canvas";
+import {pointsDistance} from "../../utils/geometry";
 import {SVG} from "../_shared/SVG";
 import * as d3 from "d3";
 import {
@@ -17,8 +17,8 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import classNames from "classnames";
 import {EToolType} from "../../store/tool/types";
-import {ESelectionMode, ECurveType, CurveValueName} from "../../store/selectTool/types";
-import {SelectionValue, SelectToolParams} from '../../utils/types';
+import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
+import {SelectionValue} from '../../utils/types';
 import {SelectionParams} from "../../store/patterns/helpers";
 import "../../styles/selection.scss"
 

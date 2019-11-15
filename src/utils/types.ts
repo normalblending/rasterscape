@@ -1,5 +1,5 @@
 import {Segment} from "./path";
-import {ECurveType, ESelectionMode} from "../store/selectTool/types";
+import {Action} from "redux";
 
 export interface CanvasState {
     imageData: ImageData
@@ -8,17 +8,6 @@ export interface CanvasState {
 }
 
 export type SelectionValue = Segment[];
-
-export type SelectToolParams = {
-    mode: ESelectionMode
-    curveType?: ECurveType
-    curveValue?: number
-};
-
-export interface Size {
-    width: number
-    height: number
-}
 
 export interface FunctionState<V, P> {
     value: V
@@ -29,4 +18,16 @@ export interface EventData {
     value: any,
     name?: string,
     e?: any
+}
+
+export interface ImageAction extends Action {
+    imageData: ImageData
+}
+
+export interface WidthAction extends Action {
+    width: number
+}
+
+export interface HeightAction extends Action {
+    height: number
 }

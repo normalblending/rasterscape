@@ -70,7 +70,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handleDown = data => {
 
-        console.log(this.state.startValue);
         if (this.state.startValue) {
             return;
         }
@@ -95,8 +94,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     handleMove = e => {
         const {onChange, name, selected} = this.props;
         const value = this.calcValue(e);
-
-        console.log(value);
 
         onChange && onChange({e, value, name, selected});
 
@@ -173,7 +170,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     calcValue = e => {
         const {range, valueD = ValueD.VerticalLinear(100)} = this.props;
 
-        console.log(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
         let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
         nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
         return nextValue;
@@ -183,7 +179,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         const {range, className, getText, text, shortcut, ...otherProps} = this.props;
         const {value = 0, startValue} = this.state;
 
-        // console.log("number button render", value);
+        console.log("number button render");
 
         return (
             <ButtonSelect

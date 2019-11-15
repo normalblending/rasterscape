@@ -1,4 +1,4 @@
-import {pointsDistance} from "./canvas";
+import {pointsDistance} from "./geometry";
 
 export enum ESegType {
     M = "M",

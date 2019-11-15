@@ -1,4 +1,3 @@
-import {SelectToolParams} from "../../utils/types";
 import {EParamType, ParamConfig} from "../../components/_shared/Params";
 import {
     curveTypesSelectItems,
@@ -6,7 +5,7 @@ import {
 } from "../../components/Area/Selection";
 import {
     CurveValueName,
-    ESelectionMode
+    ESelectionMode, SelectToolParams
 } from "./types";
 
 export const getSelectToolParamsConfig = (params?: SelectToolParams) => {

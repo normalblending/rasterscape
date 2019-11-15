@@ -1,5 +1,5 @@
 import {EPathModeType, ESegType, findSliceBounds, getLastSlice, getNearestSegment, Path} from "./utils/path";
-import {pointsDistance} from "./utils/canvas";
+import {pointsDistance} from "./utils/geometry";
 
 describe('path module', () => {
 

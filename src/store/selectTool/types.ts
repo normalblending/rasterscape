@@ -1,6 +1,5 @@
 import {Action} from "redux";
 
-
 export enum ECurveType {
     CurveBasis = "curveBasis",
     CurveBundle = "curveBundle",

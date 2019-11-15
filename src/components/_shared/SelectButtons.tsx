@@ -22,25 +22,34 @@ export interface SelectButtonsLineProps {
 const defaultGetValue = ({value}) => value;
 const defaultGetText = ({text}) => text;
 
-export const SelectButtons: React.FC<SelectButtonsLineProps> = ({items, value, name, onChange, getValue = defaultGetValue, getText = defaultGetText}) => {
+export class SelectButtons extends React.PureComponent<SelectButtonsLineProps> {
 
-    const handleClick = ({value: item, e}) =>
-        onChange({
+
+    handleClick = ({value: item, e}) => {
+        const {name, items, onChange, getValue = defaultGetValue} = this.props;
+        onChange && onChange ({
             value: getValue(item),
             e, item, items, name
         });
+    };
 
-    return (
-        <span className={"select-buttons"}>
+    render () {
+        const {items, value, name, getValue = defaultGetValue, getText = defaultGetText} = this.props;
+
+        console.log("select buttons render", name);
+
+        return (
+            <span className={"select-buttons"}>
             {items.map((item) => (
                 <ButtonSelect
                     value={item}
                     key={getValue(item)}
                     selected={getValue(item) === value}
-                    onClick={handleClick}>
+                    onClick={this.handleClick}>
                     {getText(item)}
                 </ButtonSelect>
             ))}
         </span>
-    );
+        );
+    }
 };

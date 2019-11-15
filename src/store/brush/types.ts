@@ -6,6 +6,17 @@ export enum EBrushType {
     Pattren = "Pattren",
 }
 
+export interface BrushParams {
+    size: number
+    opacity: number
+    type: EBrushType
+}
+
+export interface SetBrushParamsAction extends Action {
+    params: BrushParams
+}
+
+
 export interface SetSizeAction extends Action {
     size: number
 }

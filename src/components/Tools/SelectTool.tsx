@@ -23,8 +23,6 @@ export interface SelectToolProps extends SelectToolStateProps, SelectToolActionP
 }
 
 const SelectToolComponent: React.FC<SelectToolProps> = ({paramsValue, paramsConfig, setSelectToolParams}) => {
-
-    console.log(paramsConfig);
     return (
         <Params
             data={paramsConfig}

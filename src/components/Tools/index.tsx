@@ -5,7 +5,6 @@ import {EToolType} from "../../store/tool/types";
 import {setCurrentTool} from "../../store/tool/actions";
 import {Brush} from "./Brush";
 import {Line} from "./Line";
-import {Button} from "../_shared/Button";
 import {ButtonSelect} from "../_shared/ButtonSelect";
 import {SelectTool} from "./SelectTool";
 

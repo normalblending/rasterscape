@@ -1,27 +1,33 @@
 import {handleActions} from "redux-actions";
-import {BrushState} from "../brush/reducer";
-import {ELineType, SetOpacityAction, SetSizeAction, SetTypeAction} from "./types";
+import {ELineType, LineParams, SetLineParamsAction} from "./types";
 import {ELineAction} from "./actions";
+import {ParamConfig} from "../../components/_shared/Params";
+import {getLineParamsConfig} from "./helpers";
 
 export interface LineState {
-    size: number
-    opacity: number
-    type: ELineType
+    params: LineParams
+    paramsConfig: ParamConfig[]
 }
 
 export const lineReducer = handleActions<LineState>({
-    [ELineAction.SET_SIZE]: (state: BrushState, action: SetSizeAction) => ({
-        ...state,
-        size: action.size
-    }),
-    [ELineAction.SET_OPACITY]: (state: BrushState, action: SetOpacityAction) => ({
-        ...state,
-        opacity: action.opacity
-    }),
-    [ELineAction.SET_TYPE]: (state: BrushState, action: SetTypeAction) => ({
-        ...state,
-        type: action.lineType
-    }),
-}, {});
+    [ELineAction.SET_PARAMS]: (state: LineState, action: SetLineParamsAction) => {
+        const params = {
+            ...state.params,
+            ...action.params
+        };
+        const paramsConfig = getLineParamsConfig(params);
+        return {
+            paramsConfig,
+            params
+        }
+    }
+}, {
+    params: {
+        size: 5,
+        opacity: 1,
+        type: ELineType.Default
+    },
+    paramsConfig: getLineParamsConfig()
+});
 
 

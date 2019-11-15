@@ -44,8 +44,10 @@ export interface PatternsState {
 
 class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState> {
 
+    handleAddClick = () => this.props.addPattern({history: true, selection: true});
+
     render() {
-        const {addPattern, removePattern, patterns, updateImage, updateSelection, undo, redo, setWidth, setHeight} = this.props;
+        const {removePattern, patterns, updateImage, updateSelection, undo, redo, setWidth, setHeight} = this.props;
         return (
             <>
                 {patterns.map(({id, current, config, history, store, selection}) => {
@@ -71,7 +73,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onSetHeight={setHeight}/>
                     );
                 })}
-                <Button onClick={() => addPattern({history: true, selection: true})}>add</Button>
+                <Button onClick={this.handleAddClick}>add</Button>
             </>
         );
     }

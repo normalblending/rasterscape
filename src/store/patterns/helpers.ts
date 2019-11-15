@@ -1,5 +1,5 @@
 import {PatternAction} from "./types";
-import {createCleanCanvasState} from "../../utils/canvas";
+import {createCleanCanvasState} from "../../utils/state";
 import {HistoryValue, PatternsState, PatternState} from "./reducer";
 import {omit} from "lodash";
 import {CanvasState, FunctionState, SelectionValue} from "../../utils/types";

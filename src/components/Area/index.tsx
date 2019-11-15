@@ -35,27 +35,29 @@ export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps
 
 }
 
-const AreaComponent: React.FC<AreaProps> = ({currentTool, id, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange}) => {
+class AreaComponent extends React.PureComponent<AreaProps> {
+    render() {
+        const {currentTool, id, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange} = this.props;
 
-    console.log(selectionTools.indexOf(currentTool) !== -1);
-    return (
-        <div className="area">
-            <Draw
-                value={imageValue}
-                width={width}
-                height={height}
-                onChange={onImageChange}/>
-            <Selection
-                isActive={selectionTools.indexOf(currentTool) !== -1}
-                id={id}
-                width={width}
-                height={height}
-                value={selectionValue}
-                params={selectionParams}
-                onChange={onSelectionChange}/>
-        </div>
-    );
-};
+        return (
+            <div className="area">
+                <Draw
+                    value={imageValue}
+                    width={width}
+                    height={height}
+                    onChange={onImageChange}/>
+                <Selection
+                    isActive={selectionTools.indexOf(currentTool) !== -1}
+                    id={id}
+                    width={width}
+                    height={height}
+                    value={selectionValue}
+                    params={selectionParams}
+                    onChange={onSelectionChange}/>
+            </div>
+        );
+    }
+}
 
 const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = state => ({
     currentTool: state.tool.current

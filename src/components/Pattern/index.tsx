@@ -64,7 +64,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
     render() {
         const {imageValue, height, width, id, config, history, store, selection} = this.props;
 
-        console.log(selection.value);
+        console.log("pattern render " + id);
         return (
             <div className="pattern">
                 <Area

@@ -1,16 +1,8 @@
-import {EBrushType, SetOpacityAction, SetSizeAction, SetTypeAction} from "./types";
+import {BrushParams, SetBrushParamsAction} from "./types";
 
 export enum EBrushAction {
-    SET_SIZE = "brush/set-size",
-    SET_OPACITY = "brush/set-opacity",
-    SET_TYPE = "brush/set-type",
+    SET_PARAMS = "brush/set-params",
 }
 
-export const setSize = (size: number): SetSizeAction =>
-    ({type: EBrushAction.SET_SIZE, size});
-
-export const setOpacity = (opacity: number): SetOpacityAction =>
-    ({type: EBrushAction.SET_OPACITY, opacity});
-
-export const setType = (brushType: EBrushType): SetTypeAction =>
-    ({type: EBrushAction.SET_TYPE, brushType});
+export const setBrushParams = (params: BrushParams): SetBrushParamsAction =>
+    ({type: EBrushAction.SET_PARAMS, params});

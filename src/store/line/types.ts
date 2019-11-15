@@ -5,14 +5,12 @@ export enum ELineType {
     Pattren = "Pattren",
 }
 
-export interface SetSizeAction extends Action {
+export interface LineParams {
     size: number
-}
-
-export interface SetOpacityAction extends Action {
     opacity: number
+    type: ELineType
 }
 
-export interface SetTypeAction extends Action {
-    lineType: ELineType
+export interface SetLineParamsAction extends Action {
+    params: LineParams
 }

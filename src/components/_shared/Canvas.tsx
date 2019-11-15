@@ -1,5 +1,5 @@
 import React from 'react';
-import {canvasToImageData} from "../../utils/canvas";
+import {canvasToImageData} from "../../utils/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
 
@@ -11,6 +11,8 @@ export interface CanvasProps {
     style?: any
 
     children?: React.ReactNode
+
+    updateOnDrag?: boolean
 
     drawProcess?(e: MouseEvent, pre: MouseEvent, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement)
 
@@ -48,7 +50,6 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
 
         this.canvasRef.current.addEventListener("mousedown", this.mouseDownHandler);
-        // document.addEventListener("mouseup", this.mouseUpHandler);
         this.canvasRef.current.addEventListener("mousemove", this.mouseMoveHandler);
 
         if (this.props.value instanceof ImageData) {
@@ -57,11 +58,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     }
 
     componentWillUnmount() {
-
         this.canvasRef.current.removeEventListener("mousedown", this.mouseDownHandler);
-        // document.removeEventListener("mouseup", this.mouseUpHandler);
         this.canvasRef.current.removeEventListener("mousemove", this.mouseMoveHandler);
-        // listeners
     }
 
     componentDidUpdate(prevProps) {
@@ -114,27 +112,32 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         moveProcess && moveProcess(e, this.pre, this.ctx, this.canvasRef.current, this.state.drawing);
 
+        // обновление стейта
+        const {onChange, updateOnDrag = true} = this.props;
+        updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
+
         this.pre = e;
     };
 
     // public
 
-    public setImageData = image =>
-        this.ctx.putImageData(image, 0, 0);
-
-    public drawImage = (...p) =>
-        this.ctx.drawImage(...p);
-    public getCtx = () =>
-        this.ctx;
-
-    public getImageData = () =>
-        this.ctx.getImageData(0, 0, this.props.width, this.props.height);
-
-    public clear = () => {
-        this.ctx.clearRect(0, 0, this.props.width, this.props.height);
-    };
+    // public setImageData = image =>
+    //     this.ctx.putImageData(image, 0, 0);
+    //
+    // public drawImage = (...p) =>
+    //     this.ctx.drawImage(...p);
+    // public getCtx = () =>
+    //     this.ctx;
+    //
+    // public getImageData = () =>
+    //     this.ctx.getImageData(0, 0, this.props.width, this.props.height);
+    //
+    // public clear = () => {
+    //     this.ctx.clearRect(0, 0, this.props.width, this.props.height);
+    // };
 
     render() {
+        console.log("canvas render");
         const {value, width, height, className, style, children} = this.props;
         return (
             <div className={classNames("canvas", className)}>
