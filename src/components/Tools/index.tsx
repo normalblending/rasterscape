@@ -7,10 +7,12 @@ import {Brush} from "./Brush";
 import {Line} from "./Line";
 import {Button} from "../_shared/Button";
 import {ButtonSelect} from "../_shared/ButtonSelect";
+import {SelectTool} from "./SelectTool";
 
 export const ToolsParams = {
     [EToolType.Brush]: {component: Brush, type: EToolType.Brush},
     [EToolType.Line]: {component: Line, type: EToolType.Line},
+    [EToolType.Select]: {component: SelectTool, type: EToolType.Select},
 };
 
 export interface ToolsStateProps {

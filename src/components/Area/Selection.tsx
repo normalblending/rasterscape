@@ -1,6 +1,6 @@
 import * as React from "react";
 import {pointsDistance} from "../../utils/canvas";
-import {SVG} from "./SVG";
+import {SVG} from "../_shared/SVG";
 import * as d3 from "d3";
 import {
     EPathModeType,
@@ -12,13 +12,16 @@ import {
     Segment,
     stringToPathData
 } from "../../utils/path";
-import {EParamType, Param} from "./Params";
 import {arrayToSelectItems} from "../../utils/utils";
-import {SelectionParams, Size} from "../../utils/types";
-import {WindowState} from "../../store/mainWindow/reducer";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {windowSelectors} from "../../store/_shared/window/selectors";
+import classNames from "classnames";
+import {EToolType} from "../../store/tool/types";
+import {ESelectionMode, ECurveType, CurveValueName} from "../../store/selectTool/types";
+import {SelectionValue, SelectToolParams} from '../../utils/types';
+import {SelectionParams} from "../../store/patterns/helpers";
+import "../../styles/selection.scss"
+
 
 const lineFunction = d3
     .line<Segment>()
@@ -26,68 +29,9 @@ const lineFunction = d3
     .y(({values}) => values ? values[1] : 0)
     .defined(({values}) => !!values);
 
-export enum ECurveType {
-    CurveBasis = "curveBasis",
-    CurveBundle = "curveBundle",
-    CurveCardinal = "curveCardinal",
-    CurveCatmullRom = "curveCatmullRom",
-    CurveLinear = "curveLinear",
-    CurveMonotoneX = "curveMonotoneX",
-    CurveMonotoneY = "curveMonotoneY",
-    CurveNatural = "curveNatural",
-    CurveStep = "curveStep",
-    CurveStepBefore = "curveStepBefore",
-    CurveStepAfter = "curveStepAfter",
-    Default = "curveLinear",
-}
-
-export const CurveValueName = {
-    [ECurveType.CurveBundle]: "beta",
-    [ECurveType.CurveCardinal]: "tension",
-    [ECurveType.CurveCatmullRom]: "alpha"
-};
 
 const HANDLER_SIZE = 5;
 
-export enum ESelectionMode {
-    Line = "Line",
-    Rect = "Rect",
-    SimplePoints = "SimplePoints",
-    Points = "Points"
-}
-
-export const getParamsConfig = (params?: SelectionParams) => {
-    let config: Param[] = [{
-        name: "mode",
-        type: EParamType.Select,
-        props: {
-            items: selectionModesSelectItems
-        }
-    }];
-
-    if (params && params.mode === ESelectionMode.Points) {
-        config.push({
-            name: "curveType",
-            type: EParamType.Select,
-            props: {
-                items: curveTypesSelectItems
-            }
-        });
-
-        if (Object.keys(CurveValueName).indexOf(params.curveType) !== -1) {
-            config = [...config, {
-                name: CurveValueName[params.curveType],
-                type: EParamType.Number,
-                props: {
-                    range: [0, 1],
-                    text: 1
-                }
-            }]
-        }
-    }
-
-    return config;
-};
 
 export const selectionModesSelectItems = arrayToSelectItems(
     [ESelectionMode.Rect, ESelectionMode.Line, ESelectionMode.Points]);
@@ -95,22 +39,25 @@ export const selectionModesSelectItems = arrayToSelectItems(
 export const curveTypesSelectItems = arrayToSelectItems(Object.values(ECurveType));
 
 export interface CanvasSelectionStateProps {
-    size: Size
-
-    value?: any
-
-    params: SelectionParams
-    // mode?: ESelectionMode
-    // curveType?: ECurveType
-    // curveValue?: number
+    currentTool: EToolType
+    selectToolParams: SelectToolParams
 }
 
 export interface CanvasSelectionActionProps {
-    onChange?(value?: any)
 }
 
 export interface CanvasSelectionOwnProps {
+    isActive: boolean
+    params: SelectionParams
+
+    id: number
+    width: number
+    height: number
+
+    value?: SelectionValue
     className?: string
+
+    onChange?(value?: any)
 }
 
 export interface CanvasSelectionProps extends CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps {
@@ -126,16 +73,18 @@ export interface CanvasSelectionState {
     points: any[]
     closed: boolean
     path: any[]
+    prevPath: any[] // нужно чтобы знать когда обновлять стейт из пропсов
     curvePath: any[]
     currentSliceN: number
 }
 
-export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, CanvasSelectionState> {
+class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps, CanvasSelectionState> {
 
     canvasRef;
     pathRef;
     pathPointsRef;
     maskPathRef;
+    maskRef;
 
     constructor(props) {
         super(props);
@@ -144,6 +93,7 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
         this.pathRef = React.createRef();
         this.pathPointsRef = React.createRef();
         this.maskPathRef = React.createRef();
+        this.maskRef = React.createRef();
 
         this.state = {
             startX: null,
@@ -153,6 +103,7 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
             points: [],
             closed: true,
             path: [],
+            prevPath: null,
             curvePath: [],
             currentSliceN: 0
         };
@@ -167,14 +118,15 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
     }
 
     componentDidUpdate(prevProps: CanvasSelectionProps) {
-        if (prevProps.params.mode !== this.props.params.mode) {
-            this.handlers[prevProps.params.mode].exit(this.props.params.mode)
+        if (prevProps.selectToolParams.mode !== this.props.selectToolParams.mode) {
+            this.selectToolHandlers[prevProps.selectToolParams.mode].exit(this.props.selectToolParams.mode)
         }
     }
 
-    static getDerivedStateFromState(nextProps: CanvasSelectionProps) {
+    static getDerivedStateFromProps(nextProps: CanvasSelectionProps, prevState) {
         const {value} = nextProps;
-        return Array.isArray(value) ? {
+        return Array.isArray(value) && value !== prevState.prevPath ? {
+            prevPath: value,
             path: value,
             currentSliceN: value.filter(({type}) => type === ESegType.M).length,
         } : {}
@@ -186,7 +138,7 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
         onChange && onChange(this.state.path);
     };
 
-    handlers = {
+    selectToolHandlers = {
         [ESelectionMode.Rect]: ({
             down: e => {
                 const {path} = this.state;
@@ -339,7 +291,7 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
                     }
                 }
             },
-            drag: () => undefined,
+            drag: () => undefined, // можно сделать чтобы последняя точка перетаскивалась пока держишь
             up: () => undefined,
             exit: (nextMode) => {
                 const {path} = this.state;
@@ -375,9 +327,9 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
     };
 
     line = (path, line) => {
-        const {params} = this.props;
-        const {curveType} = params;
-        const curveValue = params[CurveValueName[curveType]];
+        const {selectToolParams} = this.props;
+        const {curveType} = selectToolParams;
+        const curveValue = selectToolParams[CurveValueName[curveType]];
 
         let curve = d3[curveType || "curveLinear"];
         if (Object.keys(CurveValueName).indexOf(curveType) !== -1)
@@ -391,52 +343,53 @@ export class CanvasSelection extends React.PureComponent<CanvasSelectionProps, C
     };
 
     render() {
-        console.log("selector render");
-        const {size: {width, height}, params: {mode}} = this.props;
+        console.log("selector render", this.state.path);
+        const {width, height, selectToolParams: {mode}, isActive, id} = this.props;
 
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
 
         return (
-            <SVG
-                className={"canvasSelection"}
-                width={width}
-                height={height}
-                onDown={this.handlers[mode].down}
-                onDrag={this.handlers[mode].drag}
-                onUp={this.handlers[mode].up}>
-                <mask id="myMask">
-                    <rect x="0" y="0" width={width} height={height} fill="white"/>
-                    <path
-                        ref={this.maskPathRef}
-                        fillOpacity={1}
-                        fill="black"/>
-                </mask>
-                <rect x="0" y="0" width={width} height={height} fill="black" fillOpacity={0.3} mask="url(#myMask)"/>
-                <path
-                    ref={this.pathRef}
-                    fillOpacity={0}
-                    fill="black"
-                    stroke="red"/>
-            </SVG>
+            <div className={classNames("selection", {
+                ["selectionActive"]: isActive
+            })}>
+                <SVG
+                    width={width}
+                    height={height}
+                    onDown={this.selectToolHandlers[mode].down}
+                    onDrag={this.selectToolHandlers[mode].drag}
+                    onUp={this.selectToolHandlers[mode].up}>
+                    {this.state.path && this.state.path.length && <>
+                        <mask
+                            id={`selectionMask${id}`}
+                            ref={this.maskRef}>
+                            <rect x="0" y="0" width={width} height={height} fill="white"/>
+                            <path
+                                ref={this.maskPathRef}
+                                fillOpacity={1}
+                                fill="black"/>
+                        </mask>
+                        <rect x="0" y="0" width={width} height={height} fill="black" fillOpacity={0.3}
+                              mask={`url(#selectionMask${id})`}/>
+                        <path
+                            ref={this.pathRef}
+                            fillOpacity={0}
+                            fill="black"
+                            stroke="red"/>
+                    </>}
+                </SVG>
+            </div>
         )
     }
 }
 
-export const canvasSelectionConnect = (getWindowState: (state: AppState) => WindowState, changeAction) => {
+const mapStateToProps: MapStateToProps<CanvasSelectionStateProps, CanvasSelectionOwnProps, AppState> = state => ({
+    selectToolParams: state.selectTool.params,
+    currentTool: state.tool.current
+});
 
-    const WindowSelectors = windowSelectors(getWindowState);
-    const mapStateToProps: MapStateToProps<CanvasSelectionStateProps, CanvasSelectionOwnProps, AppState> = state => ({
-        value: WindowSelectors.getSelectionValue(state),
-        size: WindowSelectors.getSize(state),
-        params: WindowSelectors.getSelectionParams(state)
-    });
+const mapDispatchToProps: MapDispatchToProps<CanvasSelectionActionProps, CanvasSelectionOwnProps> = {};
 
-    const mapDispatchToProps: MapDispatchToProps<CanvasSelectionActionProps, CanvasSelectionOwnProps> = {
-        onChange: changeAction
-    };
-
-    return connect<CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps, AppState>(
-        mapStateToProps, mapDispatchToProps
-    )(CanvasSelection)
-};
+export const Selection = connect<CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps, AppState>(
+    mapStateToProps, mapDispatchToProps
+)(CanvasSelectionComponent);

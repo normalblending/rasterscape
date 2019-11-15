@@ -1,7 +1,7 @@
 import * as React from "react";
-import {Canvas, CanvasProps} from "./Canvas";
+import {Canvas, CanvasProps} from "../_shared/Canvas";
 import {circle} from "../../utils/canvas";
-import {AppState} from "../../store";
+import {AppState} from "../../store/index";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../store/brush/reducer";
 import {EToolType} from "../../store/tool/types";
@@ -41,6 +41,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
 
 
+        console.log(111);
 
 
 
@@ -76,6 +77,6 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
 };
 
-export const CanvasDraw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(
+export const Draw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(
     mapStateToProps, mapDispatchToProps
 )(CanvasDrawComponent);

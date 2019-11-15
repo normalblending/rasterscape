@@ -51,7 +51,7 @@ export const pointsDistance = (x1, y1, x2, y2) => {
 };
 // STATE
 
-export function createCleanCanvasState(width, height): CanvasState {
+export function createCleanCanvasState(width: number, height: number): CanvasState {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 

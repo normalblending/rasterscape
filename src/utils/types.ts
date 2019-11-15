@@ -1,6 +1,5 @@
 import {Segment} from "./path";
-import {ECurveType, ESelectionMode} from "../components/_shared/CanvasSelection";
-import {Param} from "../components/_shared/Params";
+import {ECurveType, ESelectionMode} from "../store/selectTool/types";
 
 export interface CanvasState {
     imageData: ImageData
@@ -8,15 +7,9 @@ export interface CanvasState {
     height: number
 }
 
-export interface SelectionState {
-    value: SelectionValue
-    paramsConfig: Param[]
-    params: SelectionParams
-}
-
 export type SelectionValue = Segment[];
 
-export type SelectionParams = {
+export type SelectToolParams = {
     mode: ESelectionMode
     curveType?: ECurveType
     curveValue?: number
@@ -25,4 +18,15 @@ export type SelectionParams = {
 export interface Size {
     width: number
     height: number
+}
+
+export interface FunctionState<V, P> {
+    value: V
+    params: P
+}
+
+export interface EventData {
+    value: any,
+    name?: string,
+    e?: any
 }

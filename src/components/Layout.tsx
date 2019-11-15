@@ -1,5 +1,4 @@
 import * as React from "react";
-import {MainWindow} from "./MainWindow";
 import "../styles/layout.scss";
 import {Patterns} from "./Patterns";
 import {Tools} from "./Tools";
@@ -17,7 +16,6 @@ export const Layout: React.FC<LayoutProps> = ({}) => {
             </div>
             <div className="windows">
                 <Patterns/>
-                <MainWindow/>
             </div>
         </div>
     );

@@ -1,11 +1,9 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import "../../styles/button.scss";
+import {EventData} from "../../utils/types";
 
-export interface ButtonEventData {
-    value?: any,
-    name?: string,
-    e?: any
+export interface ButtonEventData extends EventData {
 }
 
 export interface ButtonProps {

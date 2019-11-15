@@ -1,6 +1,6 @@
 import {createSelector} from "reselect";
 // import {MainWindowState} from "./reducer";
-import {CurveValueName} from "../../components/_shared/CanvasSelection";
+// import {CurveValueName} from "../../store/selectTool/types";
 
 const getPatternsState = state => state.patterns;
 

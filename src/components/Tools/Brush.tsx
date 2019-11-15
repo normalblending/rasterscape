@@ -9,6 +9,9 @@ import {Button} from "../_shared/Button";
 import {Key} from "../_shared/Key";
 import {InputText} from "../_shared/InputText";
 import {SelectButtons} from "../_shared/SelectButtons";
+import {array} from "prop-types";
+import {arrayToSelectItems} from "../../utils/utils";
+import {EventData} from "../../utils/types";
 
 export interface BrushStateProps {
     size: number
@@ -32,7 +35,7 @@ export interface BrushProps extends BrushStateProps, BrushActionProps, BrushOwnP
 
 }
 
-const typeSelectItems = Object.values(EBrushType);
+const typeSelectItems = arrayToSelectItems(Object.values(EBrushType));
 const sizeRange = [1, 200] as [number, number];
 const sizeValueD = ValueD.VerticalLinear(.5);
 const opacityRange = [0, 1] as [number, number];
@@ -47,7 +50,7 @@ class BrushComponent extends React.PureComponent<BrushProps> {
         const {setOpacity} = this.props;
         setOpacity && setOpacity(value)
     };
-    handleTypeChange = (value) => {
+    handleTypeChange = ({value}) => {
         const {setType} = this.props;
         setType && setType(value)
     };

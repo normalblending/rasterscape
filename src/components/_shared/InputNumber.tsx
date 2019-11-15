@@ -17,6 +17,10 @@ export const InputNumber: React.FC<InputNumberProps> = ({value, onChange, min = 
 
     const [_value, set_value] = React.useState(value);
 
+    React.useEffect(() => {
+        value !== _value && !timer && set_value(value)
+    });
+
     const changeHandler = e => {
         const n_value = +e.target.value;
 
@@ -41,6 +45,8 @@ export const InputNumber: React.FC<InputNumberProps> = ({value, onChange, min = 
                 }
 
                 onChange(n_value);
+                clearTimeout(timer);
+                timer = null; // чистим таймер чтобы обновлять значение из пропсов только когда таймер не запущен
 
             }, delay)
         }

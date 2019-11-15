@@ -1,0 +1,10 @@
+.area {
+  display: flex;
+  position: relative;
+
+  & > .selection {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

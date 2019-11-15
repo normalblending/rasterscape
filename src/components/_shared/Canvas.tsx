@@ -48,7 +48,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
 
         this.canvasRef.current.addEventListener("mousedown", this.mouseDownHandler);
-        document.addEventListener("mouseup", this.mouseUpHandler);
+        // document.addEventListener("mouseup", this.mouseUpHandler);
         this.canvasRef.current.addEventListener("mousemove", this.mouseMoveHandler);
 
         if (this.props.value instanceof ImageData) {
@@ -59,7 +59,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     componentWillUnmount() {
 
         this.canvasRef.current.removeEventListener("mousedown", this.mouseDownHandler);
-        document.removeEventListener("mouseup", this.mouseUpHandler);
+        // document.removeEventListener("mouseup", this.mouseUpHandler);
         this.canvasRef.current.removeEventListener("mousemove", this.mouseMoveHandler);
         // listeners
     }
@@ -84,9 +84,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         }
     }
 
-    // handlers
-
     private mouseDownHandler = e => {
+        console.log('canvas down');
+        document.addEventListener("mouseup", this.mouseUpHandler);
         this.setState({drawing: true});
 
         const {clickProcess} = this.props;
@@ -95,6 +95,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     };
 
     private mouseUpHandler = e => {
+        console.log('canvas up');
+        document.removeEventListener("mouseup", this.mouseUpHandler);
         if (this.state.drawing) {
             this.setState({drawing: false});
 
@@ -141,8 +143,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
                     ref={this.canvasRef}
                     width={width || (value ? value.width : 300)}
                     height={height || (value ? value.height : 300)}/>
-                {React.Children.map(children, child =>
-                    <div className="canvasLayer">{child}</div>)}
+                {children}
             </div>
         )
     }

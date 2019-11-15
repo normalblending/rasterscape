@@ -1,8 +1,10 @@
 import * as React from "react";
 import {ButtonSelect} from "./ButtonSelect";
 import {ButtonNumber} from "./ButtonNumber";
+import {SelectButtons} from "./SelectButtons";
+import {EventData} from "../../utils/types";
 
-export interface Param {
+export interface ParamConfig {
     type: EParamType
     props?: object
     name: string
@@ -16,6 +18,7 @@ export enum EParamType {
 
 export const ParamComponents = {
     [EParamType.Boolean]: ButtonSelect,
+    [EParamType.Select]: SelectButtons,
     [EParamType.Number]: ButtonNumber,
 };
 
@@ -33,9 +36,11 @@ export interface ParamsState {
 
 export class Params extends React.PureComponent<ParamsProps, ParamsState> {
 
-    handleChange = (changedValue, changedName) => {
+    handleChange = (data: EventData) => {
         const {value, onChange, name} = this.props;
-        onChange && onChange({...value, [changedName]: changedValue}, name);
+
+        console.log(data);
+        onChange && onChange({...value, [data.name]: data.value}, name);
     };
 
     render() {

@@ -43,7 +43,7 @@ export class SVG extends React.PureComponent<CanvasSVGProps, CanvasSVGState> {
         this.elementRef.current.addEventListener("mousemove", this.mouseMoveHandler);
     }
 
-    // handlers
+    // selectToolHandlers
 
     private mouseDownHandler = e => {
         this.setState({dragging: true});

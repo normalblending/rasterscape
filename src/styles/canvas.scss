@@ -1,25 +1,8 @@
 .canvas {
+  display: flex;
   position: relative;
-  & > .mainWindow {
-    border: 1px solid red;
-  }
-  & > .canvasLayer {
-    display: flex;
-    border: 1px solid rebeccapurple;
-    position: absolute;
-    left: 0;
-    top: 0;
+  border: 1px solid red;
+  & > canvas {
 
-    .vertex {
-
-      cursor: pointer;
-      fill: white;
-      stroke: black;
-      stroke-width: 1;
-
-      &.red-vertex {
-        fill: red;
-      }
-    }
   }
 }
