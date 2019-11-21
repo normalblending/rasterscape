@@ -1,11 +1,19 @@
 import {
-    AddPatternAction, EditPatternConfigAction,
+    AddPatternAction, CreateRoomAction, EditPatternConfigAction,
     PatternRedoAction, PatternUndoAction, RemovePatternAction,
     SetPatternHeightAction,
     SetPatternWidthAction, UpdatePatternImageAction, UpdatePatternSelectionAction
 } from "./types";
 import {SelectionValue} from "../../utils/types";
 import {PatternConfig} from "./helpers";
+import {ThunkAction, ThunkDispatch} from 'redux-thunk'
+import {AppState} from "../index";
+import {Action} from "redux";
+import {createRoom_s} from "./service";
+import {base64ToImageData, imageDataToBase64} from "../../utils/imageData";
+import {dispatch} from "d3-dispatch";
+
+type ThunkResult<R> = ThunkAction<R, AppState, undefined, Action>;
 
 export enum EPatternsAction {
     ADD_PATTERN = "patterns/add",
@@ -23,6 +31,8 @@ export enum EPatternAction {
     SET_WIDTH = "pattern/set-width",
     SET_HEIGHT = "pattern/set-height",
     SET_SELECTION_PARAMS = "pattern/set-selection-params",
+
+    CREATE_ROOM = "pattern/create-room",
 }
 
 export const addPattern = (config?: PatternConfig): AddPatternAction =>
@@ -31,8 +41,15 @@ export const addPattern = (config?: PatternConfig): AddPatternAction =>
 export const removePattern = (id: number): RemovePatternAction =>
     ({type: EPatternsAction.REMOVE_PATTERN, id});
 
-export const updateImage = (id: number, imageData: ImageData): UpdatePatternImageAction =>
-    ({type: EPatternAction.UPDATE_IMAGE, imageData, id});
+export const updateImage = (id: number, imageData: ImageData, emit: boolean = true): ThunkResult<UpdatePatternImageAction> =>
+    (dispatch, getState) => {
+
+        const socket = getState().patterns[id].socket;
+
+        emit && socket && socket.emit("image", imageDataToBase64(imageData));
+
+        return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData, id});
+    };
 
 export const updateSelection = (id: number, value: SelectionValue): UpdatePatternSelectionAction =>
     ({type: EPatternAction.UPDATE_SELECTION, value, id});
@@ -49,6 +66,20 @@ export const setWidth = (id: number, width: number): SetPatternWidthAction =>
     ({type: EPatternAction.SET_WIDTH, id, width});
 export const setHeight = (id: number, height: number): SetPatternHeightAction =>
     ({type: EPatternAction.SET_HEIGHT, id, height});
+
+
+export const createRoom = (id: number, roomName: string): ThunkResult<CreateRoomAction> =>
+    dispatch => {
+        const socket = createRoom_s(roomName);
+
+        socket.on("image", base64 => {
+            base64ToImageData(base64).then(imageData => {
+                dispatch(updateImage(id, imageData, false));
+            });
+        });
+
+        return dispatch({type: EPatternAction.CREATE_ROOM, id, roomName, socket})
+    };
 
 // export const storeImage = (id: number): PatternStoreAction => ({type: EPatternsAction.STORE_IMAGE});
 // export const unstoreImage = (id: number): PatternUnstoreAction => ({type: EPatternsAction.UNSTORE_IMAGE});

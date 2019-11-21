@@ -2,7 +2,17 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
 import {Button} from "./_shared/Button";
-import {addPattern, redo, removePattern, undo, updateImage, updateSelection, setHeight, setWidth} from "../store/patterns/actions";
+import {
+    addPattern,
+    redo,
+    removePattern,
+    undo,
+    updateImage,
+    updateSelection,
+    setHeight,
+    setWidth,
+    createRoom
+} from "../store/patterns/actions";
 import {EPatternType} from "../store/patterns/types";
 import {Pattern} from "./Pattern/";
 import {PatternConfig} from "../store/patterns/helpers";
@@ -28,6 +38,8 @@ export interface PatternsActionProps {
     setWidth(id: number, value: number)
 
     setHeight(id: number, value: number)
+
+    createRoom(id: number, name: string)
 }
 
 export interface PatternsOwnProps {
@@ -47,15 +59,17 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
     handleAddClick = () => this.props.addPattern({history: true, selection: true});
 
     render() {
-        const {removePattern, patterns, updateImage, updateSelection, undo, redo, setWidth, setHeight} = this.props;
+        const {createRoom, removePattern, patterns, updateImage, updateSelection, undo, redo, setWidth, setHeight} = this.props;
         return (
             <>
-                {patterns.map(({id, current, config, history, store, selection}) => {
+                {patterns.map(({id, current, config, history, store, selection, connected}) => {
                     return (
                         <Pattern
                             key={id}
                             id={id}
                             config={config}
+
+                            connected={connected}
 
                             history={history}
                             store={store}
@@ -70,7 +84,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
                             onSetWidth={setWidth}
-                            onSetHeight={setHeight}/>
+                            onSetHeight={setHeight}
+                            onCreateRoom={createRoom}/>
                     );
                 })}
                 <Button onClick={this.handleAddClick}>add</Button>
@@ -84,7 +99,7 @@ const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {
-    addPattern, removePattern, updateImage, updateSelection, redo, undo, setWidth, setHeight
+    createRoom, addPattern, removePattern, updateImage, updateSelection, redo, undo, setWidth, setHeight
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

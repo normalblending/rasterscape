@@ -3,6 +3,14 @@ import {canvasToImageData} from "../../utils/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
 
+export interface CanvasEvent {
+    e: MouseEvent
+    pre?: MouseEvent
+    ctx: CanvasRenderingContext2D
+    canvas: HTMLCanvasElement
+    drawing?: boolean
+}
+
 export interface CanvasProps {
     value?: ImageData
     width?: number
@@ -14,13 +22,21 @@ export interface CanvasProps {
 
     updateOnDrag?: boolean
 
-    drawProcess?(e: MouseEvent, pre: MouseEvent, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement)
+    onDown?(e: CanvasEvent)
+    onUp?(e: CanvasEvent)
+    onDraw?(e: CanvasEvent)
 
-    clickProcess?(e: MouseEvent, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement)
+    drawProcess?(e: CanvasEvent)
 
-    moveProcess?(e: MouseEvent, pre: MouseEvent, ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, drawing: boolean)
+    clickProcess?(e: CanvasEvent)
+
+    moveProcess?(e: CanvasEvent)
+
+    releaseProcess?(e: CanvasEvent)
 
     onChange?(imageData?: ImageData)
+
+
 }
 
 export interface CanvasState {
@@ -87,9 +103,22 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         document.addEventListener("mouseup", this.mouseUpHandler);
         this.setState({drawing: true});
 
+        const event = {
+            e,
+            ctx: this.ctx,
+            canvas: this.canvasRef.current,
+            drawing: true
+        };
+
+        const {onDown} = this.props;
+
+        onDown && onDown(event);
+
         const {clickProcess} = this.props;
 
-        clickProcess && clickProcess(e, this.ctx, this.canvasRef.current);
+        clickProcess && clickProcess(event);
+
+
     };
 
     private mouseUpHandler = e => {
@@ -102,19 +131,46 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             const {onChange} = this.props;
 
             onChange && onChange(canvasToImageData(this.canvasRef.current));
+
+            const event = {
+                e,
+                ctx: this.ctx,
+                canvas: this.canvasRef.current,
+                drawing: false
+            };
+
+            const {onUp} = this.props;
+
+            onUp && onUp(event);
+
+            const {releaseProcess} = this.props;
+
+            releaseProcess && releaseProcess(event);
         }
     };
 
     private mouseMoveHandler = e => {
         const {drawProcess, moveProcess} = this.props;
 
-        this.state.drawing && drawProcess && drawProcess(e, this.pre, this.ctx, this.canvasRef.current);
+        this.state.drawing && drawProcess && drawProcess({
+            e,
+            pre: this.pre,
+            ctx: this.ctx,
+            canvas: this.canvasRef.current,
+            drawing: true
+        });
 
-        moveProcess && moveProcess(e, this.pre, this.ctx, this.canvasRef.current, this.state.drawing);
+        moveProcess && moveProcess({
+            e,
+            pre: this.pre,
+            ctx: this.ctx,
+            canvas: this.canvasRef.current,
+            drawing: this.state.drawing
+        });
 
-        // обновление стейта
-        const {onChange, updateOnDrag = true} = this.props;
-        updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
+        // обновление стxейта, может понадобиться для мультиплеера
+        // const {onChange, updateOnDrag = true} = this.props;
+        // updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
 
         this.pre = e;
     };

@@ -8,7 +8,7 @@ import {
     updateCurrentImage, updatePatternState
 } from "./helpers";
 import {
-    AddPatternAction,
+    AddPatternAction, CreateRoomAction,
     EditPatternConfigAction,
     PatternUndoAction,
     RemovePatternAction, SetPatternHeightAction, SetPatternWidthAction,
@@ -37,6 +37,9 @@ export interface PatternState {
     history?: HistoryState,
     store?: StoreState,
     selection?: SelectionState
+
+    connected?: string
+    socket?: any
 }
 
 export interface PatternsState {
@@ -126,7 +129,12 @@ export const patternsReducer = handleActions<PatternsState>({
                 height: action.height,
                 imageData: resizeImageData(pattern.current.imageData, pattern.current.width, action.height)
             })),
-
+    [EPatternAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            connected: action.roomName,
+            socket: action.socket,
+        }))
 }, {});
 
 

@@ -4,6 +4,8 @@ import {AppState} from "../../store";
 import {BrushParams} from "../../store/brush/types";
 import {setBrushParams} from "../../store/brush/actions";
 import {ParamConfig, Params} from "../_shared/Params";
+import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {ValueD} from "../_shared/ButtonNumber";
 
 export interface BrushStateProps {
     paramsConfig: ParamConfig[]
@@ -22,16 +24,35 @@ export interface BrushProps extends BrushStateProps, BrushActionProps, BrushOwnP
 
 }
 
+const sizeRange = [1, 200] as [number, number];
+const sizeValueD = ValueD.VerticalLinear(.5);
+
 class BrushComponent extends React.PureComponent<BrushProps> {
+
+    handleSizeChange = ({value}) => {
+        console.log(value);
+        this.props.setBrushParams({
+            ...this.props.paramsValue,
+            size: value
+        })
+    };
 
     render() {
 
         const {paramsConfig, paramsValue, setBrushParams} = this.props;
         return (
-            <Params
-                data={paramsConfig}
-                value={paramsValue}
-                onChange={setBrushParams}/>
+            <>
+                <ButtonNumberCF
+                    value={paramsValue.size}
+                    name={"size"}
+                    onChange={this.handleSizeChange}
+                    range={sizeRange}
+                    valueD={sizeValueD}/>
+                <Params
+                    data={paramsConfig}
+                    value={paramsValue}
+                    onChange={setBrushParams}/>
+            </>
         );
     }
 }

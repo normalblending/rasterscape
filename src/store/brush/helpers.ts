@@ -1,10 +1,10 @@
-import {BrushParams, EBrushType} from "./types";
+import {BrushParams, EBrushCompositeOperation, EBrushType} from "./types";
 import {EParamType, ParamConfig} from "../../components/_shared/Params";
-import {selectionModesSelectItems} from "../../components/Area/Selection";
 import {ValueD} from "../../components/_shared/ButtonNumber";
 import {arrayToSelectItems} from "../../utils/utils";
 
 const typeSelectItems = arrayToSelectItems(Object.values(EBrushType));
+const compositeOperationSelectItems = arrayToSelectItems(Object.values(EBrushCompositeOperation));
 const sizeRange = [1, 200] as [number, number];
 const sizeValueD = ValueD.VerticalLinear(.5);
 const opacityRange = [0, 1] as [number, number];
@@ -28,6 +28,12 @@ export const getBrushParamsConfig = (params?: BrushParams) => {
         type: EParamType.Select,
         props: {
             items: typeSelectItems,
+        }
+    }, {
+        name: "compositeOperation",
+        type: EParamType.Select,
+        props: {
+            items: compositeOperationSelectItems,
         }
     }];
 

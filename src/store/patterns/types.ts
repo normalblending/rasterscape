@@ -38,10 +38,13 @@ export interface PatternUndoAction extends PatternAction {
 export interface PatternRedoAction extends PatternAction {
 }
 
-export interface SetPatternWidthAction extends WidthAction {
-    id: number
+export interface SetPatternWidthAction extends WidthAction, PatternAction {
 }
 
-export interface SetPatternHeightAction extends HeightAction {
-    id: number
+export interface SetPatternHeightAction extends HeightAction, PatternAction {
+}
+
+export interface CreateRoomAction extends PatternAction {
+    roomName: string
+    socket: any
 }
