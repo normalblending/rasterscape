@@ -5,9 +5,9 @@ import {BrushState} from "../../store/brush/reducer";
 import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
-import {SelectionState, StoreState} from "../../store/patterns/reducer";
+import {StoreState} from "../../store/patterns/types";
 import {SelectionValue} from "../../utils/types";
-import {SelectionParams} from "../../store/patterns/helpers";
+import {SelectionParams, SelectionState} from "../../store/patterns/types";
 import "../../styles/area.scss";
 
 export interface AreaStateProps {
@@ -18,7 +18,7 @@ export interface AreaActionProps {
 }
 
 export interface AreaOwnProps {
-    id: number // нужен для маски выделения
+    name: any // нужен для маски выделения
     height: number
     width: number
 
@@ -37,7 +37,7 @@ export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps
 
 class AreaComponent extends React.PureComponent<AreaProps> {
     render() {
-        const {currentTool, id, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange} = this.props;
+        const {currentTool, name, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange} = this.props;
 
         return (
             <div className="area">
@@ -48,7 +48,7 @@ class AreaComponent extends React.PureComponent<AreaProps> {
                     onChange={onImageChange}/>
                 <Selection
                     isActive={selectionTools.indexOf(currentTool) !== -1}
-                    id={id}
+                    name={name}
                     width={width}
                     height={height}
                     value={selectionValue}

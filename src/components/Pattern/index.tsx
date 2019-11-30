@@ -1,19 +1,24 @@
 import * as React from "react";
 import {Button} from "../_shared/Button";
 import "../../styles/pattern.scss";
-import {PatternConfig} from "../../store/patterns/helpers";
-import {HistoryState, SelectionState, StoreState} from "../../store/patterns/reducer";
+import {MaskParams, PatternConfig, SelectionState, StoreState} from "../../store/patterns/types";
+import {HistoryState} from "../../store/patterns/types";
 import {HistoryControls} from "./HistoryControls";
 import {SelectionValue} from "../../utils/types";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/InputNumber";
-import * as io from "socket.io-client";
-import {base64ToImageData, imageDataToBase64} from "../../utils/imageData";
 import {InputText} from "../_shared/InputText";
+import {MaskDraw} from "../Area/MaskDraw";
+import {ButtonSelect} from "../_shared/ButtonSelect";
+import {ButtonNumber} from "../_shared/ButtonNumber";
+import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {Canvas} from "../_shared/Canvas";
 
 export interface PatternWindowProps {
     id: number
     imageValue: ImageData
+    maskValue?: ImageData
+    maskParams?: MaskParams
     height: number
     width: number
 
@@ -24,7 +29,13 @@ export interface PatternWindowProps {
     store: StoreState
     selection: SelectionState
 
+    resultImage: HTMLCanvasElement
+
     onImageChange(id: number, imageData: ImageData)
+
+    onMaskChange(id: number, imageData: ImageData)
+
+    onMaskParamsChange(id: number, params: MaskParams)
 
     onSelectionChange(id: number, selectionValue: SelectionValue)
 
@@ -39,6 +50,8 @@ export interface PatternWindowProps {
     onSetHeight(id: number, height: number)
 
     onCreateRoom(id: number, name: string)
+
+    onConfigChange(id: number, value: PatternConfig)
 }
 
 export interface PatternWindowState {
@@ -49,31 +62,14 @@ const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true}
 
 export class Pattern extends React.PureComponent<PatternWindowProps, PatternWindowState> {
 
-    socket;
-
     state = {
         roomName: "222"
     };
 
-    constructor(props) {
-        super(props);
 
+    handleImageChange = imageData => this.props.onImageChange(this.props.id, imageData);
 
-        // this.socket = io.connect("http://localhost:3000");
-        //
-        // this.socket.on("image", base64 => {
-        //     base64ToImageData(base64).then(imageData => {
-        //         console.log(imageData);
-        //         this.props.onImageChange(this.props.id, imageData);
-        //     });
-        // })
-    }
-
-
-    handleImageChange = imageData => {
-        // this.socket.emit("image", imageDataToBase64(imageData));
-        this.props.onImageChange(this.props.id, imageData);
-    };
+    handleMaskChange = imageData => this.props.onMaskChange(this.props.id, imageData);
 
     handleSelectionChange = value =>
         this.props.onSelectionChange(this.props.id, value);
@@ -92,29 +88,50 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
     handleSetHeight = height => this.props.onSetHeight(this.props.id, height);
 
 
+    handleMaskParamsChange = (params: MaskParams) =>
+        this.props.onMaskParamsChange(this.props.id, params);
 
     handleCreateRoom = () => {
         this.props.onCreateRoom(this.props.id, this.state.roomName);
     };
 
-    render() {
-        const {connected, imageValue, height, width, id, config, history, store, selection} = this.props;
+    handleConfigToggle = (data) => {
+        this.props.onConfigChange(this.props.id, {
+            ...this.props.config,
+            [data.name]: !data.selected
+        })
+    };
 
-        console.log("pattern render " + id);
+    render() {
+        const {resultImage, connected, imageValue, maskValue, maskParams, height, width, id, config, history, store, selection} = this.props;
+
+        console.log("pattern render ", id, resultImage);
         return (
             <div className="pattern">
-                <Area
-                    id={id}
-                    width={width}
-                    height={height}
+                <div className={"areas"}>
+                    <Area
+                        name={id}
+                        width={width}
+                        height={height}
 
-                    imageValue={imageValue}
+                        imageValue={imageValue}
 
-                    selectionValue={selection.value}
-                    selectionParams={selection.params}
+                        selectionValue={selection.value}
+                        selectionParams={selection.params}
 
-                    onImageChange={this.handleImageChange}
-                    onSelectionChange={this.handleSelectionChange}/>
+                        onImageChange={this.handleImageChange}
+                        onSelectionChange={this.handleSelectionChange}/>
+                    {config.mask &&
+                    <MaskDraw
+                        params={maskParams}
+                        value={maskValue}
+                        name={id}
+                        width={width}
+                        height={height}
+                        onParamsChange={this.handleMaskParamsChange}
+                        onChange={this.handleMaskChange}/>}
+                    {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
+                </div>
                 <div className="pattern-controls">
                     <Button onClick={this.handleRemove}>del</Button> {id}
 
@@ -146,6 +163,12 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         onClick={this.handleClearSelection}>clear</Button>}
 
 
+                    <div>
+                        <ButtonSelect
+                            name={"mask"}
+                            selected={config.mask}
+                            onClick={this.handleConfigToggle}>mask</ButtonSelect>
+                    </div>
                 </div>
 
             </div>

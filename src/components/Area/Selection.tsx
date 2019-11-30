@@ -19,7 +19,7 @@ import classNames from "classnames";
 import {EToolType} from "../../store/tool/types";
 import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
 import {SelectionValue} from '../../utils/types';
-import {SelectionParams} from "../../store/patterns/helpers";
+import {SelectionParams} from "../../store/patterns/types";
 import "../../styles/selection.scss"
 
 
@@ -50,7 +50,7 @@ export interface CanvasSelectionOwnProps {
     isActive: boolean
     params: SelectionParams
 
-    id: number
+    name: any
     width: number
     height: number
 
@@ -344,7 +344,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
 
     render() {
         console.log("selector render", this.state.path);
-        const {width, height, selectToolParams: {mode}, isActive, id} = this.props;
+        const {width, height, selectToolParams: {mode}, isActive, name} = this.props;
 
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
@@ -361,7 +361,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                     onUp={this.selectToolHandlers[mode].up}>
                     {this.state.path && this.state.path.length && <>
                         <mask
-                            id={`selectionMask${id}`}
+                            id={`selectionMask${name}`}
                             ref={this.maskRef}>
                             <rect x="0" y="0" width={width} height={height} fill="white"/>
                             <path
@@ -370,7 +370,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                                 fill="black"/>
                         </mask>
                         <rect x="0" y="0" width={width} height={height} fill="black" fillOpacity={0.3}
-                              mask={`url(#selectionMask${id})`}/>
+                              mask={`url(#selectionMask${name})`}/>
                         <path
                             ref={this.pathRef}
                             fillOpacity={0}

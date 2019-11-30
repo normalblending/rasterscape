@@ -1,52 +1,35 @@
 import {handleActions} from "redux-actions";
 import {EPatternAction, EPatternsAction} from "./actions";
 import {
-    createPatternInitialState, HistoryParams, PatternConfig,
+    createPatternInitialState,
+    historyPush, historyRedo, historyUndo,
     patternId,
     reducePattern,
-    removePattern, SelectionParams, StoreParams,
-    updateCurrentImage, updatePatternState
+    removePattern,
+    updatePatternState
 } from "./helpers";
 import {
-    AddPatternAction, CreateRoomAction,
+    AddPatternAction,
+    CreateRoomAction,
     EditPatternConfigAction,
+    PatternState,
     PatternUndoAction,
-    RemovePatternAction, SetPatternHeightAction, SetPatternWidthAction,
-    UpdatePatternImageAction, UpdatePatternSelectionAction
+    RemovePatternAction, SetMaskParamsAction,
+    SetPatternHeightAction,
+    SetPatternWidthAction,
+    UpdatePatternImageAction,
+    UpdatePatternMaskAction,
+    UpdatePatternSelectionAction
 } from "./types";
-import {CanvasState, FunctionState, SelectionValue} from "../../utils/types";
-import {resizeImageData} from "../../utils/imageData";
+import {maskedImage, resizeImageData} from "../../utils/imageData";
 
-
-export interface HistoryValue {
-    before: CanvasState[],
-    after: CanvasState[]
-}
-
-export type HistoryState = FunctionState<HistoryValue, HistoryParams>;
-
-export type StoreState = FunctionState<CanvasState, StoreParams>;
-
-export type SelectionState = FunctionState<SelectionValue, SelectionParams>;
-
-
-export interface PatternState {
-    id: number
-    config: PatternConfig
-    current: CanvasState
-    history?: HistoryState,
-    store?: StoreState,
-    selection?: SelectionState
-
-    connected?: string
-    socket?: any
-}
 
 export interface PatternsState {
     [id: string]: PatternState
 }
 
 export const patternsReducer = handleActions<PatternsState>({
+
     [EPatternsAction.ADD_PATTERN]: (state: PatternsState, action: AddPatternAction) => {
         const id = patternId(state);
         return {
@@ -56,57 +39,81 @@ export const patternsReducer = handleActions<PatternsState>({
     },
     [EPatternsAction.REMOVE_PATTERN]: (state: PatternsState, action: RemovePatternAction) =>
         removePattern(state, action.id),
-    [EPatternAction.UPDATE_IMAGE]: reducePattern<UpdatePatternImageAction>(
-        (pattern: PatternState, action) =>
-            updateCurrentImage(pattern, {imageData: action.imageData})),
+
+
     [EPatternAction.EDIT_CONFIG]: reducePattern<EditPatternConfigAction>(
         (pattern: PatternState, action) =>
             updatePatternState(pattern, action.config)),
-    [EPatternAction.UNDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
-        const {history: {value: {before, after}}, current} = pattern;
 
-        if (before.length === 0) return pattern;
 
-        const prevCanvasState = before[before.length - 1];
-
-        const beforeNext = before.slice(0, before.length - 1); // pop
-        const afterNext = [current, ...after]; // unshift current
-
-        return {
+    [EPatternAction.SET_WIDTH]: reducePattern<SetPatternWidthAction>(
+        (pattern: PatternState, action) => ({
             ...pattern,
-            current: {...prevCanvasState},
-            history: {
-                ...pattern.history,
+            current: {
+                ...pattern.current,
+                width: action.width,
+                imageData: resizeImageData(pattern.current.imageData, action.width, pattern.current.height)
+            },
+            mask: pattern.mask && {
+                ...pattern.mask,
                 value: {
-                    before: beforeNext,
-                    after: afterNext
+                    ...pattern.mask.value,
+                    width: action.width,
+                    imageData: resizeImageData(pattern.mask.value.imageData, action.width, pattern.mask.value.height)
+                }
+            },
+            history: pattern.history && historyPush(pattern.history, {
+                current: pattern.current,
+                maskValue: pattern.mask && pattern.mask.value
+            })
+        })),
+    [EPatternAction.SET_HEIGHT]: reducePattern<SetPatternHeightAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            current: {
+                ...pattern.current,
+                height: action.height,
+                imageData: resizeImageData(pattern.current.imageData, pattern.current.width, action.height)
+            },
+            mask: pattern.mask && {
+                ...pattern.mask,
+                value: {
+                    ...pattern.mask.value,
+                    height: action.height,
+                    imageData: resizeImageData(pattern.mask.value.imageData, pattern.mask.value.width, action.height)
+                }
+            },
+            history: pattern.history && historyPush(pattern.history, {
+                current: pattern.current,
+                maskValue: pattern.mask && pattern.mask.value
+            })
+        })),
+
+    [EPatternAction.SET_MASK_PARAMS]: reducePattern<SetMaskParamsAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            mask: pattern.mask && {
+                ...pattern.mask,
+                params: {
+                    ...pattern.mask.params,
+                    ...action.params
                 }
             }
-        }
-    }),
-    [EPatternAction.REDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
+        })),
 
-        const {history: {value: {before, after}}, current} = pattern;
-
-        if (after.length === 0) return pattern;
-
-        const nextCanvasState = after[0];
-
-        const beforeNext = [...before, current]; // push current
-        const afterNext = after.slice(1, after.length); // shift
-
-        return {
+    [EPatternAction.UPDATE_IMAGE]: reducePattern<UpdatePatternImageAction>(
+        (pattern: PatternState, action) => ({
             ...pattern,
-            current: {...nextCanvasState},
-            history: {
-                ...pattern.history,
-                value: {
-                    before: beforeNext,
-                    after: afterNext
-                }
-            }
-        }
-    }),
+            current: {
+                ...pattern.current,
+                imageData: action.imageData
+            },
+            resultImage: maskedImage(action.imageData, pattern.mask && pattern.mask.value.imageData),
+            history: pattern.history && historyPush(pattern.history, {
+                current: pattern.current
+            })
+        })),
+
     [EPatternAction.UPDATE_SELECTION]: reducePattern<UpdatePatternSelectionAction>(
         (pattern: PatternState, action) => {
             return ({
@@ -117,18 +124,59 @@ export const patternsReducer = handleActions<PatternsState>({
                 }
             })
         }),
-    [EPatternAction.SET_WIDTH]: reducePattern<SetPatternWidthAction>(
-        (pattern: PatternState, action) =>
-            updateCurrentImage(pattern, {
-                width: action.width,
-                imageData: resizeImageData(pattern.current.imageData, action.width, pattern.current.height)
-            })),
-    [EPatternAction.SET_HEIGHT]: reducePattern<SetPatternHeightAction>(
-        (pattern: PatternState, action) =>
-            updateCurrentImage(pattern, {
-                height: action.height,
-                imageData: resizeImageData(pattern.current.imageData, pattern.current.width, action.height)
-            })),
+
+    [EPatternAction.UPDATE_MASK]: reducePattern<UpdatePatternMaskAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            mask: {
+                ...pattern.mask,
+                value: {
+                    ...pattern.mask.value,
+                    imageData: action.imageData
+                }
+            },
+            resultImage: maskedImage(pattern.current.imageData, action.imageData),
+            history: pattern.history && historyPush(pattern.history, {
+                maskValue: pattern.mask.value
+            })
+        })),
+
+    [EPatternAction.UNDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
+        const undoResult = historyUndo(pattern.history, {
+            current: pattern.current,
+            maskValue: pattern.mask && pattern.mask.value
+        });
+        if (!undoResult) return pattern;
+
+        return {
+            ...pattern,
+            history: undoResult.history,
+            current: undoResult.prev.current || pattern.current,
+            mask: pattern.mask && {
+                ...pattern.mask,
+                value: undoResult.prev.maskValue || pattern.mask.value
+            }
+        }
+
+    }),
+    [EPatternAction.REDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
+        const redoResult = historyRedo(pattern.history, {
+            current: pattern.current,
+            maskValue: pattern.mask && pattern.mask.value
+        });
+        if (!redoResult) return pattern;
+
+        return {
+            ...pattern,
+            history: redoResult.history,
+            current: redoResult.next.current || pattern.current,
+            mask: pattern.mask && {
+                ...pattern.mask,
+                value: redoResult.next.maskValue || pattern.mask.value
+            }
+        }
+    }),
+
     [EPatternAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
         (pattern: PatternState, action) => ({
             ...pattern,

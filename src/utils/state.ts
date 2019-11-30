@@ -8,9 +8,9 @@ export function createCleanCanvasState(width: number, height: number): CanvasSta
     const imageData = ctx.createImageData(width, height);
 
     // noise
-    for (let i = 0; i < imageData.data.length; i++) {
-        imageData.data[i] = Math.random() * 100;
-    }
+    // for (let i = 0; i < imageData.data.length; i++) {
+    //     imageData.data[i] = Math.random() * 100;
+    // }
 
     return {
         imageData,

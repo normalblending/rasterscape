@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Button} from "../_shared/Button";
-import {HistoryValue} from "../../store/patterns/reducer";
+import {HistoryValue} from "../../store/patterns/types";
 
 export interface HistoryControlsProps {
 

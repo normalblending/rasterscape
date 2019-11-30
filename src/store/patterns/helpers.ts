@@ -1,8 +1,16 @@
-import {PatternAction} from "./types";
+import {
+    HistoryParams, HistoryState, HistoryValue,
+    MaskParams,
+    PatternAction,
+    PatternConfig, PatternHistoryItem,
+    PatternParams, PatternState,
+    SelectionParams,
+    StoreParams
+} from "./types";
 import {createCleanCanvasState} from "../../utils/state";
-import {HistoryValue, PatternsState, PatternState} from "./reducer";
+import {PatternsState} from "./reducer";
 import {omit} from "lodash";
-import {CanvasState, FunctionState, SelectionValue} from "../../utils/types";
+import {CanvasState, FunctionState, MaskValue, SelectionValue} from "../../utils/types";
 
 export const patternId = (state: PatternsState) =>
     Object.keys(state).length
@@ -10,63 +18,32 @@ export const patternId = (state: PatternsState) =>
         : 1;
 
 
-export interface HistoryParams {
-    length?: number
-}
-
-export interface StoreParams {
-
-}
-
-export interface SelectionParams {
-    strokeColor?: string
-    strokeOpacity?: number
-    fillColor?: string
-    fillOpacity?: number
-}
-
-export interface PatternParams {
-    history?: HistoryParams
-
-    store?: StoreParams
-
-    selection?: SelectionParams
-}
-
-export interface PatternConfig {
-
-    width?: number
-    height?: number
-
-    history?: boolean
-
-    store?: boolean
-
-    selection?: boolean
-
-}
-
 export const createPatternInitialState = (id: number, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {width = 300, height = 300, history, store, selection} = config || {};
+    const {width = 300, height = 300, history, store, selection, mask} = config || {};
     return {
         id,
         config,
+        resultImage: null,
         current: createCleanCanvasState(width, height),
         history: getHistoryState(history, undefined, (params || {}).history),
         store: getStoreState(store, undefined, (params || {}).store),
         selection: getSelectionState(selection, undefined, (params || {}).selection),
+        mask: getMaskState(width, height)(mask, undefined, (params || {}).mask),
     }
 };
 
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection} = config || {};
+    const {history, store, selection, mask} = config || {};
+    params = params || {};
     return {
         config,
         id: state.id,
         current: state.current,
+        resultImage: state.resultImage,
         history: getHistoryState(history, state.history, params.history),
         store: getStoreState(store, state.store, params.store),
         selection: getSelectionState(selection, state.selection, params.selection),
+        mask: getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask),
     }
 };
 
@@ -100,6 +77,11 @@ export const getStoreState = getFunctionState<CanvasState, StoreParams>(null, {}
 
 export const getSelectionState = getFunctionState<SelectionValue, SelectionParams>(null, {});
 
+export const getMaskState = (width, height) => getFunctionState<MaskValue, MaskParams>(
+    createCleanCanvasState(width, height), {
+        opacity: 1,
+        black: true
+    });
 
 
 export const removePattern = (state: PatternsState, id: number) => omit(state, id);
@@ -113,37 +95,74 @@ export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T
         [action.id]: reducer(state[action.id], action, state)
     });
 
-export const updateCurrentImage = (state: PatternState, nextCurrent) => {
-    if (state.history) {
-        const {history: {value: {before}, params: {length: historyLength}}, current: currentPrev} = state;
 
-        const beforeNext: CanvasState[] = [...before, currentPrev];
-        const afterNext: CanvasState[] = [];
+export const historyPush = (history: HistoryState, current: PatternHistoryItem): HistoryState => {
+    const {value: {before}, params: {length: historyLength}} = history;
 
-        if (beforeNext.length > historyLength)
-            beforeNext.shift();
+    const beforeNext: PatternHistoryItem[] = [...before, current];
+    const afterNext: PatternHistoryItem[] = [];
 
-        return {
-            ...state,
-            current: {
-                ...state.current,
-                ...nextCurrent
-            },
-            history: {
-                ...state.history,
-                value: {
-                    before: beforeNext,
-                    after: afterNext
-                }
-            }
+    if (beforeNext.length > historyLength)
+        beforeNext.shift();
+
+    return {
+        ...history,
+        value: {
+            before: beforeNext,
+            after: afterNext
         }
-    } else {
-        return {
-            ...state,
-            current: {
-                ...state.current,
-                ...nextCurrent
+    }
+};
+
+export interface PatternUndoResult {
+    history: HistoryState
+    prev: PatternHistoryItem
+}
+
+export const historyUndo = (history: HistoryState, current: PatternHistoryItem): PatternUndoResult => {
+    const {value: {before, after}} = history;
+
+    if (before.length === 0) return null;
+
+    const prev = before[before.length - 1];
+
+    const beforeNext = before.slice(0, before.length - 1); // pop
+    const afterNext = [current, ...after]; // unshift current
+
+    return {
+        history: {
+            ...history,
+            value: {
+                before: beforeNext,
+                after: afterNext
             }
-        }
+        },
+        prev
+    }
+};
+export interface PatternRedoResult {
+    history: HistoryState
+    next: PatternHistoryItem
+}
+
+export const historyRedo = (history: HistoryState, current: PatternHistoryItem): PatternRedoResult => {
+    const {value: {before, after}} = history;
+
+    if (after.length === 0) return null;
+
+    const next = after[0];
+
+    const beforeNext = [...before, current]; // push current
+    const afterNext = after.slice(1, after.length); // shift
+
+    return {
+        history: {
+            ...history,
+            value: {
+                before: beforeNext,
+                after: afterNext
+            }
+        },
+        next
     }
 };

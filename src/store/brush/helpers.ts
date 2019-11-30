@@ -1,4 +1,4 @@
-import {BrushParams, EBrushCompositeOperation, EBrushType} from "./types";
+import {BrushParams,EBrushCompositeOperation, EBrushType} from "./types";
 import {EParamType, ParamConfig} from "../../components/_shared/Params";
 import {ValueD} from "../../components/_shared/ButtonNumber";
 import {arrayToSelectItems} from "../../utils/utils";

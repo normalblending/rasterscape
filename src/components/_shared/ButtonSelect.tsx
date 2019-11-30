@@ -12,15 +12,17 @@ export interface ButtonSelectProps extends ButtonProps {
     onClick?(data?: ButtonSelectEventData)
 
     onMouseDown?(data?: ButtonSelectEventData)
+    onMouseUp?(data?: ButtonSelectEventData)
 }
 
-export const ButtonSelect: React.FC<ButtonSelectProps> = ({className, selected, onClick, onMouseDown, ...props}) => {
+export const ButtonSelect: React.FC<ButtonSelectProps> = ({className, selected, onClick, onMouseDown, onMouseUp, ...props}) => {
 
     return (
         <Button
             {...props}
             onClick={data => onClick && onClick({...data, selected})}
             onMouseDown={data => onMouseDown && onMouseDown({...data, selected})}
+            onMouseUp={data => onMouseUp && onMouseUp({...data, selected})}
             className={classNames("button-select", className, {["button-select-selected"]: selected})}/>
     );
 };

@@ -1,21 +1,9 @@
 import {createSelector} from "reselect";
-// import {MainWindowState} from "./reducer";
-// import {CurveValueName} from "../../store/selectTool/types";
+import {objectToSelectItems} from "../../utils/utils";
 
 const getPatternsState = state => state.patterns;
 
-// export const PatternsSelector = {
-//     getMainCanvasState,
-//     getSelectionValue: createSelector(
-//         [getMainCanvasState],
-//         (state: MainWindowState) => state.selection.value),
-//     getSelectionParams: createSelector(
-//         [getMainCanvasState],
-//         (state: MainWindowState) => ({
-//             ...state.selection.params,
-//             curveValue: state.selection.params[CurveValueName[state.selection.params.curveType]]})),
-//     getSelectionParamsConfig: createSelector(
-//         [getMainCanvasState],
-//         (state: MainWindowState) => state.selection.paramsConfig),
-//
-// };
+
+export const getPatternsSelectItems = createSelector(
+    [getPatternsState],
+    patterns => objectToSelectItems(patterns, (value, key) => +key));

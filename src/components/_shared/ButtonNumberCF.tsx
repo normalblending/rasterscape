@@ -7,6 +7,7 @@ import {objectToSelectItems} from "../../utils/utils";
 import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
 import {changeFunctionByType} from "../../store/changeFunctions/helpers";
 import {Button} from "./Button";
+import {SelectDrop} from "./SelectDrop";
 
 export interface ButtonNumberCFStateProps {
     cfs: ChangeFunctionsState
@@ -56,7 +57,7 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
                     isChanging={changing}
                     changeFunctionParams={cf ? cf.params : null}
                     changeFunction={cf ? changeFunctionByType[cf.type] : null}/>
-                <SelectButtons
+                <SelectDrop
                     value={this.state.cfId}
                     onChange={this.handleCFChange}
                     items={objectToSelectItems(cfs, ({id}) => id, ({id}) => id)}/>

@@ -11,11 +11,11 @@ import {
     updateSelection,
     setHeight,
     setWidth,
-    createRoom
+    createRoom, editConfig, updateMask, setMaskParams
 } from "../store/patterns/actions";
-import {EPatternType} from "../store/patterns/types";
+import {EPatternType, MaskParams} from "../store/patterns/types";
 import {Pattern} from "./Pattern/";
-import {PatternConfig} from "../store/patterns/helpers";
+import {PatternConfig} from "../store/patterns/types";
 import {SelectionValue} from "../utils/types";
 
 export interface PatternsStateProps {
@@ -29,6 +29,10 @@ export interface PatternsActionProps {
 
     updateImage(id: number, imageData: ImageData)
 
+    updateMask(id: number, imageData: ImageData)
+
+    setMaskParams(id: number, params: MaskParams)
+
     updateSelection(id: number, value: SelectionValue)
 
     redo(id: number)
@@ -38,6 +42,8 @@ export interface PatternsActionProps {
     setWidth(id: number, value: number)
 
     setHeight(id: number, value: number)
+
+    editConfig(id: number, config: PatternConfig)
 
     createRoom(id: number, name: string)
 }
@@ -59,10 +65,10 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
     handleAddClick = () => this.props.addPattern({history: true, selection: true});
 
     render() {
-        const {createRoom, removePattern, patterns, updateImage, updateSelection, undo, redo, setWidth, setHeight} = this.props;
+        const {createRoom, removePattern, patterns, updateImage, updateMask, setMaskParams, updateSelection, undo, redo, setWidth, setHeight,editConfig } = this.props;
         return (
             <>
-                {patterns.map(({id, current, config, history, store, selection, connected}) => {
+                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage}) => {
                     return (
                         <Pattern
                             key={id}
@@ -75,17 +81,23 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             store={store}
                             selection={selection}
                             imageValue={current ? current.imageData : null}
+                            maskValue={mask ? mask.value.imageData : null}
+                            resultImage={resultImage}
+                            maskParams={mask ? mask.params : null}
                             width={current ? current.width : null}
                             height={current ? current.height : null}
 
                             onUndo={undo}
                             onRedo={redo}
                             onImageChange={updateImage}
+                            onMaskChange={updateMask}
+                            onMaskParamsChange={setMaskParams}
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
                             onSetWidth={setWidth}
                             onSetHeight={setHeight}
-                            onCreateRoom={createRoom}/>
+                            onCreateRoom={createRoom}
+                            onConfigChange={editConfig}/>
                     );
                 })}
                 <Button onClick={this.handleAddClick}>add</Button>
@@ -99,7 +111,7 @@ const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {
-    createRoom, addPattern, removePattern, updateImage, updateSelection, redo, undo, setWidth, setHeight
+    setMaskParams, createRoom, addPattern, removePattern, updateImage, updateSelection, redo, undo, setWidth, setHeight, editConfig, updateMask
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

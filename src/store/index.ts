@@ -9,6 +9,7 @@ import {LineState, lineReducer} from "./line/reducer";
 import {SelectToolState, selectToolReducer} from "./selectTool/reducer";
 import {RoomsState, roomsReducer} from "./rooms/reducer";
 import {ChangeFunctionsState, changeFunctionsReducer, changingReducer} from "./changeFunctions/reducer";
+import {colorReducer, ColorState} from "./color/reducer";
 
 export interface AppState {
     patterns: PatternsState
@@ -19,6 +20,7 @@ export interface AppState {
     rooms: RoomsState
     changeFunctions: ChangeFunctionsState
     changing: boolean
+    color: ColorState
 }
 
 const rootReducer = combineReducers<AppState>({
@@ -29,7 +31,8 @@ const rootReducer = combineReducers<AppState>({
     selectTool: selectToolReducer,
     rooms: roomsReducer,
     changeFunctions: changeFunctionsReducer,
-    changing: changingReducer
+    changing: changingReducer,
+    color: colorReducer
 });
 
 export const store = createStore(rootReducer, applyMiddleware(thunk, logger));

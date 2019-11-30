@@ -5,21 +5,24 @@ import {AppState} from "../../store/index";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../store/brush/reducer";
 import {EToolType} from "../../store/tool/types";
-import {EBrushType} from "../../store/brush/types";
+import {EBrushCompositeOperation, EBrushType} from "../../store/brush/types";
 import {LineState} from "../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
 import {startChanging, stopChanging} from "../../store/changeFunctions/actions";
+import {PatternsState} from "../../store/patterns/reducer";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
     line: LineState
     tool: EToolType
+    patterns: PatternsState
 }
 
 export interface CanvasDrawActionProps {
     startChanging()
+
     stopChanging()
 }
 
@@ -32,29 +35,8 @@ export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionP
 export interface CanvasDrawState {
 }
 
-const brush = ({e, pre, ctx, canvas}, {size, opacity, type, compositeOperation}) => {
-    ctx.fillStyle = getRandomColor();//"black";
-    ctx.globalAlpha = opacity;
-    ctx.globalCompositeOperation = compositeOperation;
-
-    if (type === EBrushType.Square) {
-        ctx.fillRect(e.offsetX - size / 2, e.offsetY - size / 2, size, size);
-    } else if (type === EBrushType.Circle) {
-        ctx.beginPath();
-        ctx.arc(e.offsetX, e.offsetY, size / 2, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-    // else if (this.state.brush.type === EBrushType.Pattern && this.state.patterns[this.state.currentPattern]) {
-    //     const p = this.state.patterns[this.state.currentPattern].image;
-    //     const i = this.state.patterns[this.state.currentPattern].imageMasked;
-    //     ctx.drawImage(i, e.offsetX - p.width / 2, e.offsetY - p.height / 2, p.width, p.height);
-    // }
-
-    ctx.globalCompositeOperation = ELineCompositeOperation.SourceOver;
-    ctx.globalAlpha = 1;
-};
-
 function getRandomColor() {
+    // return "black";
     var letters = '0123456789ABCDEF';
     var color = '#';
     for (var i = 0; i < 6; i++) {
@@ -67,14 +49,70 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
     handlers = {
         [EToolType.Brush]: {
-            0: ({
-                draw: (e) => {
-                    brush(e, this.props.brush.params);
-                },
-                click: (e) => {
-                    brush(e, this.props.brush.params);
+            [EBrushType.Square]: (() => {
+                const squareBrush = (ev) => {
+                    const {ctx, e} = ev;
+                    const {size, opacity, compositeOperation} = this.props.brush.params;
+
+                    ctx.fillStyle = getRandomColor();
+                    ctx.globalAlpha = opacity;
+                    ctx.globalCompositeOperation = compositeOperation;
+
+                    ctx.fillRect(e.offsetX - size / 2, e.offsetY - size / 2, size, size);
+
+
+                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalAlpha = 1;
+                };
+                return {
+                    draw: squareBrush,
+                    click: squareBrush
                 }
-            })
+            })(),
+            [EBrushType.Circle]: (() => {
+                const circleBrush = (ev) => {
+                    const {ctx, e} = ev;
+                    const {size, opacity, compositeOperation} = this.props.brush.params;
+
+                    ctx.fillStyle = getRandomColor();
+                    ctx.globalAlpha = opacity;
+                    ctx.globalCompositeOperation = compositeOperation;
+
+                    ctx.beginPath();
+                    ctx.arc(e.offsetX, e.offsetY, size / 2, 0, 2 * Math.PI);
+                    ctx.fill();
+
+                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalAlpha = 1;
+                };
+                return {
+                    draw: circleBrush,
+                    click: circleBrush
+                }
+            })(),
+            [EBrushType.Pattern]: (() => {
+                const patternBrush = (ev) => {
+                    const {ctx, e} = ev;
+                    const {patterns} = this.props;
+                    const {size, opacity, compositeOperation, pattern} = this.props.brush.params;
+
+                    ctx.fillStyle = getRandomColor();
+                    ctx.globalAlpha = opacity;
+                    ctx.globalCompositeOperation = compositeOperation;
+
+
+                    const p = patterns[pattern].resultImage;
+                    //const i = patterns[pattern].imageMasked;
+                    ctx.drawImage(p, e.offsetX - p.width / 2, e.offsetY - p.height / 2, p.width, p.height);
+
+                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalAlpha = 1;
+                };
+                return {
+                    draw: patternBrush,
+                    click: patternBrush
+                }
+            })(),
         },
         [EToolType.Line]: {
             [ELineType.Default]: {
@@ -199,13 +237,14 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
 const getTypeField = {
     [EToolType.Line]: props => get(props, "line.params.type"),
-    // [EToolType.Brush]: props => 0,
+    [EToolType.Brush]: props => get(props, "brush.params.type"),
 };
 
 const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = state => ({
     brush: state.brush,
     line: state.line,
-    tool: state.tool.current
+    tool: state.tool.current,
+    patterns: state.patterns
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {

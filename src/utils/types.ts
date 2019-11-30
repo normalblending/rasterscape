@@ -9,6 +9,8 @@ export interface CanvasState {
 
 export type SelectionValue = Segment[];
 
+export type MaskValue = CanvasState;
+
 export interface FunctionState<V, P> {
     value: V
     params: P

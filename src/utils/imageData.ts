@@ -1,7 +1,7 @@
 export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData =>
     canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
 
-export function imagedataToCanvas(imageData: ImageData): HTMLCanvasElement {
+export function imageDataToCanvas(imageData: ImageData): HTMLCanvasElement {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
@@ -17,7 +17,7 @@ export function imagedataToCanvas(imageData: ImageData): HTMLCanvasElement {
 }
 
 export const resizeImageData = (imageData: ImageData, width: number, height: number): ImageData => {
-    const oldCanvas = imagedataToCanvas(imageData);
+    const oldCanvas = imageDataToCanvas(imageData);
     const newCanvas = document.createElement('canvas');
     newCanvas.width = width;
     newCanvas.height = height;
@@ -65,4 +65,25 @@ export const base64ToImageData = (src: string): Promise<ImageData> => {
     });
 };
 
-// base64ToImageData("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAPAgMAAABGuH3ZAAAAAXNSR0IArs4c6QAAAAlQTFRFAAANAAAA/PxQjQj98QAAAAF0Uk5TAEDm2GYAAAABYktHRACIBR1IAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH2gwXFQ4DaigKYQAAADhJREFUCNdjYBANYGBgzFrKwMC2apUDg1TUtAkQImvVqiXoROaqlUsYpLKWAZVMjZoA0QHWCzIFAJGSGI4XxkZDAAAAAElFTkSuQmCC").then(d => console.log(d))
+export const maskedImage = (imageData: ImageData, maskImageData: ImageData): HTMLCanvasElement => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+        return null;
+    }
+
+
+
+    canvas.width = imageData.width;
+    canvas.height = imageData.height;
+
+    if (maskImageData) {
+        ctx.putImageData(maskImageData, 0, 0);
+        ctx.globalCompositeOperation = "source-in";
+    }
+    ctx.drawImage(imageDataToCanvas(imageData), 0, 0, imageData.width, imageData.height);
+
+    return canvas;
+
+};

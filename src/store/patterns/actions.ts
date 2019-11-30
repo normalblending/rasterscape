@@ -1,11 +1,11 @@
 import {
-    AddPatternAction, CreateRoomAction, EditPatternConfigAction,
-    PatternRedoAction, PatternUndoAction, RemovePatternAction,
+    AddPatternAction, CreateRoomAction, EditPatternConfigAction, MaskParams,
+    PatternRedoAction, PatternUndoAction, RemovePatternAction, SetMaskParamsAction,
     SetPatternHeightAction,
-    SetPatternWidthAction, UpdatePatternImageAction, UpdatePatternSelectionAction
+    SetPatternWidthAction, UpdatePatternImageAction, UpdatePatternMaskAction, UpdatePatternSelectionAction
 } from "./types";
 import {SelectionValue} from "../../utils/types";
-import {PatternConfig} from "./helpers";
+import {PatternConfig} from "./types";
 import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {AppState} from "../index";
 import {Action} from "redux";
@@ -22,7 +22,9 @@ export enum EPatternsAction {
 
 export enum EPatternAction {
     UPDATE_IMAGE = "pattern/update-image",
+    UPDATE_MASK = "pattern/update-mask",
     UPDATE_SELECTION = "pattern/update-selection",
+    SET_MASK_PARAMS = "pattern/set-mask-params",
     EDIT_CONFIG = "pattern/edit-config",
     UNDO = "pattern/undo",
     REDO = "pattern/redo",
@@ -50,6 +52,12 @@ export const updateImage = (id: number, imageData: ImageData, emit: boolean = tr
 
         return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData, id});
     };
+
+export const updateMask = (id: number, imageData: ImageData): UpdatePatternMaskAction =>
+    ({type: EPatternAction.UPDATE_MASK, imageData, id});
+
+export const setMaskParams = (id: number, params: MaskParams): SetMaskParamsAction =>
+    ({type: EPatternAction.SET_MASK_PARAMS, id, params});
 
 export const updateSelection = (id: number, value: SelectionValue): UpdatePatternSelectionAction =>
     ({type: EPatternAction.UPDATE_SELECTION, value, id});

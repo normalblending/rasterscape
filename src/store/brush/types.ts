@@ -3,13 +3,14 @@ import {Action} from "redux";
 export enum EBrushType {
     Square = "Square",
     Circle = "Circle",
-    Pattren = "Pattren",
+    Pattern = "Pattern",
 }
 
 export interface BrushParams {
     size: number
     opacity: number
     type: EBrushType
+    pattern: number
     compositeOperation: EBrushCompositeOperation
 }
 

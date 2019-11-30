@@ -11,6 +11,8 @@ export interface ButtonProps {
 
     onMouseDown?(data?: ButtonEventData)
 
+    onMouseUp?(data?: ButtonEventData)
+
     value?: any
     name?: string
 
@@ -20,11 +22,12 @@ export interface ButtonProps {
     width?: number
 }
 
-export const Button: React.FC<ButtonProps> = ({children, onClick, onMouseDown, disabled, width, className, value, name}) => {
+export const Button: React.FC<ButtonProps> = ({children, onClick, onMouseDown, onMouseUp, disabled, width, className, value, name}) => {
     return (
         <button
             className={classNames("button", className)}
             onClick={e => onClick && onClick({e, value, name})}
+            onMouseUp={e => onMouseUp && onMouseUp({e, value, name})}
             onMouseDown={e => onMouseDown && onMouseDown({e, value, name})}
             style={{width}}
             disabled={disabled}>

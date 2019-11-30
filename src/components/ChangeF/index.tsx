@@ -51,6 +51,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                     const Component = CFComponentByType[type];
                     return (
                         <Component
+                            key={id}
                             name={id}
                             params={params}
                             paramsConfig={paramsConfig}

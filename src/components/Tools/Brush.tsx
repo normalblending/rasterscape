@@ -1,15 +1,18 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {BrushParams} from "../../store/brush/types";
+import {BrushParams, EBrushType} from "../../store/brush/types";
 import {setBrushParams} from "../../store/brush/actions";
 import {ParamConfig, Params} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import {ValueD} from "../_shared/ButtonNumber";
+import {SelectButtons} from "../_shared/SelectButtons";
+import {getPatternsSelectItems} from "../../store/patterns/selectors";
 
 export interface BrushStateProps {
     paramsConfig: ParamConfig[]
     paramsValue: BrushParams
+    patternsSelectItems: any[]
 }
 
 export interface BrushActionProps {
@@ -37,11 +40,23 @@ class BrushComponent extends React.PureComponent<BrushProps> {
         })
     };
 
+    handlePatternChange = ({value}) => {
+        this.props.setBrushParams({
+            ...this.props.paramsValue,
+            pattern: +value
+        })
+    };
+
     render() {
 
-        const {paramsConfig, paramsValue, setBrushParams} = this.props;
+        const {paramsConfig, paramsValue, setBrushParams, patternsSelectItems} = this.props;
         return (
             <>
+                {paramsValue.type === EBrushType.Pattern &&
+                <SelectButtons
+                    value={paramsValue.pattern}
+                    onChange={this.handlePatternChange}
+                    items={patternsSelectItems}/>}
                 <ButtonNumberCF
                     value={paramsValue.size}
                     name={"size"}
@@ -60,6 +75,7 @@ class BrushComponent extends React.PureComponent<BrushProps> {
 const mapStateToProps: MapStateToProps<BrushStateProps, BrushOwnProps, AppState> = state => ({
     paramsConfig: state.brush.paramsConfig,
     paramsValue: state.brush.params,
+    patternsSelectItems: getPatternsSelectItems(state)
 });
 
 const mapDispatchToProps: MapDispatchToProps<BrushActionProps, BrushOwnProps> = {
