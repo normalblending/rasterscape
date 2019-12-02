@@ -58,6 +58,7 @@ class BrushComponent extends React.PureComponent<BrushProps> {
                     onChange={this.handlePatternChange}
                     items={patternsSelectItems}/>}
                 <ButtonNumberCF
+                    path={"brush.params.size"}
                     value={paramsValue.size}
                     name={"size"}
                     onChange={this.handleSizeChange}

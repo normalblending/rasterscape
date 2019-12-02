@@ -1,7 +1,7 @@
 import * as React from "react";
 import {ParamConfig, Params} from "../_shared/Params";
-import {ButtonNumber} from "../_shared/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import "../../styles/sinChangeFunction.scss";
 
 export interface SinCFProps {
     params: any
@@ -26,8 +26,9 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
     render() {
         const {params, paramsConfig, onChange, name} = this.props;
         return (
-            <>
+            <div className={"sin-change-function"}>
                 <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.a`}
                     value={params.a}
                     range={[0, 1]}
                     onChange={this.handleAChange}
@@ -38,7 +39,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     value={params}
                     onChange={onChange}
                 />
-            </>
+            </div>
         );
     }
 }

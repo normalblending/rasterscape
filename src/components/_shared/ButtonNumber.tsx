@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "./ButtonSelect";
-import {ButtonEventData} from "./Button";
 import {Key} from "./Key";
 
 export const ValueD = {
@@ -33,12 +32,6 @@ export interface ButtonNumberProps extends ButtonSelectProps {
 
     onRelease?(data?: ButtonNumberEventData)
 
-    changeFunction?(params: any, range: [number, number]): ((startValue: any, time: number) => any)
-
-    changeFunctionParams?: any
-
-    isChanging?: boolean
-
 }
 
 export interface ButtonNumberState {
@@ -68,7 +61,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return nextState.value !== this.state.value || nextProps.isChanging !== this.props.isChanging;
+        return nextState.value !== this.state.value;
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -79,75 +72,11 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         };
     }
 
-    int;
-    interval;
-
-    componentDidUpdate(prevProps: ButtonNumberProps, prevState) {
-        console.log("---------------------", !prevProps.isChanging && this.props.isChanging)
-        if (!prevProps.isChanging && this.props.isChanging) {
-
-            if (this.props.changeFunction) {
-                const {value} = this.state;
-                const startValue = value;
-                let time = 0;
-                this.int = true;
-                this.setState({changingStartValue: startValue});
-                this.interval = setInterval(() => {
-                    const {onChange, name, selected, changeFunction} = this.props;
-                    if (!changeFunction) {
-                        clearInterval(this.interval);
-                        this.interval = null;
-                        this.int = false;
-                        this.setState({changingStartValue: null, value: startValue})
-                    } else {
-                        const value = this.calcValueInterval(startValue, time * 2);
-
-                        onChange && onChange({e: null, value, name, selected});
-
-                        this.setState({value});
-
-                        time += 20;
-                    }
-                }, 20)
-            }
-
-            // console.log("uppppppp, ", this.props.changeFunction)
-            // if (this.props.changeFunction) {
-            //     console.log("mouse-up", this.interval, this.state.startValue);
-            //     if (this.interval) {
-            //         clearInterval(this.interval);
-            //         this.interval = null;
-            //         this.setState({startValue: null})
-            //     } else if (this.int) {
-            //         this.int = false;
-            //     } else {
-            //
-            //     }
-            //
-            // }
-        } else if (prevProps.isChanging && !this.props.isChanging) {
-            if (this.interval) {
-                clearInterval(this.interval);
-                this.interval = null;
-                console.log(this.state.changingStartValue);
-
-                const {onChange, name, selected} = this.props;
-
-                onChange && onChange({e: null, value: this.state.changingStartValue, name, selected});
-                this.setState({changingStartValue: null});
-            }
-        }
-    }
-
     handleDown = data => {
 
         console.log("down");
 
-        if (this.interval) {
-            clearInterval(this.interval);
-            this.interval = null;
-            this.setState({startValue: null})
-        }
+
 
         if (this.state.startValue) {
             return;
@@ -250,17 +179,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         }, () => {
             document.removeEventListener("mousemove", this.handlePressed);
         });
-    };
-
-    calcValueInterval = (startValue, time) => {
-        const {range, changeFunction, changeFunctionParams} = this.props;
-        if (changeFunction) {
-            let nextValue = changeFunction(changeFunctionParams, range)(startValue, time);
-            nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
-            return nextValue;
-        } else {
-            return startValue;
-        }
     };
 
     calcValue = e => {

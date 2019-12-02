@@ -10,7 +10,7 @@ import {LineState} from "../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
-import {startChanging, stopChanging} from "../../store/changeFunctions/actions";
+import {startChanging, stopChanging} from "../../store/changing/actions";
 import {PatternsState} from "../../store/patterns/reducer";
 
 export interface CanvasDrawStateProps {

@@ -2,23 +2,28 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ButtonNumber, ButtonNumberProps} from "./ButtonNumber";
-import {SelectButtons} from "./SelectButtons";
 import {objectToSelectItems} from "../../utils/utils";
 import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
-import {changeFunctionByType} from "../../store/changeFunctions/helpers";
 import {Button} from "./Button";
 import {SelectDrop} from "./SelectDrop";
+import {setValueInChangingList} from "../../store/changingValues/actions";
+import {ChangingValuesState} from "../../store/changingValues/reducer";
 
 export interface ButtonNumberCFStateProps {
-    cfs: ChangeFunctionsState
-    changing: boolean
+    changeFunctions: ChangeFunctionsState
+    changingValues: ChangingValuesState
 }
 
 export interface ButtonNumberCFActionProps {
+    setValueInChangingList(
+        path: string,
+        changeFunctionId: string,
+        range: [number, number],
+        startValue: number)
 }
 
 export interface ButtonNumberCFOwnProps extends ButtonNumberProps {
-
+    path: string
 }
 
 export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps {
@@ -26,41 +31,40 @@ export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNum
 }
 
 export interface ButtonNumberCFState {
-    cfId: string
-
 }
 
 class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, ButtonNumberCFState> {
 
-    state = {
-        cfId: null
-    };
-
-    handleCFChange = ({value}) => {
-        this.setState({cfId: value});
+    handleCFChange = ({value: changeFunctionId}) => {
+        const {setValueInChangingList, path, range, value} = this.props;
+        setValueInChangingList(path, changeFunctionId, range, value);
     };
 
     handleCFReset = () => {
-        this.setState({cfId: null});
+        const {setValueInChangingList, path, range, value} = this.props;
+        setValueInChangingList(path, null, range, value);
+    };
+
+    handleChange = (...args) => {
+        // тут надо менять старт валуе
+        this.props.onChange(...args);
     };
 
     render() {
-        const {cfs, changing, ...bnProps} = this.props;
-        console.log("render b cf", changing);
-        const cf = cfs[this.state.cfId];
+        const {changeFunctions, changingValues, onChange, ...buttonNumberProps} = this.props;
+        console.log("render b cf");
 
 
         return (
             <>
                 <ButtonNumber
-                    {...bnProps}
-                    isChanging={changing}
-                    changeFunctionParams={cf ? cf.params : null}
-                    changeFunction={cf ? changeFunctionByType[cf.type] : null}/>
+                    {...buttonNumberProps}
+                    onChange={this.handleChange}/>
                 <SelectDrop
-                    value={this.state.cfId}
+                    value={changingValues[this.props.path] && changingValues[this.props.path].changeFunctionId}
                     onChange={this.handleCFChange}
-                    items={objectToSelectItems(cfs, ({id}) => id, ({id}) => id)}/>
+                    // todo вынести отсюда
+                    items={objectToSelectItems(changeFunctions, ({id}) => id, ({id}) => id)}/>
                 <Button onClick={this.handleCFReset}>0</Button>
             </>
         );
@@ -68,11 +72,13 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
 }
 
 const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, {}, AppState> = state => ({
-    cfs: state.changeFunctions,
-    changing: state.changing
+    changeFunctions: state.changeFunctions,
+    changingValues: state.changingValues
 });
 
-const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNumberCFOwnProps> = {};
+const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNumberCFOwnProps> = {
+    setValueInChangingList
+};
 
 export const ButtonNumberCF = connect<ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps, AppState>(
     mapStateToProps,

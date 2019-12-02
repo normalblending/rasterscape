@@ -27,10 +27,3 @@ export const changeFunctionsReducer = handleActions<ChangeFunctionsState>({
         }
     }
 }, {});
-
-export const changingReducer = handleActions<boolean>({
-    [EChangeFunctionsAction.START_CHANGE]: () => true,
-    [EChangeFunctionsAction.STOP_CHANGE]: () => false,
-}, false);
-
-

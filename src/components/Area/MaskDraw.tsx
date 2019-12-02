@@ -6,7 +6,7 @@ import "../../styles/mask.scss";
 import {BrushState} from "../../store/brush/reducer";
 import {LineState} from "../../store/line/reducer";
 import {EToolType} from "../../store/tool/types";
-import {startChanging, stopChanging} from "../../store/changeFunctions/actions";
+import {startChanging, stopChanging} from "../../store/changing/actions";
 import get from "lodash/get";
 import {ELineCompositeOperation, ELineType} from "../../store/line/types";
 import {EBrushType} from "../../store/brush/types";
@@ -290,6 +290,7 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
             <>
                 <div>
                     <ButtonNumberCF
+                        path={""}
                         name={"opacity"}
                         range={opacityRange}
                         value={params.opacity}
