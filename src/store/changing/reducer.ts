@@ -1,9 +1,10 @@
 import {handleActions} from "redux-actions";
 import {EChangingAction} from "./actions";
+import {ChangingMode} from "./types";
 
 export interface ChangingState {
     isChanging: boolean
-    changeOnDraw: boolean
+    mode: ChangingMode
 }
 
 export const changingReducer = handleActions<ChangingState>({
@@ -15,7 +16,11 @@ export const changingReducer = handleActions<ChangingState>({
         ...state,
         isChanging: false
     }),
+    [EChangingAction.SET_MODE]: (state: ChangingState, action) => ({
+        ...state,
+        mode: action.mode
+    }),
 }, {
     isChanging: false,
-    changeOnDraw: true
+    mode: ChangingMode.OnDraw
 });

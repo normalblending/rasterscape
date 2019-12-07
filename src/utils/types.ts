@@ -1,15 +1,4 @@
-import {Segment} from "./path";
 import {Action} from "redux";
-
-export interface CanvasState {
-    imageData: ImageData
-    width: number
-    height: number
-}
-
-export type SelectionValue = Segment[];
-
-export type MaskValue = CanvasState;
 
 export interface FunctionState<V, P> {
     value: V
@@ -34,3 +23,8 @@ export interface HeightAction extends Action {
     height: number
 }
 
+export interface CanvasState {
+    imageData: ImageData
+    width: number
+    height: number
+}

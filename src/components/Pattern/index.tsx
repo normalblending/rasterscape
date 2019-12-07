@@ -1,24 +1,33 @@
 import * as React from "react";
 import {Button} from "../_shared/Button";
 import "../../styles/pattern.scss";
-import {MaskParams, PatternConfig, SelectionState, StoreState} from "../../store/patterns/types";
+import {
+    MaskParams,
+    PatternConfig,
+    RepeatingParams,
+    RotationValue,
+    SelectionState,
+    StoreState
+} from "../../store/patterns/types";
 import {HistoryState} from "../../store/patterns/types";
 import {HistoryControls} from "./HistoryControls";
-import {SelectionValue} from "../../utils/types";
+import {SelectionValue} from "../../store/patterns/types";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/InputNumber";
 import {InputText} from "../_shared/InputText";
 import {MaskDraw} from "../Area/MaskDraw";
 import {ButtonSelect} from "../_shared/ButtonSelect";
-import {ButtonNumber} from "../_shared/ButtonNumber";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
-import {Canvas} from "../_shared/Canvas";
+import {RotationControls} from "./RotatingControls";
+import {RepeatingControls} from "./RepeatingControls";
 
 export interface PatternWindowProps {
-    id: number
+    id: string
     imageValue: ImageData
     maskValue?: ImageData
     maskParams?: MaskParams
+    rotation?: RotationValue
+    repeating?: RepeatingParams
+
     height: number
     width: number
 
@@ -31,27 +40,31 @@ export interface PatternWindowProps {
 
     resultImage: HTMLCanvasElement
 
-    onImageChange(id: number, imageData: ImageData)
+    onImageChange(id: string, imageData: ImageData)
 
-    onMaskChange(id: number, imageData: ImageData)
+    onMaskChange(id: string, imageData: ImageData)
 
-    onMaskParamsChange(id: number, params: MaskParams)
+    onMaskParamsChange(id: string, params: MaskParams)
 
-    onSelectionChange(id: number, selectionValue: SelectionValue)
+    onSelectionChange(id: string, selectionValue: SelectionValue)
 
-    onRemove(id: number)
+    onRemove(id: string)
 
-    onUndo(id: number)
+    onUndo(id: string)
 
-    onRedo(id: number)
+    onRedo(id: string)
 
-    onSetWidth(id: number, width: number)
+    onSetWidth(id: string, width: number)
 
-    onSetHeight(id: number, height: number)
+    onSetHeight(id: string, height: number)
 
-    onCreateRoom(id: number, name: string)
+    onCreateRoom(id: string, name: string)
 
-    onConfigChange(id: number, value: PatternConfig)
+    onConfigChange(id: string, value: PatternConfig)
+
+    onRotationChange(id: string, value: RotationValue)
+
+    onRepeatingChange(id: string, value: RepeatingParams)
 }
 
 export interface PatternWindowState {
@@ -102,10 +115,23 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
         })
     };
 
-    render() {
-        const {resultImage, connected, imageValue, maskValue, maskParams, height, width, id, config, history, store, selection} = this.props;
+    handleRotationChange = (rotation: RotationValue) => {
+        this.props.onRotationChange(this.props.id, rotation)
+    };
 
-        console.log("pattern render ", id, resultImage);
+    handleRepeatingChange = (repeating: RepeatingParams) => {
+        this.props.onRepeatingChange(this.props.id, repeating)
+    };
+
+    render() {
+        const {
+            connected,
+            resultImage, imageValue, maskValue, maskParams,
+            height, width, id, config,
+            history, store, selection, rotation, repeating
+        } = this.props;
+
+        console.log("pattern render ", id, rotation);
         return (
             <div className="pattern">
                 <div className={"areas"}>
@@ -113,6 +139,8 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         name={id}
                         width={width}
                         height={height}
+
+                        rotation={rotation}
 
                         imageValue={imageValue}
 
@@ -123,6 +151,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         onSelectionChange={this.handleSelectionChange}/>
                     {config.mask &&
                     <MaskDraw
+                        rotation={rotation}
                         params={maskParams}
                         value={maskValue}
                         name={id}
@@ -162,12 +191,27 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                     <Button
                         onClick={this.handleClearSelection}>clear</Button>}
 
+                    {config.rotation &&
+                    <RotationControls
+                        patternId={id}
+                        rotation={rotation}
+                        onChange={this.handleRotationChange}/>}
+
+                    {config.repeating &&
+                    <RepeatingControls
+                        patternId={id}
+                        repeating={repeating}
+                        onChange={this.handleRepeatingChange}/>}
 
                     <div>
                         <ButtonSelect
                             name={"mask"}
                             selected={config.mask}
                             onClick={this.handleConfigToggle}>mask</ButtonSelect>
+                        <ButtonSelect
+                            name={"repeating"}
+                            selected={config.repeating}
+                            onClick={this.handleConfigToggle}>repeating</ButtonSelect>
                     </div>
                 </div>
 

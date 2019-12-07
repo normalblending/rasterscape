@@ -8,6 +8,8 @@ const compositeOperationSelectItems = arrayToSelectItems(Object.values(EBrushCom
 const sizeRange = [1, 200] as [number, number];
 const sizeValueD = ValueD.VerticalLinear(.5);
 const opacityRange = [0, 1] as [number, number];
+const patternSizeRange = [0, 5] as [number, number];
+const patternSizeValueD = ValueD.VerticalLinear(200);
 
 export const getBrushParamsConfig = (params?: BrushParams) => {
     const config: ParamConfig[] = [{
@@ -34,6 +36,13 @@ export const getBrushParamsConfig = (params?: BrushParams) => {
         type: EParamType.Select,
         props: {
             items: compositeOperationSelectItems,
+        }
+    }, {
+        name: "patternSize",
+        type: EParamType.Number,
+        props: {
+            range: patternSizeRange,
+            valueD: patternSizeValueD
         }
     }];
 

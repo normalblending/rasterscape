@@ -193,12 +193,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     // };
 
     render() {
-        console.log("canvas render");
         const {value, width, height, className, style, children} = this.props;
+        console.log("canvas render", style);
         return (
-            <div className={classNames(className, "canvas")}>
+            <div style={style} className={classNames(className, "canvas")}>
                 <canvas
-                    style={style}
                     ref={this.canvasRef}
                     width={width || (value ? value.width : 300)}
                     height={height || (value ? value.height : 300)}/>

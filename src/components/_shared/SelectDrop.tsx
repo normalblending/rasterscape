@@ -1,6 +1,8 @@
 import * as React from "react";
 import {defaultGetText, SelectButtons, SelectButtonsProps} from "./SelectButtons";
 import * as classNames from "classnames";
+import "../../styles/selectDrop.scss"
+import {Button} from "./Button";
 
 export interface SelectDropProps extends SelectButtonsProps {
 
@@ -15,16 +17,14 @@ export class SelectDrop extends React.PureComponent<SelectDropProps, SelectDropS
     render() {
         const {className, ...props} = this.props;
         const {value, getText = defaultGetText} = props;
-        console.log(value)
+        console.log("select drop render", props.name, value);
+
         return (
             <div className={classNames(className, "select-drop")}>
-                <div className={"select-drop-value"}>
-                    {value && getText(value)}
-                </div>
-
-                <div className={"select-drop-items"}>
-                    <SelectButtons {...props}/>
-                </div>
+                <Button className={"select-drop-value"}>
+                    {value || "null"}
+                </Button>
+                <SelectButtons {...props} className={"select-drop-items"}/>
             </div>
         );
     }

@@ -6,13 +6,15 @@ import "../../styles/mask.scss";
 import {BrushState} from "../../store/brush/reducer";
 import {LineState} from "../../store/line/reducer";
 import {EToolType} from "../../store/tool/types";
-import {startChanging, stopChanging} from "../../store/changing/actions";
+import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import get from "lodash/get";
 import {ELineCompositeOperation, ELineType} from "../../store/line/types";
 import {EBrushType} from "../../store/brush/types";
 import {MaskParams} from "../../store/patterns/types";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import {ButtonSelect} from "../_shared/ButtonSelect";
+import {RotationValue} from "../../store/patterns/types";
+import {Draw} from "./Draw";
 
 export interface MaskDrawStateProps {
     brush: BrushState
@@ -29,6 +31,7 @@ export interface MaskDrawActionProps {
 export interface MaskDrawOwnProps extends CanvasProps {
     params?: MaskParams
     name: any
+    rotation?: RotationValue
 
     onParamsChange(params: MaskParams)
 }
@@ -38,6 +41,8 @@ export interface MaskDrawProps extends MaskDrawStateProps, MaskDrawActionProps, 
 }
 
 export interface MaskDrawState {
+    style?: any
+    rotation?: RotationValue
 
 }
 
@@ -82,7 +87,29 @@ enum ECompositeOperation {
     destinationOut = "destination-out",
 }
 
+const getStyle = (rotation) => ({
+    transform: `rotate(${rotation.angle}deg) translateY(${-rotation.offset.y}px) translateX(${rotation.offset.x}px)`,
+});
+
 class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState> {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            style: getStyle(props.rotation),
+            rotation: props.rotation
+        };
+    }
+
+
+    static getDerivedStateFromProps(props, state) {
+        // if (state.rotation !== props.rotation) {
+        return {
+            rotation: props.rotation,
+            style: getStyle(props.rotation)
+        }
+        // }
+    }
 
     handlers = {
         [EToolType.Brush]: {
@@ -279,7 +306,7 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
 
     render() {
 
-        const {tool, startChanging, stopChanging, params} = this.props;
+        const {tool, startChanging, stopChanging, params, name} = this.props;
 
         const getType = getTypeField[tool];
         const type = getType ? getType(this.props) : 0;
@@ -290,17 +317,20 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
             <>
                 <div>
                     <ButtonNumberCF
-                        path={""}
+                        path={`patterns.${name}.mask.params.opacity`}
                         name={"opacity"}
                         range={opacityRange}
                         value={params.opacity}
                         onChange={this.handleOpacityChange}/>
-                    <ButtonSelect
-                        name={"black"}
-                        selected={params.black}
-                        onClick={this.handleBlackChange}/>
+                    <div>
+                        <ButtonSelect
+                            name={"black"}
+                            selected={params.black}
+                            onClick={this.handleBlackChange}/>
+                    </div>
                 </div>
                 <Canvas
+                    style={this.state.style}
                     className={"maskCanvas"}
                     onDown={startChanging}
                     onUp={stopChanging}
@@ -325,7 +355,7 @@ const mapStateToProps: MapStateToProps<MaskDrawStateProps, MaskDrawOwnProps, App
 });
 
 const mapDispatchToProps: MapDispatchToProps<MaskDrawActionProps, MaskDrawOwnProps> = {
-    startChanging, stopChanging
+    startChanging: startDrawChanging, stopChanging: stopDrawChanging
 };
 
 export const MaskDraw = connect<MaskDrawStateProps, MaskDrawActionProps, MaskDrawOwnProps, AppState>(

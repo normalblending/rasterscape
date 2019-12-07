@@ -14,6 +14,10 @@ export interface SelectButtonsProps {
     items: any[]
     value?: any
 
+    nullAble?: boolean
+
+    br?: number
+
     onChange?(data?: SelectButtonsEventData)
 
     getValue?(item?: any)
@@ -27,32 +31,41 @@ export const defaultGetText = ({text}) => text;
 export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
 
 
-    handleClick = ({value: item, e}) => {
-        const {name, items, onChange, getValue = defaultGetValue} = this.props;
+    handleClick = ({value: item, selected, e}) => {
+        const {name, items, onChange, getValue = defaultGetValue, nullAble, value: oldValue} = this.props;
+        let value = getValue(item);
+
+        if (nullAble && oldValue === value) {
+            value = null
+        }
+
         onChange && onChange({
-            value: getValue(item),
+            value,
             e, item, items, name
         });
     };
 
     render() {
-        const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText} = this.props;
+        const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText, br} = this.props;
 
         console.log("select buttons render", name);
 
         return (
             <span className={classNames(className, "select-buttons")}>
-            {items.map((item) => (
-                <ButtonSelect
-                    value={item}
-                    key={getValue(item)}
-                    selected={getValue(item) === value}
-                    onMouseUp={(e) => {
-                        console.log(e)
-                    }}
-                    onClick={this.handleClick}>
-                    {getText(item)}
-                </ButtonSelect>
+            {items.map((item, index) => (
+                <>
+                    {!!br && !!index && !(index % br) && <br/>}
+                    <ButtonSelect
+                        value={item}
+                        key={getValue(item)}
+                        selected={getValue(item) === value}
+                        onMouseUp={(e) => {
+                            console.log(e)
+                        }}
+                        onClick={this.handleClick}>
+                        {getText(item)}
+                    </ButtonSelect>
+                </>
             ))}</span>
         );
     }

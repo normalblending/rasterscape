@@ -14,8 +14,11 @@ import {ChangingValuesState, changingValuesReducer} from "./changingValues/reduc
 import {changingReducer, ChangingState} from "./changing/reducer";
 import {colorReducer, ColorState} from "./color/reducer";
 import {changeReducer} from "./change/reducer";
+import {fullscreenReducer, FullScreenState} from "./fullscreen";
 
 export interface AppState {
+    fullScreen: FullScreenState
+
     patterns: PatternsState
 
     color: ColorState
@@ -35,6 +38,8 @@ export interface AppState {
 
 const rootReducer = reduceReducers(
     combineReducers<AppState>({
+        fullScreen: fullscreenReducer,
+
         patterns: patternsReducer,
 
         color: colorReducer,

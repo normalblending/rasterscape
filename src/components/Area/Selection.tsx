@@ -18,7 +18,7 @@ import {AppState} from "../../store";
 import classNames from "classnames";
 import {EToolType} from "../../store/tool/types";
 import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
-import {SelectionValue} from '../../utils/types';
+import {SelectionValue} from '../../store/patterns/types';
 import {SelectionParams} from "../../store/patterns/types";
 import "../../styles/selection.scss"
 
@@ -56,6 +56,7 @@ export interface CanvasSelectionOwnProps {
 
     value?: SelectionValue
     className?: string
+    style?:any
 
     onChange?(value?: any)
 }
@@ -344,15 +345,17 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
 
     render() {
         console.log("selector render", this.state.path);
-        const {width, height, selectToolParams: {mode}, isActive, name} = this.props;
+        const {width, height, selectToolParams: {mode}, isActive, name, style} = this.props;
 
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
 
         return (
-            <div className={classNames("selection", {
-                ["selectionActive"]: isActive
-            })}>
+            <div
+                style={style}
+                className={classNames("selection", {
+                    ["selectionActive"]: isActive
+                })}>
                 <SVG
                     width={width}
                     height={height}

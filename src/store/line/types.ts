@@ -1,4 +1,5 @@
 import {Action} from "redux";
+import {EBrushType} from "../brush/types";
 
 export enum ELineType {
     Default = "Default",
@@ -26,6 +27,7 @@ export interface LineParams {
     opacity: number
     type: ELineType
     compositeOperation: ELineCompositeOperation
+    pattern: number
 }
 
 export interface SetLineParamsAction extends Action {

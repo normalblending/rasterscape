@@ -8,6 +8,7 @@ export enum EBrushType {
 
 export interface BrushParams {
     size: number
+    patternSize: number
     opacity: number
     type: EBrushType
     pattern: number
@@ -29,6 +30,10 @@ export interface SetOpacityAction extends Action {
 
 export interface SetTypeAction extends Action {
     brushType: EBrushType
+}
+
+export interface SetPatternSizeAction extends Action {
+    patternSize: number
 }
 
 

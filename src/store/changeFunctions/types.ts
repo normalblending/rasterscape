@@ -3,7 +3,8 @@ import {ParamConfig} from "../../components/_shared/Params";
 
 
 export enum ECFType {
-    SIN = "sin"
+    SIN = "sin",
+    LOOP = 'loop'
 }
 
 export interface ChangeFunction {

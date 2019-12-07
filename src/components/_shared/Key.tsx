@@ -10,10 +10,14 @@ export interface KeyProps {
 }
 
 export interface KeyState {
-
+    keys: string
 }
 
 export class Key extends React.PureComponent<KeyProps, KeyState> {
+
+    // state = {
+    //     keys: null
+    // };
 
     handlePress = e => {
         e.preventRepeat();
@@ -25,6 +29,13 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
         const {onRelease, keys} = this.props;
         onRelease && onRelease(e, keys)
     };
+
+    // static getDerivedStateFromProps(props, state) {
+    //     if (props.keys !== state.keys) {
+    //         return {keys: props.keys};
+    //     }
+    //     return;
+    // }
 
     componentDidMount() {
         const {keys} = this.props;
@@ -44,6 +55,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
     }
 
     render() {
+        console.log("keys render", this.props.keys);
         return <></>;
     }
 }

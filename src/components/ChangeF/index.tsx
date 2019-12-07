@@ -6,10 +6,16 @@ import {addCF, changeCFParams} from "../../store/changeFunctions/actions";
 import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
 import {Button} from "../_shared/Button";
-import {startChanging, stopChanging} from "../../store/changing/actions";
+import {setChangingMode, startChanging, stopChanging} from "../../store/changing/actions";
+import {SelectDrop} from "../_shared/SelectDrop";
+import {enumToSelectItems, objectToSelectItems} from "../../utils/utils";
+import {ChangingMode} from "../../store/changing/types";
+import {SelectButtons} from "../_shared/SelectButtons";
+import {LoopCF} from "./LoopCF";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctionsState
+    changingMode: ChangingMode
 }
 
 export interface ChangeFActionProps {
@@ -17,6 +23,7 @@ export interface ChangeFActionProps {
     addCF(cfType: ECFType)
     startChanging()
     stopChanging()
+    setChangingMode(mode: ChangingMode)
 }
 
 export interface ChangeFOwnProps {
@@ -32,8 +39,13 @@ export interface ChangeFState {
 }
 
 const CFComponentByType = {
-    [ECFType.SIN]: SinCF
+    [ECFType.SIN]: SinCF,
+    [ECFType.LOOP]: LoopCF,
 };
+
+const modesItems = enumToSelectItems(ChangingMode);
+
+console.log(modesItems);
 
 class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
 
@@ -45,16 +57,16 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
         this.props.addCF(ECFType.SIN);
     };
 
-    handleStartChange = () => {
-        this.props.startChanging();
+    handleAddLoop = () => {
+        this.props.addCF(ECFType.LOOP);
     };
 
-    handleStopChange = () => {
-        this.props.stopChanging();
+    handleModeChange = ({value}) => {
+        this.props.setChangingMode(value);
     };
 
     render() {
-        const {cfs} = this.props;
+        const {cfs, changingMode} = this.props;
         return (
             <div>
                 {Object.values(cfs).map(cf => {
@@ -69,19 +81,23 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                             onChange={this.handleChange}/>);
                 })}
                 <Button onClick={this.handleAddSin}>sin</Button>
-                <Button onClick={this.handleStartChange}>start</Button>
-                <Button onClick={this.handleStopChange}>stop</Button>
+                <Button onClick={this.handleAddLoop}>loop</Button>
+                <SelectButtons
+                    items={modesItems}
+                    value={changingMode}
+                    onChange={this.handleModeChange}/>
             </div>
         );
     }
 }
 
 const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = state => ({
-    cfs: state.changeFunctions
+    cfs: state.changeFunctions,
+    changingMode: state.changing.mode
 });
 
 const mapDispatchToProps: MapDispatchToProps<ChangeFActionProps, ChangeFOwnProps> = {
-    changeCFParams, addCF, startChanging, stopChanging
+    changeCFParams, addCF, startChanging, stopChanging, setChangingMode
 };
 
 export const ChangeF = connect<ChangeFStateProps, ChangeFActionProps, ChangeFOwnProps, AppState>(

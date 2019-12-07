@@ -1,13 +1,21 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {Params} from "../_shared/Params";
 import {setSelectToolParams} from "../../store/selectTool/actions";
-import {SelectToolParams} from "../../store/selectTool/types";
+import {ESelectionMode, SelectToolParams} from "../../store/selectTool/types";
+import {SelectDrop} from "../_shared/SelectDrop";
+import {createSelector} from "reselect";
+import {ParamConfig} from "../_shared/Params";
+import {ButtonNumber, ValueD} from "../_shared/ButtonNumber";
+import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 
 export interface SelectToolStateProps {
+
+    paramsConfigMap: {
+        [key: string]: ParamConfig
+    }
     paramsConfig: object
-    paramsValue: object
+    paramsValue: SelectToolParams
 }
 
 export interface SelectToolActionProps {
@@ -21,19 +29,64 @@ export interface SelectToolOwnProps {
 export interface SelectToolProps extends SelectToolStateProps, SelectToolActionProps, SelectToolOwnProps {
 
 }
+const opacityRange = [0, 1] as [number, number];
+const opacityValueD = ValueD.VerticalLinear(100);
 
-const SelectToolComponent: React.FC<SelectToolProps> = ({paramsValue, paramsConfig, setSelectToolParams}) => {
-    return (
-        <Params
-            data={paramsConfig}
-            value={paramsValue}
-            onChange={setSelectToolParams}/>
-    );
-};
+class SelectToolComponent extends React.PureComponent<SelectToolProps> {
+
+    handleParamChange = (data) => {
+        const {value, name} = data;
+        const {setSelectToolParams, paramsValue} = this.props;
+        setSelectToolParams({
+            ...paramsValue,
+            [name]: value
+        })
+    };
+
+    render() {
+        const {paramsValue, paramsConfigMap, paramsConfig, setSelectToolParams} = this.props;
+        const {mode, curveType, ...otherParams} = paramsConfigMap;
+        return (
+            <>
+                <SelectDrop
+                    name="mode"
+                    value={paramsValue.mode}
+                    items={mode.props.items}
+                    onChange={this.handleParamChange}/>
+                {paramsValue.mode === ESelectionMode.Points &&
+                <SelectDrop
+                    name="curveType"
+                    value={paramsValue.curveType}
+                    items={curveType.props.items}
+                    onChange={this.handleParamChange}/>}
+
+                {Object.values(otherParams).map(({name, props}) => (
+                    <ButtonNumberCF
+                        value={paramsValue[name]}
+                        name={name}
+                        path={`selectTool.params.${name}`}
+                        range={props.range}
+                        onChange={this.handleParamChange}
+                        valueD={opacityValueD}/>
+                ))}
+
+            </>
+        );
+    }
+}
+
+
+const paramsConfigMapSelector = createSelector(
+    [(state: AppState) => state.selectTool.paramsConfig],
+    (paramsConfig) => paramsConfig.reduce((res, paramConfig) => {
+        res[paramConfig.name] = paramConfig;
+        return res;
+    }, {}));
 
 const mapStateToProps: MapStateToProps<SelectToolStateProps, SelectToolOwnProps, AppState> = state => ({
     paramsConfig: state.selectTool.paramsConfig,
     paramsValue: state.selectTool.params,
+    paramsConfigMap: paramsConfigMapSelector(state),
 });
 
 const mapDispatchToProps: MapDispatchToProps<SelectToolActionProps, SelectToolOwnProps> = {

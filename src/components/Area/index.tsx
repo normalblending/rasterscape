@@ -5,8 +5,8 @@ import {BrushState} from "../../store/brush/reducer";
 import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
-import {StoreState} from "../../store/patterns/types";
-import {SelectionValue} from "../../utils/types";
+import {MaskParams, RotationValue, StoreState} from "../../store/patterns/types";
+import {SelectionValue} from "../../store/patterns/types";
 import {SelectionParams, SelectionState} from "../../store/patterns/types";
 import "../../styles/area.scss";
 
@@ -21,6 +21,7 @@ export interface AreaOwnProps {
     name: any // нужен для маски выделения
     height: number
     width: number
+    rotation?: RotationValue
 
     imageValue: ImageData
     selectionValue: SelectionValue
@@ -35,18 +36,52 @@ export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps
 
 }
 
-class AreaComponent extends React.PureComponent<AreaProps> {
-    render() {
-        const {currentTool, name, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange} = this.props;
+export interface AreaState {
+    rotation?: RotationValue
+    style?: any
+}
 
+const getStyle = (rotation) => ({
+    transform: `rotate(${rotation.angle}deg) translateY(${-rotation.offset.y}px) translateX(${rotation.offset.x}px)`,
+});
+
+class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
+
+
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            style: getStyle(props.rotation),
+            rotation: props.rotation
+        };
+    }
+
+
+    static getDerivedStateFromProps(props, state) {
+        // if (state.rotation !== props.rotation) {
+            return {
+                rotation: props.rotation,
+                style: getStyle(props.rotation)
+            }
+        // }
+    }
+
+    render() {
+        const {currentTool, name, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange, rotation} = this.props;
+
+        console.log("area", this.state);
         return (
             <div className="area">
                 <Draw
+                    patternId={name}
+                    style={this.state.style}
                     value={imageValue}
                     width={width}
                     height={height}
                     onChange={onImageChange}/>
                 <Selection
+                    style={this.state.style}
                     isActive={selectionTools.indexOf(currentTool) !== -1}
                     name={name}
                     width={width}

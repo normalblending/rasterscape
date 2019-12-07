@@ -1,0 +1,7 @@
+.shortcut-input {
+  background: lightgoldenrodyellow;
+  width: 20px;
+  &:focus {
+    border: 1px solid red;
+  }
+}

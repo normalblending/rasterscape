@@ -7,6 +7,8 @@ import {Brush} from "./Brush";
 import {Line} from "./Line";
 import {ButtonSelect} from "../_shared/ButtonSelect";
 import {SelectTool} from "./SelectTool";
+import {Button} from "../_shared/Button";
+import {reverseFullScreen} from "../../store/fullscreen";
 
 export const ToolsParams = {
     [EToolType.Brush]: {component: Brush, type: EToolType.Brush},
@@ -20,6 +22,7 @@ export interface ToolsStateProps {
 
 export interface ToolsActionProps {
     setCurrentTool(tool: EToolType)
+    reverseFullScreen()
 }
 
 export interface ToolsOwnProps {
@@ -30,11 +33,12 @@ export interface ToolsProps extends ToolsStateProps, ToolsActionProps, ToolsOwnP
 
 }
 
-const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool}) => {
+const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reverseFullScreen}) => {
 
     const ToolControls = ToolsParams[currentTool].component;
     return (
         <div className="tools">
+            <Button onClick={reverseFullScreen}>full</Button>
             <div>
                 {Object.keys(ToolsParams).map(toolType => (
                     <ButtonSelect
@@ -54,7 +58,7 @@ const mapStateToProps: MapStateToProps<ToolsStateProps, ToolsOwnProps, AppState>
 });
 
 const mapDispatchToProps: MapDispatchToProps<ToolsActionProps, ToolsOwnProps> = {
-    setCurrentTool
+    setCurrentTool, reverseFullScreen
 };
 
 export const Tools = connect<ToolsStateProps, ToolsActionProps, ToolsOwnProps, AppState>(

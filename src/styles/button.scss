@@ -2,6 +2,8 @@
   background: lightgoldenrodyellow;
 
 
+  //display: inline-flex; todo pricolno
+
 
   height: 20px;
   width: 70px;
@@ -19,6 +21,20 @@
 
   padding: 0;
   position: relative;
+
+  .button-number-amplitude {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border: 1px solid lightcoral;
+    span {
+      right: 0;
+      position: absolute;
+      bottom: 0;
+      font-size: 10px;
+    }
+  }
 
   & > .button-number-value {
     width: 0;

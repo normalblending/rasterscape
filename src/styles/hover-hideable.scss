@@ -1,0 +1,12 @@
+.hover-hideable {
+
+  &:hover {
+    & > .hover-hideable-hidden-part {
+      display: flex;
+    }
+  }
+
+  & > .hover-hideable-hidden-part {
+    display: none;
+  }
+}

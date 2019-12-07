@@ -16,7 +16,7 @@ import {
     PatternUndoAction,
     RemovePatternAction, SetMaskParamsAction,
     SetPatternHeightAction,
-    SetPatternWidthAction,
+    SetPatternWidthAction, SetRepeatingAction, SetRotationAction,
     UpdatePatternImageAction,
     UpdatePatternMaskAction,
     UpdatePatternSelectionAction
@@ -176,6 +176,26 @@ export const patternsReducer = handleActions<PatternsState>({
             }
         }
     }),
+
+
+    [EPatternAction.SET_ROTATION]: reducePattern<SetRotationAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            rotation: pattern.rotation && {
+                ...pattern.rotation,
+                value: action.rotation
+            }
+        })),
+
+
+    [EPatternAction.SET_REPEATING]: reducePattern<SetRepeatingAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            repeating: pattern.repeating && {
+                ...pattern.repeating,
+                params: action.repeating
+            }
+        })),
 
     [EPatternAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
         (pattern: PatternState, action) => ({

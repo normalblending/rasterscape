@@ -4,7 +4,7 @@ import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import "../../styles/sinChangeFunction.scss";
 import {ValueD} from "../_shared/ButtonNumber";
 
-export interface SinCFProps {
+export interface LoopCFProps {
     params: any
     paramsConfig: ParamConfig[]
 
@@ -14,11 +14,17 @@ export interface SinCFProps {
 
 }
 
-export interface SinCFState {
+export interface LoopCFState {
 
 }
 
-export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
+
+const tRange = [0, 3000] as [number, number];
+const tValueD = ValueD.VerticalLinear(.05);
+const seRange = [0, 1] as [number, number];
+const seValueD = ValueD.VerticalLinear(100);
+
+export class LoopCF extends React.PureComponent<LoopCFProps, LoopCFState> {
 
     handleParamChange = ({value, name}) => {
         this.props.onChange({...this.props.params, [name]: value}, this.props.name)
@@ -29,28 +35,29 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
         return (
             <div className={"sin-change-function"}>
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.a`}
-                    value={params.a}
-                    name={"a"}
-                    range={[0, 1]}
-                    valueD={ValueD.VerticalLinear(100)}
+                    path={`changeFunctions.${name}.params.start`}
+                    value={params.start}
+                    name={"start"}
+                    valueD={seValueD}
+                    range={seRange}
+                    onChange={this.handleParamChange}
+                />
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.end`}
+                    value={params.end}
+                    name={"end"}
+                    valueD={seValueD}
+                    range={seRange}
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
                     path={`changeFunctions.${name}.params.t`}
                     value={params.t}
                     name={"t"}
-                    range={[0, 1000]}
-                    valueD={ValueD.VerticalLinear(0.05)}
+                    valueD={tValueD}
+                    range={tRange}
                     onChange={this.handleParamChange}
                 />
-                {/*<ButtonNumberCF*/}
-                    {/*path={`changeFunctions.${name}.params.p`}*/}
-                    {/*value={params.p}*/}
-                    {/*name={"p"}*/}
-                    {/*range={[0, 1]}*/}
-                    {/*onChange={this.handleParamChange}*/}
-                {/*/>*/}
             </div>
         );
     }

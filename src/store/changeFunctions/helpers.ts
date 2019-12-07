@@ -7,8 +7,13 @@ import {ValueD} from "../../components/_shared/ButtonNumber";
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
 export const cfId = (type: ECFType, state: ChangeFunctionsState) => {
+    console.log(
+        Object
+            .keys(state)
+            .filter(key => state[key].type === type)
+    );
     return type.toString() + (Object.keys(state).length
-        ? (Math.max(
+        ? (Math.max(0,
         ...Object
             .keys(state)
             .filter(key => state[key].type === type)
@@ -21,6 +26,12 @@ const chInitialParams = {
         a: 0.3,
         t: 300,
         p: 0,
+    },
+    [ECFType.LOOP]: {
+        start: 0,
+        end: 1,
+        t: 3000,
+        p: 0,
     }
 };
 
@@ -29,6 +40,7 @@ const chParamsConfig = {
         name: "a",
         type: EParamType.Number,
         props: {
+            valueD: ValueD.VerticalLinear(100),
             range: [0, 1] as [number, number]
         }
     }, {
@@ -45,6 +57,28 @@ const chParamsConfig = {
             valueD: ValueD.VerticalLinear(0.5),
             range: [1, 1500] as [number, number]
         }
+    }],
+    [ECFType.LOOP]: [{
+        name: "start",
+        type: EParamType.Number,
+        props: {
+            valueD: ValueD.VerticalLinear(100),
+            range: [0, 1] as [number, number]
+        }
+    }, {
+        name: "end",
+        type: EParamType.Number,
+        props: {
+            valueD: ValueD.VerticalLinear(100),
+            range: [0, 1] as [number, number]
+        }
+    }, {
+        name: "t",
+        type: EParamType.Number,
+        props: {
+            valueD: ValueD.VerticalLinear(0.1),
+            range: [1, 3000] as [number, number]
+        }
     }]
 };
 
@@ -60,5 +94,9 @@ export const createCFInitialState = (id, type: ECFType) => {
 
 
 export const changeFunctionByType = {
-    [ECFType.SIN]: (params, range) => (startValue, time) => startValue + params.a * (range[1] - range[0]) * Math.sin(time / params.t)
+    [ECFType.SIN]: (params, range) => (startValue, time) => startValue + params.a * (range[1] - range[0]) * Math.sin(time / params.t),
+    [ECFType.LOOP]:
+        (params, range) =>
+            (startValue, time) =>
+                ((time % params.t) / params.t) * (params.end * (range[1] - range[0]) - params.start * (range[1] - range[0])) + params.start * (range[1] - range[0])
 };

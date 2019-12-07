@@ -1,7 +1,7 @@
 import * as React from "react";
 import {Canvas, CanvasProps} from "../_shared/Canvas";
 import {circle} from "../../utils/canvas";
-import {AppState} from "../../store/index";
+import {AppState} from "../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../store/brush/reducer";
 import {EToolType} from "../../store/tool/types";
@@ -10,8 +10,9 @@ import {LineState} from "../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
-import {startChanging, stopChanging} from "../../store/changing/actions";
+import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import {PatternsState} from "../../store/patterns/reducer";
+import {getRepeatingCoords} from "../../utils/draw";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -27,6 +28,7 @@ export interface CanvasDrawActionProps {
 }
 
 export interface CanvasDrawOwnProps extends CanvasProps {
+    patternId: string
 }
 
 export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps {
@@ -52,13 +54,20 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [EBrushType.Square]: (() => {
                 const squareBrush = (ev) => {
                     const {ctx, e} = ev;
+                    const {patterns, patternId} = this.props;
+                    const pattern = patterns[patternId];
                     const {size, opacity, compositeOperation} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
-                    ctx.fillRect(e.offsetX - size / 2, e.offsetY - size / 2, size, size);
+
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) =>
+                        ctx.fillRect(x - size / 2, y - size / 2, size, size));
+
+
+
 
 
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
@@ -94,19 +103,37 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 const patternBrush = (ev) => {
                     const {ctx, e} = ev;
                     const {patterns} = this.props;
-                    const {size, opacity, compositeOperation, pattern} = this.props.brush.params;
+                    const {patternSize, opacity, compositeOperation, pattern} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
 
-                    const p = patterns[pattern].resultImage;
-                    //const i = patterns[pattern].imageMasked;
-                    ctx.drawImage(p, e.offsetX - p.width / 2, e.offsetY - p.height / 2, p.width, p.height);
+                    const rotation = patterns[pattern] && patterns[pattern].rotation.value;
+                    const p = patterns[pattern] && patterns[pattern].resultImage;
+                    if (p) {
 
-                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
-                    ctx.globalAlpha = 1;
+                        if (rotation) {
+                            ctx.translate(e.offsetX + rotation.offset.x, e.offsetY + rotation.offset.y);
+                            ctx.rotate(Math.PI * rotation.angle / 180);
+                        }
+
+
+                        const width = patternSize * p.width;
+                        const height = patternSize * p.height;
+
+                        //const i = patterns[pattern].imageMasked;
+                        ctx.drawImage(p, -width / 2, -height / 2, width, height);
+
+                        ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                        ctx.globalAlpha = 1;
+
+                        if (rotation) {
+                            ctx.rotate(-Math.PI * rotation.angle / 180);
+                            ctx.translate(-e.offsetX - rotation.offset.x, -e.offsetY - rotation.offset.y);
+                        }
+                    }
                 };
                 return {
                     draw: patternBrush,
@@ -133,6 +160,9 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 draw: (ev) => {
                     const {ctx, e} = ev;
                     const {size, opacity} = this.props.line.params;
+
+                    ctx.lineWidth = size;
+                    ctx.globalAlpha = opacity;
                     ctx.lineTo(e.offsetX, e.offsetY);
                     // ctx.strokeStyle = getRandomColor();
                     ctx.stroke();
@@ -164,6 +194,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     const {size, opacity} = this.props.line.params;
 
                     if (!pre) return;
+                    ctx.lineWidth = size;
+                    ctx.globalAlpha = opacity;
 
                     ctx.moveTo(pre.offsetX, pre.offsetY);
 
@@ -196,6 +228,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     const {ctx, e, pre} = ev;
                     const {size, opacity} = this.props.line.params;
 
+                    ctx.lineWidth = size;
+                    ctx.globalAlpha = opacity;
                     if (!pre) return;//"green";
 
                     ctx.beginPath();
@@ -248,7 +282,7 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
-    startChanging, stopChanging
+    startChanging: startDrawChanging, stopChanging: stopDrawChanging
 };
 
 export const Draw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(

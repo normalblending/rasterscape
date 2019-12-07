@@ -6,7 +6,7 @@ import {EventData} from "../../utils/types";
 
 export interface ParamConfig {
     type: EParamType
-    props?: object
+    props?: any
     name: string
 }
 
