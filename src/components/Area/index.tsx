@@ -41,9 +41,9 @@ export interface AreaState {
     style?: any
 }
 
-const getStyle = (rotation) => ({
+const getStyle = (rotation) => rotation ? {
     transform: `rotate(${rotation.angle}deg) translateY(${-rotation.offset.y}px) translateX(${rotation.offset.x}px)`,
-});
+} : null;
 
 class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
 

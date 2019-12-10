@@ -80,6 +80,8 @@ export enum ERepeatingType {
 export interface RepeatingGridParams {
     x: number
     y: number
+    integer: boolean
+
 }
 
 export interface RepeatingParams {

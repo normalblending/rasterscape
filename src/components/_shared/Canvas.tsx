@@ -175,23 +175,6 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.pre = e;
     };
 
-    // public
-
-    // public setImageData = image =>
-    //     this.ctx.putImageData(image, 0, 0);
-    //
-    // public drawImage = (...p) =>
-    //     this.ctx.drawImage(...p);
-    // public getCtx = () =>
-    //     this.ctx;
-    //
-    // public getImageData = () =>
-    //     this.ctx.getImageData(0, 0, this.props.width, this.props.height);
-    //
-    // public clear = () => {
-    //     this.ctx.clearRect(0, 0, this.props.width, this.props.height);
-    // };
-
     render() {
         const {value, width, height, className, style, children} = this.props;
         console.log("canvas render", style);

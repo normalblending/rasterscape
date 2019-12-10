@@ -81,15 +81,22 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [EBrushType.Circle]: (() => {
                 const circleBrush = (ev) => {
                     const {ctx, e} = ev;
+                    const {patterns, patternId} = this.props;
+                    const pattern = patterns[patternId];
                     const {size, opacity, compositeOperation} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
-                    ctx.beginPath();
-                    ctx.arc(e.offsetX, e.offsetY, size / 2, 0, 2 * Math.PI);
-                    ctx.fill();
+
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) =>{
+                        ctx.beginPath();
+                        ctx.arc(x, y, size / 2, 0, 2 * Math.PI);
+                        ctx.fill();
+                    });
+
+
 
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
@@ -102,38 +109,57 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [EBrushType.Pattern]: (() => {
                 const patternBrush = (ev) => {
                     const {ctx, e} = ev;
-                    const {patterns} = this.props;
+                    const {patterns, patternId} = this.props;
                     const {patternSize, opacity, compositeOperation, pattern} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
+                    const destinationPattern = patterns[patternId];
+                    const brushPattern = patterns[pattern];
 
-                    const rotation = patterns[pattern] && patterns[pattern].rotation.value;
-                    const p = patterns[pattern] && patterns[pattern].resultImage;
-                    if (p) {
+                    const rotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
 
-                        if (rotation) {
-                            ctx.translate(e.offsetX + rotation.offset.x, e.offsetY + rotation.offset.y);
-                            ctx.rotate(Math.PI * rotation.angle / 180);
-                        }
+                    const brushPatternImage = brushPattern && brushPattern.resultImage;
+
+                    if (brushPatternImage) {
 
 
-                        const width = patternSize * p.width;
-                        const height = patternSize * p.height;
+                        const dr = ({x, y}) =>{
+                            if (rotation) {
+                                ctx.translate(x + rotation.offset.x, y + rotation.offset.y);
+                                ctx.rotate(Math.PI * rotation.angle / 180);
+                            } else {
+                                ctx.translate(x, y);
+                            }
 
-                        //const i = patterns[pattern].imageMasked;
-                        ctx.drawImage(p, -width / 2, -height / 2, width, height);
 
-                        ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
-                        ctx.globalAlpha = 1;
+                            const width = patternSize * brushPatternImage.width;
+                            const height = patternSize * brushPatternImage.height;
 
-                        if (rotation) {
-                            ctx.rotate(-Math.PI * rotation.angle / 180);
-                            ctx.translate(-e.offsetX - rotation.offset.x, -e.offsetY - rotation.offset.y);
-                        }
+                            //const i = patterns[pattern].imageMasked;
+                            ctx.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
+
+
+
+                            if (rotation) {
+                                ctx.rotate(-Math.PI * rotation.angle / 180);
+                                ctx.translate(-x - rotation.offset.x, -y - rotation.offset.y);
+                                // ctx.translate(-e.offsetX - rotation.offset.x, -e.offsetY - rotation.offset.y);
+                            } else {
+                                ctx.translate(-x, -y);
+                            }
+
+                        };
+
+                        getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(dr);
+                        // dr({x:e.offsetX, y: e.offsetY});
+
+
                     }
+                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalAlpha = 1;
                 };
                 return {
                     draw: patternBrush,

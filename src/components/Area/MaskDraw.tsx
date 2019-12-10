@@ -87,9 +87,9 @@ enum ECompositeOperation {
     destinationOut = "destination-out",
 }
 
-const getStyle = (rotation) => ({
+const getStyle = (rotation) => rotation ? {
     transform: `rotate(${rotation.angle}deg) translateY(${-rotation.offset.y}px) translateX(${rotation.offset.x}px)`,
-});
+} : null;
 
 class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState> {
 

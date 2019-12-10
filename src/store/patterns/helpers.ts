@@ -102,7 +102,8 @@ export const getRepeatingState = getFunctionState<RepeatingValue, RepeatingParam
         type: ERepeatingType.Grid,
         gridParams: {
             x: 2,
-            y: 2
+            y: 2,
+            integer: true
         }
     });
 

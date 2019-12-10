@@ -212,6 +212,10 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             name={"repeating"}
                             selected={config.repeating}
                             onClick={this.handleConfigToggle}>repeating</ButtonSelect>
+                        <ButtonSelect
+                            name={"rotation"}
+                            selected={config.rotation}
+                            onClick={this.handleConfigToggle}>rotation</ButtonSelect>
                     </div>
                 </div>
 
