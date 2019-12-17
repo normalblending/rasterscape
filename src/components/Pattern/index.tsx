@@ -2,10 +2,11 @@ import * as React from "react";
 import {Button} from "../_shared/Button";
 import "../../styles/pattern.scss";
 import {
+    LoadingParams,
     MaskParams,
     PatternConfig,
     RepeatingParams,
-    RotationValue,
+    RotationValue, Segments,
     SelectionState,
     StoreState
 } from "../../store/patterns/types";
@@ -19,6 +20,8 @@ import {MaskDraw} from "../Area/MaskDraw";
 import {ButtonSelect} from "../_shared/ButtonSelect";
 import {RotationControls} from "./RotatingControls";
 import {RepeatingControls} from "./RepeatingControls";
+import {SaveLoadControls} from "./SaveLoadControls";
+import {SelectionControls} from "./SelectionControls";
 
 export interface PatternWindowProps {
     id: string
@@ -27,6 +30,7 @@ export interface PatternWindowProps {
     maskParams?: MaskParams
     rotation?: RotationValue
     repeating?: RepeatingParams
+    loading: LoadingParams
 
     height: number
     width: number
@@ -46,9 +50,11 @@ export interface PatternWindowProps {
 
     onMaskParamsChange(id: string, params: MaskParams)
 
-    onSelectionChange(id: string, selectionValue: SelectionValue)
+    onSelectionChange(id: string, selectionValue: Segments, bBox: SVGRect)
 
     onRemove(id: string)
+
+    onDouble(id: string)
 
     onUndo(id: string)
 
@@ -65,6 +71,16 @@ export interface PatternWindowProps {
     onRotationChange(id: string, value: RotationValue)
 
     onRepeatingChange(id: string, value: RepeatingParams)
+
+    onLoad(id: string, image)
+
+    onSave(id: string)
+
+    onLoadingParamsChange(id: string, params: LoadingParams)
+
+    onCreatePatternFromSelection(id: string)
+
+    onCutBySelection(id: string)
 }
 
 export interface PatternWindowState {
@@ -84,13 +100,15 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
 
     handleMaskChange = imageData => this.props.onMaskChange(this.props.id, imageData);
 
-    handleSelectionChange = value =>
-        this.props.onSelectionChange(this.props.id, value);
+    handleSelectionChange = (value, bBox: SVGRect) =>
+        this.props.onSelectionChange(this.props.id, value, bBox);
 
     handleClearSelection = () =>
-        this.props.onSelectionChange(this.props.id, []);
+        this.props.onSelectionChange(this.props.id, [], null);
 
     handleRemove = () => this.props.onRemove(this.props.id);
+
+    handleDouble = () => this.props.onDouble(this.props.id);
 
     handleUndo = () => this.props.onUndo(this.props.id);
 
@@ -123,12 +141,29 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
         this.props.onRepeatingChange(this.props.id, repeating)
     };
 
+    handleLoad = (image) => {
+        this.props.onLoad(this.props.id, image)
+    };
+    handleSave = () => {
+        this.props.onSave(this.props.id)
+    };
+    handleLoadingParamsChange = (params: LoadingParams) => {
+        this.props.onLoadingParamsChange(this.props.id, params)
+    };
+    handleCreatePatternFromSelection = () => {
+        this.props.onCreatePatternFromSelection(this.props.id)
+    };
+    handleCutBySelection = () => {
+        this.props.onCutBySelection(this.props.id)
+    };
+
+
     render() {
         const {
             connected,
             resultImage, imageValue, maskValue, maskParams,
             height, width, id, config,
-            history, store, selection, rotation, repeating
+            history, store, selection, rotation, repeating, loading
         } = this.props;
 
         console.log("pattern render ", id, rotation);
@@ -144,7 +179,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
 
                         imageValue={imageValue}
 
-                        selectionValue={selection.value}
+                        selectionValue={selection.value.segments}
                         selectionParams={selection.params}
 
                         onImageChange={this.handleImageChange}
@@ -163,6 +198,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                 </div>
                 <div className="pattern-controls">
                     <Button onClick={this.handleRemove}>del</Button> {id}
+                    <Button onClick={this.handleDouble}>double</Button>
 
                     {connected}
                     <InputText
@@ -187,9 +223,12 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         onUndo={this.handleUndo}
                         onRedo={this.handleRedo}/>}
 
-                    {selection.value && selection.value.length &&
-                    <Button
-                        onClick={this.handleClearSelection}>clear</Button>}
+
+                    <SelectionControls
+                        selectionValue={selection.value}
+                        onCreatePattern={this.handleCreatePatternFromSelection}
+                        onClear={this.handleClearSelection}
+                        onCut={this.handleCutBySelection}/>
 
                     {config.rotation &&
                     <RotationControls
@@ -202,6 +241,13 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         patternId={id}
                         repeating={repeating}
                         onChange={this.handleRepeatingChange}/>}
+
+                    <SaveLoadControls
+                        patternId={id}
+                        loading={loading}
+                        onParamsChange={this.handleLoadingParamsChange}
+                        onLoad={this.handleLoad}
+                        onSave={this.handleSave}/>
 
                     <div>
                         <ButtonSelect

@@ -1,11 +1,11 @@
 import {
-    AddPatternAction,
+    AddPatternAction, CreatePatternFromSelection,
     CreateRoomAction,
-    EditPatternConfigAction,
-    MaskParams,
+    EditPatternConfigAction, LoadAction, LoadingParams,
+    MaskParams, PatternParams,
     PatternRedoAction,
     PatternUndoAction,
-    RemovePatternAction, RepeatingParams, RotationValue,
+    RemovePatternAction, RepeatingParams, RotationValue, SaveAction, Segments, SetLoadingParamsAction,
     SetMaskParamsAction,
     SetPatternHeightAction,
     SetPatternWidthAction, SetRepeatingAction,
@@ -20,8 +20,18 @@ import {ThunkAction, ThunkDispatch} from 'redux-thunk'
 import {AppState} from "../index";
 import {Action} from "redux";
 import {createRoom_s} from "./service";
-import {base64ToImageData, imageDataToBase64} from "../../utils/imageData";
+import {
+    base64ToImageData,
+    canvasToImageData,
+    imageDataToBase64,
+    imageDataToCanvas,
+    imageToImageData
+} from "../../utils/canvas/imageData";
 import {dispatch} from "d3-dispatch";
+import {randomZ} from "../../utils/utils";
+import {getPatternConfig, getPatternParams, getSelectedImageData} from "./helpers";
+import {createCanvas} from "../../utils/canvas/canvas";
+import {boundingBox, getMaskFromSegments, pathDataToString} from "../../utils/path";
 
 type ThunkResult<R> = ThunkAction<R, AppState, undefined, Action>;
 
@@ -45,12 +55,15 @@ export enum EPatternAction {
     SET_SELECTION_PARAMS = "pattern/set-selection-params",
     SET_ROTATION = "pattern/set-rotation",
     SET_REPEATING = "pattern/set-repeating",
+    SET_LOADING_PARAMS = "pattern/set-loading-params",
+    LOAD = "pattern/load",
+    SAVE = "pattern/save",
 
     CREATE_ROOM = "pattern/create-room",
 }
 
-export const addPattern = (config?: PatternConfig): AddPatternAction =>
-    ({type: EPatternsAction.ADD_PATTERN, config});
+export const addPattern = (config?: PatternConfig, params?: PatternParams): AddPatternAction =>
+    ({type: EPatternsAction.ADD_PATTERN, config, params});
 
 export const removePattern = (id: string): RemovePatternAction =>
     ({type: EPatternsAction.REMOVE_PATTERN, id});
@@ -71,8 +84,8 @@ export const updateMask = (id: string, imageData: ImageData): UpdatePatternMaskA
 export const setMaskParams = (id: string, params: MaskParams): SetMaskParamsAction =>
     ({type: EPatternAction.SET_MASK_PARAMS, id, params});
 
-export const updateSelection = (id: string, value: SelectionValue): UpdatePatternSelectionAction =>
-    ({type: EPatternAction.UPDATE_SELECTION, value, id});
+export const updateSelection = (id: string, value: Segments, bBox: SVGRect): UpdatePatternSelectionAction =>
+    ({type: EPatternAction.UPDATE_SELECTION, value, bBox, id});
 
 export const editConfig = (id: string, config: PatternConfig): EditPatternConfigAction =>
     ({type: EPatternAction.EDIT_CONFIG, id, config});
@@ -94,6 +107,117 @@ export const setRotation = (id: string, rotation: RotationValue): SetRotationAct
 
 export const setRepeating = (id: string, repeating: RepeatingParams): SetRepeatingAction =>
     ({type: EPatternAction.SET_REPEATING, id, repeating});
+
+
+export const doublePattern = (id: string) => (dispatch, getState) => {
+    const state: AppState = getState();
+
+    const pattern = state.patterns[id];
+
+    const config = getPatternConfig(pattern);
+    const params = getPatternParams(pattern);
+
+    dispatch(addPattern(config, params));
+};
+
+export const createPatternFromSelection = (id: string) => (dispatch, getState) => {
+    const state: AppState = getState();
+
+    const pattern = state.patterns[id];
+
+    const config = getPatternConfig(pattern);
+    const params = getPatternParams(pattern);
+
+    config.startImage = getSelectedImageData(pattern);
+
+    dispatch(addPattern(config, params));
+};
+
+export const cutPatternBySelection = (id: string) => (dispatch, getState) => {
+    const state: AppState = getState();
+
+    const pattern = state.patterns[id];
+
+    dispatch(updateImage(id, getSelectedImageData(pattern)));
+    dispatch(updateSelection(id, [], null));
+};
+
+export const setLoadingParams = (id: string, value: LoadingParams): SetLoadingParamsAction =>
+    ({type: EPatternAction.SET_LOADING_PARAMS, id, value});
+
+export const load = (id: string, image) => (dispatch, getState) => {
+
+    const imageData = imageToImageData(image);
+
+    const state: AppState = getState();
+
+    const isFit = state.patterns[id].loading.params.fit;
+
+    if (isFit) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (!ctx) {
+            return null;
+        }
+
+
+
+        const oldWidth = state.patterns[id].current.width;
+        const oldHeight = state.patterns[id].current.height;
+
+        canvas.width = oldWidth;
+        canvas.height = oldHeight;
+
+        ctx.drawImage(image, 0, 0, oldWidth, oldHeight);
+
+
+
+
+
+        const imageData2 = ctx.getImageData(0,0, oldWidth, oldHeight);
+        dispatch(updateImage(id, imageData2));
+
+    } else {
+
+        dispatch(updateImage(id, imageData));
+    }
+
+
+    dispatch({type: EPatternAction.LOAD, id, imageData});
+};
+export const save = (id: string) => (dispatch, getState) => {
+    const state: AppState = getState();
+
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    if (!ctx) {
+        return null;
+    }
+
+
+    canvas.width = state.patterns[id].current.width;
+    canvas.height = state.patterns[id].current.height;
+
+    ctx.putImageData(state.patterns[id].current.imageData, 0, 0);
+
+
+
+    var dataURL = canvas.toDataURL("image/png");
+    var link = document.createElement("a");
+    document.body.appendChild(link); // Firefox requires the link to be in the body :(
+    link.href = dataURL;
+    link.download = `${randomZ()}.png`;
+    link.click();
+    document.body.removeChild(link);
+
+
+
+
+    dispatch({type: EPatternAction.SAVE, id});
+};
 
 
 export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoomAction> =>

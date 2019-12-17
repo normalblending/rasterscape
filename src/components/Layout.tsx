@@ -8,6 +8,7 @@ import {connect} from "react-redux";
 import {setFullScreen} from "../store/fullscreen";
 import {AppState} from "../store";
 import FullScreen from "react-full-screen";
+import {AppControls} from "./AppControls";
 
 export interface LayoutStateProps {
     full: boolean
@@ -26,6 +27,7 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
         <FullScreen enabled={full} onChange={setFullScreen}>
             <div className={"layout-container"}>
                 <div className="layout">
+                    <AppControls/>
                     <div className="tools-panel">
                         <Tools/>
                     </div>

@@ -36,13 +36,20 @@ export interface StoreParams {
 // SELECTION SELECTION SELECTION SELECTION SELECTION SELECTION SELECTION SELECTION
 
 export interface SelectionParams {
+    mask?: any
     strokeColor?: string
     strokeOpacity?: number
     fillColor?: string
     fillOpacity?: number
 }
 
-export type SelectionValue = Segment[];
+export type Segments = Segment[];
+
+export interface SelectionValue {
+    segments: Segments
+    bBox?: SVGRect
+    mask?: any
+}
 
 
 // MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK MASK
@@ -92,6 +99,16 @@ export interface RepeatingParams {
 export interface RepeatingValue {
 }
 
+// LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING LOADING
+
+export interface LoadingParams {
+    fit: boolean
+}
+
+export interface LoadingValue {
+
+}
+
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
 
@@ -107,9 +124,13 @@ export interface PatternParams {
     selection?: SelectionParams
 
     mask?: MaskParams
+
+    loading?: LoadingParams
 }
 
 export interface PatternConfig {
+
+    startImage?: ImageData
 
     width?: number
     height?: number
@@ -136,6 +157,7 @@ export type SelectionState = FunctionState<SelectionValue, SelectionParams>;
 export type MaskState = FunctionState<MaskValue, MaskParams>;
 export type RotationState = FunctionState<RotationValue, RotationParams>;
 export type RepeatingState = FunctionState<RepeatingValue, RepeatingParams>;
+export type LoadingState = FunctionState<LoadingValue, LoadingParams>;
 
 export interface PatternState {
     id: string
@@ -148,6 +170,7 @@ export interface PatternState {
     mask?: MaskState
     rotation?: RotationState
     repeating?: RepeatingState
+    loading?: LoadingState
 
     connected?: string
     socket?: any
@@ -157,6 +180,7 @@ export interface PatternState {
 
 export interface AddPatternAction extends Action {
     config?: PatternConfig
+    params?: PatternParams
 }
 
 export interface PatternAction extends Action {
@@ -177,7 +201,8 @@ export interface SetMaskParamsAction extends PatternAction {
 }
 
 export interface UpdatePatternSelectionAction extends PatternAction {
-    value: SelectionValue
+    value: Segments
+    bBox: SVGRect
 }
 
 export interface EditPatternConfigAction extends PatternAction {
@@ -202,6 +227,19 @@ export interface SetRotationAction extends PatternAction {
 
 export interface SetRepeatingAction extends PatternAction {
     repeating: RepeatingParams
+}
+
+export interface CreatePatternFromSelection extends PatternAction {
+}
+
+export interface SetLoadingParamsAction extends PatternAction {
+    value: LoadingParams
+}
+
+export interface LoadAction extends PatternAction {
+}
+
+export interface SaveAction extends PatternAction {
 }
 
 export interface CreateRoomAction extends PatternAction {

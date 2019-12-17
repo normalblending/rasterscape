@@ -5,7 +5,7 @@ import {BrushState} from "../../store/brush/reducer";
 import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
-import {MaskParams, RotationValue, StoreState} from "../../store/patterns/types";
+import {MaskParams, RotationValue, Segments, StoreState} from "../../store/patterns/types";
 import {SelectionValue} from "../../store/patterns/types";
 import {SelectionParams, SelectionState} from "../../store/patterns/types";
 import "../../styles/area.scss";
@@ -24,12 +24,12 @@ export interface AreaOwnProps {
     rotation?: RotationValue
 
     imageValue: ImageData
-    selectionValue: SelectionValue
+    selectionValue: Segments
     selectionParams: SelectionParams
 
     onImageChange(imageData: ImageData)
 
-    onSelectionChange(selectionValue: SelectionValue)
+    onSelectionChange(selectionValue: SelectionValue, bBox: SVGRect)
 }
 
 export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps {

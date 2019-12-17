@@ -1,17 +1,32 @@
 import {
     ERepeatingType,
-    HistoryParams, HistoryState, HistoryValue,
-    MaskParams, MaskValue,
+    HistoryParams,
+    HistoryState,
+    HistoryValue,
+    LoadingParams,
+    LoadingValue,
+    MaskParams,
+    MaskValue,
     PatternAction,
-    PatternConfig, PatternHistoryItem,
-    PatternParams, PatternState, RepeatingParams, RepeatingValue, RotationParams, RotationValue,
-    SelectionParams, SelectionValue,
+    PatternConfig,
+    PatternHistoryItem,
+    PatternParams,
+    PatternState,
+    RepeatingParams,
+    RepeatingValue,
+    RotationParams,
+    RotationValue,
+    SelectionParams,
+    SelectionValue,
     StoreParams
 } from "./types";
-import {createCleanCanvasState} from "../../utils/state";
+import {createCanvasStateFromImageData, createCleanCanvasState} from "../../utils/state";
 import {PatternsState} from "./reducer";
 import {omit} from "lodash";
 import {CanvasState, FunctionState} from "../../utils/types";
+import {getMaskFromSegments} from "../../utils/path";
+import {createCanvas} from "../../utils/canvas/canvas";
+import {imageDataToCanvas} from "../../utils/canvas/imageData";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -20,18 +35,23 @@ export const patternId = (state: PatternsState) =>
 
 
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {width = 300, height = 300, history, store, selection, mask, rotation, repeating} = config || {};
+    const {history, store, selection, mask, rotation, repeating, startImage} = config || {};
+
+    const width = startImage ? startImage.width : (config.width || 300);
+    const height = startImage ? startImage.height : (config.height || 300);
+
     return {
         id,
         config,
         resultImage: null,
-        current: createCleanCanvasState(width, height),
+        current: startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height),
         history: getHistoryState(history, undefined, (params || {}).history),
         store: getStoreState(store, undefined, (params || {}).store),
         selection: getSelectionState(selection, undefined, (params || {}).selection),
         mask: getMaskState(width, height)(mask, undefined, (params || {}).mask),
         rotation: getRotationState(rotation, undefined, (params || {}).rotation),
-        repeating: getRepeatingState(repeating, undefined, (params || {}).repeating)
+        repeating: getRepeatingState(repeating, undefined, (params || {}).repeating),
+        loading: getLoadingState(true, undefined, (params || {}).loading)
     }
 };
 
@@ -48,7 +68,8 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         selection: getSelectionState(selection, state.selection, params.selection),
         mask: getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask),
         rotation: getRotationState(rotation, state.rotation, params.rotation),
-        repeating: getRepeatingState(repeating, state.repeating, params.repeating)
+        repeating: getRepeatingState(repeating, state.repeating, params.repeating),
+        loading: getLoadingState(true, state.loading, params.loading)
     }
 };
 
@@ -80,7 +101,11 @@ export const getHistoryState = getFunctionState<HistoryValue, HistoryParams>({
 
 export const getStoreState = getFunctionState<CanvasState, StoreParams>(null, {});
 
-export const getSelectionState = getFunctionState<SelectionValue, SelectionParams>(null, {});
+export const getSelectionState = getFunctionState<SelectionValue, SelectionParams>({
+    segments: [],
+    bBox: null,
+    mask: null
+}, {});
 
 export const getMaskState = (width, height) => getFunctionState<MaskValue, MaskParams>(
     createCleanCanvasState(width, height), {
@@ -105,6 +130,11 @@ export const getRepeatingState = getFunctionState<RepeatingValue, RepeatingParam
             y: 2,
             integer: true
         }
+    });
+
+export const getLoadingState = getFunctionState<LoadingValue, LoadingParams>(
+    {}, {
+        fit: false
     });
 
 
@@ -190,4 +220,62 @@ export const historyRedo = (history: HistoryState, current: PatternHistoryItem):
         },
         next
     }
+};
+
+export const getPatternConfig = (pattern: PatternState): PatternConfig => {
+    return {
+        startImage: pattern.current.imageData,
+
+        width: pattern.current.width,
+        height: pattern.current.height,
+
+        history: !!pattern.history,
+
+        store: !!pattern.store,
+
+        selection: !!pattern.selection,
+
+        mask: !!pattern.mask,
+
+        rotation: !!pattern.rotation,
+
+        repeating: !!pattern.repeating
+    }
+};
+
+export const getPatternParams = (pattern: PatternState): PatternParams => {
+    return {
+        history: pattern.history && pattern.history.params,
+
+        store: pattern.store && pattern.store.params,
+
+        rotation: pattern.rotation && pattern.rotation.params,
+
+        repeating: pattern.repeating && pattern.repeating.params,
+
+        selection: pattern.selection && pattern.selection.params,
+
+        mask: pattern.mask && pattern.mask.params,
+
+        loading: pattern.loading && pattern.loading.params
+    }
+};
+
+export const getSelectedImageData = (pattern: PatternState): ImageData => {
+    const bbox = pattern.selection.value.bBox;
+    const maskImageData = getMaskFromSegments(pattern.current.width, pattern.current.height, pattern.selection.value.segments);
+
+    const {context} = createCanvas(pattern.current.width, pattern.current.height);
+
+    if (maskImageData) {
+        context.putImageData(maskImageData, 0, 0);
+        context.globalCompositeOperation = "source-in";
+    }
+    context.drawImage(imageDataToCanvas(pattern.current.imageData), 0, 0, pattern.current.width, pattern.current.height);
+
+    context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+
+    return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
 };

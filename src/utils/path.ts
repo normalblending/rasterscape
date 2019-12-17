@@ -1,4 +1,6 @@
 import {pointsDistance} from "./geometry";
+import {Segments, SelectionValue} from "../store/patterns/types";
+import {createCanvas} from "./canvas/canvas";
 
 export enum ESegType {
     M = "M",
@@ -160,4 +162,32 @@ export const stringToPathData = (string: string) => {
     path.setAttribute("d", string);
 
     return (path as any).getPathData();
+};
+
+export const boundingBox = (width, height, pathData) => {
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    svg.setAttribute("width", width);
+    svg.setAttribute("height", height);
+
+    svg.appendChild(path);
+
+
+    (path as any).setPathData(pathData);
+
+    return (path as any).getBBox();
+};
+
+export const getMaskFromSegments = (width, height, selectionValue: Segments) => {
+
+    const {context} = createCanvas(width, height);
+
+    const path = new Path2D(pathDataToString(selectionValue));
+
+    context.fillStyle = "black";
+    context.fill(path);
+
+    return context.getImageData(0, 0, width, height);
+
 };

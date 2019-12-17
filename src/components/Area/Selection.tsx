@@ -18,7 +18,7 @@ import {AppState} from "../../store";
 import classNames from "classnames";
 import {EToolType} from "../../store/tool/types";
 import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
-import {SelectionValue} from '../../store/patterns/types';
+import {Segments, SelectionValue} from '../../store/patterns/types';
 import {SelectionParams} from "../../store/patterns/types";
 import "../../styles/selection.scss"
 
@@ -54,11 +54,11 @@ export interface CanvasSelectionOwnProps {
     width: number
     height: number
 
-    value?: SelectionValue
+    value?: Segments
     className?: string
     style?:any
 
-    onChange?(value?: any)
+    onChange?(value: any, bBox: SVGRect)
 }
 
 export interface CanvasSelectionProps extends CanvasSelectionStateProps, CanvasSelectionActionProps, CanvasSelectionOwnProps {
@@ -136,7 +136,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
     commitChanges = () => {
         const {onChange} = this.props;
 
-        onChange && onChange(this.state.path);
+        onChange && onChange(this.state.path, this.maskPathRef.current && this.maskPathRef.current.getBBox());
     };
 
     selectToolHandlers = {
@@ -349,6 +349,8 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
 
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
+
+        console.log(this.maskPathRef.current && this.maskPathRef.current.getBBox());
 
         return (
             <div

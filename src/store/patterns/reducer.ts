@@ -1,8 +1,7 @@
 import {handleActions} from "redux-actions";
 import {EPatternAction, EPatternsAction} from "./actions";
 import {
-    createPatternInitialState,
-    historyPush, historyRedo, historyUndo,
+    createPatternInitialState, historyPush, historyRedo, historyUndo,
     patternId,
     reducePattern,
     removePattern,
@@ -14,14 +13,15 @@ import {
     EditPatternConfigAction,
     PatternState,
     PatternUndoAction,
-    RemovePatternAction, SetMaskParamsAction,
+    RemovePatternAction, SetLoadingParamsAction, SetMaskParamsAction,
     SetPatternHeightAction,
     SetPatternWidthAction, SetRepeatingAction, SetRotationAction,
     UpdatePatternImageAction,
     UpdatePatternMaskAction,
     UpdatePatternSelectionAction
 } from "./types";
-import {maskedImage, resizeImageData} from "../../utils/imageData";
+import {maskedImage, resizeImageData} from "../../utils/canvas/imageData";
+import {getMaskFromSegments} from "../../utils/path";
 
 
 export interface PatternsState {
@@ -34,7 +34,7 @@ export const patternsReducer = handleActions<PatternsState>({
         const id = patternId(state);
         return {
             ...state,
-            [id]: createPatternInitialState(id, action.config)
+            [id]: createPatternInitialState(id, action.config, action.params)
         }
     },
     [EPatternsAction.REMOVE_PATTERN]: (state: PatternsState, action: RemovePatternAction) =>
@@ -47,47 +47,57 @@ export const patternsReducer = handleActions<PatternsState>({
 
 
     [EPatternAction.SET_WIDTH]: reducePattern<SetPatternWidthAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            current: {
-                ...pattern.current,
-                width: action.width,
-                imageData: resizeImageData(pattern.current.imageData, action.width, pattern.current.height)
-            },
-            mask: pattern.mask && {
-                ...pattern.mask,
-                value: {
-                    ...pattern.mask.value,
+        (pattern: PatternState, action) => {
+            const newCurrentImageData = resizeImageData(pattern.current.imageData, action.width, pattern.current.height);
+            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, action.width, pattern.mask.value.height);
+            return {
+                ...pattern,
+                current: {
+                    ...pattern.current,
                     width: action.width,
-                    imageData: resizeImageData(pattern.mask.value.imageData, action.width, pattern.mask.value.height)
-                }
-            },
-            history: pattern.history && historyPush(pattern.history, {
-                current: pattern.current,
-                maskValue: pattern.mask && pattern.mask.value
-            })
-        })),
+                    imageData: newCurrentImageData
+                },
+                mask: pattern.mask && {
+                    ...pattern.mask,
+                    value: {
+                        ...pattern.mask.value,
+                        width: action.width,
+                        imageData: newMaskImageData
+                    }
+                },
+                history: pattern.history && historyPush(pattern.history, {
+                    current: pattern.current,
+                    maskValue: pattern.mask && pattern.mask.value
+                }),
+                resultImage: maskedImage(newCurrentImageData, newMaskImageData),
+            }
+        }),
     [EPatternAction.SET_HEIGHT]: reducePattern<SetPatternHeightAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            current: {
-                ...pattern.current,
-                height: action.height,
-                imageData: resizeImageData(pattern.current.imageData, pattern.current.width, action.height)
-            },
-            mask: pattern.mask && {
-                ...pattern.mask,
-                value: {
-                    ...pattern.mask.value,
+        (pattern: PatternState, action) => {
+            const newCurrentImageData = resizeImageData(pattern.current.imageData, pattern.current.width, action.height);
+            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, pattern.mask.value.width, action.height);
+            return {
+                ...pattern,
+                current: {
+                    ...pattern.current,
                     height: action.height,
-                    imageData: resizeImageData(pattern.mask.value.imageData, pattern.mask.value.width, action.height)
-                }
-            },
-            history: pattern.history && historyPush(pattern.history, {
-                current: pattern.current,
-                maskValue: pattern.mask && pattern.mask.value
-            })
-        })),
+                    imageData: newCurrentImageData
+                },
+                mask: pattern.mask && {
+                    ...pattern.mask,
+                    value: {
+                        ...pattern.mask.value,
+                        height: action.height,
+                        imageData: newMaskImageData
+                    }
+                },
+                history: pattern.history && historyPush(pattern.history, {
+                    current: pattern.current,
+                    maskValue: pattern.mask && pattern.mask.value
+                }),
+                resultImage: maskedImage(newCurrentImageData, newMaskImageData),
+            }
+        }),
 
     [EPatternAction.SET_MASK_PARAMS]: reducePattern<SetMaskParamsAction>(
         (pattern: PatternState, action) => ({
@@ -106,7 +116,9 @@ export const patternsReducer = handleActions<PatternsState>({
             ...pattern,
             current: {
                 ...pattern.current,
-                imageData: action.imageData
+                imageData: action.imageData,
+                width: action.imageData.width,
+                height: action.imageData.height,
             },
             resultImage: maskedImage(action.imageData, pattern.mask && pattern.mask.value.imageData),
             history: pattern.history && historyPush(pattern.history, {
@@ -120,7 +132,13 @@ export const patternsReducer = handleActions<PatternsState>({
                 ...pattern,
                 selection: {
                     ...pattern.selection,
-                    value: action.value
+                    value: {
+                        segments: action.value,
+                        mask: action.value.length
+                            ? getMaskFromSegments(pattern.current.width, pattern.current.height, action.value)
+                            : null,
+                        bBox: action.bBox
+                    }
                 }
             })
         }),
@@ -194,6 +212,18 @@ export const patternsReducer = handleActions<PatternsState>({
             repeating: pattern.repeating && {
                 ...pattern.repeating,
                 params: action.repeating
+            }
+        })),
+
+    [EPatternAction.SET_LOADING_PARAMS]: reducePattern<SetLoadingParamsAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            loading: {
+                ...pattern.loading,
+                params: {
+                    ...pattern.loading.params,
+                    ...action.value
+                }
             }
         })),
 

@@ -11,12 +11,21 @@ import {
     updateSelection,
     setHeight,
     setWidth,
-    createRoom, editConfig, updateMask, setMaskParams, setRotation, setRepeating
+    createRoom,
+    editConfig, updateMask, setMaskParams, setRotation, setRepeating, save, load,
+    setLoadingParams, createPatternFromSelection, doublePattern,
+    cutPatternBySelection
 } from "../store/patterns/actions";
-import {EPatternType, MaskParams, RepeatingParams, RotationValue} from "../store/patterns/types";
+import {
+    EPatternType,
+    LoadingParams,
+    MaskParams,
+    RepeatingParams,
+    RotationValue,
+    Segments
+} from "../store/patterns/types";
 import {Pattern} from "./Pattern/";
 import {PatternConfig} from "../store/patterns/types";
-import {SelectionValue} from "../store/patterns/types";
 
 export interface PatternsStateProps {
     patterns: any
@@ -27,13 +36,15 @@ export interface PatternsActionProps {
 
     removePattern(id: string)
 
+    doublePattern(id: string)
+
     updateImage(id: string, imageData: ImageData)
 
     updateMask(id: string, imageData: ImageData)
 
     setMaskParams(id: string, params: MaskParams)
 
-    updateSelection(id: string, value: SelectionValue)
+    updateSelection(id: string, value: Segments, bBox: SVGRect)
 
     redo(id: string)
 
@@ -50,6 +61,16 @@ export interface PatternsActionProps {
     setRotation(id: string, value: RotationValue)
 
     setRepeating(id: string, value: RepeatingParams)
+
+    save(id: string)
+
+    load(id: string, image)
+
+    setLoadingParams(id: string, value: LoadingParams)
+
+    createPatternFromSelection(id: string)
+
+    cutPatternBySelection(id: string)
 }
 
 export interface PatternsOwnProps {
@@ -72,11 +93,13 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         const {
             createRoom, removePattern, patterns, updateImage, updateMask,
             setMaskParams, updateSelection, undo, redo, setWidth,
-            setHeight, editConfig, setRotation, setRepeating
+            setHeight, editConfig, setRotation, setRepeating,
+            save, load, setLoadingParams,
+            createPatternFromSelection, doublePattern, cutPatternBySelection
         } = this.props;
         return (
             <>
-                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating}) => {
+                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, loading}) => {
                     return (
                         <Pattern
                             key={id}
@@ -94,6 +117,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             maskParams={mask ? mask.params : null}
                             rotation={rotation ? rotation.value : null}
                             repeating={repeating ? repeating.params : null}
+                            loading={loading ? loading.params : null}
 
                             width={current ? current.width : null}
                             height={current ? current.height : null}
@@ -110,7 +134,13 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onCreateRoom={createRoom}
                             onConfigChange={editConfig}
                             onRotationChange={setRotation}
-                            onRepeatingChange={setRepeating}/>
+                            onRepeatingChange={setRepeating}
+                            onSave={save}
+                            onLoad={load}
+                            onLoadingParamsChange={setLoadingParams}
+                            onCreatePatternFromSelection={createPatternFromSelection}
+                            onDouble={doublePattern}
+                            onCutBySelection={cutPatternBySelection}/>
                     );
                 })}
                 <Button onClick={this.handleAddClick}>add</Button>
@@ -137,7 +167,13 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     editConfig,
     updateMask,
     setRotation,
-    setRepeating
+    setRepeating,
+    save,
+    load,
+    setLoadingParams,
+    createPatternFromSelection,
+    doublePattern,
+    cutPatternBySelection
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

@@ -38,7 +38,6 @@ const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reve
     const ToolControls = ToolsParams[currentTool].component;
     return (
         <div className="tools">
-            <Button onClick={reverseFullScreen}>full</Button>
             <div>
                 {Object.keys(ToolsParams).map(toolType => (
                     <ButtonSelect

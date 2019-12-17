@@ -1,5 +1,5 @@
 import React from 'react';
-import {canvasToImageData} from "../../utils/imageData";
+import {canvasToImageData} from "../../utils/canvas/imageData";
 
 export interface CanvasSVGProps {
     children?: React.ReactNode

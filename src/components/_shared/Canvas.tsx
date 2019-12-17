@@ -1,7 +1,9 @@
 import React from 'react';
-import {canvasToImageData} from "../../utils/imageData";
+import {canvasToImageData} from "../../utils/canvas/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
+import {change} from "../../store/change/actions";
+import {EChangingAction} from "../../store/changing/actions";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -23,7 +25,9 @@ export interface CanvasProps {
     updateOnDrag?: boolean
 
     onDown?(e: CanvasEvent)
+
     onUp?(e: CanvasEvent)
+
     onDraw?(e: CanvasEvent)
 
     drawProcess?(e: CanvasEvent)
@@ -41,6 +45,7 @@ export interface CanvasProps {
 
 export interface CanvasState {
     drawing: boolean
+    position: MouseEvent
 }
 
 export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
@@ -53,7 +58,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         super(props);
 
         this.state = {
-            drawing: false
+            drawing: false,
+            position: null
         };
 
         this.canvasRef = React.createRef();
@@ -101,8 +107,13 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     private mouseDownHandler = e => {
         console.log('canvas down');
         document.addEventListener("mouseup", this.mouseUpHandler);
-        this.setState({drawing: true});
+        this.e =e ;
+        this.setState({
+            drawing: true,
+            position: e
+        });
 
+        this.start();
         const event = {
             e,
             ctx: this.ctx,
@@ -121,9 +132,82 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     };
 
+    requestID = null;
+    start = () => {
+
+        const {drawProcess} = this.props;
+        console.log(this.requestID, !this.requestID, "------------------------------------------");
+
+
+        if (!this.requestID) {
+            cancelAnimationFrame(this.requestID);
+
+            const startTime = performance.now();
+
+            console.log(startTime, "------------------------------------------");
+            const changing = (time) => {
+                console.log(time, this.e.offsetX, this.e.offsetY);
+
+                // this.canvasRef.current.dispatchEvent(new Event("mousemove"));
+
+                this.state.drawing && drawProcess && drawProcess({
+                    e: this.e,
+                    pre: this.pre,
+                    ctx: this.ctx,
+                    canvas: this.canvasRef.current,
+                    drawing: true
+                });
+
+
+                this.requestID = requestAnimationFrame(changing);
+            };
+            this.requestID = requestAnimationFrame(changing);
+        }
+    };
+
+    stop = () => {
+        this.requestID && cancelAnimationFrame(this.requestID);
+        this.requestID = null;
+    };
+
+    e;
+
+    private mouseMoveHandler = e => {
+        // console.log("------------------------------------------", e.offsetX, e.offsetY, e);
+        const {drawProcess, moveProcess} = this.props;
+
+
+        this.e = e;
+        this.setState({
+            position: e
+        });
+        // this.state.drawing && drawProcess && drawProcess({
+        //     e,
+        //     pre: this.pre,
+        //     ctx: this.ctx,
+        //     canvas: this.canvasRef.current,
+        //     drawing: true
+        // });
+
+        moveProcess && moveProcess({
+            e,
+            pre: this.pre,
+            ctx: this.ctx,
+            canvas: this.canvasRef.current,
+            drawing: this.state.drawing
+        });
+
+        // обновление стxейта, может понадобиться для мультиплеера
+        // const {onChange, updateOnDrag = true} = this.props;
+        // updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
+
+        this.pre = e;
+    };
+
     private mouseUpHandler = e => {
         console.log('canvas up');
         document.removeEventListener("mouseup", this.mouseUpHandler);
+        this.stop();
         if (this.state.drawing) {
             this.setState({drawing: false});
 
@@ -149,35 +233,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         }
     };
 
-    private mouseMoveHandler = e => {
-        const {drawProcess, moveProcess} = this.props;
-
-        this.state.drawing && drawProcess && drawProcess({
-            e,
-            pre: this.pre,
-            ctx: this.ctx,
-            canvas: this.canvasRef.current,
-            drawing: true
-        });
-
-        moveProcess && moveProcess({
-            e,
-            pre: this.pre,
-            ctx: this.ctx,
-            canvas: this.canvasRef.current,
-            drawing: this.state.drawing
-        });
-
-        // обновление стxейта, может понадобиться для мультиплеера
-        // const {onChange, updateOnDrag = true} = this.props;
-        // updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
-
-        this.pre = e;
-    };
-
     render() {
         const {value, width, height, className, style, children} = this.props;
-        console.log("canvas render", style);
+        // console.log("canvas render", this.state);
         return (
             <div style={style} className={classNames(className, "canvas")}>
                 <canvas

@@ -7,6 +7,7 @@
 
     height: 100vh;
 
+    position: relative;
     display: flex;
     align-items: flex-end;
     justify-content: flex-start;
@@ -27,6 +28,86 @@
       align-items: flex-end;
 
       padding-bottom: 40px;
+    }
+
+    .app-controls {
+      position: fixed;
+      top: 7px;
+      right: 11px;
+
+      padding: 0;
+
+      display: flex;
+      align-items: center;
+
+      & > button {
+        margin-left: 14px;
+      }
+
+      .app-control-button {
+        color: rgba(0,0,0,.5);
+        border: none;
+        outline: none;
+        background: rgba(0,0,0,.05);
+
+
+        width: 46px;
+        height: 12px;
+
+        text-align: center;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          opacity: 0.5;
+        }
+      }
+
+      .full-button {
+        position: relative;
+        width: 26px;
+        height: 12px;
+        .tl, .br {
+          position: absolute;
+          width: 4px;
+          height: 4px;
+
+          border-color: rgba(0,0,0,.5);
+
+          transition: all 300ms;
+        }
+
+        .tl {
+          top: 0;
+          left: 0;
+          border-top: 1px solid;
+          border-left: 1px solid;
+
+        }
+        .br {
+          bottom: 0;
+          right: 0;
+          border-bottom: 1px solid;
+          border-right: 1px solid;
+
+        }
+
+        &.full-button-off {
+          .tl {
+            top: 50%;
+            left: 54%;
+
+          }
+          .br {
+            bottom: 50%;
+            right: 50%;
+
+          }
+        }
+      }
     }
   }
 }
