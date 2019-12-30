@@ -1,6 +1,7 @@
 import {allToStartValue, change} from "../change/actions";
 import {ChangingMode} from "./types";
 import {AppState} from "../index";
+import {position} from "../../components/Area/canvasPosition.servise";
 
 // todo прикрутить сюда тайпскрипт
 
@@ -21,7 +22,7 @@ export const startChanging = () => (dispatch, getState) => {
 
         requestID = requestAnimationFrame(function changing(time) {
 
-            dispatch(change(time - startTime));
+            dispatch(change(time - startTime, position));
 
             requestID = requestAnimationFrame(changing);
         });

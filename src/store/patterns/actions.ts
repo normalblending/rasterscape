@@ -28,7 +28,7 @@ import {
     imageToImageData
 } from "../../utils/canvas/imageData";
 import {dispatch} from "d3-dispatch";
-import {randomZ} from "../../utils/utils";
+import {dateZs, randomZ} from "../../utils/utils";
 import {getPatternConfig, getPatternParams, getSelectedImageData} from "./helpers";
 import {createCanvas} from "../../utils/canvas/canvas";
 import {boundingBox, getMaskFromSegments, pathDataToString} from "../../utils/path";
@@ -209,7 +209,7 @@ export const save = (id: string) => (dispatch, getState) => {
     var link = document.createElement("a");
     document.body.appendChild(link); // Firefox requires the link to be in the body :(
     link.href = dataURL;
-    link.download = `${randomZ()}.png`;
+    link.download = `${dateZs()}.png`;
     link.click();
     document.body.removeChild(link);
 

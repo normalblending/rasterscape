@@ -1,4 +1,5 @@
 import {Action} from "redux";
+import {CanvasPosition} from "../../components/Area/canvasPosition.servise";
 
 export enum EChangeAction {
     CHANGE = "change",
@@ -8,14 +9,15 @@ export enum EChangeAction {
 
 export interface ChangeAction extends Action {
     time: number
+    position: CanvasPosition
 }
 
 export interface ChangeToStartValueAction extends Action {
     path: string
 }
 
-export const change = (time: number): ChangeAction =>
-    ({type: EChangeAction.CHANGE, time});
+export const change = (time: number, position: CanvasPosition): ChangeAction =>
+    ({type: EChangeAction.CHANGE, time, position});
 
 export const toStartValue = (path: string): ChangeToStartValueAction =>
     ({type: EChangeAction.TO_START_VALUE, path});

@@ -128,6 +128,7 @@ export const getRepeatingState = getFunctionState<RepeatingValue, RepeatingParam
         gridParams: {
             x: 2,
             y: 2,
+            bezierPoints: [{x: 0, y: 0}, {x: 40, y: 40}, {x: 50, y: 50}, {x: 100, y: 100}],
             integer: true
         }
     });

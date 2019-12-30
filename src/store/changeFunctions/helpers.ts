@@ -94,9 +94,10 @@ export const createCFInitialState = (id, type: ECFType) => {
 
 
 export const changeFunctionByType = {
-    [ECFType.SIN]: (params, range) => (startValue, time) => startValue + params.a * (range[1] - range[0]) * Math.sin(time / params.t),
+    [ECFType.SIN]: (params, range) => (startValue, time, position) => startValue + params.a * (range[1] - range[0]) * Math.sin(time / params.t),
+    // [ECFType.SIN]: (params, range) => (startValue, time, position) => startValue + params.a * (range[1] - range[0]) * position.x / 500,
     [ECFType.LOOP]:
         (params, range) =>
-            (startValue, time) =>
+            (startValue, time, position) =>
                 ((time % params.t) / params.t) * (params.end * (range[1] - range[0]) - params.start * (range[1] - range[0])) + params.start * (range[1] - range[0])
 };

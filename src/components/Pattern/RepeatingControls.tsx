@@ -3,6 +3,8 @@ import {ERepeatingType, RepeatingParams} from "../../store/patterns/types";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import {ValueD} from "../_shared/ButtonNumber";
 import {ButtonSelect} from "../_shared/ButtonSelect";
+import {BezierCurve} from "../_shared/BezierCurve";
+import * as Bezier from "bezier-js";
 
 export interface RepeatingControlsProps {
     repeating: RepeatingParams
@@ -22,6 +24,10 @@ const repeatingValueD = ValueD.VerticalLinear(9);
 export class RepeatingControls extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
 
 
+    state = {
+        curve: new Bezier(10, 10, 20, 20, 80, 80, 90, 90)
+    }
+
     handleGridParamsChange = ({value, name}) => {
         const {onChange, repeating} = this.props;
         onChange({
@@ -40,7 +46,19 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
-                [name]: !selected
+                [name]: !selected,
+                bezierPoints: [{x: 10, y: 10}, {x: 20, y: 20}, {x: 80, y: 80}, {x: 90, y: 90}]
+            }
+        })
+    };
+
+    handleBezierChange = (points) => {
+        const {onChange, repeating} = this.props;
+        onChange({
+            ...repeating,
+            gridParams: {
+                ...repeating.gridParams,
+                bezierPoints: points
             }
         })
     };
@@ -70,6 +88,11 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
                         range={repeatingRange}
                         valueD={repeatingValueD}
                         onChange={this.handleGridParamsChange}/>
+                    <BezierCurve
+                        xn={gridParams.x}
+                        yn={gridParams.y}
+                        value={gridParams.bezierPoints}
+                        onChange={this.handleBezierChange}/>
                 </>)}
             </div>
         );

@@ -70,3 +70,38 @@ export const randomZ = () => {
     return s;
 
 };
+
+const tosSzZ = (string, offset) => string
+    .split(((0 + offset) % 4).toString()).join("z")
+    .split(((1 + offset) % 4).toString()).join("s")
+    .split(((2 + offset) % 4).toString()).join("k")
+    .split(((3 + offset) % 4).toString()).join("i");
+const tozZsS = (string, offset) => string
+    .split(((0 + offset) % 4).toString()).join("s")
+    .split(((1 + offset) % 4).toString()).join("z")
+    .split(((2 + offset) % 4).toString()).join("S")
+    .split(((3 + offset) % 4).toString()).join("z");
+
+
+let offset = 0;
+export const dateZs = () => {
+
+    const date = new Date();
+
+    let f;
+
+    if (date.getDay() === 4) {
+        f = tozZsS;
+    } else if (date.getDay() === 4) {
+        f = tozZsS;
+    } else {
+        f = tosSzZ;
+    }
+
+    offset = (offset + 1) % 4;
+
+    return f(date.getTime().toString(4), 0);
+
+};
+
+console.log(new Date().getTime().toString(4));

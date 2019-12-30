@@ -1,6 +1,7 @@
 import {CanvasState, FunctionState, HeightAction, ImageAction, WidthAction,} from "../../utils/types";
 import {Action} from "redux";
 import {Segment} from "../../utils/path";
+import {BezierPoints} from "../../components/_shared/BezierCurve";
 
 
 export enum EPatternType {
@@ -88,7 +89,8 @@ export interface RepeatingGridParams {
     x: number
     y: number
     integer: boolean
-
+    bezierPoints?: BezierPoints
+    // x = (1−t)2x1 + 2(1−t)tx2 + t2x3
 }
 
 export interface RepeatingParams {

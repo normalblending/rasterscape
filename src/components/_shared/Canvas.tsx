@@ -40,12 +40,13 @@ export interface CanvasProps {
 
     onChange?(imageData?: ImageData)
 
+    onLeave?()
+
 
 }
 
 export interface CanvasState {
     drawing: boolean
-    position: MouseEvent
 }
 
 export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
@@ -58,8 +59,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         super(props);
 
         this.state = {
-            drawing: false,
-            position: null
+            drawing: false
         };
 
         this.canvasRef = React.createRef();
@@ -107,10 +107,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     private mouseDownHandler = e => {
         console.log('canvas down');
         document.addEventListener("mouseup", this.mouseUpHandler);
-        this.e =e ;
+        this.e = e;
         this.setState({
-            drawing: true,
-            position: e
+            drawing: true
         });
 
         this.start();
@@ -177,10 +176,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         const {drawProcess, moveProcess} = this.props;
 
 
+        this.pre = this.e;
         this.e = e;
-        this.setState({
-            position: e
-        });
+
         // this.state.drawing && drawProcess && drawProcess({
         //     e,
         //     pre: this.pre,
@@ -201,7 +199,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         // const {onChange, updateOnDrag = true} = this.props;
         // updateOnDrag && this.state.drawing && onChange && onChange(canvasToImageData(this.canvasRef.current));
 
-        this.pre = e;
+        // this.pre = e;
     };
 
     private mouseUpHandler = e => {
@@ -234,11 +232,12 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     };
 
     render() {
-        const {value, width, height, className, style, children} = this.props;
+        const {value, width, height, className, style, children, onLeave} = this.props;
         // console.log("canvas render", this.state);
         return (
             <div style={style} className={classNames(className, "canvas")}>
                 <canvas
+                    onMouseLeave={onLeave}
                     ref={this.canvasRef}
                     width={width || (value ? value.width : 300)}
                     height={height || (value ? value.height : 300)}/>

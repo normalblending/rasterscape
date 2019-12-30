@@ -20,7 +20,7 @@ import {
     UpdatePatternMaskAction,
     UpdatePatternSelectionAction
 } from "./types";
-import {maskedImage, resizeImageData} from "../../utils/canvas/imageData";
+import {getMaskedImage, resizeImageData} from "../../utils/canvas/imageData";
 import {getMaskFromSegments} from "../../utils/path";
 
 
@@ -69,7 +69,7 @@ export const patternsReducer = handleActions<PatternsState>({
                     current: pattern.current,
                     maskValue: pattern.mask && pattern.mask.value
                 }),
-                resultImage: maskedImage(newCurrentImageData, newMaskImageData),
+                resultImage: getMaskedImage(newCurrentImageData, newMaskImageData),
             }
         }),
     [EPatternAction.SET_HEIGHT]: reducePattern<SetPatternHeightAction>(
@@ -95,7 +95,7 @@ export const patternsReducer = handleActions<PatternsState>({
                     current: pattern.current,
                     maskValue: pattern.mask && pattern.mask.value
                 }),
-                resultImage: maskedImage(newCurrentImageData, newMaskImageData),
+                resultImage: getMaskedImage(newCurrentImageData, newMaskImageData),
             }
         }),
 
@@ -120,7 +120,7 @@ export const patternsReducer = handleActions<PatternsState>({
                 width: action.imageData.width,
                 height: action.imageData.height,
             },
-            resultImage: maskedImage(action.imageData, pattern.mask && pattern.mask.value.imageData),
+            resultImage: getMaskedImage(action.imageData, pattern.mask && pattern.mask.value.imageData),
             history: pattern.history && historyPush(pattern.history, {
                 current: pattern.current
             })
@@ -153,7 +153,7 @@ export const patternsReducer = handleActions<PatternsState>({
                     imageData: action.imageData
                 }
             },
-            resultImage: maskedImage(pattern.current.imageData, action.imageData),
+            resultImage: getMaskedImage(pattern.current.imageData, action.imageData),
             history: pattern.history && historyPush(pattern.history, {
                 maskValue: pattern.mask.value
             })

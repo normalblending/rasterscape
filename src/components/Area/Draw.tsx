@@ -13,7 +13,17 @@ import {ELineCompositeOperation} from "../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import {PatternsState} from "../../store/patterns/reducer";
 import {getRepeatingCoords} from "../../utils/draw";
-import {drawWithMask, imageDataToCanvas} from "../../utils/canvas/imageData";
+import {
+    drawMasked, drawMaskedWithPosition,
+    drawMaskedWithPositionAndRotation,
+    drawWithMask,
+    drawWithPositionAndRotation,
+    imageDataToCanvas
+} from "../../utils/canvas/imageData";
+import {position, setPosition} from "./canvasPosition.servise";
+import {SVG} from "../_shared/SVG";
+import classNames from "classnames";
+import '../../styles/draw.scss';
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -36,6 +46,7 @@ export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionP
 }
 
 export interface CanvasDrawState {
+    coords
 }
 
 function getRandomColor() {
@@ -50,6 +61,9 @@ function getRandomColor() {
 
 class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDrawState> {
 
+    state = {
+        coords: []
+    };
     handlers = {
         [EToolType.Brush]: {
             [EBrushType.Square]: (() => {
@@ -63,9 +77,26 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
+                    const selectionMask = pattern.selection && pattern.selection.value.mask;
+                    if (selectionMask) {
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) =>
-                        ctx.fillRect(x - size / 2, y - size / 2, size, size));
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+                            const {canvas: image} = drawMasked(selectionMask, ({context}) => {
+                                context.fillStyle = ctx.fillStyle;
+                                context.fillRect(x - size / 2, y - size / 2, size, size);
+                            });
+                            ctx.globalCompositeOperation = compositeOperation;
+                            ctx.drawImage(image, 0, 0);
+                        });
+
+
+                    } else {
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y, scale}) => {
+                            const sizeX = size / scale.x;// > 0.05 ? size * 1 / scale.x : 0;
+                            const sizeY = size / scale.y;// > 0.05 ? size * 1 / scale.y : 0;
+                            ctx.fillRect(x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+                        });
+                    }
 
 
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
@@ -87,14 +118,27 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
 
+                    const selectionMask = pattern.selection && pattern.selection.value.mask;
+                    if (selectionMask) {
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
-                        ctx.beginPath();
-                        ctx.arc(x, y, size / 2, 0, 2 * Math.PI);
-                        ctx.fill();
-                    });
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+                            const {canvas: image} = drawMasked(selectionMask, ({context}) => {
+                                context.fillStyle = ctx.fillStyle;
+                                circle(context, x, y, size / 2);
+                            });
+                            ctx.globalCompositeOperation = compositeOperation;
+                            ctx.drawImage(image, 0, 0);
+                        });
 
 
+                    } else {
+
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+                            circle(ctx, x, y, size / 2);
+                        });
+
+
+                    }
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
                 };
@@ -105,7 +149,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             })(),
             [EBrushType.Pattern]: (() => {
                 const patternBrush = (ev) => {
-                    const {ctx, e} = ev;
+                    const {ctx, e, canvas} = ev;
                     const {patterns, patternId} = this.props;
                     const {patternSize, opacity, compositeOperation, pattern} = this.props.brush.params;
 
@@ -124,109 +168,39 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     if (brushPatternImage) {
 
 
-                        const dr0 = ({x, y}) => {
-                            if (rotation) {
-                                ctx.translate(x + rotation.offset.x, y + rotation.offset.y);
-                                ctx.rotate(Math.PI * rotation.angle / 180);
-                            } else {
-                                ctx.translate(x, y);
-                            }
-
-
-                            const width = patternSize * brushPatternImage.width;
-                            const height = patternSize * brushPatternImage.height;
-
-
-                            // if (destinationPattern.mask && destinationPattern.mask.value.imageData) {
-                            //     // ctx.globalCompositeOperation = 'destination-in';
-                            //     ctx.putImageData(destinationPattern.mask.value.imageData, 0, 0);
-                            //     ctx.globalCompositeOperation = "source-in";
-                            // }
-                            //const i = patterns[pattern].imageMasked;
-                            ctx.drawImage(
-                                drawWithMask(
-                                    destinationPattern.mask && destinationPattern.mask.value.imageData,
-                                    rotation
-                                )(x, y, brushPatternImage, -width / 2, -height / 2, width, height),
-                                0, 0);
-
-
-                            if (rotation) {
-                                ctx.rotate(-Math.PI * rotation.angle / 180);
-                                ctx.translate(-x - rotation.offset.x, -y - rotation.offset.y);
-                                // ctx.translate(-e.offsetX - rotation.offset.x, -e.offsetY - rotation.offset.y);
-                            } else {
-                                ctx.translate(-x, -y);
-                            }
-
-                        };
                         const dr = ({x, y}) => {
-                            if (rotation) {
-                                // ctx.translate(x + rotation.offset.x, y + rotation.offset.y);
-                                // ctx.rotate(Math.PI * rotation.angle / 180);
-                            } else {
-                                // ctx.translate(x, y);
-                            }
-
 
                             const width = patternSize * brushPatternImage.width;
                             const height = patternSize * brushPatternImage.height;
 
 
-                            // if (destinationPattern.mask && destinationPattern.mask.value.imageData) {
-                            //     // ctx.globalCompositeOperation = 'destination-in';
-                            //     ctx.putImageData(destinationPattern.mask.value.imageData, 0, 0);
-                            //     ctx.globalCompositeOperation = "source-in";
-                            // }
-                            //const i = patterns[pattern].imageMasked;
+                            const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
 
-
-                            if (destinationPattern.selection && destinationPattern.selection.params.mask) {
-                                const img = drawWithMask(
-                                    destinationPattern.selection && destinationPattern.selection.params.mask,
-                                    rotation
-                                    )(x, y,brushPatternImage, - width / 2, - height / 2, width, height);
+                            if (selectionMask) {
+                                const {canvas: image} = drawMaskedWithPositionAndRotation(
+                                    selectionMask,
+                                    rotation,
+                                    x, y,
+                                    ({context}) =>
+                                        context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                                );
 
                                 ctx.globalCompositeOperation = compositeOperation;
-
-                                ctx.drawImage(img, 0, 0);
+                                ctx.drawImage(image, 0, 0);
                             } else {
 
-                                if (rotation) {
-                                    ctx.translate(x + rotation.offset.x, y + rotation.offset.y);
-                                    ctx.rotate(Math.PI * rotation.angle / 180);
-                                } else {
-                                    ctx.translate(x, y);
-                                }
-
-                                ctx.globalCompositeOperation = compositeOperation;
-
-                                ctx.drawImage(brushPatternImage, - width / 2, - height / 2, width, height);
-
-                                if (rotation) {
-                                    ctx.rotate(-Math.PI * rotation.angle / 180);
-                                    ctx.translate(-x - rotation.offset.x, -y - rotation.offset.y);
-                                } else {
-                                    ctx.translate(-x, -y);
-                                }
+                                drawWithPositionAndRotation(
+                                    rotation,
+                                    x, y,
+                                    ({context}) =>
+                                        context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                                )({context: ctx, canvas})
                             }
 
-
-
-                            if (rotation) {
-                                // ctx.rotate(-Math.PI * rotation.angle / 180);
-                                // ctx.translate(-x - rotation.offset.x, -y - rotation.offset.y);
-                                // ctx.translate(-e.offsetX - rotation.offset.x, -e.offsetY - rotation.offset.y);
-                            } else {
-                                // ctx.translate(-x, -y);
-                            }
 
                         };
 
                         getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(dr);
-                        // dr({x:e.offsetX, y: e.offsetY});
-
-
                     }
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
@@ -276,13 +250,13 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     const {size, opacity, compositeOperation} = this.props.line.params;
 
 
+                    ctx.beginPath();
                     ctx.globalCompositeOperation = compositeOperation;
                     ctx.globalAlpha = opacity;
                     ctx.strokeStyle = getRandomColor();//"green";
                     ctx.lineWidth = size;
 
                     // ctx.moveTo(e.offsetX, e.offsetY);
-                    ctx.beginPath();
 
                 },
                 draw: (ev) => {
@@ -293,6 +267,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     ctx.lineWidth = size;
                     ctx.globalAlpha = opacity;
 
+                    console.log(pre === e, ev);
                     ctx.moveTo(pre.offsetX, pre.offsetY);
 
                     ctx.lineTo(e.offsetX, e.offsetY);
@@ -353,8 +328,24 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
     }
 
+    moveHandler = ({e}) => {
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])});
+        setPosition(e.offsetX, e.offsetY, this.props.patternId);
+        console.log(position);
+    };
+
+    leaveHandler = () => {
+        this.props.onLeave && this.props.onLeave();
+
+        this.setState({coords: []})
+    };
+
+    //todo рефакторинг
+    // хендлеры событий вынести в методы класса
+    // 
+
     render() {
-        const {tool, startChanging, stopChanging} = this.props;
+        const {tool, startChanging, stopChanging, children, width, height, className} = this.props;
 
         const getType = getTypeField[tool];
         const type = getType ? getType(this.props) : 0;
@@ -363,12 +354,26 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         console.log(handlers);
         return (
             <Canvas
+                className={classNames("draw", className)}
                 onDown={startChanging}
                 onUp={stopChanging}
+                moveProcess={this.moveHandler}
                 drawProcess={handlers && handlers.draw}
                 clickProcess={handlers && handlers.click}
                 releaseProcess={handlers && handlers.release}
-                {...this.props}/>
+                width={width}
+                height={height}
+                onLeave={this.leaveHandler}
+                {...this.props}>
+                <SVG
+                    className={"draw-cursors"}
+                    width={width}
+                    height={height}>
+                    {this.state.coords.map(({x, y}) =>
+                        <rect x={x} y={y} width={2} height={2} fill="black" fillOpacity={1}/>)}
+                </SVG>
+                {children}
+            </Canvas>
         );
     }
 }
@@ -382,7 +387,7 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
     brush: state.brush,
     line: state.line,
     tool: state.tool.current,
-    patterns: state.patterns
+    patterns: state.patterns //todo придуматть как оптимизировать тут
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {

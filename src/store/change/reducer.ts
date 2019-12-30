@@ -1,12 +1,13 @@
 import {handleActions} from "redux-actions";
 import * as immutable from 'object-path-immutable';
 import {AppState} from "../index";
-import {ChangeToStartValueAction, EChangeAction} from "./actions";
+import {ChangeAction, ChangeToStartValueAction, EChangeAction} from "./actions";
 import {changeFunctionByType} from "../changeFunctions/helpers";
+import {act} from "react-dom/test-utils";
 
 export const changeReducer = handleActions<AppState>({
-    [EChangeAction.CHANGE]: (state: AppState, action) => {
-        console.log(state, action.time);
+    [EChangeAction.CHANGE]: (state: AppState, action: ChangeAction) => {
+        console.log(state, action.time, action.position);
 
         const {changeFunctions, changingValues} = state;
 
@@ -20,7 +21,7 @@ export const changeReducer = handleActions<AppState>({
 
             const changeFunction = changeFunctionByType[changeFunctionData.type];
 
-            let nextValue = changeFunction(changeFunctionData.params, range)(startValue, action.time);
+            let nextValue = changeFunction(changeFunctionData.params, range)(startValue, action.time, action.position);
             nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
 
             return res.set(path, nextValue)

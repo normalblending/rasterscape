@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "https://wrreee.github.io/u3u",
   "dependencies": {
+    "bezier-js": "^2.4.4",
     "classnames": "2.2.6",
     "color": "3.1.2",
     "d3": "5.12.0",
