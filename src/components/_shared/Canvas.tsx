@@ -30,11 +30,9 @@ export interface CanvasProps {
 
     onDraw?(e: CanvasEvent)
 
-    drawProcess?(e: CanvasEvent)
+    onClick?(e: CanvasEvent)
 
-    clickProcess?(e: CanvasEvent)
-
-    moveProcess?(e: CanvasEvent)
+    onMove?(e: CanvasEvent)
 
     releaseProcess?(e: CanvasEvent)
 
@@ -53,7 +51,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     canvasRef;
     ctx;
+    e;
     pre;
+    requestID;
 
     constructor(props) {
         super(props);
@@ -98,15 +98,18 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             prevProps.width !== this.props.width ||
             prevProps.height !== this.props.height
         ) && this.props.value instanceof ImageData) {
+
             this.ctx = this.canvasRef.current.getContext("2d");
-            console.log()
+
             this.ctx.putImageData(this.props.value, 0, 0);
         }
     }
 
     private mouseDownHandler = e => {
         console.log('canvas down');
+
         document.addEventListener("mouseup", this.mouseUpHandler);
+
         this.e = e;
         this.setState({
             drawing: true
@@ -124,17 +127,16 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         onDown && onDown(event);
 
-        const {clickProcess} = this.props;
+        const {onClick} = this.props;
 
-        clickProcess && clickProcess(event);
+        onClick && onClick(event);
 
 
     };
 
-    requestID = null;
     start = () => {
 
-        const {drawProcess} = this.props;
+        const {onDraw} = this.props;
         console.log(this.requestID, !this.requestID, "------------------------------------------");
 
 
@@ -149,7 +151,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
                 // this.canvasRef.current.dispatchEvent(new Event("mousemove"));
 
-                this.state.drawing && drawProcess && drawProcess({
+                this.state.drawing && onDraw && onDraw({
                     e: this.e,
                     pre: this.pre,
                     ctx: this.ctx,
@@ -169,17 +171,15 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.requestID = null;
     };
 
-    e;
-
     private mouseMoveHandler = e => {
-        // console.log("------------------------------------------", e.offsetX, e.offsetY, e);
-        const {drawProcess, moveProcess} = this.props;
+        console.log("------------------------------------------", e.offsetX, e.offsetY, e);
+        const {onDraw, onMove} = this.props;
 
 
         this.pre = this.e;
         this.e = e;
 
-        // this.state.drawing && drawProcess && drawProcess({
+        // this.state.drawing && onDraw && onDraw({
         //     e,
         //     pre: this.pre,
         //     ctx: this.ctx,
@@ -187,7 +187,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         //     drawing: true
         // });
 
-        moveProcess && moveProcess({
+        onMove && onMove({
             e,
             pre: this.pre,
             ctx: this.ctx,
@@ -204,7 +204,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     private mouseUpHandler = e => {
         console.log('canvas up');
+
         document.removeEventListener("mouseup", this.mouseUpHandler);
+
         this.stop();
         if (this.state.drawing) {
             this.setState({drawing: false});

@@ -44,17 +44,11 @@ export class BezierCurve extends React.PureComponent<BezierCurveProps, BezierCur
         this.drawFunctions.drawSkeleton(this.curve);
         this.drawFunctions.drawCurve(this.curve);
 
-        var LUT = this.curve.getLUT(N + 1);
-        ctx.fillStyle = "green";
-        LUT.forEach((p) => { this.drawFunctions.drawCircle(p,5); });
-
-        console.log(ctx);
         for (let i = 0; i <= N; i++) {
             const ai = this.curve.get(i / N);
             for (let j = 0; j <= M; j++) {
 
                 const aj = this.curve.get(j / M);
-                console.log(ai.x, aj.y);
 
                 ctx.fillStyle = "black";
                 ctx.fillRect( ai.x - r / 2, aj.y - r / 2, r, r);

@@ -334,8 +334,8 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
                     className={"maskCanvas"}
                     onDown={startChanging}
                     onUp={stopChanging}
-                    drawProcess={handlers && handlers.draw}
-                    clickProcess={handlers && handlers.click}
+                    onDraw={handlers && handlers.draw}
+                    onClick={handlers && handlers.click}
                     releaseProcess={handlers && handlers.release}
                     {...this.props}/>
             </>

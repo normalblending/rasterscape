@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Canvas, CanvasProps} from "../_shared/Canvas";
+import {Canvas, CanvasEvent, CanvasProps} from "../_shared/Canvas";
 import {circle} from "../../utils/canvas/canvas";
 import {AppState} from "../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
@@ -91,10 +91,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
 
                     } else {
-                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y, scale}) => {
-                            const sizeX = size / scale.x;// > 0.05 ? size * 1 / scale.x : 0;
-                            const sizeY = size / scale.y;// > 0.05 ? size * 1 / scale.y : 0;
-                            ctx.fillRect(x - sizeX / 2, y - sizeY / 2, sizeX, sizeY);
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+                            ctx.fillRect(x - size / 2, y - size / 2, size, size);
                         });
                     }
 
@@ -104,7 +102,25 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 };
                 return {
                     draw: squareBrush,
-                    click: squareBrush
+                    click: squareBrush,
+                    cursors: ({x, y, outer}) => {
+
+                        let width = this.props.brush.params.size;
+                        let height = this.props.brush.params.size;
+
+                        let xc = x - width / 2;
+                        let yc = y - height / 2;
+
+                        return (
+                            <rect
+                                x={xc}
+                                y={yc}
+                                width={width}
+                                height={height}
+                                stroke={"black"} fill="purple"
+                                fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
+                        )
+                    }
                 }
             })(),
             [EBrushType.Circle]: (() => {
@@ -144,7 +160,18 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 };
                 return {
                     draw: circleBrush,
-                    click: circleBrush
+                    click: circleBrush,
+                    cursors: ({x, y, outer}) => {
+
+                        return (
+                            <circle
+                                cx={x}
+                                cy={y}
+                                r={this.props.brush.params.size / 2}
+                                stroke={"black"} fill="purple"
+                                fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
+                        )
+                    }
                 }
             })(),
             [EBrushType.Pattern]: (() => {
@@ -323,12 +350,22 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     componentDidUpdate(prevProps: CanvasDrawProps) {
         const {patternId} = this.props;
         if (prevProps.patterns[patternId].selection.params.mask) {
-
+            //todo чо я тут хотел
         }
 
     }
 
-    moveHandler = ({e}) => {
+    downHandler = (e: CanvasEvent) => {
+        const {startChanging} = this.props;
+
+        startChanging();
+    };
+
+    clickHandler = () => {
+
+    };
+
+    moveHandler = ({e}: CanvasEvent) => {
         this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])});
         setPosition(e.offsetX, e.offsetY, this.props.patternId);
         console.log(position);
@@ -340,45 +377,57 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         this.setState({coords: []})
     };
 
-    //todo рефакторинг
-    // хендлеры событий вынести в методы класса
-    // 
+    upHandler = () => {
+        const {stopChanging} = this.props;
+
+        stopChanging();
+    };
+
+    getHandlers = () => {
+        const {tool} = this.props;
+
+        const getType = ToolTypeGetter[tool];
+        const type = getType && getType(this.props);
+        return this.handlers && this.handlers[tool] && this.handlers[tool][type];
+        //todo рефакторинг
+        // хендлеры событий вынести в методы класса
+        //
+    };
+
+    cursors = {};
 
     render() {
-        const {tool, startChanging, stopChanging, children, width, height, className} = this.props;
+        const {children, width, height, className} = this.props;
 
-        const getType = getTypeField[tool];
-        const type = getType ? getType(this.props) : 0;
-        const handlersByTool = this.handlers[tool];
-        const handlers = handlersByTool && handlersByTool[type];
-        console.log(handlers);
+        const handlers = this.getHandlers();
+
         return (
             <Canvas
                 className={classNames("draw", className)}
-                onDown={startChanging}
-                onUp={stopChanging}
-                moveProcess={this.moveHandler}
-                drawProcess={handlers && handlers.draw}
-                clickProcess={handlers && handlers.click}
+                onDown={this.downHandler}
+                onClick={handlers && handlers.click}
+                onMove={this.moveHandler}
+                onDraw={handlers && handlers.draw}
+                onLeave={this.leaveHandler}
+                onUp={this.upHandler}
                 releaseProcess={handlers && handlers.release}
                 width={width}
                 height={height}
-                onLeave={this.leaveHandler}
                 {...this.props}>
+                {handlers && handlers.cursors &&
                 <SVG
                     className={"draw-cursors"}
                     width={width}
                     height={height}>
-                    {this.state.coords.map(({x, y}) =>
-                        <rect x={x} y={y} width={2} height={2} fill="black" fillOpacity={1}/>)}
-                </SVG>
+                    {this.state.coords.map(handlers.cursors)}
+                </SVG>}
                 {children}
             </Canvas>
         );
     }
 }
 
-const getTypeField = {
+const ToolTypeGetter = {
     [EToolType.Line]: props => get(props, "line.params.type"),
     [EToolType.Brush]: props => get(props, "brush.params.type"),
 };

@@ -19,6 +19,7 @@ export interface RepeatingControlsState {
 }
 
 const repeatingRange = [1, 10] as [number, number];
+const repeatingOutRange = [0, 3] as [number, number];
 const repeatingValueD = ValueD.VerticalLinear(9);
 
 export class RepeatingControls extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
@@ -86,6 +87,22 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
                         name={"y"}
                         value={gridParams.y}
                         range={repeatingRange}
+                        valueD={repeatingValueD}
+                        onChange={this.handleGridParamsChange}/>
+                    <ButtonNumberCF
+                        integer={gridParams.integer}
+                        path={`patterns.${this.props.patternId}.repeating.params.gridParams.xOut`}
+                        name={"xOut"}
+                        value={gridParams.xOut}
+                        range={repeatingOutRange}
+                        valueD={repeatingValueD}
+                        onChange={this.handleGridParamsChange}/>
+                    <ButtonNumberCF
+                        integer={gridParams.integer}
+                        path={`patterns.${this.props.patternId}.repeating.params.gridParams.yOut`}
+                        name={"yOut"}
+                        value={gridParams.yOut}
+                        range={repeatingOutRange}
                         valueD={repeatingValueD}
                         onChange={this.handleGridParamsChange}/>
                     <BezierCurve

@@ -88,6 +88,8 @@ export enum ERepeatingType {
 export interface RepeatingGridParams {
     x: number
     y: number
+    xOut: number
+    yOut: number
     integer: boolean
     bezierPoints?: BezierPoints
     // x = (1−t)2x1 + 2(1−t)tx2 + t2x3
