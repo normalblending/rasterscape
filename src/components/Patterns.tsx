@@ -4,28 +4,24 @@ import {AppState} from "../store";
 import {Button} from "./_shared/Button";
 import {
     addPattern,
-    redo,
-    removePattern,
-    undo,
-    updateImage,
-    updateSelection,
-    setHeight,
-    setWidth,
-    createRoom,
-    editConfig, updateMask, setMaskParams, setRotation, setRepeating, save, load,
-    setLoadingParams, createPatternFromSelection, doublePattern,
-    cutPatternBySelection
+    removePattern
 } from "../store/patterns/actions";
-import {
-    EPatternType,
-    LoadingParams,
-    MaskParams,
-    RepeatingParams,
-    RotationValue,
-    Segments
-} from "../store/patterns/types";
 import {Pattern} from "./Pattern/";
-import {PatternConfig} from "../store/patterns/types";
+import {PatternConfig} from "../store/patterns/pattern/types";
+import {setMaskParams, updateMask} from "../store/patterns/mask/actions";
+import {createPatternFromSelection, cutPatternBySelection, updateSelection} from "../store/patterns/selection/actions";
+import {redo, undo} from "../store/patterns/history/actions";
+import {setRotation} from "../store/patterns/rotating/actions";
+import {setRepeating} from "../store/patterns/repeating/actions";
+import {load, save, setImportParams} from "../store/patterns/import/actions";
+import {createRoom} from "../store/patterns/room/actions";
+import {doublePattern, editConfig, setHeight, setWidth, updateImage} from "../store/patterns/pattern/actions";
+import {EPatternType} from "../store/patterns/types";
+import {MaskParams} from "../store/patterns/mask/types";
+import {Segments} from "../store/patterns/selection/types";
+import {RotationValue} from "../store/patterns/rotating/types";
+import {RepeatingParams} from "../store/patterns/repeating/types";
+import {ImportParams} from "../store/patterns/import/types";
 
 export interface PatternsStateProps {
     patterns: any
@@ -66,7 +62,7 @@ export interface PatternsActionProps {
 
     load(id: string, image)
 
-    setLoadingParams(id: string, value: LoadingParams)
+    setLoadingParams(id: string, value: ImportParams)
 
     createPatternFromSelection(id: string)
 
@@ -100,7 +96,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         } = this.props;
         return (
             <>
-                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, loading}) => {
+                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, import: loading}) => {
                     return (
                         <Pattern
                             key={id}
@@ -171,7 +167,7 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     setRepeating,
     save,
     load,
-    setLoadingParams,
+    setLoadingParams: setImportParams,
     createPatternFromSelection,
     doublePattern,
     cutPatternBySelection

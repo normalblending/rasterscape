@@ -1,14 +1,12 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {BrushState} from "../../store/brush/reducer";
 import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
-import {MaskParams, RotationValue, Segments, StoreState} from "../../store/patterns/types";
-import {SelectionValue} from "../../store/patterns/types";
-import {SelectionParams, SelectionState} from "../../store/patterns/types";
 import "../../styles/area.scss";
+import {RotationValue} from "../../store/patterns/rotating/types";
+import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/selection/types";
 
 export interface AreaStateProps {
     currentTool: EToolType

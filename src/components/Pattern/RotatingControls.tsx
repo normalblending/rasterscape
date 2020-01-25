@@ -1,7 +1,7 @@
 import * as React from "react";
-import {RotationValue} from "../../store/patterns/types";
 import {ValueD} from "../_shared/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {RotationValue} from "../../store/patterns/rotating/types";
 
 export interface RotationControlsProps {
     rotation: RotationValue

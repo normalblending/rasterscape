@@ -1,5 +1,6 @@
-import {ERepeatingType, PatternState} from "../store/patterns/types";
+import {PatternState} from "../store/patterns/pattern/types";
 import * as Bezier from "bezier-js";
+import {ERepeatingType} from "../store/patterns/repeating/types";
 
 export const getRepeatingCoords = (x, y, pattern: PatternState) => {
     if (!pattern.repeating) {

@@ -1,84 +1,5 @@
-import {createCanvas} from "./canvas";
-import {RotationValue} from "../../store/patterns/types";
-
-export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData =>
-    canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
-
-export function imageDataToCanvas(imageData: ImageData): HTMLCanvasElement {
-
-    const {canvas, context} = createCanvas(imageData.width, imageData.height);
-
-    context.putImageData(imageData, 0, 0);
-
-    return canvas;
-}
-
-export const imageToImageData = (image): ImageData => {
-
-    const {context} = createCanvas(image.width, image.height);
-
-    context.drawImage(image, 0, 0);
-
-    return context.getImageData(0, 0, image.width, image.height);
-};
-
-
-export const resizeImageData = (imageData: ImageData, width: number, height: number): ImageData => {
-    const oldCanvas = imageDataToCanvas(imageData);
-    const newCanvas = document.createElement('canvas');
-    newCanvas.width = width;
-    newCanvas.height = height;
-
-
-    const context = newCanvas.getContext("2d");
-
-    context.imageSmoothingEnabled = false;
-
-
-    context.drawImage(oldCanvas, 0, 0, width, height);
-
-    return canvasToImageData(newCanvas);
-};
-
-export const imageDataToBase64 = (imageData: ImageData): string => {
-
-    const {canvas, context} = createCanvas(imageData.width, imageData.height);
-
-    context.putImageData(imageData, 0, 0);
-
-    return canvas.toDataURL();
-};
-
-export const base64ToImageData = (src: string): Promise<ImageData> => {
-    return new Promise(resolve => {
-        const image = new Image();
-        image.src = src;
-        image.onload = () => {
-
-            const {canvas, context} = createCanvas(image.width, image.height);
-
-            context.drawImage(image, 0, 0);
-
-            resolve(context.getImageData(0, 0, canvas.width, canvas.height))
-
-        }
-    });
-};
-
-export const getMaskedImage = (imageData: ImageData, maskImageData: ImageData): HTMLCanvasElement => {
-
-    const {canvas, context} = createCanvas(imageData.width, imageData.height);
-
-    if (maskImageData) {
-        context.putImageData(maskImageData, 0, 0);
-        context.globalCompositeOperation = "source-in";
-    }
-    context.drawImage(imageDataToCanvas(imageData), 0, 0, imageData.width, imageData.height);
-
-    return canvas;
-
-};
-
+import {createCanvas} from "./base";
+import {RotationValue} from "../../../store/patterns/rotating/types";
 
 export interface DrawMaskedDrawFunctionParams {
     context: CanvasRenderingContext2D,
@@ -86,7 +7,6 @@ export interface DrawMaskedDrawFunctionParams {
 }
 
 export type DrawMaskedDrawFunction = ({context, canvas}: DrawMaskedDrawFunctionParams) => void;
-
 export const drawMasked = (maskImageData: ImageData, draw: DrawMaskedDrawFunction) => {
     const {canvas, context} = createCanvas(maskImageData.width, maskImageData.height);
 
@@ -99,7 +19,6 @@ export const drawMasked = (maskImageData: ImageData, draw: DrawMaskedDrawFunctio
 
     return {canvas, context};
 };
-
 export const drawWithPositionAndRotation = (
     rotation: RotationValue,
     x: number, y: number,
@@ -125,7 +44,6 @@ export const drawWithPositionAndRotation = (
 
     return {canvas, context};
 };
-
 export const drawWithRotation = (
     angle: number,
     x: number, y: number,
@@ -143,7 +61,6 @@ export const drawWithRotation = (
 
     return {canvas, context};
 };
-
 export const drawWithPosition = (
     x: number, y: number,
     draw: DrawMaskedDrawFunction
@@ -157,7 +74,6 @@ export const drawWithPosition = (
 
     return {canvas, context};
 };
-
 export const drawMaskedWithPositionAndRotation = (
     maskImageData: ImageData,
     rotation: RotationValue,
@@ -169,7 +85,6 @@ export const drawMaskedWithPositionAndRotation = (
 
     return {canvas, context};
 };
-
 export const drawMaskedWithPosition = (
     maskImageData: ImageData,
     x: number, y: number,
@@ -179,7 +94,6 @@ export const drawMaskedWithPosition = (
 
     return {canvas, context};
 };
-
 export const drawMaskedWithRotation = (
     maskImageData: ImageData,
     angle: number,
@@ -190,7 +104,6 @@ export const drawMaskedWithRotation = (
 
     return {canvas, context};
 };
-
 export const drawWithMask = (maskImageData, rotation) => (x, y, patternImage, dx, dy, w, h): HTMLCanvasElement => {
 
     const {canvas} = drawMasked(maskImageData, ({context}) => {

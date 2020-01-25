@@ -1,4 +1,4 @@
-import {CanvasState} from "./types";
+import {CanvasState} from "./canvas/types";
 
 export function createCleanCanvasState(width: number, height: number): CanvasState {
     const canvas = document.createElement('canvas');

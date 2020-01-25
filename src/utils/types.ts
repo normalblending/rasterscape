@@ -1,10 +1,5 @@
 import {Action} from "redux";
 
-export interface FunctionState<V, P> {
-    value: V
-    params: P
-}
-
 export interface EventData {
     value: any,
     name?: string,
@@ -23,8 +18,3 @@ export interface HeightAction extends Action {
     height: number
 }
 
-export interface CanvasState {
-    imageData: ImageData
-    width: number
-    height: number
-}

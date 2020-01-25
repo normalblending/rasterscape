@@ -3,7 +3,7 @@ import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 
-import {PatternsState, patternsReducer} from "./patterns/reducer";
+import {patternsReducer} from "./patterns/reducer";
 import {ToolState, toolReducer} from "./tool/reducer";
 import {BrushState, brushReducer} from "./brush/reducer";
 import {LineState, lineReducer} from "./line/reducer";
@@ -15,6 +15,7 @@ import {changingReducer, ChangingState} from "./changing/reducer";
 import {colorReducer, ColorState} from "./color/reducer";
 import {changeReducer} from "./change/reducer";
 import {fullscreenReducer, FullScreenState} from "./fullscreen";
+import {PatternsState} from "./patterns/types";
 
 export interface AppState {
     fullScreen: FullScreenState

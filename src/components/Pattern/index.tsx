@@ -1,18 +1,7 @@
 import * as React from "react";
 import {Button} from "../_shared/Button";
 import "../../styles/pattern.scss";
-import {
-    LoadingParams,
-    MaskParams,
-    PatternConfig,
-    RepeatingParams,
-    RotationValue, Segments,
-    SelectionState,
-    StoreState
-} from "../../store/patterns/types";
-import {HistoryState} from "../../store/patterns/types";
 import {HistoryControls} from "./HistoryControls";
-import {SelectionValue} from "../../store/patterns/types";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/InputNumber";
 import {InputText} from "../_shared/InputText";
@@ -22,6 +11,14 @@ import {RotationControls} from "./RotatingControls";
 import {RepeatingControls} from "./RepeatingControls";
 import {SaveLoadControls} from "./SaveLoadControls";
 import {SelectionControls} from "./SelectionControls";
+import {MaskParams} from "../../store/patterns/mask/types";
+import {RotationValue} from "../../store/patterns/rotating/types";
+import {RepeatingParams} from "../../store/patterns/repeating/types";
+import {ImportParams} from "../../store/patterns/import/types";
+import {PatternConfig} from "../../store/patterns/pattern/types";
+import {HistoryState} from "../../store/patterns/history/types";
+import {StoreState} from "../../store/patterns/store/types";
+import {Segments, SelectionState} from "../../store/patterns/selection/types";
 
 export interface PatternWindowProps {
     id: string
@@ -30,7 +27,7 @@ export interface PatternWindowProps {
     maskParams?: MaskParams
     rotation?: RotationValue
     repeating?: RepeatingParams
-    loading: LoadingParams
+    loading: ImportParams
 
     height: number
     width: number
@@ -76,7 +73,7 @@ export interface PatternWindowProps {
 
     onSave(id: string)
 
-    onLoadingParamsChange(id: string, params: LoadingParams)
+    onLoadingParamsChange(id: string, params: ImportParams)
 
     onCreatePatternFromSelection(id: string)
 
@@ -147,7 +144,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
     handleSave = () => {
         this.props.onSave(this.props.id)
     };
-    handleLoadingParamsChange = (params: LoadingParams) => {
+    handleLoadingParamsChange = (params: ImportParams) => {
         this.props.onLoadingParamsChange(this.props.id, params)
     };
     handleCreatePatternFromSelection = () => {

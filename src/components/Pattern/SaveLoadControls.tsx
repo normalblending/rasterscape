@@ -2,16 +2,16 @@ import * as React from "react";
 import {File} from "../_shared/File";
 import {Button} from "../_shared/Button";
 import {ButtonSelect} from "../_shared/ButtonSelect";
-import {LoadingParams} from "../../store/patterns/types";
+import {ImportParams} from "../../store/patterns/import/types";
 
 export interface SaveLoadControlsProps {
     patternId: string
-    loading: LoadingParams
+    loading: ImportParams
 
     onLoad(image)
 
     onSave()
-    onParamsChange(params: LoadingParams)
+    onParamsChange(params: ImportParams)
 }
 
 export interface SaveLoadControlsState {

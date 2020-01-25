@@ -1,6 +1,5 @@
 import * as React from "react";
 import {Canvas, CanvasEvent, CanvasProps} from "../_shared/Canvas";
-import {circle} from "../../utils/canvas/canvas";
 import {AppState} from "../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../store/brush/reducer";
@@ -11,20 +10,17 @@ import get from "lodash/get";
 import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
-import {PatternsState} from "../../store/patterns/reducer";
 import {getRepeatingCoords} from "../../utils/draw";
-import {
-    drawMasked, drawMaskedWithPosition,
-    drawMaskedWithPositionAndRotation, drawMaskedWithRotation,
-    drawWithMask,
-    drawWithPositionAndRotation, drawWithRotation,
-    imageDataToCanvas
-} from "../../utils/canvas/imageData";
-import {blueHelper, coordHelper, coordHelper2, position, redHelper, setPosition} from "./canvasPosition.servise";
+import { setPosition} from "./canvasPosition.servise";
 import {SVG} from "../_shared/SVG";
 import classNames from "classnames";
 import '../../styles/draw.scss';
-import {RotationValue} from "../../store/patterns/types";
+import {
+    drawMaskedWithRotation,
+     drawWithRotation
+} from "../../utils/canvas/helpers/draw";
+import {PatternsState} from "../../store/patterns/types";
+import {circle} from "../../utils/canvas/helpers/geometry";
 
 export interface CanvasDrawStateProps {
     brush: BrushState

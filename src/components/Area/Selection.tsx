@@ -18,9 +18,8 @@ import {AppState} from "../../store";
 import classNames from "classnames";
 import {EToolType} from "../../store/tool/types";
 import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
-import {Segments, SelectionValue} from '../../store/patterns/types';
-import {SelectionParams} from "../../store/patterns/types";
 import "../../styles/selection.scss"
+import {Segments, SelectionParams} from "../../store/patterns/selection/types";
 
 
 const lineFunction = d3

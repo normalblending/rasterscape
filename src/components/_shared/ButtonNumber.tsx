@@ -2,13 +2,10 @@ import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "./ButtonSelect";
 import {Key} from "./Key";
-import {mousePositionElement} from "../../utils/mouse";
-import {range} from "d3-array";
 import {ECFType} from "../../store/changeFunctions/types";
 import {Canvas} from "./Canvas";
-import {createCanvas} from "../../utils/canvas/canvas";
-import {coordHelper} from "../Area/canvasPosition.servise";
 import {getOffset} from "../../utils/offset";
+import {createCanvas} from "../../utils/canvas/helpers/base";
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);

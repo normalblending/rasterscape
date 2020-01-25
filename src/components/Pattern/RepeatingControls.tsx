@@ -1,10 +1,10 @@
 import * as React from "react";
-import {ERepeatingType, RepeatingParams} from "../../store/patterns/types";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import {ValueD} from "../_shared/ButtonNumber";
 import {ButtonSelect} from "../_shared/ButtonSelect";
 import {BezierCurve} from "../_shared/BezierCurve";
 import * as Bezier from "bezier-js";
+import {ERepeatingType, RepeatingParams} from "../../store/patterns/repeating/types";
 
 export interface RepeatingControlsProps {
     repeating: RepeatingParams

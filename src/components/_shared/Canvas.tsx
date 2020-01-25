@@ -1,11 +1,10 @@
 import React from 'react';
-import {canvasToImageData} from "../../utils/canvas/imageData";
+import {canvasToImageData} from "../../utils/canvas/helpers/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
-import {RotationValue} from "../../store/patterns/types";
 import {getOffset} from "../../utils/offset";
-import {blueHelper, greenHelper, redHelper} from "../Area/canvasPosition.servise";
 import {rotate} from "../../utils/draw";
+import {RotationValue} from "../../store/patterns/rotating/types";
 
 export interface CanvasEvent {
     e: MouseEvent

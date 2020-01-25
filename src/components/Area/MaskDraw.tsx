@@ -10,11 +10,10 @@ import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions"
 import get from "lodash/get";
 import {ELineCompositeOperation, ELineType} from "../../store/line/types";
 import {EBrushType} from "../../store/brush/types";
-import {MaskParams} from "../../store/patterns/types";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import {ButtonSelect} from "../_shared/ButtonSelect";
-import {RotationValue} from "../../store/patterns/types";
-import {Draw} from "./Draw";
+import {RotationValue} from "../../store/patterns/rotating/types";
+import {MaskParams} from "../../store/patterns/mask/types";
 
 export interface MaskDrawStateProps {
     brush: BrushState
