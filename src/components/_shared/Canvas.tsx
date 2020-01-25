@@ -2,8 +2,10 @@ import React from 'react';
 import {canvasToImageData} from "../../utils/canvas/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
-import {change} from "../../store/change/actions";
-import {EChangingAction} from "../../store/changing/actions";
+import {RotationValue} from "../../store/patterns/types";
+import {getOffset} from "../../utils/offset";
+import {blueHelper, greenHelper, redHelper} from "../Area/canvasPosition.servise";
+import {rotate} from "../../utils/draw";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -11,6 +13,7 @@ export interface CanvasEvent {
     ctx: CanvasRenderingContext2D
     canvas: HTMLCanvasElement
     drawing?: boolean
+    rotation?: RotationValue
 }
 
 export interface CanvasProps {
@@ -21,6 +24,8 @@ export interface CanvasProps {
     style?: any
 
     children?: React.ReactNode
+
+    rotation?: RotationValue
 
     updateOnDrag?: boolean
 
@@ -38,7 +43,7 @@ export interface CanvasProps {
 
     onChange?(imageData?: ImageData)
 
-    onLeave?()
+    onLeave?(e?)
 
 
 }
@@ -75,6 +80,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.canvasRef.current.addEventListener("mousedown", this.mouseDownHandler);
         this.canvasRef.current.addEventListener("mousemove", this.mouseMoveHandler);
+        this.canvasRef.current.addEventListener("mouseenter", this.mouseEnterHandler);
+        this.canvasRef.current.addEventListener("mouseleave", this.mouseLeaveHandler);
 
         if (this.props.value instanceof ImageData) {
             this.ctx.putImageData(this.props.value, 0, 0);
@@ -84,6 +91,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     componentWillUnmount() {
         this.canvasRef.current.removeEventListener("mousedown", this.mouseDownHandler);
         this.canvasRef.current.removeEventListener("mousemove", this.mouseMoveHandler);
+        this.canvasRef.current.removeEventListener("mouseenter", this.mouseEnterHandler);
+        this.canvasRef.current.removeEventListener("mouseleave", this.mouseLeaveHandler);
     }
 
     componentDidUpdate(prevProps) {
@@ -108,8 +117,6 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     }
 
     private mouseDownHandler = e => {
-        console.log('canvas down');
-
         document.addEventListener("mouseup", this.mouseUpHandler);
         window.addEventListener("mousemove", this.mouseDragHandler);
 
@@ -119,42 +126,75 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             startEvent: e
         });
 
-        this.start();
         const event = {
             e,
             ctx: this.ctx,
             canvas: this.canvasRef.current,
-            drawing: true
+            drawing: true,
+            rotation: this.props.rotation
         };
 
         const {onDown} = this.props;
 
         onDown && onDown(event);
 
-        const {onClick} = this.props;
+        this.start();
 
-        onClick && onClick(event);
+        setTimeout(()=> {
 
+            const {onClick} = this.props;
+
+            onClick && onClick(event);
+        }, 10)
 
     };
 
     start = () => {
 
-        const {onDraw} = this.props;
+        const {onDraw, onMove} = this.props;
 
 
         if (!this.requestID) {
 
             const changing = (time) => {
 
+                const e = this.e;
+                const {top, left, box} = getOffset(this.canvasRef.current);
+
+                const canvasCenter = {
+                    x: left + box.width / 2,
+                    y: top + box.height / 2
+                };
+                const rotatedE = rotate(canvasCenter.x, canvasCenter.y, e.pageX, e.pageY, this.props.rotation.angle);
+
+
+                this.state.drawing && onMove && onMove({
+                    e: {
+                        ...e,
+                        offsetX: rotatedE.x - canvasCenter.x + this.props.width / 2,
+                        offsetY: rotatedE.y - canvasCenter.y + this.props.height / 2,
+                    },
+                    pre: this.pre,
+                    ctx: this.ctx,
+                    canvas: this.canvasRef.current,
+                    drawing: this.state.drawing,
+                });
+
                 // todo тут видимо можно передать тайм в онДрав и использовать это время для энвелопа ил  нет?
                 this.state.drawing && onDraw && onDraw({
-                    e: this.e,
+                    e: {
+                        ...e,
+                        offsetX: rotatedE.x - canvasCenter.x + this.props.width / 2,
+                        offsetY: rotatedE.y - canvasCenter.y + this.props.height / 2,
+                    },
                     pre: this.pre,
                     ctx: this.ctx,
                     canvas: this.canvasRef.current,
                     drawing: true,
+                    rotation: this.props.rotation
                 });
+
+
 
 
                 this.requestID = requestAnimationFrame(changing);
@@ -176,38 +216,26 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             this.pre = this.e;
             this.e = e;
 
-            onMove && onMove({
-                e,
-                pre: this.pre,
-                ctx: this.ctx,
-                canvas: this.canvasRef.current,
-                drawing: this.state.drawing
-            });
-        }
-    };
-
-    mouseDragHandler = (e) => {
-
-        const {startEvent} = this.state;
-
-        const {onMove} = this.props;
-
-        if (this.state.drawing) {
-
-            this.pre = this.e;
-            this.e = {
-                ...e,
-                offsetX: e.screenX - startEvent.screenX + startEvent.offsetX,
-                offsetY: e.screenY - startEvent.screenY + startEvent.offsetY,
-            };
+            // если просто водим мышкой
 
             onMove && onMove({
                 e: this.e,
                 pre: this.pre,
                 ctx: this.ctx,
                 canvas: this.canvasRef.current,
-                drawing: this.state.drawing
+                drawing: this.state.drawing,
             });
+        }
+    };
+
+    mouseDragHandler = (e) => {
+
+        if (this.state.drawing) {
+            this.pre = this.e;
+            this.e = e;
+
+            // если водим при нажатии
+            // в этом случае onMove срабатывает в анимации
         }
     };
 
@@ -219,7 +247,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.stop();
         if (this.state.drawing) {
-            this.setState({drawing: false, startEvent: null});
+            this.setState({drawing: false, startEvent: e});
 
             this.pre = null;
             const {onChange} = this.props;
@@ -243,13 +271,39 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         }
     };
 
+    mouseEnterHandler = (e) => {
+
+        // console.log(e);
+        if (!this.state.drawing) {
+            // console.log(e);
+            // this.setState({startEvent: e});
+        } else {
+
+
+        }
+    };
+
+    mouseLeaveHandler = (e) => {
+
+        if (!this.state.drawing) {
+            // this.setState({startEvent: null});
+
+        } else {
+
+
+        }
+
+        const {onLeave} = this.props;
+
+        onLeave && onLeave(e);
+    };
+
     render() {
-        const {value, width, height, className, style, children, onLeave} = this.props;
+        const {value, width, height, className, style, children} = this.props;
         // console.log("canvas render", this.state);
         return (
             <div style={style} className={classNames(className, "canvas")}>
                 <canvas
-                    onMouseLeave={onLeave}
                     ref={this.canvasRef}
                     width={width || (value ? value.width : 300)}
                     height={height || (value ? value.height : 300)}/>

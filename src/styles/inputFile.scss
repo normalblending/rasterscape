@@ -1,0 +1,36 @@
+.input-file {
+  display: inline-flex;
+  input {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+
+    z-index: -1;
+  }
+
+  label {
+    text-align: center;
+    font-size: 11px;
+    line-height: normal;
+    display: inline-block;
+    background: lightgoldenrodyellow;
+    height: 20px;
+    width: 70px;
+    padding: 1px 7px 2px 7px;
+    box-sizing: border-box;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+
+    &:active {
+      border-style: inset;
+      outline: -webkit-focus-ring-color auto 5px;
+      z-index: 100;
+    }
+
+    &:focus {
+    }
+  }
+}

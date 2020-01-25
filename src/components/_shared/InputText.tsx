@@ -22,7 +22,7 @@ export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, 
         <input
             className={classNames(className, "input-text")}
             type="text"
-            value={value}
+            value={value || ''}
             onFocus={onFocus}
             onBlur={onBlur}
             onChange={changeHandler}/>

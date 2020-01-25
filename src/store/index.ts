@@ -60,3 +60,4 @@ const rootReducer = reduceReducers(
 );
 
 export const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+// export const store = createStore(rootReducer, applyMiddleware(thunk));

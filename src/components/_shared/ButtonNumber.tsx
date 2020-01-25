@@ -5,6 +5,10 @@ import {Key} from "./Key";
 import {mousePositionElement} from "../../utils/mouse";
 import {range} from "d3-array";
 import {ECFType} from "../../store/changeFunctions/types";
+import {Canvas} from "./Canvas";
+import {createCanvas} from "../../utils/canvas/canvas";
+import {coordHelper} from "../Area/canvasPosition.servise";
+import {getOffset} from "../../utils/offset";
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);
@@ -58,10 +62,11 @@ export interface ButtonNumberState {
     value?: any
     startPoint: [number, number]
     startValue?: any
-    changing: boolean
 }
 
 export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumberState> {
+
+    buttonRef;
 
     constructor(props) {
         super(props);
@@ -72,14 +77,15 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             value: props.value || range[0],
             startPoint: null,
             startValue: null,
-            changing: false,
         };
 
+        this.buttonRef = React.createRef();
 
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         return nextState.value !== this.state.value
+            || !!nextState.startPoint || !!this.state.startPoint
             || nextProps.changingStartValue !== this.props.changingStartValue
             || nextProps.changeFunctionParams !== this.props.changeFunctionParams
             || nextProps.changeFunctionId !== this.props.changeFunctionId
@@ -143,16 +149,14 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
 
         const one = (range[1] - range[0]) / precision;
-//!changingStartValue &&
         if (Math.abs(value - this.state.startValue) < one) {
 
-            const y = mousePositionElement(e).x;
-            console.log("11111", y, width / 2, this.state.startValue);
+            const {left} = getOffset(e.target);
+
             value = Math.min(Math.max(
-                this.state.startValue + (y > width / 2 ? one : -one)
+                this.state.startValue + (left + width / 2 < e.pageX ? one : -one)
                 , range[0]), range[1]);
 
-            console.log(value, "=", this.state.startValue, "+", (y > width / 2 ? 1 : -1));
             onChange && onChange({e, value, name, selected});
         } else {
             onMouseUp && onMouseUp({e, value, name, selected});
@@ -238,7 +242,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     render() {
         const {changingStartValue, changeFunctionId, changeFunctionType, changeFunctionParams, range, width = DEFAULT_WIDTH, className, getText = defaultGetText, text, shortcut, ...otherProps} = this.props;
-        const {value = 0, startValue} = this.state;
+        const {value = 0, startValue, startPoint} = this.state;
 
         console.log("number button render", getText(value));
 
@@ -253,6 +257,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                     ["button-number-active"]: !!startValue,
                 })}
                 width={width}
+                ref={this.buttonRef}
                 onMouseDown={this.handleDown}>
                 <div
                     className={"button-number-value"}
@@ -262,7 +267,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
                 {changeFunctionId &&
                 <Amplitude
+                    changing={!!startPoint}
                     range={range}
+                    buttonWidth={width}
                     params={changeFunctionParams}
                     changingStartValue={changingStartValue}
                     changeFunctionId={changeFunctionId}/>}
@@ -278,7 +285,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 }
 
 const amplitudeComponent = {
-    [ECFType.SIN]: ({range, params, changingStartValue, changeFunctionId}) => {
+    [ECFType.SIN]: ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
         const startVPerc = (changingStartValue / (range[1] - range[0]));
 
         const ampWidth = (Math.min(startVPerc, params.a) + Math.min(1 - startVPerc, params.a));
@@ -296,7 +303,7 @@ const amplitudeComponent = {
             </div>
         );
     },
-    [ECFType.LOOP]: ({range, params, changingStartValue, changeFunctionId}) => {
+    [ECFType.LOOP]: ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
 
         return (
             <div
@@ -311,4 +318,86 @@ const amplitudeComponent = {
             </div>
         );
     },
+    [ECFType.XY]: (props) => {
+        const {range, params, changingStartValue, changeFunctionId, changing, buttonWidth} = props;
+
+
+        const ampWidth = params.end * (1 - (changingStartValue - range[0]) / (range[1] - range[0]));
+
+        const startVPerc = (changingStartValue  - range[0])/ (range[1] - range[0]);
+
+        // console.log(props);
+        const width = Math.round(buttonWidth * ampWidth);
+
+        if (width <= 1) {
+            return (
+                <div
+                    style={{
+                        width: ampWidth * 100 + "%",
+                        left: `${startVPerc * 100}%`
+                    }}
+                    className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}>
+                    <span>{changeFunctionId}</span>
+                </div>);
+        }
+
+        const height = 20;
+        const {canvas, context} = createCanvas(width, height);
+        const imageData = context.getImageData(0, 0, width, height);
+
+        const cf = (x, y) => {
+            return ((params, range, pattern) =>
+                (startValue, time, position) => {
+                    const {x: X, y: Y, c: C, xa, ya, start, end} = params;
+                    // console.log(params, range);
+                    const z = Math.pow(position.x - pattern.current.width / 2, 2) / X * xa
+                        + Math.pow(position.y - pattern.current.height / 2, 2) * ya / Y;
+
+                    const m = Math.pow(-pattern.current.width / 2, 2) / X * xa
+                        + Math.pow(-pattern.current.height / 2, 2) * ya / Y;
+
+
+                    const startValueNormalized = startValue / (range[1] - range[0]);
+                    return Math.max(
+                        Math.min(
+                            (+z / m * (1 - startValueNormalized)) * (range[1] - range[0]) + startValue,
+                            range[1]),
+                        range[0]
+                    );
+                })(params, [0, 1], {
+                current: {
+                    width, height
+                }
+            })(0, null, {x, y})
+        };
+
+        console.log(width, height, imageData)
+        // noise
+        for (let i = 0; i < imageData.data.length; i += 4) {
+            const x = (i / 4) % width;
+            const y = Math.floor((i / 4) / width);
+            const a = cf(x, y);
+            // console.log(a);
+            imageData.data[i] = a * 255;//Math.random() * 100;
+            imageData.data[i + 1] = 0;//Math.random() * 100;
+            imageData.data[i + 2] = 0;//Math.random() * 100;
+            imageData.data[i + 3] = a * 255;//Math.random() * 100;
+        }
+
+
+        return (
+            <Canvas
+                style={{
+                    width: ampWidth * 100 + "%",
+                    left: `${startVPerc * 100}%`
+                }}
+                className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}
+                width={width}
+                height={height}
+                value={imageData}>
+                <span>{changeFunctionId}</span>
+            </Canvas>
+        );
+    },
 };
+

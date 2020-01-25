@@ -15,3 +15,43 @@ export const setPosition = (x: number, y: number, patternId: string) => {
     position.y = y;
     position.patternId = patternId;
 };
+
+export class CursorHelper {
+    setPos;
+    constructor(color, size) {
+        const elem = document.createElement('div');
+        document.body.appendChild(elem);
+
+        this.setPos = (x, y) => {
+            elem.style.cssText = `position:absolute;top:${y - size/2}px;left:${x - size/2}px;width:${size}px;height:${size}px;opacity:1;z-index:100;background: ${color}; pointer-events: none;}`;
+        };
+    }
+}
+
+export class TextHelper {
+    setText;
+    constructor(x, y) {
+        const elem = document.createElement('div');
+        document.body.appendChild(elem);
+
+        elem.style.cssText = `position:absolute;bottom:${y}px;left:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+
+        this.setText = (string) => {
+            elem.innerText = string;
+        };
+    }
+}
+
+export const redHelper = new CursorHelper('#f00', 10);
+export const blueHelper = new CursorHelper('#00f', 10);
+export const greenHelper = new CursorHelper('#0f0', 10);
+
+export const coordHelper = new TextHelper(10, 30);
+export const coordHelper2 = new TextHelper(10, 50);
+export const coordHelper3 = new TextHelper(10, 70);
+
+
+// const elem = document.createElement('div');
+// document.body.appendChild(elem);
+//
+// elem.style.cssText = `position:absolute;top:${0}px;left:${0}px;opacity:1;z-index:100;width:${300}px; height:${300}px; border: 1px solid rgba(0,0,0,.3)`;

@@ -1,7 +1,11 @@
 import * as React from "react";
+import '../../styles/inputFile.scss';
+import {Button} from "./Button";
 
 export interface FileProps {
     onChange(image)
+    name: string
+    children: string
 }
 
 export interface FileState {
@@ -35,14 +39,16 @@ export class File extends React.PureComponent<FileProps, FileState> {
     };
 
     render() {
+        const { name, children } = this.props;
         return (
-            <div>
+            <div className={'input-file'}>
                 <input
                     type="file"
-                    id="imageLoader"
-                    name="imageLoader"
+                    name={name}
+                    id={name}
                     ref={this.inputRef}
                     onChange={this.handleFile}/>
+                <label htmlFor={name}>{children}</label>
             </div>
         );
     }

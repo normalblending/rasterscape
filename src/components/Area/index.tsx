@@ -76,6 +76,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                 <Draw
                     patternId={name}
                     style={this.state.style}
+                    rotation={rotation}
                     value={imageValue}
                     width={width}
                     height={height}

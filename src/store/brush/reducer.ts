@@ -24,9 +24,9 @@ export const brushReducer = handleActions<BrushState>({
 }, {
     params: {
         patternSize: 1,
-        size: 2,
+        size: 43,
         opacity: 1,
-        type: EBrushType.Square
+        type: EBrushType.Circle
     },
     paramsConfig: getBrushParamsConfig()
 });

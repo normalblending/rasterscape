@@ -29,7 +29,13 @@ export const resizeImageData = (imageData: ImageData, width: number, height: num
     newCanvas.width = width;
     newCanvas.height = height;
 
-    newCanvas.getContext("2d").drawImage(oldCanvas, 0, 0, width, height);
+
+    const context = newCanvas.getContext("2d");
+
+    context.imageSmoothingEnabled = false;
+
+
+    context.drawImage(oldCanvas, 0, 0, width, height);
 
     return canvasToImageData(newCanvas);
 };
@@ -97,12 +103,13 @@ export const drawMasked = (maskImageData: ImageData, draw: DrawMaskedDrawFunctio
 export const drawWithPositionAndRotation = (
     rotation: RotationValue,
     x: number, y: number,
-    draw: DrawMaskedDrawFunction
+    draw: DrawMaskedDrawFunction,
+    rotationInverse?: boolean,
 ) => ({context, canvas}) => {
 
     if (rotation) {
-        context.translate(x + rotation.offset.x, y + rotation.offset.y);
-        context.rotate(Math.PI * rotation.angle / 180);
+        context.translate(x + rotation.offset.x * (rotationInverse ? -1 : 1), y + rotation.offset.y * (rotationInverse ? -1 : 1));
+        context.rotate(Math.PI * rotation.angle / 180 * (rotationInverse ? -1 : 1));
     } else {
         context.translate(x, y);
     }
@@ -110,11 +117,29 @@ export const drawWithPositionAndRotation = (
     draw({canvas, context});
 
     if (rotation) {
-        context.rotate(-Math.PI * rotation.angle / 180);
-        context.translate(-x - rotation.offset.x, -y - rotation.offset.y);
+        context.rotate(-Math.PI * rotation.angle / 180 * (rotationInverse ? -1 : 1));
+        context.translate(-x - rotation.offset.x * (rotationInverse ? -1 : 1), -y - rotation.offset.y * (rotationInverse ? -1 : 1));
     } else {
         context.translate(-x, -y);
     }
+
+    return {canvas, context};
+};
+
+export const drawWithRotation = (
+    angle: number,
+    x: number, y: number,
+    draw: DrawMaskedDrawFunction,
+) => ({context, canvas}) => {
+
+    context.translate(x, y);
+    context.rotate(Math.PI * angle / 180);
+
+    draw({canvas, context});
+
+
+    context.rotate(-Math.PI * angle / 180);
+    context.translate(-x, -y);
 
     return {canvas, context};
 };
@@ -137,9 +162,10 @@ export const drawMaskedWithPositionAndRotation = (
     maskImageData: ImageData,
     rotation: RotationValue,
     x: number, y: number,
-    draw: DrawMaskedDrawFunction
+    draw: DrawMaskedDrawFunction,
+    rotationInverse?: boolean
 ) => {
-    const {canvas, context} = drawMasked(maskImageData, drawWithPositionAndRotation(rotation, x, y, draw));
+    const {canvas, context} = drawMasked(maskImageData, drawWithPositionAndRotation(rotation, x, y, draw, rotationInverse));
 
     return {canvas, context};
 };
@@ -150,6 +176,17 @@ export const drawMaskedWithPosition = (
     draw: DrawMaskedDrawFunction
 ) => {
     const {canvas, context} = drawMasked(maskImageData, drawWithPosition(x, y, draw));
+
+    return {canvas, context};
+};
+
+export const drawMaskedWithRotation = (
+    maskImageData: ImageData,
+    angle: number,
+    x: number, y: number,
+    draw: DrawMaskedDrawFunction
+) => {
+    const {canvas, context} = drawMasked(maskImageData, drawWithRotation(angle, x, y, draw));
 
     return {canvas, context};
 };

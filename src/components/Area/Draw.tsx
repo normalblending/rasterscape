@@ -15,15 +15,16 @@ import {PatternsState} from "../../store/patterns/reducer";
 import {getRepeatingCoords} from "../../utils/draw";
 import {
     drawMasked, drawMaskedWithPosition,
-    drawMaskedWithPositionAndRotation,
+    drawMaskedWithPositionAndRotation, drawMaskedWithRotation,
     drawWithMask,
-    drawWithPositionAndRotation,
+    drawWithPositionAndRotation, drawWithRotation,
     imageDataToCanvas
 } from "../../utils/canvas/imageData";
-import {position, setPosition} from "./canvasPosition.servise";
+import {blueHelper, coordHelper, coordHelper2, position, redHelper, setPosition} from "./canvasPosition.servise";
 import {SVG} from "../_shared/SVG";
 import classNames from "classnames";
 import '../../styles/draw.scss';
+import {RotationValue} from "../../store/patterns/types";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -68,7 +69,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         [EToolType.Brush]: {
             [EBrushType.Square]: (() => {
                 const squareBrush = (ev) => {
-                    const {ctx, e} = ev;
+                    const {ctx, e, canvas, rotation} = ev;
+                    console.log(ev);
                     const {patterns, patternId} = this.props;
                     const pattern = patterns[patternId];
                     const {size, opacity, compositeOperation} = this.props.brush.params;
@@ -81,10 +83,18 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     if (selectionMask) {
 
                         getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
-                            const {canvas: image} = drawMasked(selectionMask, ({context}) => {
-                                context.fillStyle = ctx.fillStyle;
-                                context.fillRect(x - size / 2, y - size / 2, size, size);
-                            });
+
+                            const {canvas: image} = drawMaskedWithRotation(
+                                selectionMask,
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+
+                                    context.fillStyle = ctx.fillStyle;
+                                    context.fillRect(-size / 2, -size / 2, size, size)
+                                }
+                            );
+
                             ctx.globalCompositeOperation = compositeOperation;
                             ctx.drawImage(image, 0, 0);
                         });
@@ -92,7 +102,13 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
                     } else {
                         getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
-                            ctx.fillRect(x - size / 2, y - size / 2, size, size);
+                            drawWithRotation(
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+                                    context.fillRect(-size / 2, -size / 2, size, size)
+                                },
+                            )({context: ctx, canvas});
                         });
                     }
 
@@ -108,13 +124,12 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                         let width = this.props.brush.params.size;
                         let height = this.props.brush.params.size;
 
-                        let xc = x - width / 2;
-                        let yc = y - height / 2;
-
+                        const {rotation} = this.props;
                         return (
                             <rect
-                                x={xc}
-                                y={yc}
+                                transform={`rotate(${-rotation.angle} ${x} ${y})`}
+                                x={x - width / 2}
+                                y={y - height / 2}
                                 width={width}
                                 height={height}
                                 stroke={"black"} fill="purple"
@@ -125,7 +140,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             })(),
             [EBrushType.Circle]: (() => {
                 const circleBrush = (ev) => {
-                    const {ctx, e} = ev;
+                    const {ctx, e, canvas, rotation} = ev;
                     const {patterns, patternId} = this.props;
                     const pattern = patterns[patternId];
                     const {size, opacity, compositeOperation} = this.props.brush.params;
@@ -138,23 +153,34 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     if (selectionMask) {
 
                         getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
-                            const {canvas: image} = drawMasked(selectionMask, ({context}) => {
-                                context.fillStyle = ctx.fillStyle;
-                                circle(context, x, y, size / 2);
-                            });
+
+                            const {canvas: image} = drawMaskedWithRotation(
+                                selectionMask,
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+                                    context.fillStyle = ctx.fillStyle;
+                                    circle(context, 0, 0, size / 2);
+                                },
+                            );
+
                             ctx.globalCompositeOperation = compositeOperation;
                             ctx.drawImage(image, 0, 0);
                         });
 
-
                     } else {
 
                         getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
-                            circle(ctx, x, y, size / 2);
+                            drawWithRotation(
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+                                    circle(context, 0, 0, size / 2);
+                                }
+                            )({context: ctx, canvas});
                         });
-
-
                     }
+
                     ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
                 };
@@ -188,7 +214,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     const destinationPattern = patterns[patternId];
                     const brushPattern = patterns[pattern];
 
-                    const rotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
+                    const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
+                    const destinationRotation = destinationPattern && destinationPattern.rotation && destinationPattern.rotation.value;
 
                     const brushPatternImage = brushPattern && brushPattern.resultImage;
 
@@ -204,26 +231,27 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                             const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
 
                             if (selectionMask) {
-                                const {canvas: image} = drawMaskedWithPositionAndRotation(
+                                const {canvas: image} = drawMaskedWithRotation(
                                     selectionMask,
-                                    rotation,
-                                    x, y,
-                                    ({context}) =>
+                                    -destinationRotation.angle + brushRotation.angle,
+                                    x + brushRotation.offset.x, y + brushRotation.offset.y,
+                                    ({context}) => {
                                         context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                                    }
                                 );
 
                                 ctx.globalCompositeOperation = compositeOperation;
                                 ctx.drawImage(image, 0, 0);
                             } else {
 
-                                drawWithPositionAndRotation(
-                                    rotation,
-                                    x, y,
-                                    ({context}) =>
+                                drawWithRotation(
+                                    -destinationRotation.angle + brushRotation.angle,
+                                    x + brushRotation.offset.x, y + brushRotation.offset.y,
+                                    ({context}) => {
                                         context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                                    }
                                 )({context: ctx, canvas})
                             }
-
 
                         };
 
@@ -234,7 +262,34 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 };
                 return {
                     draw: patternBrush,
-                    click: patternBrush
+                    click: patternBrush,
+                    cursors: ({x, y, outer}) => {
+
+
+                        const {patterns} = this.props;
+                        const {pattern, patternSize} = this.props.brush.params;
+
+
+                        const brushPattern = patterns[pattern];
+
+                        const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
+                        const brushPatternImage = brushPattern && brushPattern.resultImage;
+
+                        const width = patternSize * (brushPatternImage && brushPatternImage.width);
+                        const height = patternSize * (brushPatternImage && brushPatternImage.height);
+
+                        const {rotation} = this.props;
+                        return (
+                            <rect
+                                transform={rotation && brushRotation ? `rotate(${-rotation.angle + brushRotation.angle} ${x} ${y})` : ""}
+                                x={x - width / 2}
+                                y={y - height / 2}
+                                width={width}
+                                height={height}
+                                stroke={"black"} fill="purple"
+                                fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
+                        )
+                    }
                 }
             })(),
         },
@@ -359,16 +414,27 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         const {startChanging} = this.props;
 
         startChanging();
+
+        this.setState({
+            coords: []
+        });
     };
 
     clickHandler = () => {
 
     };
 
-    moveHandler = ({e}: CanvasEvent) => {
-        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])});
+    moveHandler = ({e, drawing}: CanvasEvent) => {
+
+        if (!drawing) {
+            this.setState({
+                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])
+            });
+        } else {
+
+        }
+
         setPosition(e.offsetX, e.offsetY, this.props.patternId);
-        console.log(position);
     };
 
     leaveHandler = () => {
@@ -377,10 +443,12 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         this.setState({coords: []})
     };
 
-    upHandler = () => {
+    upHandler = ({e}) => {
         const {stopChanging} = this.props;
 
         stopChanging();
+
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])})
     };
 
     getHandlers = () => {
@@ -393,8 +461,6 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         // хендлеры событий вынести в методы класса
         //
     };
-
-    cursors = {};
 
     render() {
         const {children, width, height, className} = this.props;

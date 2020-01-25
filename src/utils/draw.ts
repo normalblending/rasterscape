@@ -10,13 +10,21 @@ export const getRepeatingCoords = (x, y, pattern: PatternState) => {
 
     if (params.type === ERepeatingType.Grid) {
         const {gridParams: {x: xn, y: yn, bezierPoints, xOut, yOut}} = params;
-        const {current: {width, height}} = pattern;
+        const {current: {width, height}, rotation} = pattern;
 
         const xd = width / xn;
         const yd = height / yn;
 
         x = x % xd;
         y = y % yd;
+
+        if (x < 0) {
+            x +=xd;
+        }
+
+        if (y < 0) {
+            y +=yd;
+        }
 
         const array = [];
 
@@ -32,9 +40,13 @@ export const getRepeatingCoords = (x, y, pattern: PatternState) => {
                 const ty = (y + yd * j) / height;
                 const aj = curve.get(ty);
 
+                const xij = width * ai.x / 100;
+                const yij = height * aj.y / 100;
+
+
                 array.push({
-                    x: width * ai.x / 100,
-                    y: height * aj.y / 100,
+                    x: xij,
+                    y: yij,
                     outer: i < 0 || i >= xn || j < 0 || j >= yn
                 });
             }
@@ -47,3 +59,12 @@ export const getRepeatingCoords = (x, y, pattern: PatternState) => {
 
     return [{x, y}];
 };
+
+export function rotate(cx, cy, x, y, angle) {
+    var radians = (Math.PI / 180) * angle,
+        cos = Math.cos(radians),
+        sin = Math.sin(radians),
+        nx = (cos * (x - cx)) + (sin * (y - cy)) + cx,
+        ny = (cos * (y - cy)) - (sin * (x - cx)) + cy;
+    return {x: nx, y: ny};
+}

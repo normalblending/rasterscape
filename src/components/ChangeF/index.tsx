@@ -12,6 +12,7 @@ import {enumToSelectItems, objectToSelectItems} from "../../utils/utils";
 import {ChangingMode} from "../../store/changing/types";
 import {SelectButtons} from "../_shared/SelectButtons";
 import {LoopCF} from "./LoopCF";
+import {XYCF} from "./XYCF";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctionsState
@@ -41,6 +42,7 @@ export interface ChangeFState {
 const CFComponentByType = {
     [ECFType.SIN]: SinCF,
     [ECFType.LOOP]: LoopCF,
+    [ECFType.XY]: XYCF,
 };
 
 const modesItems = enumToSelectItems(ChangingMode);
@@ -59,6 +61,10 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
 
     handleAddLoop = () => {
         this.props.addCF(ECFType.LOOP);
+    };
+
+    handleAddXY = () => {
+        this.props.addCF(ECFType.XY);
     };
 
     handleModeChange = ({value}) => {
@@ -82,6 +88,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                 })}
                 <Button onClick={this.handleAddSin}>sin</Button>
                 <Button onClick={this.handleAddLoop}>loop</Button>
+                <Button onClick={this.handleAddXY}>xy</Button>
                 <SelectButtons
                     items={modesItems}
                     value={changingMode}

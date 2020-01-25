@@ -87,11 +87,12 @@ export interface PatternsState {
 
 class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState> {
 
-    handleAddClick = () => this.props.addPattern({history: true, selection: true, rotation: true, repeating: true});
+    handleAddClick = () => this.props.addPattern({history: true, selection: true, rotation: true, repeating: false});
 
     render() {
         const {
-            createRoom, removePattern, patterns, updateImage, updateMask,
+            patterns,
+            createRoom, removePattern, updateImage, updateMask,
             setMaskParams, updateSelection, undo, redo, setWidth,
             setHeight, editConfig, setRotation, setRepeating,
             save, load, setLoadingParams,

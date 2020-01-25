@@ -18,7 +18,7 @@ import {
     RotationValue,
     SelectionParams,
     SelectionValue,
-    StoreParams
+    StoreParams, VideoParams, VideoValue
 } from "./types";
 import {createCanvasStateFromImageData, createCleanCanvasState} from "../../utils/state";
 import {PatternsState} from "./reducer";
@@ -51,7 +51,8 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         mask: getMaskState(width, height)(mask, undefined, (params || {}).mask),
         rotation: getRotationState(rotation, undefined, (params || {}).rotation),
         repeating: getRepeatingState(repeating, undefined, (params || {}).repeating),
-        loading: getLoadingState(true, undefined, (params || {}).loading)
+        loading: getLoadingState(true, undefined, (params || {}).loading),
+        video: getVideoState(true, undefined, (params || {}).video),
     }
 };
 
@@ -138,6 +139,11 @@ export const getRepeatingState = getFunctionState<RepeatingValue, RepeatingParam
 export const getLoadingState = getFunctionState<LoadingValue, LoadingParams>(
     {}, {
         fit: false
+    });
+
+export const getVideoState = getFunctionState<VideoValue, VideoParams>(
+    {}, {
+        on: false
     });
 
 

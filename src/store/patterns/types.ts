@@ -2,6 +2,7 @@ import {CanvasState, FunctionState, HeightAction, ImageAction, WidthAction,} fro
 import {Action} from "redux";
 import {Segment} from "../../utils/path";
 import {BezierPoints} from "../../components/_shared/BezierCurve";
+import {VideoParams} from "./functions/video";
 
 
 export enum EPatternType {
@@ -130,6 +131,8 @@ export interface PatternParams {
     mask?: MaskParams
 
     loading?: LoadingParams
+
+    video?: VideoParams
 }
 
 export interface PatternConfig {
@@ -150,6 +153,8 @@ export interface PatternConfig {
     rotation?: boolean
 
     repeating?: boolean
+
+    video?: boolean
 }
 
 
@@ -162,6 +167,7 @@ export type MaskState = FunctionState<MaskValue, MaskParams>;
 export type RotationState = FunctionState<RotationValue, RotationParams>;
 export type RepeatingState = FunctionState<RepeatingValue, RepeatingParams>;
 export type LoadingState = FunctionState<LoadingValue, LoadingParams>;
+export type VideoState = FunctionState<VideoValue, VideoParams>;
 
 export interface PatternState {
     id: string
@@ -175,6 +181,7 @@ export interface PatternState {
     rotation?: RotationState
     repeating?: RepeatingState
     loading?: LoadingState
+    video?: VideoState
 
     connected?: string
     socket?: any
@@ -244,6 +251,10 @@ export interface LoadAction extends PatternAction {
 }
 
 export interface SaveAction extends PatternAction {
+}
+
+export interface VideoOnChangeAction extends PatternAction {
+    value: boolean
 }
 
 export interface CreateRoomAction extends PatternAction {

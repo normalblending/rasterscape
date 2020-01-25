@@ -19,7 +19,7 @@ export interface LoopCFState {
 }
 
 
-const tRange = [0, 3000] as [number, number];
+const tRange = [-3000, 3000] as [number, number];
 const tValueD = ValueD.VerticalLinear(.05);
 const seRange = [0, 1] as [number, number];
 const seValueD = ValueD.VerticalLinear(100);

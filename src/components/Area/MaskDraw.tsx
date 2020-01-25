@@ -31,7 +31,6 @@ export interface MaskDrawActionProps {
 export interface MaskDrawOwnProps extends CanvasProps {
     params?: MaskParams
     name: any
-    rotation?: RotationValue
 
     onParamsChange(params: MaskParams)
 }

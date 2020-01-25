@@ -53,11 +53,11 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
         return (
             <span className={classNames(className, "select-buttons")}>
             {items.map((item, index) => (
-                <>
+                <React.Fragment key={getValue(item)}>
                     {!!br && !!index && !(index % br) && <br/>}
                     <ButtonSelect
                         value={item}
-                        key={getValue(item)}
+                        // key={getValue(item)}
                         selected={getValue(item) === value}
                         onMouseUp={(e) => {
                             console.log(e)
@@ -65,7 +65,7 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
                         onClick={this.handleClick}>
                         {getText(item)}
                     </ButtonSelect>
-                </>
+                </React.Fragment>
             ))}</span>
         );
     }
