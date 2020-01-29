@@ -12,6 +12,7 @@ import {rotatingReducers} from "./rotating/reducers";
 import {selectionReducers} from "./selection/reducers";
 import {storeReducers} from "./store/reducers";
 import {videoReducers} from "./video/reducers";
+import {roomReducers} from "./room/reducers";
 
 export const patternsReducer = handleActions<PatternsState>({
     [EPatternsAction.ADD_PATTERN]: (state: PatternsState, action: AddPatternAction) => {
@@ -33,6 +34,7 @@ export const patternsReducer = handleActions<PatternsState>({
     ...rotatingReducers,
     ...videoReducers,
     ...storeReducers,
+    ...roomReducers,
 }, {});
 
 

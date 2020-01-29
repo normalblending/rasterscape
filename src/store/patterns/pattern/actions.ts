@@ -23,9 +23,9 @@ export enum EPatternAction {
 export const updateImage = (id: string, imageData: ImageData, emit: boolean = true): ThunkResult<UpdatePatternImageAction, AppState> =>
     (dispatch, getState) => {
 
-        const socket = getState().patterns[id].socket;
+         // const socket = getState().patterns[id].room.value.socket;
 
-        emit && socket && socket.emit("image", imageDataToBase64(imageData));
+        // emit && socket && socket.emit("image", imageDataToBase64(imageData));
 
         return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData, id});
     };

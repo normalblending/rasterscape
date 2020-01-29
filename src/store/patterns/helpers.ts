@@ -53,7 +53,8 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         mask: getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask),
         rotation: getRotationState(rotation, state.rotation, params.rotation),
         repeating: getRepeatingState(repeating, state.repeating, params.repeating),
-        import: getImportState(true, state.import, params.import)
+        import: getImportState(true, state.import, params.import),
+        video: getVideoState(true, state.video, params.video),
     }
 };
 

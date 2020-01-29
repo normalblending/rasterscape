@@ -19,6 +19,9 @@ import {PatternConfig} from "../../store/patterns/pattern/types";
 import {HistoryState} from "../../store/patterns/history/types";
 import {StoreState} from "../../store/patterns/store/types";
 import {Segments, SelectionState} from "../../store/patterns/selection/types";
+import {VideoControls} from "./VideoControls";
+import {VideoParams} from "../../store/patterns/video/types";
+import {RoomControls} from "./RoomControls";
 
 export interface PatternWindowProps {
     id: string
@@ -28,6 +31,7 @@ export interface PatternWindowProps {
     rotation?: RotationValue
     repeating?: RepeatingParams
     loading: ImportParams
+    video: VideoParams
 
     height: number
     width: number
@@ -78,19 +82,16 @@ export interface PatternWindowProps {
     onCreatePatternFromSelection(id: string)
 
     onCutBySelection(id: string)
+
+    onVideoParamsChange(id: string, params: VideoParams)
 }
 
 export interface PatternWindowState {
-    roomName?: string
 }
 
 const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true};
 
 export class Pattern extends React.PureComponent<PatternWindowProps, PatternWindowState> {
-
-    state = {
-        roomName: "222"
-    };
 
 
     handleImageChange = imageData => this.props.onImageChange(this.props.id, imageData);
@@ -119,8 +120,8 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
     handleMaskParamsChange = (params: MaskParams) =>
         this.props.onMaskParamsChange(this.props.id, params);
 
-    handleCreateRoom = () => {
-        this.props.onCreateRoom(this.props.id, this.state.roomName);
+    handleCreateRoom = (roomName) => {
+        this.props.onCreateRoom(this.props.id, roomName);
     };
 
     handleConfigToggle = (data) => {
@@ -154,13 +155,16 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
         this.props.onCutBySelection(this.props.id)
     };
 
+    handleVideoParamsChange = (params) => {
+        this.props.onVideoParamsChange(this.props.id, params)
+    };
 
     render() {
         const {
             connected,
             resultImage, imageValue, maskValue, maskParams,
             height, width, id, config,
-            history, store, selection, rotation, repeating, loading
+            history, store, selection, rotation, repeating, loading, video
         } = this.props;
 
         console.log("pattern render ", id, rotation);
@@ -197,13 +201,11 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                     <Button onClick={this.handleRemove}>del</Button> {id}
                     <Button onClick={this.handleDouble}>double</Button>
 
-                    {connected}
-                    <InputText
-                        value={this.state.roomName}
-                        onChange={roomName => this.setState({roomName})}/>
-                    <Button
-                        onClick={this.handleCreateRoom}/>
 
+                    {config.room &&
+                    <RoomControls
+                        onRoomCreate={this.handleCreateRoom}
+                        connected={connected}/>}
 
                     <InputNumber
                         onChange={this.handleSetWidth}
@@ -245,6 +247,12 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         onParamsChange={this.handleLoadingParamsChange}
                         onLoad={this.handleLoad}
                         onSave={this.handleSave}/>
+
+                    <VideoControls
+                        patternId={id}
+                        params={video}
+                        onParamsChange={this.handleVideoParamsChange}
+                    />
 
                     <div>
                         <ButtonSelect

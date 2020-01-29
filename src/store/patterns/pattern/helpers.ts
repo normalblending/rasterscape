@@ -27,7 +27,9 @@ export const getPatternConfig = (pattern: PatternState): PatternConfig => {
 
         rotation: !!pattern.rotation,
 
-        repeating: !!pattern.repeating
+        repeating: !!pattern.repeating,
+
+        room: !!pattern.room
     }
 };
 export const getPatternParams = (pattern: PatternState): PatternParams => {
@@ -44,6 +46,8 @@ export const getPatternParams = (pattern: PatternState): PatternParams => {
 
         mask: pattern.mask && pattern.mask.params,
 
-        import: pattern.import && pattern.import.params
+        import: pattern.import && pattern.import.params,
+
+        room: pattern.room && pattern.room.params
     }
 };

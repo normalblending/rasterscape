@@ -6,7 +6,7 @@ export const importReducers = {
     [EImportAction.SET_IMPORT_PARAMS]: reducePattern<SetImportParamsAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
-            loading: {
+            import: {
                 ...pattern.import,
                 params: {
                     ...pattern.import.params,

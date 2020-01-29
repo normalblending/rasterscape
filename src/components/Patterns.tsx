@@ -22,6 +22,8 @@ import {Segments} from "../store/patterns/selection/types";
 import {RotationValue} from "../store/patterns/rotating/types";
 import {RepeatingParams} from "../store/patterns/repeating/types";
 import {ImportParams} from "../store/patterns/import/types";
+import {setVideoParams} from "../store/patterns/video/actions";
+import {VideoParams} from "../store/patterns/video/types";
 
 export interface PatternsStateProps {
     patterns: any
@@ -67,6 +69,8 @@ export interface PatternsActionProps {
     createPatternFromSelection(id: string)
 
     cutPatternBySelection(id: string)
+
+    setVideoParams(id: string, value: VideoParams)
 }
 
 export interface PatternsOwnProps {
@@ -92,11 +96,11 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setMaskParams, updateSelection, undo, redo, setWidth,
             setHeight, editConfig, setRotation, setRepeating,
             save, load, setLoadingParams,
-            createPatternFromSelection, doublePattern, cutPatternBySelection
+            createPatternFromSelection, doublePattern, cutPatternBySelection, setVideoParams
         } = this.props;
         return (
             <>
-                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, import: loading}) => {
+                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, import: loading, video}) => {
                     return (
                         <Pattern
                             key={id}
@@ -115,9 +119,12 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             rotation={rotation ? rotation.value : null}
                             repeating={repeating ? repeating.params : null}
                             loading={loading ? loading.params : null}
+                            video={video ? video.params : null}
 
                             width={current ? current.width : null}
                             height={current ? current.height : null}
+
+                            onConfigChange={editConfig}
 
                             onUndo={undo}
                             onRedo={redo}
@@ -129,7 +136,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onSetWidth={setWidth}
                             onSetHeight={setHeight}
                             onCreateRoom={createRoom}
-                            onConfigChange={editConfig}
                             onRotationChange={setRotation}
                             onRepeatingChange={setRepeating}
                             onSave={save}
@@ -137,7 +143,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onLoadingParamsChange={setLoadingParams}
                             onCreatePatternFromSelection={createPatternFromSelection}
                             onDouble={doublePattern}
-                            onCutBySelection={cutPatternBySelection}/>
+                            onCutBySelection={cutPatternBySelection}
+                            onVideoParamsChange={setVideoParams}/>
                     );
                 })}
                 <Button onClick={this.handleAddClick}>add</Button>
@@ -170,7 +177,8 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     setLoadingParams: setImportParams,
     createPatternFromSelection,
     doublePattern,
-    cutPatternBySelection
+    cutPatternBySelection,
+    setVideoParams
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

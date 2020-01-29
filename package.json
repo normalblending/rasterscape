@@ -12,6 +12,7 @@
     "lodash": "4.17.15",
     "node-sass": "4.13.0",
     "object-path-immutable": "4.0.2",
+    "p5": "0.8.0",
     "paper": "0.12.3",
     "path-data-polyfill": "1.0.3",
     "react": "16.11.0",

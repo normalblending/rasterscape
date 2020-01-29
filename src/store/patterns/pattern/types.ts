@@ -9,6 +9,7 @@ import {SelectionParams, SelectionState} from "../selection/types";
 import {MaskParams, MaskState} from "../mask/types";
 import {VideoParams, VideoState} from "../video/types";
 import {ImportParams, ImportState} from "../import/types";
+import {RoomParams, RoomState} from "../room/types";
 
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
@@ -29,6 +30,8 @@ export interface PatternParams {
     import?: ImportParams
 
     video?: VideoParams
+
+    room?: RoomParams
 }
 
 export interface PatternConfig {
@@ -51,6 +54,8 @@ export interface PatternConfig {
     repeating?: boolean
 
     video?: boolean
+
+    room?: boolean
 }
 
 
@@ -67,9 +72,7 @@ export interface PatternState {
     repeating?: RepeatingState
     import?: ImportState
     video?: VideoState
-
-    connected?: string
-    socket?: any
+    room?: RoomState
 }
 
 // ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS

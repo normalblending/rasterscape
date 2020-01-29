@@ -6,7 +6,12 @@ export const roomReducers = {
     [ERoomAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
-            connected: action.roomName,
-            socket: action.socket,
+            room: {
+                ...pattern.room,
+                value: {
+                    connected: action.roomName,
+                    socket: action.socket,
+                }
+            }
         }))
 };
