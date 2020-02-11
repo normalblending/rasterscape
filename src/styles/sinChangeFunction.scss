@@ -1,3 +1,9 @@
 .sin-change-function {
   border: 1px solid midnightblue;
+  display: flex;
+  flex-direction: column;
+
+  canvas {
+    border: none;
+  }
 }

@@ -21,9 +21,13 @@ export interface ChangeFStateProps {
 
 export interface ChangeFActionProps {
     changeCFParams(id: string, params: any)
+
     addCF(cfType: ECFType)
+
     startChanging()
+
     stopChanging()
+
     setChangingMode(mode: ChangingMode)
 }
 
@@ -42,7 +46,7 @@ export interface ChangeFState {
 const CFComponentByType = {
     [ECFType.SIN]: SinCF,
     [ECFType.LOOP]: LoopCF,
-    [ECFType.XY]: XYCF,
+    [ECFType.XY_PARABOLOID]: XYCF,
 };
 
 const modesItems = enumToSelectItems(ChangingMode);
@@ -64,7 +68,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
     };
 
     handleAddXY = () => {
-        this.props.addCF(ECFType.XY);
+        this.props.addCF(ECFType.XY_PARABOLOID);
     };
 
     handleModeChange = ({value}) => {
@@ -74,25 +78,30 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
     render() {
         const {cfs, changingMode} = this.props;
         return (
-            <div>
-                {Object.values(cfs).map(cf => {
-                    const {type, id, params, paramsConfig} = cf;
-                    const Component = CFComponentByType[type];
-                    return (
-                        <Component
-                            key={id}
-                            name={id}
-                            params={params}
-                            paramsConfig={paramsConfig}
-                            onChange={this.handleChange}/>);
-                })}
-                <Button onClick={this.handleAddSin}>sin</Button>
-                <Button onClick={this.handleAddLoop}>loop</Button>
-                <Button onClick={this.handleAddXY}>xy</Button>
-                <SelectButtons
-                    items={modesItems}
-                    value={changingMode}
-                    onChange={this.handleModeChange}/>
+            <div className="change-functions">
+                <div className="control-buttons">
+                    <Button onClick={this.handleAddSin}>sin</Button>
+                    <Button onClick={this.handleAddLoop}>loop</Button>
+                    <Button onClick={this.handleAddXY}>parab</Button>
+                    {/*<br/>*/}
+                    {/*<SelectButtons*/}
+                    {/*    items={modesItems}*/}
+                    {/*    value={changingMode}*/}
+                    {/*    onChange={this.handleModeChange}/>*/}
+                </div>
+                <div className="functions-list">
+                    {Object.values(cfs).reverse().map(cf => {
+                        const {type, id, params, paramsConfig} = cf;
+                        const Component = CFComponentByType[type];
+                        return (
+                            <Component
+                                key={id}
+                                name={id}
+                                params={params}
+                                paramsConfig={paramsConfig}
+                                onChange={this.handleChange}/>);
+                    })}
+                </div>
             </div>
         );
     }

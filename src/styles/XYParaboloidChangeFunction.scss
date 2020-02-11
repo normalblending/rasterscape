@@ -1,0 +1,13 @@
+.XY_PARABOLOID-change-function {
+  border: 1px solid midnightblue;
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  .XY_PARABOLOID-change-function-row {
+    display: flex;
+  }
+  canvas {
+
+    //border: 1px solid red;
+  }
+}

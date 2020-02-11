@@ -176,4 +176,3 @@ export class Capture {
         this.sketch.save(this.canvas, randomZ())
     };
 }
-export const a = 1;

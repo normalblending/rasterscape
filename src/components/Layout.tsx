@@ -30,11 +30,11 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
                     <AppControls/>
                     <div className="tools-panel">
                         <Tools/>
+                        <ChangeF/>
                     </div>
                     <div className="windows">
                         <Patterns/>
                         <Rooms/>
-                        <ChangeF/>
                     </div>
                 </div>
             </div>

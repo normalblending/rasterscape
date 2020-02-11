@@ -1,17 +1,17 @@
 import {EParamType} from "../../../components/_shared/Params";
 import {ValueD} from "../../../components/_shared/ButtonNumber";
+import {xyParaboloid} from "./helpers";
+import {coordHelper, redHelper} from "../../../components/Area/canvasPosition.servise";
 
-export const xyInitialParams = {
-    start: 0,
+export const xyParaboloidInitialParams = {
+    zd: 0,
     end: 1,
-    x: 150,
-    y: 150,
-    xa: 1,
-    ya: 1
+    x: 1.5,
+    y: 1.5,
 };
 
-export const xyParamsConfig = [{
-    name: "start",
+export const xyParaboloidParamsConfig = [{
+    name: "zd",
     type: EParamType.Number,
     props: {
         valueD: ValueD.VerticalLinear(100),
@@ -54,23 +54,28 @@ export const xyParamsConfig = [{
     }
 }];
 
-export const xyChangeFunction =
+export const xyParaboloidChangeFunction =
     ({params, range, pattern}) =>
         ({startValue, time, position}) => {
-            const {x: X, y: Y, c: C, xa, ya, start, end} = params;
-            const z = Math.pow(position.x - pattern.current.width / 2, 2) / X * xa
-                + Math.pow(position.y - pattern.current.height / 2, 2) * ya / Y;
 
-            const m = Math.pow(-pattern.current.width / 2, 2) / X * xa
-                + Math.pow(-pattern.current.height / 2, 2) * ya / Y;
+            const {x, y, end, zd} = params;
 
-            const startValueNormalized = startValue / (range[1] - range[0]);
+            const f = xyParaboloid(1/2, 1/2, x, y);
 
+            const width = pattern.current.width;
+            const height = pattern.current.height;
+
+            const xnorm = position.x / width;
+            const ynorm = position.y / height;
+            const znorm = f(xnorm, ynorm) + zd;
+
+            // (range[1] - startValue) * end;
 
             return Math.max(
                 Math.min(
-                    (+z / m * (1 - startValueNormalized) * end) * (range[1] - range[0]) + startValue,
-                    range[1]),
-                range[0]
+                    (znorm * end ) * (range[1] - range[0]) + startValue,
+                    startValue + (range[1] - startValue) * end
+                ),
+                startValue
             );
         };

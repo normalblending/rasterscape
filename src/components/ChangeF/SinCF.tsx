@@ -3,6 +3,7 @@ import {ParamConfig, Params} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
 import "../../styles/sinChangeFunction.scss";
 import {ValueD} from "../_shared/ButtonNumber";
+import {Wave} from "../_shared/canvases/Wave";
 
 export interface SinCFProps {
     params: any
@@ -32,7 +33,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     path={`changeFunctions.${name}.params.a`}
                     value={params.a}
                     name={"a"}
-                    range={[0, 1]}
+                    range={[0.0001, 1]}
                     valueD={ValueD.VerticalLinear(100)}
                     onChange={this.handleParamChange}
                 />
@@ -40,16 +41,32 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     path={`changeFunctions.${name}.params.t`}
                     value={params.t}
                     name={"t"}
-                    range={[0, 1000]}
+                    range={[1, 5000]}
                     valueD={ValueD.VerticalLinear(0.05)}
                     onChange={this.handleParamChange}
                 />
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.o`}
+                    value={params.o}
+                    name={"o"}
+                    range={[0, 1]}
+                    valueD={ValueD.VerticalLinear(100)}
+                    onChange={this.handleParamChange}
+                />
+                <Wave
+                    W={68}
+                    H={50}
+                    O={params.o}
+                    Tmax={5000}
+                    Amax={1}
+                    A={params.a}
+                    T={params.t}/>
                 {/*<ButtonNumberCF*/}
-                    {/*path={`changeFunctions.${name}.params.p`}*/}
-                    {/*value={params.p}*/}
-                    {/*name={"p"}*/}
-                    {/*range={[0, 1]}*/}
-                    {/*onChange={this.handleParamChange}*/}
+                {/*path={`changeFunctions.${name}.params.p`}*/}
+                {/*value={params.p}*/}
+                {/*name={"p"}*/}
+                {/*range={[0, 1]}*/}
+                {/*onChange={this.handleParamChange}*/}
                 {/*/>*/}
             </div>
         );

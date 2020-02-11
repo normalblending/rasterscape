@@ -9,6 +9,8 @@ import {ButtonSelect} from "../_shared/ButtonSelect";
 import {SelectTool} from "./SelectTool";
 import {Button} from "../_shared/Button";
 import {reverseFullScreen} from "../../store/fullscreen";
+import * as classNames from "classnames";
+import "../../styles/tools.scss";
 
 export const ToolsParams = {
     [EToolType.Brush]: {component: Brush, type: EToolType.Brush},
@@ -26,18 +28,18 @@ export interface ToolsActionProps {
 }
 
 export interface ToolsOwnProps {
-
+    className?: string
 }
 
 export interface ToolsProps extends ToolsStateProps, ToolsActionProps, ToolsOwnProps {
 
 }
 
-const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reverseFullScreen}) => {
+const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reverseFullScreen, className}) => {
 
     const ToolControls = ToolsParams[currentTool].component;
     return (
-        <div className="tools">
+        <div className={classNames("tools", className)}>
             <div>
                 {Object.keys(ToolsParams).map(toolType => (
                     <ButtonSelect

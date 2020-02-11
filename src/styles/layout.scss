@@ -13,21 +13,23 @@
     justify-content: flex-start;
 
     .tools-panel {
-      border: 1px solid lightseagreen;
 
       position: fixed;
       top: 7px;
       left: 11px;
+
+      display: flex;
+
     }
 
     .windows {
+      height: 100%;
       white-space: nowrap;
       margin-right: 600px;
       margin-left: 600px;
       display: flex;
       align-items: flex-end;
 
-      padding-bottom: 40px;
     }
 
     .app-controls {

@@ -22,7 +22,7 @@ import {Segments} from "../store/patterns/selection/types";
 import {RotationValue} from "../store/patterns/rotating/types";
 import {RepeatingParams} from "../store/patterns/repeating/types";
 import {ImportParams} from "../store/patterns/import/types";
-import {setVideoParams} from "../store/patterns/video/actions";
+import {onNewFrame, setVideoParams} from "../store/patterns/video/actions";
 import {VideoParams} from "../store/patterns/video/types";
 
 export interface PatternsStateProps {
@@ -71,6 +71,8 @@ export interface PatternsActionProps {
     cutPatternBySelection(id: string)
 
     setVideoParams(id: string, value: VideoParams)
+
+    onNewVideoFrame(id: string, imageData: ImageData)
 }
 
 export interface PatternsOwnProps {
@@ -96,7 +98,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setMaskParams, updateSelection, undo, redo, setWidth,
             setHeight, editConfig, setRotation, setRepeating,
             save, load, setLoadingParams,
-            createPatternFromSelection, doublePattern, cutPatternBySelection, setVideoParams
+            createPatternFromSelection, doublePattern, cutPatternBySelection, setVideoParams,
+            onNewVideoFrame
         } = this.props;
         return (
             <>
@@ -144,7 +147,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onCreatePatternFromSelection={createPatternFromSelection}
                             onDouble={doublePattern}
                             onCutBySelection={cutPatternBySelection}
-                            onVideoParamsChange={setVideoParams}/>
+                            onVideoParamsChange={setVideoParams}
+                            onNewVideoFrame={onNewVideoFrame}/>
                     );
                 })}
                 <Button onClick={this.handleAddClick}>add</Button>
@@ -178,7 +182,8 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     createPatternFromSelection,
     doublePattern,
     cutPatternBySelection,
-    setVideoParams
+    setVideoParams,
+    onNewVideoFrame: onNewFrame
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

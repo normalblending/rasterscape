@@ -135,5 +135,3 @@ export const Formulas = (W, H) => ({
         }
     }
 });
-
-export const a = 1;

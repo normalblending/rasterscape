@@ -6,6 +6,7 @@ import {ECFType} from "../../store/changeFunctions/types";
 import {Canvas} from "./Canvas";
 import {getOffset} from "../../utils/offset";
 import {createCanvas} from "../../utils/canvas/helpers/base";
+import * as Color from "color";
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);
@@ -22,7 +23,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     integer?: boolean
 
     width?: number
-    precision?: number
+    precision?: number | ((value?: any) => number)
 
     text?: string
 
@@ -136,6 +137,14 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.setState({value});
     };
 
+    calculateOneStep = (value) => {
+        const {precision = 100, range} = this.props;
+        if (typeof precision === "function") {
+            return (range[1] - range[0]) / precision(value)
+        } else {
+            return (range[1] - range[0]) / precision
+        }
+    };
 
     handleUp = (e) => {
         // //  modulation
@@ -145,7 +154,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         let value = this.calcValue(e);
 
 
-        const one = (range[1] - range[0]) / precision;
+
+        const one = this.calculateOneStep(value);
         if (Math.abs(value - this.state.startValue) < one) {
 
             const {left} = getOffset(e.target);
@@ -315,7 +325,7 @@ const amplitudeComponent = {
             </div>
         );
     },
-    [ECFType.XY]: (props) => {
+    [ECFType.XY_PARABOLOID]: (props) => {
         const {range, params, changingStartValue, changeFunctionId, changing, buttonWidth} = props;
 
 
@@ -338,47 +348,31 @@ const amplitudeComponent = {
                 </div>);
         }
 
-        const height = 20;
+        const height = 6;
         const {canvas, context} = createCanvas(width, height);
         const imageData = context.getImageData(0, 0, width, height);
 
-        const cf = (x, y) => {
-            return ((params, range, pattern) =>
-                (startValue, time, position) => {
-                    const {x: X, y: Y, c: C, xa, ya, start, end} = params;
-                    // console.log(params, range);
-                    const z = Math.pow(position.x - pattern.current.width / 2, 2) / X * xa
-                        + Math.pow(position.y - pattern.current.height / 2, 2) * ya / Y;
-
-                    const m = Math.pow(-pattern.current.width / 2, 2) / X * xa
-                        + Math.pow(-pattern.current.height / 2, 2) * ya / Y;
 
 
-                    const startValueNormalized = startValue / (range[1] - range[0]);
-                    return Math.max(
-                        Math.min(
-                            (+z / m * (1 - startValueNormalized)) * (range[1] - range[0]) + startValue,
-                            range[1]),
-                        range[0]
-                    );
-                })(params, [0, 1], {
-                current: {
-                    width, height
-                }
-            })(0, null, {x, y})
-        };
-
-        console.log(width, height, imageData)
-        // noise
         for (let i = 0; i < imageData.data.length; i += 4) {
+
             const x = (i / 4) % width;
             const y = Math.floor((i / 4) / width);
-            const a = cf(x, y);
-            // console.log(a);
-            imageData.data[i] = a * 255;//Math.random() * 100;
-            imageData.data[i + 1] = 0;//Math.random() * 100;
-            imageData.data[i + 2] = 0;//Math.random() * 100;
-            imageData.data[i + 3] = a * 255;//Math.random() * 100;
+
+            const colorFrom = 200;
+            const colorTo = colorFrom + 150;
+
+            const color = Color.hsl(Math.max(Math.min(colorTo - x/width * (colorTo - colorFrom), colorTo), colorFrom), 50, 50);
+
+// console.log(a);
+
+            const rgb = color.rgb().array();
+
+
+            imageData.data[i] = rgb[0];
+            imageData.data[i + 1] = rgb[1];
+            imageData.data[i + 2] = rgb[2];
+            imageData.data[i + 3] = 200;
         }
 
 
@@ -386,7 +380,7 @@ const amplitudeComponent = {
             <Canvas
                 style={{
                     width: ampWidth * 100 + "%",
-                    left: `${startVPerc * 100}%`
+                    left: `${(startVPerc) * 100}%`
                 }}
                 className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}
                 width={width}

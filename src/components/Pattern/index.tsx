@@ -84,6 +84,8 @@ export interface PatternWindowProps {
     onCutBySelection(id: string)
 
     onVideoParamsChange(id: string, params: VideoParams)
+
+    onNewVideoFrame(id: string, imageData: ImageData)
 }
 
 export interface PatternWindowState {
@@ -159,6 +161,10 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
         this.props.onVideoParamsChange(this.props.id, params)
     };
 
+    handleNewVideoFrame = (imageData: ImageData) => {
+        this.props.onNewVideoFrame(this.props.id, imageData)
+    };
+
     render() {
         const {
             connected,
@@ -170,103 +176,118 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
         console.log("pattern render ", id, rotation);
         return (
             <div className="pattern">
-                <div className={"areas"}>
-                    <Area
-                        name={id}
-                        width={width}
-                        height={height}
+                <div className="left">
+                    <div className="plugins">
+                        {config.repeating &&
+                        <RepeatingControls
+                            patternId={id}
+                            repeating={repeating}
+                            onChange={this.handleRepeatingChange}/>}
+                        {config.video &&
+                        <VideoControls
+                            patternId={id}
+                            params={video}
+                            onNewFrame={this.handleNewVideoFrame}
+                            onParamsChange={this.handleVideoParamsChange}/>}
+                    </div>
+                    <div className="pattern-controls">
 
-                        rotation={rotation}
-
-                        imageValue={imageValue}
-
-                        selectionValue={selection.value.segments}
-                        selectionParams={selection.params}
-
-                        onImageChange={this.handleImageChange}
-                        onSelectionChange={this.handleSelectionChange}/>
-                    {config.mask &&
-                    <MaskDraw
-                        rotation={rotation}
-                        params={maskParams}
-                        value={maskValue}
-                        name={id}
-                        width={width}
-                        height={height}
-                        onParamsChange={this.handleMaskParamsChange}
-                        onChange={this.handleMaskChange}/>}
-                    {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
+                    </div>
                 </div>
-                <div className="pattern-controls">
-                    <Button onClick={this.handleRemove}>del</Button> {id}
-                    <Button onClick={this.handleDouble}>double</Button>
+                <div className="right">
+
+                    <div className={"areas"}>
+                        <Area
+                            name={id}
+                            width={width}
+                            height={height}
+
+                            rotation={rotation}
+
+                            imageValue={imageValue}
+
+                            selectionValue={selection.value.segments}
+                            selectionParams={selection.params}
+
+                            onImageChange={this.handleImageChange}
+                            onSelectionChange={this.handleSelectionChange}/>
+                        {config.mask &&
+                        <MaskDraw
+                            rotation={rotation}
+                            params={maskParams}
+                            value={maskValue}
+                            name={id}
+                            width={width}
+                            height={height}
+                            onParamsChange={this.handleMaskParamsChange}
+                            onChange={this.handleMaskChange}/>}
+                        {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
+                    </div>
+                    <div className="pattern-controls">
+                        <Button onClick={this.handleRemove}>del</Button> {id}
+                        <Button onClick={this.handleDouble}>double</Button>
 
 
-                    {config.room &&
-                    <RoomControls
-                        onRoomCreate={this.handleCreateRoom}
-                        connected={connected}/>}
+                        {config.room &&
+                        <RoomControls
+                            onRoomCreate={this.handleCreateRoom}
+                            connected={connected}/>}
 
-                    <InputNumber
-                        onChange={this.handleSetWidth}
-                        value={width}
-                        {...inputNumberProps}/>
-                    <InputNumber
-                        onChange={this.handleSetHeight}
-                        value={height}
-                        {...inputNumberProps}/>
+                        <InputNumber
+                            onChange={this.handleSetWidth}
+                            value={width}
+                            {...inputNumberProps}/>
+                        <InputNumber
+                            onChange={this.handleSetHeight}
+                            value={height}
+                            {...inputNumberProps}/>
 
-                    {config.history &&
-                    <HistoryControls
-                        history={history.value}
-                        onUndo={this.handleUndo}
-                        onRedo={this.handleRedo}/>}
+                        {config.history &&
+                        <HistoryControls
+                            history={history.value}
+                            onUndo={this.handleUndo}
+                            onRedo={this.handleRedo}/>}
 
 
-                    <SelectionControls
-                        selectionValue={selection.value}
-                        onCreatePattern={this.handleCreatePatternFromSelection}
-                        onClear={this.handleClearSelection}
-                        onCut={this.handleCutBySelection}/>
+                        <SelectionControls
+                            selectionValue={selection.value}
+                            onCreatePattern={this.handleCreatePatternFromSelection}
+                            onClear={this.handleClearSelection}
+                            onCut={this.handleCutBySelection}/>
 
-                    {config.rotation &&
-                    <RotationControls
-                        patternId={id}
-                        rotation={rotation}
-                        onChange={this.handleRotationChange}/>}
+                        {config.rotation &&
+                        <RotationControls
+                            patternId={id}
+                            rotation={rotation}
+                            onChange={this.handleRotationChange}/>}
 
-                    {config.repeating &&
-                    <RepeatingControls
-                        patternId={id}
-                        repeating={repeating}
-                        onChange={this.handleRepeatingChange}/>}
 
-                    <SaveLoadControls
-                        patternId={id}
-                        loading={loading}
-                        onParamsChange={this.handleLoadingParamsChange}
-                        onLoad={this.handleLoad}
-                        onSave={this.handleSave}/>
+                        <SaveLoadControls
+                            patternId={id}
+                            loading={loading}
+                            onParamsChange={this.handleLoadingParamsChange}
+                            onLoad={this.handleLoad}
+                            onSave={this.handleSave}/>
 
-                    <VideoControls
-                        patternId={id}
-                        params={video}
-                        onParamsChange={this.handleVideoParamsChange}
-                    />
 
-                    <div>
-                        <ButtonSelect
-                            name={"mask"}
-                            selected={config.mask}
-                            onClick={this.handleConfigToggle}>mask</ButtonSelect>
-                        <ButtonSelect
-                            name={"repeating"}
-                            selected={config.repeating}
-                            onClick={this.handleConfigToggle}>repeating</ButtonSelect>
-                        <ButtonSelect
-                            name={"rotation"}
-                            selected={config.rotation}
-                            onClick={this.handleConfigToggle}>rotation</ButtonSelect>
+                        <div>
+                            <ButtonSelect
+                                name={"mask"}
+                                selected={config.mask}
+                                onClick={this.handleConfigToggle}>mask</ButtonSelect>
+                            <ButtonSelect
+                                name={"repeating"}
+                                selected={config.repeating}
+                                onClick={this.handleConfigToggle}>repeating</ButtonSelect>
+                            <ButtonSelect
+                                name={"rotation"}
+                                selected={config.rotation}
+                                onClick={this.handleConfigToggle}>rotation</ButtonSelect>
+                            <ButtonSelect
+                                name={"video"}
+                                selected={config.video}
+                                onClick={this.handleConfigToggle}>video</ButtonSelect>
+                        </div>
                     </div>
                 </div>
 
