@@ -17,6 +17,7 @@ export function bindDrawFunctions(cvs) {
         var oy = offset.y;
         ctx.beginPath();
         ctx.arc(p.x + ox, p.y + oy, r, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.stroke();
     };
 
@@ -114,7 +115,6 @@ export function bindDrawFunctions(cvs) {
             offset = offset || {x: 0, y: 0};
             var ox = offset.x;
             var oy = offset.y;
-            ctx.lineWidth = 1;
             ctx.closePath();
             ctx.beginPath();
             ctx.moveTo(p1.x + ox, p1.y + oy);
@@ -170,6 +170,21 @@ export function bindDrawFunctions(cvs) {
             ctx.lineTo(bbox.x.max + ox, bbox.y.min + oy);
             ctx.closePath();
             ctx.stroke();
+        },
+
+        drawRect: function (p, w, h, offset) {
+            offset = offset || {x: 0, y: 0};
+            var ox = offset.x;
+            var oy = offset.y;
+            ctx.beginPath();
+            ctx.moveTo(p.x - w/2 + ox, p.y - h/2 + oy);
+            ctx.lineTo(p.x - w/2 + w + ox, p.y - h/2 + oy);
+            ctx.lineTo(p.x - w/2 + w + ox, p.y - h/2 + h + oy);
+            ctx.lineTo(p.x - w/2 + ox, p.y - h/2 + h + oy);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
         },
 
         drawHull: function (hull, offset) {

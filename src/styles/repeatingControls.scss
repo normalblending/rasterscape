@@ -1,17 +1,74 @@
 .repeating-controls {
+
+  background: black;
   display: flex;
   flex-direction: column;
+
   .repeating-controls-grid {
     display: flex;
     flex-direction: column-reverse;
+
     .repeating-controls-grid-buttons {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+
       .repeating-controls-grid-buttons-row {
         display: flex;
 
       }
     }
   }
+}
+
+.repeating-button {
+  background: black;
+  color: white;
+
+  &.button-select.button-select-selected {
+    background: darkblue;
+  }
+}
+
+.repeating-button-number {
+  .button {
+    background: black;
+    color: white;
+  }
+
+
+  .button.button-select.button-select-selected {
+    background: darkblue;
+  }
+
+  .button-number-value {
+
+    display: flex;
+    align-items: center;
+    //height: 10px;
+    background: transparent;
+    border-right: 1px solid white; //#595959;
+  }
+
+  .button-number-cf-settings-handler {
+
+
+    background-color: black;
+
+
+    & > div {
+
+      background: #ffcd00;
+      border-radius: 50%;
+    }
+
+  }
+
+  .button-number-cf-value {
+    &.button-number-cf-value-active {
+      border: 1px solid #ffcd00;
+    }
+  }
+
+
 }

@@ -103,7 +103,7 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
     handleShortcutChange = shortcut => this.setState({shortcut});
 
     render() {
-        const {changeFunctions, changingValues, path, ...buttonNumberProps} = this.props;
+        const {changeFunctions, changingValues, path, className, ...buttonNumberProps} = this.props;
 
         const {onChange, onMouseDown, onMouseUp, onPress, onRelease, ...othersButtonNumberProps} = buttonNumberProps;
 
@@ -117,7 +117,7 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
 
         return (
             <HoverHideable
-                className={"button-number-cf"}
+                className={classNames("button-number-cf", className)}
                 button={
                     <ButtonNumber
                         {...othersButtonNumberProps}

@@ -19,7 +19,10 @@ export interface BezierCurveRepeatingState {
 
 const W = 210;
 const H = 140;
-const O = {x: 55, y: 20};
+const WW = 100;
+const HH = 100;
+const O = {x: 55, y: 17};
+
 
 export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeatingProps, BezierCurveRepeatingState> {
 
@@ -48,10 +51,37 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
         ctx.fillRect(0, 0, W, H);
 
         // frame
-        ctx.rect(O.x, O.y, 100, 100);
-        ctx.lineWidth = 0.3;
-        ctx.strokeStyle = "white";
+        ctx.rect(O.x, O.y, WW, HH);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "#595959";
         ctx.stroke();
+
+
+
+        ctx.font = "8px arial";
+        ctx.textBaseline = "hanging";
+        ctx.textAlign = "center";
+        ctx.fillStyle = 'white';
+
+        const NN = 4, MM = 4;
+        ctx.lineWidth = 1;
+        for (let xi = 0; xi <= NN; xi++) {
+            this.drawFunctions.drawLine({x: xi/NN * WW, y: HH+1}, {x: xi/NN * WW, y: HH + 5}, O);
+
+
+            ctx.fillText(Math.round(xi/NN * 100), xi/NN * WW + O.x, HH + 7 + O.y);
+            // ctx.fillText(A, 20, -(Math.sqrt(Amax / A)*A / Amax * H / 2)+ H / 2);
+        }
+
+        ctx.textBaseline = "middle";
+        ctx.textAlign = "right";
+        for (let yi = 0; yi <= MM; yi++) {
+            this.drawFunctions.drawLine({y: yi/MM * HH, x: -1}, {y: yi/MM * HH, x: -5}, O);
+            ctx.fillText(Math.round(100 - yi/MM * 100), -6 + O.x, yi/MM * HH + O.y);
+        }
+
+
+
 
         // grid points
         ctx.lineWidth = 1.2;
@@ -83,24 +113,21 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
         }
         ctx.globalAlpha = 1;
 
+        // curve
+        this.drawFunctions.drawCurve(this.curve, {line: '#ffcd00'}, O);
         // points
         ctx.strokeStyle = "white";
+        ctx.fillStyle="black";
         this.curve.points.forEach((p, i) => {
             if (i === 2 || i === 1) {
-                this.drawFunctions.drawCircle(p, 3, O);
+                this.drawFunctions.drawRect(p, 5,5, O);
             } else {
 
-                this.drawFunctions.drawCircle(p, 3, O);
-                return;
-                const r = 5;
-                ctx.rect(offset.x + p.x - r / 2, offset.y + p.y - r / 2, r, r);
-                ctx.stroke();
+                this.drawFunctions.drawRect(p, 5,5, O);
             }
         });
 
 
-        // curve
-        this.drawFunctions.drawCurve(this.curve, {line: '#ffcd00'}, O);
 
 
     };
