@@ -1,12 +1,12 @@
 import * as React from "react";
-import {Button} from "../_shared/Button";
+import {Button} from "../_shared/buttons/Button";
 import "../../styles/pattern.scss";
 import {HistoryControls} from "./HistoryControls";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/InputNumber";
 import {InputText} from "../_shared/InputText";
 import {MaskDraw} from "../Area/MaskDraw";
-import {ButtonSelect} from "../_shared/ButtonSelect";
+import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {RotationControls} from "./RotatingControls";
 import {RepeatingControls} from "./RepeatingControls";
 import {SaveLoadControls} from "./SaveLoadControls";

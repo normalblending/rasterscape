@@ -1,7 +1,7 @@
 import * as React from "react";
 import {File} from "../_shared/File";
-import {Button} from "../_shared/Button";
-import {ButtonSelect} from "../_shared/ButtonSelect";
+import {Button} from "../_shared/buttons/Button";
+import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {ImportParams} from "../../store/patterns/import/types";
 
 export interface SaveLoadControlsProps {

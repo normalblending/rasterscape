@@ -4,11 +4,11 @@ import {AppState} from "../../store";
 import {BrushParams, EBrushType} from "../../store/brush/types";
 import {setBrushParams} from "../../store/brush/actions";
 import {ParamConfig} from "../_shared/Params";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
-import {ValueD} from "../_shared/ButtonNumber";
-import {SelectButtons} from "../_shared/SelectButtons";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {ValueD} from "../_shared/buttons/ButtonNumber";
+import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
-import {SelectDrop} from "../_shared/SelectDrop";
+import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {createSelector} from "reselect";
 
 export interface BrushStateProps {

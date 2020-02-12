@@ -2,7 +2,7 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
 import {Room} from "../store/rooms/reducer";
-import {Button} from "./_shared/Button";
+import {Button} from "./_shared/buttons/Button";
 import {roomsConnect} from "../store/rooms/actions";
 
 export interface RoomsStateProps {

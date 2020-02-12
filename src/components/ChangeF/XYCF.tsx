@@ -1,11 +1,10 @@
 import * as React from "react";
 import {ParamConfig} from "../_shared/Params";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import "../../styles/XYParaboloidChangeFunction.scss";
-import {ValueD} from "../_shared/ButtonNumber";
+import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {Surface2d} from "../_shared/canvases/Surface2d";
 import {ECFType} from "../../store/changeFunctions/types";
-import {SurfaceSection} from "../_shared/canvases/SurfaceSection";
 
 export interface XYCFProps {
     params: any
@@ -72,25 +71,6 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
                         onChange={this.handleParamChange}
                     />
                 </div>
-                {/*<div className={"XY_PARABOLOID-change-function-row"}>*/}
-
-                {/*    <ButtonNumberCF*/}
-                {/*        path={`changeFunctions.${name}.params.xa`}*/}
-                {/*        value={params.xa}*/}
-                {/*        name={"xa"}*/}
-                {/*        range={[-200, 200]}*/}
-                {/*        valueD={ValueD.VerticalLinear(0.1)}*/}
-                {/*        onChange={this.handleParamChange}*/}
-                {/*    />*/}
-                {/*    <ButtonNumberCF*/}
-                {/*        path={`changeFunctions.${name}.params.ya`}*/}
-                {/*        value={params.ya}*/}
-                {/*        name={"ya"}*/}
-                {/*        range={[-200, 200]}*/}
-                {/*        valueD={ValueD.VerticalLinear(0.1)}*/}
-                {/*        onChange={this.handleParamChange}*/}
-                {/*    />*/}
-                {/*</div>*/}
                 <Surface2d
                     type={ECFType.XY_PARABOLOID}
                     params={params}

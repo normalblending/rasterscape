@@ -5,12 +5,12 @@ import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
 import {addCF, changeCFParams} from "../../store/changeFunctions/actions";
 import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
-import {Button} from "../_shared/Button";
+import {Button} from "../_shared/buttons/Button";
 import {setChangingMode, startChanging, stopChanging} from "../../store/changing/actions";
-import {SelectDrop} from "../_shared/SelectDrop";
+import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {enumToSelectItems, objectToSelectItems} from "../../utils/utils";
 import {ChangingMode} from "../../store/changing/types";
-import {SelectButtons} from "../_shared/SelectButtons";
+import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {LoopCF} from "./LoopCF";
 import {XYCF} from "./XYCF";
 

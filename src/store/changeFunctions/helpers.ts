@@ -2,7 +2,12 @@ import {ChangeFunctionsState} from "./reducer";
 import {ECFType} from "./types";
 import {sinChangeFunction, sinInitialParams, sinParamsConfig} from "./functions/sin";
 import {loopChangeFunction, loopInitialParams, loopParamsConfig} from "./functions/loop";
-import {xyParaboloidChangeFunction, xyParaboloidInitialParams, xyParaboloidParamsConfig} from "./functions/xyParaboloid";
+import {
+    xyParaboloidNumberChangeFunction,
+    xyParaboloidInitialParams,
+    xyParaboloidParamsConfig,
+    xyParaboloidVideoChangeFunction
+} from "./functions/xyParaboloid";
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
@@ -41,7 +46,7 @@ export const createCFInitialState = (id, type: ECFType) => {
 export const changeFunctionByType = {
     [ECFType.SIN]: sinChangeFunction,
     [ECFType.LOOP]: loopChangeFunction,
-    [ECFType.XY_PARABOLOID]: xyParaboloidChangeFunction,
+    [ECFType.XY_PARABOLOID]: xyParaboloidNumberChangeFunction,
     // [ECFType.SQ]:
     //     (params, range, pattern) =>
     //         (startValue, time, position) => {
@@ -50,5 +55,9 @@ export const changeFunctionByType = {
     //             const z = Math.pow(position.x - pattern.current.width / 2, 2) / xa / X + Math.pow(position.y - pattern.current.height / 2, 2) / ya / Y ;
     //             return z / pattern.current.width * (range[1] - range[0]) + startValue;
     //         },
+};
+
+export const videoChangeFunctionByType = {
+    [ECFType.XY_PARABOLOID]: xyParaboloidVideoChangeFunction
 };
 //({a, b, c, h}) => (x, y) => (Math.sin(x / a) * Math.cos(y / b) * c + h),

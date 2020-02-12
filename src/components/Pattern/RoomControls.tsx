@@ -1,6 +1,6 @@
 import * as React from "react";
 import {InputText} from "../_shared/InputText";
-import {Button} from "../_shared/Button";
+import {Button} from "../_shared/buttons/Button";
 
 export interface RoomControlsProps {
     onRoomCreate(roomName: string)

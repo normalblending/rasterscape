@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {Button} from "./_shared/Button";
+import {Button} from "./_shared/buttons/Button";
 import {reverseFullScreen} from "../store/fullscreen";
 import * as classNames from "classnames";
 

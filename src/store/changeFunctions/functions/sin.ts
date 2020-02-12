@@ -1,5 +1,5 @@
 import {EParamType} from "../../../components/_shared/Params";
-import {ValueD} from "../../../components/_shared/ButtonNumber";
+import {ValueD} from "../../../components/_shared/buttons/ButtonNumber";
 
 export const sinInitialParams = {
     a: 0.3,

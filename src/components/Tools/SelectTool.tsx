@@ -3,11 +3,11 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {setSelectToolParams} from "../../store/selectTool/actions";
 import {ESelectionMode, SelectToolParams} from "../../store/selectTool/types";
-import {SelectDrop} from "../_shared/SelectDrop";
+import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {createSelector} from "reselect";
 import {ParamConfig} from "../_shared/Params";
-import {ButtonNumber, ValueD} from "../_shared/ButtonNumber";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {ValueD} from "../_shared/buttons/ButtonNumber";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 
 export interface SelectToolStateProps {
 

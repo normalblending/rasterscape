@@ -1,6 +1,6 @@
 
 import {EParamType, ParamConfig} from "../../components/_shared/Params";
-import {ValueD} from "../../components/_shared/ButtonNumber";
+import {ValueD} from "../../components/_shared/buttons/ButtonNumber";
 import {arrayToSelectItems} from "../../utils/utils";
 import {ELineType, LineParams} from "./types";
 import {ELineCompositeOperation} from "./types";

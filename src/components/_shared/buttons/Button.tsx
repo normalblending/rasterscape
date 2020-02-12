@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
-import "../../styles/button.scss";
-import {EventData} from "../../utils/types";
+import "../../../styles/button.scss";
+import {EventData} from "../../../utils/types";
 
 export interface ButtonEventData extends EventData {
 }
@@ -29,9 +29,9 @@ export const Button: React.FC<ButtonProps> = ({ref, children, onClick, onMouseDo
         <button
             ref={ref}
             className={classNames("button", className)}
-            onClick={e => onClick && onClick({e, value, name})}
-            onMouseUp={e => onMouseUp && onMouseUp({e, value, name})}
-            onMouseDown={e => onMouseDown && onMouseDown({e, value, name})}
+            onClick={e => !disabled && onClick && onClick({e, value, name})}
+            onMouseUp={e => !disabled && onMouseUp && onMouseUp({e, value, name})}
+            onMouseDown={e => !disabled && onMouseDown && onMouseDown({e, value, name})}
             style={{width}}
             disabled={disabled}>
             {children}

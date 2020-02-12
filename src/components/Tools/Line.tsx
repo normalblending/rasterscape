@@ -5,11 +5,11 @@ import {ParamConfig, Params} from "../_shared/Params";
 import {ELineType, LineParams} from "../../store/line/types";
 import {setLineParams} from "../../store/line/actions";
 import {createSelector} from "reselect";
-import {SelectButtons} from "../_shared/SelectButtons";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
-import {SelectDrop} from "../_shared/SelectDrop";
+import {SelectButtons} from "../_shared/buttons/SelectButtons";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {BrushParams, EBrushType} from "../../store/brush/types";
-import {ValueD} from "../_shared/ButtonNumber";
+import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
 
 export interface LineStateProps {

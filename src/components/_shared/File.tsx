@@ -1,6 +1,6 @@
 import * as React from "react";
 import '../../styles/inputFile.scss';
-import {Button} from "./Button";
+import {Button} from "./buttons/Button";
 
 export interface FileProps {
     onChange(image)

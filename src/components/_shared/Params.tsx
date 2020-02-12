@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonSelect} from "./ButtonSelect";
-import {ButtonNumber} from "./ButtonNumber";
-import {SelectButtons} from "./SelectButtons";
+import {ButtonSelect} from "./buttons/ButtonSelect";
+import {ButtonNumber} from "./buttons/ButtonNumber";
+import {SelectButtons} from "./buttons/SelectButtons";
 import {EventData} from "../../utils/types";
 
 export interface ParamConfig {

@@ -1,8 +1,8 @@
 import * as React from "react";
 import {ParamConfig, Params} from "../_shared/Params";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import "../../styles/sinChangeFunction.scss";
-import {ValueD} from "../_shared/ButtonNumber";
+import {ValueD} from "../_shared/buttons/ButtonNumber";
 
 export interface LoopCFProps {
     params: any

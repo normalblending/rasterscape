@@ -10,8 +10,8 @@ import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions"
 import get from "lodash/get";
 import {ELineCompositeOperation, ELineType} from "../../store/line/types";
 import {EBrushType} from "../../store/brush/types";
-import {ButtonNumberCF} from "../_shared/ButtonNumberCF";
-import {ButtonSelect} from "../_shared/ButtonSelect";
+import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {MaskParams} from "../../store/patterns/mask/types";
 
@@ -312,8 +312,8 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
         const handlers = handlersByTool && handlersByTool[type];
 
         return (
-            <>
-                <div>
+            <div className={'mask-draw'}>
+                <div className='mask-draw-buttons'>
                     <ButtonNumberCF
                         path={`patterns.${name}.mask.params.opacity`}
                         name={"opacity"}
@@ -324,7 +324,9 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
                         <ButtonSelect
                             name={"black"}
                             selected={params.black}
-                            onClick={this.handleBlackChange}/>
+                            onClick={this.handleBlackChange}>
+                            {params.black ? 'erase' : 'black'}
+                        </ButtonSelect>
                     </div>
                 </div>
                 <Canvas
@@ -336,7 +338,7 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
                     onClick={handlers && handlers.click}
                     releaseProcess={handlers && handlers.release}
                     {...this.props}/>
-            </>
+            </div>
         );
     }
 }

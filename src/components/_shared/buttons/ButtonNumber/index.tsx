@@ -1,18 +1,24 @@
 import * as React from "react";
 import * as classNames from "classnames";
-import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "./ButtonSelect";
-import {Key} from "./Key";
-import {ECFType} from "../../store/changeFunctions/types";
-import {Canvas} from "./Canvas";
-import {getOffset} from "../../utils/offset";
-import {createCanvas} from "../../utils/canvas/helpers/base";
-import * as Color from "color";
+import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../ButtonSelect";
+import {Key} from "../../Key";
+import {ECFType} from "../../../../store/changeFunctions/types";
+import {getOffset} from "../../../../utils/offset";
+import {LoopAmplitude} from "./LoopAmplitude";
+import {ParaboloidAmplitude} from "./ParaboloidAmplitude";
+import {SinAmplitude} from "./SinAmplitude";
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);
 
 export const ValueD = {
     VerticalLinear: (step: number) => (oldValue: any, dx: number, dy) => oldValue - dy / step,
+};
+
+const amplitudeComponent = {
+    [ECFType.SIN]: SinAmplitude,
+    [ECFType.LOOP]: LoopAmplitude,
+    [ECFType.XY_PARABOLOID]: ParaboloidAmplitude,
 };
 
 export interface ButtonNumberEventData extends ButtonSelectEventData {
@@ -290,105 +296,4 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         );
     }
 }
-
-const amplitudeComponent = {
-    [ECFType.SIN]: ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
-        const startVPerc = (changingStartValue / (range[1] - range[0]));
-
-        const ampWidth = (Math.min(startVPerc, params.a) + Math.min(1 - startVPerc, params.a));
-
-        return (
-            <div
-                className={"button-number-amplitude"}
-                style={{
-                    width: ampWidth * 100 + "%",
-                    left: `calc(${(Math.max(startVPerc - params.a, 0)) * 100}%)`
-                }}>
-                    <span>
-                    {changeFunctionId}
-                    </span>
-            </div>
-        );
-    },
-    [ECFType.LOOP]: ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
-
-        return (
-            <div
-                className={"button-number-amplitude"}
-                style={{
-                    width: (params.end - params.start) * 100 + "%",
-                    left: `${params.start * 100}%`
-                }}>
-                    <span>
-                    {changeFunctionId}
-                    </span>
-            </div>
-        );
-    },
-    [ECFType.XY_PARABOLOID]: (props) => {
-        const {range, params, changingStartValue, changeFunctionId, changing, buttonWidth} = props;
-
-
-        const ampWidth = params.end * (1 - (changingStartValue - range[0]) / (range[1] - range[0]));
-
-        const startVPerc = (changingStartValue  - range[0])/ (range[1] - range[0]);
-
-        // console.log(props);
-        const width = Math.round(buttonWidth * ampWidth);
-
-        if (width <= 1) {
-            return (
-                <div
-                    style={{
-                        width: ampWidth * 100 + "%",
-                        left: `${startVPerc * 100}%`
-                    }}
-                    className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}>
-                    <span>{changeFunctionId}</span>
-                </div>);
-        }
-
-        const height = 6;
-        const {canvas, context} = createCanvas(width, height);
-        const imageData = context.getImageData(0, 0, width, height);
-
-
-
-        for (let i = 0; i < imageData.data.length; i += 4) {
-
-            const x = (i / 4) % width;
-            const y = Math.floor((i / 4) / width);
-
-            const colorFrom = 200;
-            const colorTo = colorFrom + 150;
-
-            const color = Color.hsl(Math.max(Math.min(colorTo - x/width * (colorTo - colorFrom), colorTo), colorFrom), 50, 50);
-
-// console.log(a);
-
-            const rgb = color.rgb().array();
-
-
-            imageData.data[i] = rgb[0];
-            imageData.data[i + 1] = rgb[1];
-            imageData.data[i + 2] = rgb[2];
-            imageData.data[i + 3] = 200;
-        }
-
-
-        return (
-            <Canvas
-                style={{
-                    width: ampWidth * 100 + "%",
-                    left: `${(startVPerc) * 100}%`
-                }}
-                className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}
-                width={width}
-                height={height}
-                value={imageData}>
-                <span>{changeFunctionId}</span>
-            </Canvas>
-        );
-    },
-};
 

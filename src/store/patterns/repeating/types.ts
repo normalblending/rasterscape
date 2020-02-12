@@ -1,6 +1,6 @@
 // REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING
 
-import {BezierPoints} from "../../../components/_shared/BezierCurve";
+import {BezierPoints} from "../../../components/_shared/canvases/BezierCurveRepeating";
 import {FunctionState} from "../../../utils/patterns/function";
 
 export enum ERepeatingType {

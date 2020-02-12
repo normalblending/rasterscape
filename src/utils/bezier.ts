@@ -65,21 +65,26 @@ export function bindDrawFunctions(cvs) {
             ctx.fillStyle = "transparent";
         },
 
-        drawSkeleton: function (curve, offset?, nocoords?) {
+        drawSkeleton: function (curve, colors?, offset?, nocoords?) {
+            colors = colors || {line: "rgba(255, 255, 255, .5)", points: "black"};
             offset = offset || {x: 0, y: 0};
             var pts = curve.points;
-            ctx.strokeStyle = "lightgrey";
+            ctx.strokeStyle = colors.line;
             this.drawLine(pts[0], pts[1], offset);
             if (pts.length === 3) {
+                ctx.strokeStyle = colors.line;
                 this.drawLine(pts[1], pts[2], offset);
             } else {
+                ctx.strokeStyle = colors.line;
                 this.drawLine(pts[2], pts[3], offset);
             }
-            ctx.strokeStyle = "black";
+            ctx.strokeStyle = colors.points;
             if (!nocoords) this.drawPoints(pts, offset);
         },
 
-        drawCurve: function (curve, offset?) {
+        drawCurve: function (curve, colors?, offset?) {
+            colors = colors || {line: "lightgrey"};
+            ctx.strokeStyle = colors.line;
             offset = offset || {x: 0, y: 0};
             var ox = offset.x;
             var oy = offset.y;
@@ -99,18 +104,23 @@ export function bindDrawFunctions(cvs) {
                     p[3].x + ox, p[3].y + oy
                 );
             }
+            ctx.lineWidth = 1.2;
             ctx.stroke();
             ctx.closePath();
+            ctx.lineWidth = 1;
         },
 
         drawLine: function (p1, p2, offset) {
             offset = offset || {x: 0, y: 0};
             var ox = offset.x;
             var oy = offset.y;
+            ctx.lineWidth = 1;
+            ctx.closePath();
             ctx.beginPath();
             ctx.moveTo(p1.x + ox, p1.y + oy);
             ctx.lineTo(p2.x + ox, p2.y + oy);
             ctx.stroke();
+            ctx.closePath();
         },
 
         drawPoint: function (p, offset) {
@@ -124,8 +134,14 @@ export function bindDrawFunctions(cvs) {
 
         drawPoints: function (points, offset) {
             offset = offset || {x: 0, y: 0};
-            points.forEach(function (p) {
-                drawCircle(p, 3, offset);
+            points.forEach(function (p, i) {
+                if (i === 2 || i === 1)
+                    drawCircle(p, 3, offset);
+                else {
+                    const r = 5;
+                    ctx.rect(offset.x + p.x - r / 2, offset.y + p.y - r / 2, r, r);
+                    ctx.stroke();
+                }
             }.bind(this));
         },
 
@@ -222,7 +238,11 @@ export function bindDrawFunctions(cvs) {
 }
 
 
-export function handleInteraction(cvs, curve) {
+export function handleInteraction(cvs, curve, offset?) {
+    offset = offset || {x: 0, y: 0};
+    var Ox = offset.x;
+    var Oy = offset.y;
+
     curve.mouse = false;
 
     var fix = function (e) {
@@ -244,8 +264,8 @@ export function handleInteraction(cvs, curve) {
     cvs.addEventListener("mousedown", function (evt) {
         document.addEventListener("mouseup", upHandler);
         fix(evt);
-        mx = evt.offsetX;
-        my = evt.offsetY;
+        mx = evt.offsetX - Ox;
+        my = evt.offsetY - Oy;
         lpts.forEach(function (p) {
             if (Math.abs(mx - p.x) < 10 && Math.abs(my - p.y) < 10) {
                 moving = true;
@@ -264,8 +284,8 @@ export function handleInteraction(cvs, curve) {
 
         if (!lpts) return;
         lpts.forEach(function (p) {
-            var mx = evt.offsetX;
-            var my = evt.offsetY;
+            var mx = evt.offsetX - Ox;
+            var my = evt.offsetY - Oy;
             if (Math.abs(mx - p.x) < 10 && Math.abs(my - p.y) < 10) {
                 found = found || true;
             }
@@ -276,15 +296,15 @@ export function handleInteraction(cvs, curve) {
             return //handler.onupdate(evt);
         }
 
-        ox = evt.offsetX - mx;
-        oy = evt.offsetY - my;
+        ox = evt.offsetX - mx - Ox;
+        oy = evt.offsetY - my - Oy;
         mp.x = cx + ox;
         mp.y = cy + oy;
         curve.update();
         handler.onupdate();
     });
 
-    const upHandler =  function (evt) {
+    const upHandler = function (evt) {
         document.removeEventListener("mouseup", upHandler);
         if (!moving) return;
         // console.log(curve.points.map(function(p) { return p.x+", "+p.y; }).join(", "));

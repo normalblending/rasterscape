@@ -1,0 +1,17 @@
+.repeating-controls {
+  display: flex;
+  flex-direction: column;
+  .repeating-controls-grid {
+    display: flex;
+    flex-direction: column-reverse;
+    .repeating-controls-grid-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      .repeating-controls-grid-buttons-row {
+        display: flex;
+
+      }
+    }
+  }
+}

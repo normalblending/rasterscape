@@ -1,10 +1,10 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../store";
+import {AppState} from "../../../store";
 import * as classNames from "classnames";
 import {ButtonNumber, ButtonNumberProps} from "./ButtonNumber";
-import {objectToSelectItems} from "../../utils/utils";
-import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
+import {objectToSelectItems} from "../../../utils/utils";
+import {ChangeFunctionsState} from "../../../store/changeFunctions/reducer";
 import {Button} from "./Button";
 import {SelectDrop} from "./SelectDrop";
 import {
@@ -12,13 +12,13 @@ import {
     deactivateValueChanging,
     setValueInChangingList,
     setStartValue
-} from "../../store/changingValues/actions";
-import {ChangingValuesState} from "../../store/changingValues/reducer";
-import {toStartValue} from "../../store/change/actions";
-import "../../styles/buttonNumberCF.scss";
+} from "../../../store/changingValues/actions";
+import {ChangingValuesState} from "../../../store/changingValues/reducer";
+import {toStartValue} from "../../../store/change/actions";
+import "../../../styles/buttonNumberCF.scss";
 import {SelectButtons} from "./SelectButtons";
-import {HoverHideable} from "./HoverHideable";
-import {ShortcutInput} from "./ShortcutInput";
+import {HoverHideable} from "../HoverHideable";
+import {ShortcutInput} from "../ShortcutInput";
 
 export interface ButtonNumberCFStateProps {
     changeFunctions: ChangeFunctionsState

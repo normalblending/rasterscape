@@ -1,5 +1,5 @@
 import {EParamType} from "../../../components/_shared/Params";
-import {ValueD} from "../../../components/_shared/ButtonNumber";
+import {ValueD} from "../../../components/_shared/buttons/ButtonNumber";
 import {xyParaboloid} from "./helpers";
 import {coordHelper, redHelper} from "../../../components/Area/canvasPosition.servise";
 
@@ -54,7 +54,7 @@ export const xyParaboloidParamsConfig = [{
     }
 }];
 
-export const xyParaboloidChangeFunction =
+export const xyParaboloidNumberChangeFunction =
     ({params, range, pattern}) =>
         ({startValue, time, position}) => {
 
@@ -78,4 +78,20 @@ export const xyParaboloidChangeFunction =
                 ),
                 startValue
             );
+        };
+export const xyParaboloidVideoChangeFunction =
+        (x, y, width, height, params) => {
+
+            const {x: xk, y: yk, end, zd} = params;
+
+            const f = xyParaboloid(1/2, 1/2, xk, yk);
+
+
+            const xnorm = x / width;
+            const ynorm = y / height;
+            const znorm = f(xnorm, ynorm) * end + zd;
+
+            // (range[1] - startValue) * end;
+
+            return znorm * width;
         };

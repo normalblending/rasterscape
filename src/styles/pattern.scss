@@ -7,6 +7,7 @@
 
   .areas {
     display: flex;
+    align-items: flex-end;
   }
 
   .pattern-controls {
@@ -19,6 +20,11 @@
 
   &:hover .pattern-controls {
     visibility: visible;
+  }
+
+  .video-controls {
+    display: flex;
+    flex-direction: column;
   }
 
 
