@@ -2,6 +2,8 @@
 
   display: inline-block;
   border: 1px solid lightseagreen;
+
+  flex: 1 0 auto;
 }
 
 .change-functions {
@@ -10,9 +12,13 @@
   display: flex;
   .control-buttons {
 
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
   }
   .functions-list {
 
+    flex-wrap: wrap;
     display: flex;
     align-items: baseline;
   }

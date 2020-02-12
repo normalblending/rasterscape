@@ -9,4 +9,10 @@
   .mask-draw-buttons {
     display: flex;
   }
+  .mask-draw-cursors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
 }

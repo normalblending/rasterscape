@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {Canvas, CanvasProps} from "../_shared/Canvas";
+import {Canvas, CanvasEvent, CanvasProps} from "../_shared/Canvas";
 import "../../styles/mask.scss";
 import {BrushState} from "../../store/brush/reducer";
 import {LineState} from "../../store/line/reducer";
@@ -9,16 +9,22 @@ import {EToolType} from "../../store/tool/types";
 import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import get from "lodash/get";
 import {ELineCompositeOperation, ELineType} from "../../store/line/types";
-import {EBrushType} from "../../store/brush/types";
+import {EBrushCompositeOperation, EBrushType} from "../../store/brush/types";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {MaskParams} from "../../store/patterns/mask/types";
+import {SVG} from "../_shared/SVG";
+import {getRepeatingCoords} from "../../utils/draw";
+import {setPosition} from "./canvasPosition.servise";
+import {PatternsState} from "../../store/patterns/types";
+import {drawMaskedWithRotation, drawWithRotation} from "../../utils/canvas/helpers/draw";
 
 export interface MaskDrawStateProps {
     brush: BrushState
     line: LineState
     tool: EToolType
+    patterns: PatternsState
 }
 
 export interface MaskDrawActionProps {
@@ -30,6 +36,7 @@ export interface MaskDrawActionProps {
 export interface MaskDrawOwnProps extends CanvasProps {
     params?: MaskParams
     name: any
+    patternId: string
 
     onParamsChange(params: MaskParams)
 }
@@ -41,7 +48,7 @@ export interface MaskDrawProps extends MaskDrawStateProps, MaskDrawActionProps, 
 export interface MaskDrawState {
     style?: any
     rotation?: RotationValue
-
+    coords
 }
 
 const opacityRange = [0, 1] as [number, number];
@@ -95,7 +102,8 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
         super(props);
         this.state = {
             style: getStyle(props.rotation),
-            rotation: props.rotation
+            rotation: props.rotation,
+            coords: []
         };
     }
 
@@ -111,42 +119,79 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
 
     handlers = {
         [EToolType.Brush]: {
-            [EBrushType.Square]: {
-                draw: (ev) => {
-                    const {ctx, e} = ev;
-                    const {black, opacity} = this.props.params;
-                    const {size} = this.props.brush.params;
+            [EBrushType.Square]: (() => {
+                const squareBrush = (ev) => {
+                    const {ctx, e, canvas, rotation} = ev;
+                    console.log(ev);
+                    const {patterns, patternId} = this.props;
+                    const pattern = patterns[patternId];
+                    const {size, opacity, compositeOperation} = this.props.brush.params;
 
                     ctx.fillStyle = BLACK;
                     ctx.globalAlpha = opacity;
-                    ctx.globalCompositeOperation = black
+                    ctx.globalCompositeOperation = this.props.params.black
                         ? ECompositeOperation.destinationOver
                         : ECompositeOperation.destinationOut;
 
-                    ctx.fillRect(e.offsetX - size / 2, e.offsetY - size / 2, size, size);
+                    const selectionMask = pattern.selection && pattern.selection.value.mask;
+                    if (selectionMask) {
+
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+
+                            const {canvas: image} = drawMaskedWithRotation(
+                                selectionMask,
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+
+                                    context.fillStyle = ctx.fillStyle;
+                                    context.fillRect(-size / 2, -size / 2, size, size)
+                                }
+                            );
+
+                            ctx.globalCompositeOperation = compositeOperation;
+                            ctx.drawImage(image, 0, 0);
+                        });
 
 
-                    ctx.globalCompositeOperation = ECompositeOperation.sourceOver;
+                    } else {
+                        getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+                            drawWithRotation(
+                                -rotation.angle,
+                                x, y,
+                                ({context}) => {
+                                    context.fillRect(-size / 2, -size / 2, size, size)
+                                },
+                            )({context: ctx, canvas});
+                        });
+                    }
+
+
+                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
-                },
-                click: (ev) => {
-                    const {ctx, e} = ev;
-                    const {black, opacity} = this.props.params;
-                    const {size} = this.props.brush.params;
+                };
+                return {
+                    draw: squareBrush,
+                    click: squareBrush,
+                    cursors: ({x, y, outer}) => {
 
-                    ctx.fillStyle = BLACK;
-                    ctx.globalAlpha = opacity;
-                    ctx.globalCompositeOperation = black
-                        ? ECompositeOperation.destinationOver
-                        : ECompositeOperation.destinationOut;
+                        let width = this.props.brush.params.size;
+                        let height = this.props.brush.params.size;
 
-                    ctx.fillRect(e.offsetX - size / 2, e.offsetY - size / 2, size, size);
-
-
-                    ctx.globalCompositeOperation = ECompositeOperation.sourceOver;
-                    ctx.globalAlpha = 1;
+                        const {rotation} = this.props;
+                        return (
+                            <rect
+                                transform={`rotate(${-rotation.angle} ${x} ${y})`}
+                                x={x - width / 2}
+                                y={y - height / 2}
+                                width={width}
+                                height={height}
+                                stroke={"black"} fill="purple"
+                                fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
+                        )
+                    }
                 }
-            },
+            })(),
             [EBrushType.Circle]: {
                 draw: (ev) => {
                     const {ctx, e} = ev;
@@ -296,20 +341,69 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
         },
     };
 
+    downHandler = (e: CanvasEvent) => {
+        const {startChanging} = this.props;
+
+        startChanging();
+
+        this.setState({
+            coords: []
+        });
+    };
+
+    clickHandler = () => {
+
+    };
+
+    moveHandler = ({e, drawing}: CanvasEvent) => {
+
+        if (!drawing) {
+            this.setState({
+                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])
+            });
+        } else {
+
+        }
+
+        setPosition(e.offsetX, e.offsetY, this.props.patternId);
+    };
+
+    leaveHandler = () => {
+        this.props.onLeave && this.props.onLeave();
+
+        this.setState({coords: []})
+    };
+
+    upHandler = ({e}) => {
+        const {stopChanging} = this.props;
+
+        stopChanging();
+
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])})
+    };
+
     handleOpacityChange = ({value}) =>
         this.props.onParamsChange({["opacity"]: value});
 
     handleBlackChange = (data) =>
         this.props.onParamsChange({["black"]: !data.selected});
 
+    getHandlers = () => {
+        const {tool} = this.props;
+
+        const getType = ToolTypeGetter[tool];
+        const type = getType && getType(this.props);
+        return this.handlers && this.handlers[tool] && this.handlers[tool][type];
+        //todo рефакторинг
+        // хендлеры событий вынести в методы класса
+        //
+    };
+
     render() {
 
-        const {tool, startChanging, stopChanging, params, name} = this.props;
+        const {tool, startChanging, stopChanging, params, name, width, height} = this.props;
 
-        const getType = getTypeField[tool];
-        const type = getType ? getType(this.props) : 0;
-        const handlersByTool = this.handlers[tool];
-        const handlers = handlersByTool && handlersByTool[type];
+        const handlers = this.getHandlers();
 
         return (
             <div className={'mask-draw'}>
@@ -337,13 +431,23 @@ class MaskDrawComponent extends React.PureComponent<MaskDrawProps, MaskDrawState
                     onDraw={handlers && handlers.draw}
                     onClick={handlers && handlers.click}
                     releaseProcess={handlers && handlers.release}
-                    {...this.props}/>
+                    width={width}
+                    height={height}
+                    {...this.props}>
+                    {handlers && handlers.cursors &&
+                    <SVG
+                        className={"mask-draw-cursors"}
+                        width={width}
+                        height={height}>
+                        {this.state.coords.map(handlers.cursors)}
+                    </SVG>}
+                </Canvas>
             </div>
         );
     }
 }
 
-const getTypeField = {
+const ToolTypeGetter = {
     [EToolType.Line]: props => get(props, "line.params.type"),
     [EToolType.Brush]: props => get(props, "brush.params.type"),
 };
@@ -351,7 +455,8 @@ const getTypeField = {
 const mapStateToProps: MapStateToProps<MaskDrawStateProps, MaskDrawOwnProps, AppState> = state => ({
     brush: state.brush,
     line: state.line,
-    tool: state.tool.current
+    tool: state.tool.current,
+    patterns: state.patterns //todo придуматть как оптимизировать тут
 });
 
 const mapDispatchToProps: MapDispatchToProps<MaskDrawActionProps, MaskDrawOwnProps> = {

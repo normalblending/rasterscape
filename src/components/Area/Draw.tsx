@@ -11,13 +11,13 @@ import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import {getRepeatingCoords} from "../../utils/draw";
-import { setPosition} from "./canvasPosition.servise";
+import {setPosition} from "./canvasPosition.servise";
 import {SVG} from "../_shared/SVG";
 import classNames from "classnames";
 import '../../styles/draw.scss';
 import {
     drawMaskedWithRotation,
-     drawWithRotation
+    drawWithRotation
 } from "../../utils/canvas/helpers/draw";
 import {PatternsState} from "../../store/patterns/types";
 import {circle} from "../../utils/canvas/helpers/geometry";
@@ -37,6 +37,7 @@ export interface CanvasDrawActionProps {
 
 export interface CanvasDrawOwnProps extends CanvasProps {
     patternId: string
+    mask?: boolean
 }
 
 export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps {
@@ -458,14 +459,26 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         //
     };
 
+    handleChange = (imageData: ImageData) => {
+        if (this.props.mask)
+            for (let i = 0; i < imageData.data.length; i += 4) {
+
+                imageData.data[i] = 0;
+                imageData.data[i + 1] = 0;
+                imageData.data[i + 2] = 0;
+            }
+
+        this.props.onChange(imageData);
+    };
+
     render() {
-        const {children, width, height, className} = this.props;
+        const {children, width, height, className, mask} = this.props;
 
         const handlers = this.getHandlers();
 
         return (
             <Canvas
-                className={classNames("draw", className)}
+                className={classNames("draw", {'mask' : mask}, className)}
                 onDown={this.downHandler}
                 onClick={handlers && handlers.click}
                 onMove={this.moveHandler}
@@ -475,7 +488,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 releaseProcess={handlers && handlers.release}
                 width={width}
                 height={height}
-                {...this.props}>
+                {...this.props}
+                onChange={this.handleChange}>
                 {handlers && handlers.cursors &&
                 <SVG
                     className={"draw-cursors"}

@@ -8,4 +8,8 @@
     left: 0;
     pointer-events: none;
   }
+
+  &.mask  {
+    border: 1px solid black;
+  }
 }

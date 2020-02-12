@@ -22,6 +22,8 @@ import {Segments, SelectionState} from "../../store/patterns/selection/types";
 import {VideoControls} from "./VideoControls";
 import {VideoParams} from "../../store/patterns/video/types";
 import {RoomControls} from "./RoomControls";
+import {Selection} from "../Area/Selection";
+import {Draw} from "../Area/Draw";
 
 export interface PatternWindowProps {
     id: string
@@ -212,14 +214,16 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             onImageChange={this.handleImageChange}
                             onSelectionChange={this.handleSelectionChange}/>
                         {config.mask &&
-                        <MaskDraw
+                        <Draw
+                            mask
+                            patternId={id}
                             rotation={rotation}
-                            params={maskParams}
+                            // params={maskParams}
                             value={maskValue}
-                            name={id}
+                            // name={id}
                             width={width}
                             height={height}
-                            onParamsChange={this.handleMaskParamsChange}
+                            // onParamsChange={this.handleMaskParamsChange}
                             onChange={this.handleMaskChange}/>}
                         {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
                     </div>
