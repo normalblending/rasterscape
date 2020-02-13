@@ -23,6 +23,7 @@ export const getMaskFromSegments = (width, height, selectionValue: Segments) => 
     return context.getImageData(0, 0, width, height);
 
 };
+
 export const getSelectedImageData = (pattern: PatternState): ImageData => {
     const bbox = pattern.selection.value.bBox;
     const maskImageData = getMaskFromSegments(pattern.current.width, pattern.current.height, pattern.selection.value.segments);
@@ -41,3 +42,22 @@ export const getSelectedImageData = (pattern: PatternState): ImageData => {
     return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 
 };
+export const getSelectedMask = (pattern: PatternState): ImageData => {
+    const bbox = pattern.selection.value.bBox;
+    const maskImageData = getMaskFromSegments(pattern.current.width, pattern.current.height, pattern.selection.value.segments);
+
+    const {context} = createCanvas(pattern.current.width, pattern.current.height);
+
+    if (maskImageData) {
+        context.putImageData(maskImageData, 0, 0);
+        context.globalCompositeOperation = "source-in";
+    }
+    context.drawImage(imageDataToCanvas(pattern.mask.value.imageData), 0, 0, pattern.current.width, pattern.current.height);
+
+    context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+
+    return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+};
+

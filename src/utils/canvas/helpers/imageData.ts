@@ -64,7 +64,7 @@ export const base64ToImageData = (src: string): Promise<ImageData> => {
     });
 };
 
-export const getMaskedImage = (imageData: ImageData, maskImageData: ImageData): HTMLCanvasElement => {
+export const getMaskedImage = (imageData: ImageData, maskImageData?: ImageData): HTMLCanvasElement => {
 
     const {canvas, context} = createCanvas(imageData.width, imageData.height);
 

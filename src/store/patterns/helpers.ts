@@ -10,6 +10,7 @@ import {getRotationState} from "./rotating/helpers";
 import {getRepeatingState} from "./repeating/helpers";
 import {getImportState} from "./import/helpers";
 import {getVideoState} from "./video/helpers";
+import {getMaskedImage} from "../../utils/canvas/helpers/imageData";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -18,20 +19,21 @@ export const patternId = (state: PatternsState) =>
 
 
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating, startImage} = config || {};
+    const {history, store, selection, mask, rotation, repeating, startImage, startMask} = config || {};
 
     const width = startImage ? startImage.width : (config.width || 300);
     const height = startImage ? startImage.height : (config.height || 300);
 
+    const current = startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height);
     return {
         id,
         config,
-        resultImage: null,
-        current: startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height),
+        resultImage: startMask ? getMaskedImage(current.imageData, startMask) : null,
+        current,
         history: getHistoryState(history, undefined, (params || {}).history),
         store: getStoreState(store, undefined, (params || {}).store),
         selection: getSelectionState(selection, undefined, (params || {}).selection),
-        mask: getMaskState(width, height)(mask, undefined, (params || {}).mask),
+        mask: getMaskState(width, height, startMask)(mask, undefined, (params || {}).mask),
         rotation: getRotationState(rotation, undefined, (params || {}).rotation),
         repeating: getRepeatingState(repeating, undefined, (params || {}).repeating),
         import: getImportState(true, undefined, (params || {}).import),
@@ -42,15 +44,17 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
     const {history, store, selection, mask, rotation, repeating} = config || {};
     params = params || {};
+    const maskState = getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask);
     return {
         config,
         id: state.id,
         current: state.current,
-        resultImage: state.resultImage,
+        resultImage: maskState ? getMaskedImage(state.current.imageData, maskState.value.imageData) : getMaskedImage(state.current.imageData),
+        // resultImage: state.resultImage,
         history: getHistoryState(history, state.history, params.history),
         store: getStoreState(store, state.store, params.store),
         selection: getSelectionState(selection, state.selection, params.selection),
-        mask: getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask),
+        mask: maskState,
         rotation: getRotationState(rotation, state.rotation, params.rotation),
         repeating: getRepeatingState(repeating, state.repeating, params.repeating),
         import: getImportState(true, state.import, params.import),

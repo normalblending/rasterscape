@@ -13,6 +13,7 @@ export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T
 export const getPatternConfig = (pattern: PatternState): PatternConfig => {
     return {
         startImage: pattern.current.imageData,
+        startMask: pattern.mask.value.imageData,
 
         width: pattern.current.width,
         height: pattern.current.height,

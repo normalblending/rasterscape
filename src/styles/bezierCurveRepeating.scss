@@ -1,5 +1,30 @@
-.grid-bezier-curve-canvas {
+.grid-bezier-curve {
 
-  //border: 1px solid red
+  width: 210px;
+  height: 140px;
+  position: relative;
+  .grid-bezier-curve-canvas {
+
+    //border: 1px solid red
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+  }
+
+  .grid-bezier-curve-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+
+    .grid-bezier-curve-canvas-numbers {
+
+      font: 7.5px monospace;
+      fill: white;
+    }
+  }
+
 
 }

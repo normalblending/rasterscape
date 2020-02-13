@@ -1,6 +1,16 @@
 .layout-container {
 
   background: lightgrey;
+
+  //background:
+  //        repeating-linear-gradient(
+  //                        transparent,transparent  10px, rgba(0, 0, 0, 0.4) 11px
+  //        ),
+  //        repeating-linear-gradient(
+  //                        90deg,
+  //                        lightgrey,lightgrey 10px, rgba(0, 0, 0, 0.4) 11px
+  //        );
+
   //width: 100vw;
   overflow-y: auto;
   .layout {

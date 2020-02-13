@@ -37,6 +37,7 @@ export interface PatternParams {
 export interface PatternConfig {
 
     startImage?: ImageData
+    startMask?: ImageData
 
     width?: number
     height?: number
