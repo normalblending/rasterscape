@@ -36,6 +36,19 @@
     color: white;
   }
 
+  .shortcut-input {
+    background: black;
+    color: white;
+
+    &:focus {
+      border: 1px solid #ffcd00;;
+    }
+  }
+
+  .select-drop-items {
+    border: 1px solid #ffcd00;
+  }
+
 
   .button.button-select.button-select-selected {
     background: darkblue;
@@ -53,13 +66,15 @@
   .button-number-cf-settings-handler {
 
 
-    background-color: black;
+    //background-color: black;
 
 
     & > div {
+      &:after {
+        color: #ffcd00;
+      }
 
-      background: #ffcd00;
-      border-radius: 50%;
+      //border-radius: 50%;
     }
 
   }
