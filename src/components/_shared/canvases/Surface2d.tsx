@@ -38,8 +38,9 @@ export class Surface2d extends React.PureComponent<Surface2dProps, Surface2dStat
             const ynorm = y / height * HH;
             const znorm = f(xnorm, ynorm) + zd;
 
-            const colorFrom = 200;
-            const colorTo = colorFrom + 150;
+            const colorTo = 350;
+            const colorFrom = colorTo - 100;
+
 
             const color = Color.hsl(Math.max(Math.min(colorTo- znorm * (colorTo - colorFrom), colorTo), colorFrom), 50, 50);
 

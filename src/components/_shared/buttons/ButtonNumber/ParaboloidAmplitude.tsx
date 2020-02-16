@@ -43,8 +43,8 @@ export const ParaboloidAmplitude: React.FC<ParaboloidAmplitudeProps> = (props) =
         const x = (i / 4) % width;
         const y = Math.floor((i / 4) / width);
 
-        const colorFrom = 200;
-        const colorTo = colorFrom + 150;
+        const colorTo = 350;
+        const colorFrom = colorTo - 100;
 
         const color = Color.hsl(Math.max(Math.min(colorTo - x/width * (colorTo - colorFrom), colorTo), colorFrom), 50, 50);
 

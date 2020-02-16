@@ -36,8 +36,8 @@
     .windows {
       height: 100%;
       white-space: nowrap;
-      padding-right: 70vw;
-      padding-left: 70vw;
+      padding-right: calc(100vw - 500px);
+      padding-left: calc(100vw - 500px);
       display: flex;
       align-items: flex-end;
 

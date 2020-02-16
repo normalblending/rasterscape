@@ -20,11 +20,12 @@ export interface ButtonProps {
     children?: React.ReactNode,
     disabled?: boolean
     width?: number
+    height?: number
 
     ref?: React.RefObject<any>
 }
 
-export const Button: React.FC<ButtonProps> = ({ref, children, onClick, onMouseDown, onMouseUp, disabled, width, className, value, name}) => {
+export const Button: React.FC<ButtonProps> = ({ref, children, height, onClick, onMouseDown, onMouseUp, disabled, width, className, value, name}) => {
     return (
         <button
             ref={ref}
@@ -32,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({ref, children, onClick, onMouseDo
             onClick={e => !disabled && onClick && onClick({e, value, name})}
             onMouseUp={e => !disabled && onMouseUp && onMouseUp({e, value, name})}
             onMouseDown={e => !disabled && onMouseDown && onMouseDown({e, value, name})}
-            style={{width}}
+            style={{width, height}}
             disabled={disabled}>
             {children}
         </button>

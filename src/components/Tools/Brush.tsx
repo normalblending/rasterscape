@@ -10,6 +10,10 @@ import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {createSelector} from "reselect";
+import {Canvas} from "../_shared/Canvas";
+import {ImageDataCanvas} from "../_shared/canvases/ImageData";
+import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
+import "../../styles/patternSelectButton.scss"
 
 export interface BrushStateProps {
     paramsConfigMap: {
@@ -51,10 +55,10 @@ class BrushComponent extends React.PureComponent<BrushProps> {
         })
     };
 
-    handlePatternChange = ({value}) => {
+    handlePatternChange = (id) => () => {
         this.props.setBrushParams({
             ...this.props.paramsValue,
-            pattern: +value
+            pattern: +id
         })
     };
 
@@ -91,6 +95,7 @@ class BrushComponent extends React.PureComponent<BrushProps> {
 
         const {paramsConfig, paramsConfigMap, paramsValue, setBrushParams, patternsSelectItems} = this.props;
 
+        console.log(patternsSelectItems);
         return (
             <>
                 <SelectButtons
@@ -130,11 +135,25 @@ class BrushComponent extends React.PureComponent<BrushProps> {
 
                 <br/>
 
-                {paramsValue.type === EBrushType.Pattern &&
-                <SelectButtons
-                    value={paramsValue.pattern}
-                    onChange={this.handlePatternChange}
-                    items={patternsSelectItems}/>}
+                {paramsValue.type === EBrushType.Pattern && (<>
+                    {patternsSelectItems.map(({imageData, id}, i) => (
+                        <>
+
+                            <ButtonSelect
+                                className={'pattern-select-button'}
+                                //width={35} height={35}
+                                onClick={this.handlePatternChange(id)}
+                                selected={+id === paramsValue.pattern}>
+                                <ImageDataCanvas width={68} height={18} imageData={imageData}/>
+                            </ButtonSelect>
+                            {!((i + 1) %3) ? <br/>: null}
+                        </>
+                    ))}
+                    {/*<SelectButtons*/}
+                    {/*    value={paramsValue.pattern}*/}
+                    {/*    onChange={this.handlePatternChange}*/}
+                    {/*    items={patternsSelectItems}/>*/}
+                </>)}
             </>
         );
     }

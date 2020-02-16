@@ -1,0 +1,8 @@
+.pattern-select-button {
+  padding:0px;
+  display: inline-flex;
+
+  &.button-select-selected {
+    border: 1px solid red;
+  }
+}

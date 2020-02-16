@@ -43,7 +43,7 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
-                [name]: !selected,
+                [name]: selected,
                 bezierPoints: [{x: 10, y: 10}, {x: 20, y: 20}, {x: 80, y: 80}, {x: 90, y: 90}]
             }
         })
@@ -72,7 +72,7 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
                                     className={'repeating-button'}
                                     name={"integer"}
                                     onClick={this.handleIntegerChange}
-                                    selected={gridParams.integer}>{gridParams.integer ? "int" : "float"}</ButtonSelect>
+                                    selected={!gridParams.integer}>{gridParams.integer ? "int" : "float"}</ButtonSelect>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={gridParams.integer}

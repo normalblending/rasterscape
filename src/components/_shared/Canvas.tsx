@@ -164,7 +164,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
                     x: left + box.width / 2,
                     y: top + box.height / 2
                 };
-                const rotatedE = rotate(canvasCenter.x, canvasCenter.y, e.pageX, e.pageY, this.props.rotation.angle);
+                const rotatedE = rotate(canvasCenter.x, canvasCenter.y, e.pageX, e.pageY, this.props.rotation ? this.props.rotation.angle : 0);
 
 
                 this.state.drawing && onMove && onMove({

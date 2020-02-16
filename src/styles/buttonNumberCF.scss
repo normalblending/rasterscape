@@ -33,12 +33,24 @@
       &:after {
         margin-left:3px;
 
-        font-size: 11px;
-        content: "+";
+        font-size:16px;
+        content: "◧";
         color: red;
       }
     }
 
+  }
+
+  .hover-hideable:hover {
+    .button-number-cf-settings-handler {
+
+      & > div {
+        &:after {
+          content: "▮";
+        }
+      }
+
+    }
   }
 
   .button-number-cf-value {
