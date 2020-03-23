@@ -2,7 +2,7 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
-import {addCF, changeCFParams} from "../../store/changeFunctions/actions";
+import {addCF, changeCFParams, removeCF} from "../../store/changeFunctions/actions";
 import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
 import {Button} from "../_shared/buttons/Button";
@@ -23,6 +23,7 @@ export interface ChangeFActionProps {
     changeCFParams(id: string, params: any)
 
     addCF(cfType: ECFType)
+    removeCF(id: string)
 
     startChanging()
 
@@ -49,14 +50,16 @@ const CFComponentByType = {
     [ECFType.XY_PARABOLOID]: XYCF,
 };
 
-const modesItems = enumToSelectItems(ChangingMode);
-
-console.log(modesItems);
+// const modesItems = enumToSelectItems(ChangingMode);
 
 class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
 
     handleChange = (value, name) => {
         this.props.changeCFParams(name, value);
+    };
+
+    handleDelete = ({value}) => {
+        this.props.removeCF(value);
     };
 
     handleAddSin = () => {
@@ -94,12 +97,20 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                         const {type, id, params, paramsConfig} = cf;
                         const Component = CFComponentByType[type];
                         return (
-                            <Component
-                                key={id}
-                                name={id}
-                                params={params}
-                                paramsConfig={paramsConfig}
-                                onChange={this.handleChange}/>);
+                            <div className={'function-container'} key={id}>
+                                <Component
+                                    key={id}
+                                    name={id}
+                                    params={params}
+                                    paramsConfig={paramsConfig}
+                                    onChange={this.handleChange}/>
+                                <div className={'function-controls'}>
+                                    <Button
+                                        value={id}
+                                        onClick={this.handleDelete}
+                                        className={'function-delete'}>del</Button>
+                                </div>
+                            </div>);
                     })}
                 </div>
             </div>
@@ -113,7 +124,7 @@ const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = state 
 });
 
 const mapDispatchToProps: MapDispatchToProps<ChangeFActionProps, ChangeFOwnProps> = {
-    changeCFParams, addCF, startChanging, stopChanging, setChangingMode
+    changeCFParams, addCF, startChanging, stopChanging, setChangingMode, removeCF
 };
 
 export const ChangeF = connect<ChangeFStateProps, ChangeFActionProps, ChangeFOwnProps, AppState>(

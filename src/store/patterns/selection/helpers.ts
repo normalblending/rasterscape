@@ -52,7 +52,13 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
         context.putImageData(maskImageData, 0, 0);
         context.globalCompositeOperation = "source-in";
     }
-    context.drawImage(imageDataToCanvas(pattern.mask.value.imageData), 0, 0, pattern.current.width, pattern.current.height);
+
+    if ( pattern.mask ) {
+        context.drawImage(imageDataToCanvas(pattern.mask.value.imageData), 0, 0, pattern.current.width, pattern.current.height)
+    } else {
+        context.fillStyle = 'black';
+        context.fillRect(0,0, pattern.current.width, pattern.current.height);
+    }
 
     context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 

@@ -243,10 +243,14 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                                 ctx.globalCompositeOperation = compositeOperation;
                                 ctx.drawImage(image, 0, 0);
                             } else {
+                                const destAngle = destinationRotation? destinationRotation.angle : 0;
+                                const brushAngle = brushRotation ? brushRotation.angle : 0;
+                                const brushOffset = brushRotation ? {
+                                        x: brushRotation.offset.x, y: brushRotation.offset.y
+                                    } : {x: 0, y: 0};
 
-                                drawWithRotation(
-                                    -destinationRotation.angle + brushRotation.angle,
-                                    x + brushRotation.offset.x, y + brushRotation.offset.y,
+                                drawWithRotation(-destAngle + brushAngle,
+                                    x + brushOffset.x, y + brushOffset.y,
                                     ({context}) => {
                                         context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
                                     }

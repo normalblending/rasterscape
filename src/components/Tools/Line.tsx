@@ -61,7 +61,6 @@ class LineComponent extends React.PureComponent<LineProps> {
                     name={"type"}
                     items={paramsConfigMap["type"].props.items}
                     onChange={this.handleParamChange}/>
-                <br/>
 
                 <ButtonNumberCF
                     path={"line.params.size"}
@@ -84,7 +83,6 @@ class LineComponent extends React.PureComponent<LineProps> {
                     items={paramsConfigMap["compositeOperation"].props.items}
                     onChange={this.handleParamChange}/>
 
-                <br/>
 
                 {paramsValue.type === ELineType.Pattren &&
                 <SelectButtons

@@ -379,7 +379,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                             ref={this.pathRef}
                             fillOpacity={0}
                             fill="black"
-                            stroke="red"/>
+                            stroke={isActive ? "greenyellow" : "red"}/>
                     </>}
                 </SVG>
             </div>

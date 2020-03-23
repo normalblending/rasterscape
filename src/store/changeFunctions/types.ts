@@ -20,6 +20,10 @@ export interface AddCFAction extends Action {
     cfType: ECFType
 }
 
+export interface RemoveCFAction extends Action {
+    name: string
+}
+
 export interface ChangeCFParamsAction extends Action {
     id: string
     params: any

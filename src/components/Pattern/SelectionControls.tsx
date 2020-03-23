@@ -1,6 +1,7 @@
 import * as React from "react";
 import {Button} from "../_shared/buttons/Button";
 import {SelectionValue} from "../../store/patterns/selection/types";
+import '../../styles/selectionControls.scss';
 
 export interface SelectionControlsProps {
     selectionValue: SelectionValue
@@ -21,8 +22,8 @@ export class SelectionControls extends React.PureComponent<SelectionControlsProp
 
     render() {
         const {onClear, onCreatePattern, onCut, selectionValue} = this.props;
-        return selectionValue.segments && selectionValue.segments.length && (
-            <div>
+        return selectionValue.segments && selectionValue.segments.length ? (
+            <div className={'selection-controls'}>
                 <Button
                     onClick={onClear}>clear</Button>
 
@@ -31,6 +32,6 @@ export class SelectionControls extends React.PureComponent<SelectionControlsProp
                 <Button
                     onClick={onCut}>cut</Button>
             </div>
-        );
+        ) : null;
     }
 }

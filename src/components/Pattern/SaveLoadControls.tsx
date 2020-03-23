@@ -40,15 +40,16 @@ export class SaveLoadControls extends React.PureComponent<SaveLoadControlsProps,
     render() {
         const { patternId } = this.props;
         return (
-            <div>
+            <>
+                <Button onClick={this.handleSave}>save</Button>
                 <File
                     name={patternId + '-fileInput'}
                     onChange={this.handleLoad}>load</File>
-                <Button onClick={this.handleSave}>save</Button>
                 <ButtonSelect
+                    width={46.6}
                     selected={this.props.loading.fit}
-                    onClick={this.handleFitChange}>fit</ButtonSelect>
-            </div>
+                    onClick={this.handleFitChange}>shrink</ButtonSelect>
+            </>
         );
     }
 }

@@ -8,6 +8,7 @@ import {createSelector} from "reselect";
 import {ParamConfig} from "../_shared/Params";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {SelectButtons} from "../_shared/buttons/SelectButtons";
 
 export interface SelectToolStateProps {
 
@@ -29,6 +30,7 @@ export interface SelectToolOwnProps {
 export interface SelectToolProps extends SelectToolStateProps, SelectToolActionProps, SelectToolOwnProps {
 
 }
+
 const opacityRange = [0, 1] as [number, number];
 const opacityValueD = ValueD.VerticalLinear(100);
 
@@ -48,11 +50,12 @@ class SelectToolComponent extends React.PureComponent<SelectToolProps> {
         const {mode, curveType, ...otherParams} = paramsConfigMap;
         return (
             <>
-                <SelectDrop
+                <SelectButtons
                     name="mode"
                     value={paramsValue.mode}
                     items={mode.props.items}
                     onChange={this.handleParamChange}/>
+
                 {paramsValue.mode === ESelectionMode.Points &&
                 <SelectDrop
                     name="curveType"

@@ -10,7 +10,7 @@ import {getRotationState} from "./rotating/helpers";
 import {getRepeatingState} from "./repeating/helpers";
 import {getImportState} from "./import/helpers";
 import {getVideoState} from "./video/helpers";
-import {getMaskedImage} from "../../utils/canvas/helpers/imageData";
+import {getMaskedImage, imageDataToCanvas} from "../../utils/canvas/helpers/imageData";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -28,7 +28,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
     return {
         id,
         config,
-        resultImage: startMask ? getMaskedImage(current.imageData, startMask) : null,
+        resultImage: startMask ? getMaskedImage(current.imageData, startMask) : imageDataToCanvas(current.imageData),
         current,
         history: getHistoryState(history, undefined, (params || {}).history),
         store: getStoreState(store, undefined, (params || {}).store),

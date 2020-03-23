@@ -5,7 +5,7 @@ export const getHistoryState = getFunctionState<HistoryValue, HistoryParams>({
     before: [],
     after: [],
 }, {
-    length: 4
+    length: 23
 });
 export const historyPush = (history: HistoryState, current: PatternHistoryItem): HistoryState => {
     const {value: {before}, params: {length: historyLength}} = history;

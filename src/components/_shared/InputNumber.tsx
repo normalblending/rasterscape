@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as classnames from 'classnames'
 
 export interface InputNumberProps {
     onChange(value: number): void
@@ -9,11 +10,13 @@ export interface InputNumberProps {
     value?: number
     delay?: number
     notZero?: boolean
+
+    className?: string
 }
 
 let timer;
 
-export const InputNumber: React.FC<InputNumberProps> = ({value, onChange, min = 0, max = 1, step = 0.05, delay, notZero}) => {
+export const InputNumber: React.FC<InputNumberProps> = ({className, value, onChange, min = 0, max = 1, step = 0.05, delay, notZero}) => {
 
     const [_value, set_value] = React.useState(value);
 
@@ -54,6 +57,7 @@ export const InputNumber: React.FC<InputNumberProps> = ({value, onChange, min = 
 
     return (
         <input
+            className={classnames("input-number", className)}
             type="number"
             step={step}
             min={min}

@@ -33,48 +33,44 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
         const {params, paramsConfig, onChange, name} = this.props;
         return (
             <div className={"XY_PARABOLOID-change-function"}>
-                <div className={"XY_PARABOLOID-change-function-row"}>
-                    <ButtonNumberCF
-                        path={`changeFunctions.${name}.params.zd`}
-                        value={params.zd}
-                        name={"zd"}
-                        range={[-2, 2]}
-                        valueD={ValueD.VerticalLinear(20)}
-                        onChange={this.handleParamChange}
-                    />
-                    <ButtonNumberCF
-                        path={`changeFunctions.${name}.params.end`}
-                        value={params.end}
-                        name={"end"}
-                        valueD={seValueD}
-                        range={seRange}
-                        onChange={this.handleParamChange}
-                    />
-                </div>
-                <div className={"XY_PARABOLOID-change-function-row"}>
-                    <ButtonNumberCF
-                        path={`changeFunctions.${name}.params.x`}
-                        value={params.x}
-                        name={"x"}
-                        range={[-20, 20]}
-                        precision={200}
-                        valueD={ValueD.VerticalLinear(2)}
-                        onChange={this.handleParamChange}
-                    />
-                    <ButtonNumberCF
-                        path={`changeFunctions.${name}.params.y`}
-                        value={params.y}
-                        name={"y"}
-                        range={[-20, 20]}
-                        precision={200}
-                        valueD={ValueD.VerticalLinear(2)}
-                        onChange={this.handleParamChange}
-                    />
-                </div>
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.zd`}
+                    value={params.zd}
+                    name={"zd"}
+                    range={[-2, 2]}
+                    valueD={ValueD.VerticalLinear(20)}
+                    onChange={this.handleParamChange}
+                />
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.x`}
+                    value={params.x}
+                    name={"x"}
+                    range={[-20, 20]}
+                    precision={200}
+                    valueD={ValueD.VerticalLinear(2)}
+                    onChange={this.handleParamChange}
+                />
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.y`}
+                    value={params.y}
+                    name={"y"}
+                    range={[-20, 20]}
+                    precision={200}
+                    valueD={ValueD.VerticalLinear(2)}
+                    onChange={this.handleParamChange}
+                />
                 <Surface2d
                     type={ECFType.XY_PARABOLOID}
                     params={params}
                     width={70} height={70}/>
+                <ButtonNumberCF
+                    path={`changeFunctions.${name}.params.end`}
+                    value={params.end}
+                    name={"end"}
+                    valueD={seValueD}
+                    range={seRange}
+                    onChange={this.handleParamChange}
+                />
             </div>
         );
     }

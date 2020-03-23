@@ -16,6 +16,12 @@
     visibility: hidden;
     border-top: 1px solid rebeccapurple;
     font-size: 12px;
+
+    .size-input-number {
+      width: 40.6px;
+
+      background: lightgoldenrodyellow;
+    }
   }
 
   &:hover .pattern-controls {
@@ -25,6 +31,13 @@
   .video-controls {
     display: flex;
     flex-direction: column;
+  }
+
+  .right {
+
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
   }
 
 

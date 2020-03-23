@@ -191,6 +191,11 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             params={video}
                             onNewFrame={this.handleNewVideoFrame}
                             onParamsChange={this.handleVideoParamsChange}/>}
+                        {config.rotation &&
+                        <RotationControls
+                            patternId={id}
+                            rotation={rotation}
+                            onChange={this.handleRotationChange}/>}
                     </div>
                     <div className="pattern-controls">
 
@@ -198,6 +203,11 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                 </div>
                 <div className="right">
 
+                    <SelectionControls
+                        selectionValue={selection.value}
+                        onCreatePattern={this.handleCreatePatternFromSelection}
+                        onClear={this.handleClearSelection}
+                        onCut={this.handleCutBySelection}/>
                     <div className={"areas"}>
                         <Area
                             name={id}
@@ -214,21 +224,25 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             onImageChange={this.handleImageChange}
                             onSelectionChange={this.handleSelectionChange}/>
                         {config.mask &&
-                        <Draw
+                        <Area
                             mask
-                            patternId={id}
+                            name={id}
                             rotation={rotation}
                             // params={maskParams}
-                            value={maskValue}
-                            // name={id}
+                            imageValue={maskValue}
+
+                            selectionValue={selection.value.segments}
+                            selectionParams={selection.params}
+
                             width={width}
                             height={height}
                             // onParamsChange={this.handleMaskParamsChange}
-                            onChange={this.handleMaskChange}/>}
+                            onSelectionChange={this.handleSelectionChange}
+                            onImageChange={this.handleMaskChange}/>}
                         {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
                     </div>
                     <div className="pattern-controls">
-                        <Button onClick={this.handleRemove}>del</Button> {id}
+                        <Button onClick={this.handleRemove}>delete</Button>
                         <Button onClick={this.handleDouble}>double</Button>
 
 
@@ -237,14 +251,6 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             onRoomCreate={this.handleCreateRoom}
                             connected={connected}/>}
 
-                        <InputNumber
-                            onChange={this.handleSetWidth}
-                            value={width}
-                            {...inputNumberProps}/>
-                        <InputNumber
-                            onChange={this.handleSetHeight}
-                            value={height}
-                            {...inputNumberProps}/>
 
                         {config.history &&
                         <HistoryControls
@@ -253,25 +259,26 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             onRedo={this.handleRedo}/>}
 
 
-                        <SelectionControls
-                            selectionValue={selection.value}
-                            onCreatePattern={this.handleCreatePatternFromSelection}
-                            onClear={this.handleClearSelection}
-                            onCut={this.handleCutBySelection}/>
-
-                        {config.rotation &&
-                        <RotationControls
-                            patternId={id}
-                            rotation={rotation}
-                            onChange={this.handleRotationChange}/>}
+                            <br/>
 
 
                         <SaveLoadControls
                             patternId={id}
                             loading={loading}
+
                             onParamsChange={this.handleLoadingParamsChange}
                             onLoad={this.handleLoad}
                             onSave={this.handleSave}/>
+                        <InputNumber
+                            className={"size-input-number"}
+                            onChange={this.handleSetWidth}
+                            value={width}
+                            {...inputNumberProps}/>
+                        <InputNumber
+                            className={"size-input-number"}
+                            onChange={this.handleSetHeight}
+                            value={height}
+                            {...inputNumberProps}/>
 
 
                         <div>

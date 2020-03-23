@@ -6,17 +6,22 @@
   &:hover {
     .select-drop-items {
       display: flex;
+      .select-buttons-items {
+        display: flex;
+        border: 1px solid red;
+        position: absolute;
+        top: 0;
+        left: 0;
+        flex-direction: row;
+        z-index: 11;
+        //max-height: 100px;
+        flex-wrap: wrap;
+      }
     }
   }
 
   .select-drop-items {
     display: none;
-    border: 1px solid red;
-    position: absolute;
-    top: 0;
-    left: 0;
-    flex-direction: column;
-    z-index: 10;
   }
 
   //&:hover {

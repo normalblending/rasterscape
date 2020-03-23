@@ -10,10 +10,11 @@ import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {createSelector} from "reselect";
-import {Canvas} from "../_shared/Canvas";
 import {ImageDataCanvas} from "../_shared/canvases/ImageData";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import "../../styles/patternSelectButton.scss"
+import '../../styles/brush.scss'
+import {ColorPalette} from "../ColorPalette";
 
 export interface BrushStateProps {
     paramsConfigMap: {
@@ -48,7 +49,6 @@ const opacityValueD = ValueD.VerticalLinear(100);
 class BrushComponent extends React.PureComponent<BrushProps> {
 
     handleSizeChange = ({value}) => {
-        console.log(value);
         this.props.setBrushParams({
             ...this.props.paramsValue,
             size: value
@@ -91,20 +91,14 @@ class BrushComponent extends React.PureComponent<BrushProps> {
     };
 
     render() {
+        const {paramsConfigMap, paramsValue, patternsSelectItems} = this.props;
 
-
-        const {paramsConfig, paramsConfigMap, paramsValue, setBrushParams, patternsSelectItems} = this.props;
-
-        console.log(patternsSelectItems);
         return (
             <>
                 <SelectButtons
                     value={paramsValue.type}
                     items={paramsConfigMap["type"].props.items}
                     onChange={this.handleTypeChange}/>
-                <br/>
-
-
                 {paramsValue.type === EBrushType.Pattern ?
                     <ButtonNumberCF
                         path={"brush.params.patternSize"}
@@ -133,27 +127,35 @@ class BrushComponent extends React.PureComponent<BrushProps> {
                     items={paramsConfigMap["compositeOperation"].props.items}
                     onChange={this.handleCompositeChange}/>
 
-                <br/>
 
+                <div className={'pattern-list'}>
                 {paramsValue.type === EBrushType.Pattern && (<>
-                    {patternsSelectItems.map(({imageData, id}, i) => (
-                        <>
-
-                            <ButtonSelect
-                                className={'pattern-select-button'}
-                                //width={35} height={35}
-                                onClick={this.handlePatternChange(id)}
-                                selected={+id === paramsValue.pattern}>
-                                <ImageDataCanvas width={68} height={18} imageData={imageData}/>
-                            </ButtonSelect>
-                            {!((i + 1) %3) ? <br/>: null}
-                        </>
-                    ))}
-                    {/*<SelectButtons*/}
-                    {/*    value={paramsValue.pattern}*/}
-                    {/*    onChange={this.handlePatternChange}*/}
-                    {/*    items={patternsSelectItems}/>*/}
+                    {patternsSelectItems.map(({imageData, id}, i) => {
+                        const w = imageData.width;
+                        const h = imageData.height;
+                        // const coef  = w/h > 1 ?
+                        return (
+                            <>
+                                <ButtonSelect
+                                    className={'pattern-select-button'}
+                                    width={42} height={42}
+                                    onClick={this.handlePatternChange(id)}
+                                    selected={+id === paramsValue.pattern}>
+                                    <ImageDataCanvas
+                                        width={40 * (w/h <= 1 ? w/h : 1)}
+                                        height={40 * (w/h > 1 ? h/w : 1)}
+                                        imageData={imageData}/>
+                                </ButtonSelect>
+                                {!((i + 1) % 5) ? <br/> : null}
+                            </>
+                        )
+                    })}
                 </>)}
+                </div>
+
+                {paramsValue.type !== EBrushType.Pattern && (
+                    <ColorPalette/>
+                )}
             </>
         );
     }

@@ -2,6 +2,7 @@ import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect} from "./ButtonSelect";
 import {ButtonEventData} from "./Button";
+import '../../../styles/selectButtonsStyles.scss';
 
 export interface SelectButtonsEventData extends ButtonEventData {
     item: any
@@ -17,6 +18,7 @@ export interface SelectButtonsProps {
     nullAble?: boolean
 
     br?: number
+    width?: number
 
     onChange?(data?: SelectButtonsEventData)
 
@@ -46,27 +48,30 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
     };
 
     render() {
-        const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText, br} = this.props;
+        const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText, br, width} = this.props;
 
         console.log("select buttons render", name);
 
         return (
-            <span className={classNames(className, "select-buttons")}>
-            {items.map((item, index) => (
-                <React.Fragment key={getValue(item)}>
-                    {!!br && !!index && !(index % br) && <br/>}
-                    <ButtonSelect
-                        value={item}
-                        // key={getValue(item)}
-                        selected={getValue(item) === value}
-                        onMouseUp={(e) => {
-                            console.log(e)
-                        }}
-                        onClick={this.handleClick}>
-                        {getText(item)}
-                    </ButtonSelect>
-                </React.Fragment>
-            ))}</span>
+            <div className={classNames(className, "select-buttons")} style={{width: br? br * (+width || 70) : 'auto'}}>
+                <div className={"select-buttons-items"}>
+                    {items.map((item, index) => (
+                        <React.Fragment key={getValue(item)}>
+                            <ButtonSelect
+                                width={width}
+                                value={item}
+                                // key={getValue(item)}
+                                selected={getValue(item) === value}
+                                onMouseUp={(e) => {
+                                    console.log(e)
+                                }}
+                                onClick={this.handleClick}>
+                                {getText(item)}
+                            </ButtonSelect>
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
         );
     }
 }

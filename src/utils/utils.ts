@@ -103,5 +103,3 @@ export const dateZs = () => {
     return f(date.getTime().toString(4), 0);
 
 };
-
-console.log(new Date().getTime().toString(4));
