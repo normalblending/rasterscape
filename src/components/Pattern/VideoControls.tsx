@@ -7,12 +7,13 @@ import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ECFType} from "../../store/changeFunctions/types";
-import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
+import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {createCapture} from "../../store/patterns/video/capture/createCapture";
 import {pause, play, start, stop} from "../../store/patterns/video/actions";
+import {getCFs} from "../../store/changeFunctions/selectors";
 
 export interface VideoControlsStateProps {
-    changeFunctions: ChangeFunctionsState
+    changeFunctions: ChangeFunctions
 }
 
 export interface VideoControlsActionProps {
@@ -134,7 +135,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 }
 
 const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = state => ({
-    changeFunctions: state.changeFunctions
+    changeFunctions: getCFs(state)
 });
 
 const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoControlsOwnProps> = {

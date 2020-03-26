@@ -71,7 +71,9 @@ export const changingValuesReducer = handleActions<ChangingValuesState>({
         }
     }),
     [EChangeFunctionsAction.REMOVE_CF]: (state: ChangingValuesState, action: RemoveCFAction) => {
-        const toDelete = Object.values(state).filter(({changeFunctionId}) => action.name).map(({path}) => path);
+        const toDelete = Object.values(state)
+            .filter(({changeFunctionId}) => changeFunctionId === action.name)
+            .map(({path}) => path);
         return omit(state, ...toDelete);
     }
 }, {});

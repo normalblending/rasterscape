@@ -107,9 +107,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handleDown = data => {
 
-        console.log("down");
-
-
         if (this.state.startValue) {
             return;
         }
@@ -134,9 +131,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     handleMove = e => {
         const {onChange, name, selected} = this.props;
         const value = this.calcValue(e);
-
-
-        console.log("move", value);
 
         onChange && onChange({e, value, name, selected});
 
@@ -241,7 +235,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     calcValue = e => {
-        console.log(this.state.startValue);
+        // console.log(this.state.startValue);
         const {range, valueD = ValueD.VerticalLinear(5), integer} = this.props;
 
         let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
@@ -257,7 +251,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         const {changingStartValue, changeFunctionId, changeFunctionType, changeFunctionParams, range, width = DEFAULT_WIDTH, className, getText = defaultGetText, text, shortcut, ...otherProps} = this.props;
         const {value = 0, startValue, startPoint} = this.state;
 
-        console.log("number button render", getText(value));
+        console.log("number button ", getText(value));
 
 
         const Amplitude = amplitudeComponent[changeFunctionType];

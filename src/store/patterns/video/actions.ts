@@ -31,8 +31,8 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
 
             const width = state.patterns[patternId].current.width;
             const height = state.patterns[patternId].current.height;
-            const cfParams = state.changeFunctions[cfId].params;
-            const cfType = state.changeFunctions[cfId].type;
+            const cfParams = state.changeFunctions.functions[cfId].params;
+            const cfType = state.changeFunctions.functions[cfId].type;
             return videoChangeFunctionByType[cfType](x, y, width, height, cfParams);
         } else {
             return x;

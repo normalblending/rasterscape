@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {ChangeFunctionsState} from "../../store/changeFunctions/reducer";
+import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {addCF, changeCFParams, removeCF} from "../../store/changeFunctions/actions";
 import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
@@ -13,9 +13,10 @@ import {ChangingMode} from "../../store/changing/types";
 import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {LoopCF} from "./LoopCF";
 import {XYCF} from "./XYCF";
+import {getCFs} from "../../store/changeFunctions/selectors";
 
 export interface ChangeFStateProps {
-    cfs: ChangeFunctionsState
+    cfs: ChangeFunctions
     changingMode: ChangingMode
 }
 
@@ -96,7 +97,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                     {Object.values(cfs).reverse().map(cf => {
                         const {type, id, params, paramsConfig} = cf;
                         const Component = CFComponentByType[type];
-                        return (
+                        return Component ? (
                             <div className={'function-container'} key={id}>
                                 <Component
                                     key={id}
@@ -110,7 +111,8 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                                         onClick={this.handleDelete}
                                         className={'function-delete'}>del</Button>
                                 </div>
-                            </div>);
+                            </div>
+                        ) : null;
                     })}
                 </div>
             </div>
@@ -118,8 +120,10 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
     }
 }
 
-const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = state => ({
-    cfs: state.changeFunctions,
+// const cfsSelector
+
+const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = (state) => ({
+    cfs: getCFs(state),
     changingMode: state.changing.mode
 });
 

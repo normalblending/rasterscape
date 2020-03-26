@@ -11,7 +11,7 @@ export const changeReducer = handleActions<AppState>({
     [EChangeAction.CHANGE]: (state: AppState, action: ChangeAction) => {
         // console.log(state, action.time, action.position);
 
-        const {changeFunctions, changingValues, patterns} = state;
+        const {changeFunctions: {functions: changeFunctions}, changingValues, patterns} = state;
 
 
         return Object.values(changingValues).reduce((res, {active, path, range, changeFunctionId, startValue}) => {

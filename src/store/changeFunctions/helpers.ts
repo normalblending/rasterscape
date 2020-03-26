@@ -1,4 +1,4 @@
-import {ChangeFunctionsState} from "./reducer";
+import {ChangeFunctions} from "./reducer";
 import {ECFType} from "./types";
 import {sinChangeFunction, sinInitialParams, sinParamsConfig} from "./functions/sin";
 import {loopChangeFunction, loopInitialParams, loopParamsConfig} from "./functions/loop";
@@ -11,7 +11,7 @@ import {
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
-export const cfId = (type: ECFType, state: ChangeFunctionsState) => {
+export const cfId = (type: ECFType, state: ChangeFunctions) => {
     return type.toString() + (Object.keys(state).length
         ? (Math.max(0,
         ...Object

@@ -30,7 +30,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
         return (
             <div className={"sin-change-function"}>
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.a`}
+                    path={`changeFunctions.functions.${name}.params.a`}
                     value={params.a}
                     name={"a"}
                     range={[0.0001, 1]}
@@ -38,7 +38,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.t`}
+                    path={`changeFunctions.functions.${name}.params.t`}
                     value={params.t}
                     name={"t"}
                     range={[1, 5000]}
@@ -46,7 +46,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.o`}
+                    path={`changeFunctions.functions.${name}.params.o`}
                     value={params.o}
                     name={"o"}
                     range={[0, 1]}
@@ -62,7 +62,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     A={params.a}
                     T={params.t}/>
                 {/*<ButtonNumberCF*/}
-                {/*path={`changeFunctions.${name}.params.p`}*/}
+                {/*path={`changeFunctions.functions.${name}.params.p`}*/}
                 {/*value={params.p}*/}
                 {/*name={"p"}*/}
                 {/*range={[0, 1]}*/}

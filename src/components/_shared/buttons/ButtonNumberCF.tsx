@@ -3,9 +3,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import * as classNames from "classnames";
 import {ButtonNumber, ButtonNumberProps} from "./ButtonNumber";
-import {objectToSelectItems} from "../../../utils/utils";
-import {ChangeFunctionsState} from "../../../store/changeFunctions/reducer";
-import {Button} from "./Button";
+import {SelectItem} from "../../../utils/utils";
 import {SelectDrop} from "./SelectDrop";
 import {
     activateValueChanging,
@@ -16,12 +14,14 @@ import {
 import {ChangingValuesState} from "../../../store/changingValues/reducer";
 import {toStartValue} from "../../../store/change/actions";
 import "../../../styles/buttonNumberCF.scss";
-import {SelectButtons} from "./SelectButtons";
 import {HoverHideable} from "../HoverHideable";
 import {ShortcutInput} from "../ShortcutInput";
+import {getChangeFunctionsSelectItems} from "../../../store/changeFunctions/selectors";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 export interface ButtonNumberCFStateProps {
-    changeFunctions: ChangeFunctionsState
+    changeFunctionsSelectItems: SelectItem[]
+    changeFunction: ChangeFunction
     changingValues: ChangingValuesState
 }
 
@@ -50,8 +50,6 @@ export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNum
 }
 
 export interface ButtonNumberCFState {
-    changeFunctionsItems: any[],
-    changeFunctions: ChangeFunctionsState
     active: boolean
     shortcut: string
 }
@@ -59,21 +57,9 @@ export interface ButtonNumberCFState {
 class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, ButtonNumberCFState> {
 
     state = {
-        changeFunctionsItems: [],
-        changeFunctions: null,
         active: false,
         shortcut: null
     };
-
-    static getDerivedStateFromProps(props, state) {
-        if (props.changeFunctions !== state.changeFunctions) {
-            return {
-                changeFunctions: props.changeFunctions,
-                changeFunctionsItems: objectToSelectItems(props.changeFunctions, ({id}) => id, ({id}) => id)
-            }
-        }
-        return null;
-    }
 
     handleCFChange = ({value: changeFunctionId}) => {
         const {setValueInChangingList, path, range, value} = this.props;
@@ -103,17 +89,17 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
     handleShortcutChange = shortcut => this.setState({shortcut});
 
     render() {
-        const {changeFunctions, changingValues, path, className, ...buttonNumberProps} = this.props;
+        const {changeFunction, changeFunctionsSelectItems, changingValues, path, className, ...buttonNumberProps} = this.props;
 
         const {onChange, onMouseDown, onMouseUp, onPress, onRelease, ...othersButtonNumberProps} = buttonNumberProps;
 
-        console.log("render b cf");
+        console.log("render b cf", buttonNumberProps.name, changeFunctionsSelectItems);
 
         const changingValueData = changingValues[path];
         const changingStartValue = changingValueData && changingValueData.startValue;
         const changeFunctionId = changingValueData && changingValues[path].changeFunctionId;
-        const changingParams = changingValueData && changeFunctions[changeFunctionId].params;
-        const changingType = changingValueData && changeFunctions[changeFunctionId].type;
+        const changingParams = changingValueData && changeFunction.params;
+        const changingType = changingValueData && changeFunction.type;
 
         return (
             <HoverHideable
@@ -149,11 +135,12 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
                         value={this.state.shortcut}
                         onChange={this.handleShortcutChange}/>
                     <SelectDrop
+                        name={buttonNumberProps.name + '-select-cf'}
                         nullAble
                         className={"button-number-cf-select"}
                         value={changingValues[this.props.path] && changingValues[this.props.path].changeFunctionId}
                         onChange={this.handleCFChange}
-                        items={this.state.changeFunctionsItems}/>
+                        items={changeFunctionsSelectItems}/>
                 </HoverHideable>
                 }
             </HoverHideable>
@@ -161,8 +148,9 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
     }
 }
 
-const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, {}, AppState> = state => ({
-    changeFunctions: state.changeFunctions,
+const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFOwnProps, AppState> = (state, {path}) => ({
+    changeFunctionsSelectItems: getChangeFunctionsSelectItems(state),
+    changeFunction: state.changeFunctions.functions[state.changingValues[path]?.changeFunctionId],
     changingValues: state.changingValues
 });
 

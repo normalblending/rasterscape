@@ -1,13 +1,12 @@
 import {createSelector} from "reselect";
-import {changeFunctionByType} from "./helpers";
-import {ChangeFunctionsState} from "./reducer";
+import {arrayToSelectItems, SelectItem} from "../../utils/utils";
+import {ChangeFunction} from "./types";
 
-const getCFState = state => state.changeFunctions;
+export const getCFs = state => state.changeFunctions.functions || {};
+export const getCFList = state => state.changeFunctions.namesList || [];
 
 
-
-
-export const getChangeFById = createSelector(
-    [getCFState],
-    (cfs: ChangeFunctionsState, id) => changeFunctionByType[cfs[id].type]
+export const getChangeFunctionsSelectItems = createSelector(
+    [getCFList],
+    (list: string[]): SelectItem[] => arrayToSelectItems(list)
 );

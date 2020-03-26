@@ -34,7 +34,7 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
         return (
             <div className={"XY_PARABOLOID-change-function"}>
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.zd`}
+                    path={`changeFunctions.functions.${name}.params.zd`}
                     value={params.zd}
                     name={"zd"}
                     range={[-2, 2]}
@@ -42,7 +42,7 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.x`}
+                    path={`changeFunctions.functions.${name}.params.x`}
                     value={params.x}
                     name={"x"}
                     range={[-20, 20]}
@@ -51,7 +51,7 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.y`}
+                    path={`changeFunctions.functions.${name}.params.y`}
                     value={params.y}
                     name={"y"}
                     range={[-20, 20]}
@@ -64,7 +64,7 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
                     params={params}
                     width={68} height={68}/>
                 <ButtonNumberCF
-                    path={`changeFunctions.${name}.params.end`}
+                    path={`changeFunctions.functions.${name}.params.end`}
                     value={params.end}
                     name={"end"}
                     valueD={seValueD}

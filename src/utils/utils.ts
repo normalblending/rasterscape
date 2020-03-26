@@ -19,16 +19,21 @@ export const objectToSelectItems = (
 
 };
 
+export interface SelectItem {
+    value
+    text
+}
+
 const defaultArrayValue = (item) => item;
 export const arrayToSelectItems = (
     array: any[],
     value: (item: any) => any = defaultArrayValue,
     text: (item: any) => string = defaultArrayValue
-) =>
-    array.map(item => ({
+): SelectItem[] =>
+    array?.map(item => ({
         value: value(item),
         text: text(item),
-    }));
+    })) || [];
 
 const defaultKey = ({name}) => name;
 export const arrayToObject = (
