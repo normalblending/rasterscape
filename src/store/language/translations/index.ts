@@ -3,11 +3,13 @@ import { initReactI18next } from 'react-i18next';
 import common_en from "./en/common.json";
 import common_ru from "./ru/common.json";
 
+const languageFromLocalStorage = localStorage.getItem("lang");
+
 i18n
     .use(initReactI18next)
     .init({
     interpolation: {escapeValue: false},
-    lng: 'ru',
+    lng: languageFromLocalStorage || 'en',
     // language to use
     resources: {
         en: {

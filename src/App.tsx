@@ -4,7 +4,7 @@ import {Main} from "./components/Main";
 import {Provider as ReduxProvider} from "react-redux";
 import {store} from "./store";
 
-import './translations';
+import './store/language/translations';
 
 const App: React.FC = () => (
     <ReduxProvider store={store}>
