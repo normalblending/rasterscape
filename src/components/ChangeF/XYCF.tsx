@@ -62,7 +62,7 @@ export class XYCF extends React.PureComponent<XYCFProps, XYCFState> {
                 <Surface2d
                     type={ECFType.XY_PARABOLOID}
                     params={params}
-                    width={70} height={70}/>
+                    width={68} height={68}/>
                 <ButtonNumberCF
                     path={`changeFunctions.${name}.params.end`}
                     value={params.end}

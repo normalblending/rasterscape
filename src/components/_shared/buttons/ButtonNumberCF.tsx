@@ -145,6 +145,7 @@ class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, B
                     button={<div className="button-number-cf-settings-handler"><div></div></div>}>
 
                     <ShortcutInput
+                        placeholder={'hotkey'}
                         value={this.state.shortcut}
                         onChange={this.handleShortcutChange}/>
                     <SelectDrop

@@ -27,7 +27,6 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
         <FullScreen enabled={full} onChange={setFullScreen}>
             <div className={"layout-container"}>
                 <div className="layout">
-                    <AppControls/>
                     <div className="tools-panel">
                         <Tools/>
                         <ChangeF/>
@@ -36,6 +35,7 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
                         <Patterns/>
                         <Rooms/>
                     </div>
+                    <AppControls/>
                 </div>
             </div>
         </FullScreen>

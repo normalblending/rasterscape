@@ -9,6 +9,8 @@ import {ParamConfig} from "../_shared/Params";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {SelectButtons} from "../_shared/buttons/SelectButtons";
+import {withTranslation, WithTranslation} from "react-i18next";
+import '../../styles/selectTool.scss';
 
 export interface SelectToolStateProps {
 
@@ -27,7 +29,7 @@ export interface SelectToolOwnProps {
 
 }
 
-export interface SelectToolProps extends SelectToolStateProps, SelectToolActionProps, SelectToolOwnProps {
+export interface SelectToolProps extends SelectToolStateProps, SelectToolActionProps, SelectToolOwnProps, WithTranslation {
 
 }
 
@@ -46,34 +48,38 @@ class SelectToolComponent extends React.PureComponent<SelectToolProps> {
     };
 
     render() {
-        const {paramsValue, paramsConfigMap, paramsConfig, setSelectToolParams} = this.props;
+        const {paramsValue, paramsConfigMap, t} = this.props;
         const {mode, curveType, ...otherParams} = paramsConfigMap;
         return (
-            <>
+            <div className='select-tool'>
+
                 <SelectButtons
                     name="mode"
                     value={paramsValue.mode}
+                    getText={item => t(`selectTypes.${item.text.toLowerCase()}`)}
                     items={mode.props.items}
                     onChange={this.handleParamChange}/>
 
-                {paramsValue.mode === ESelectionMode.Points &&
-                <SelectDrop
-                    name="curveType"
-                    value={paramsValue.curveType}
-                    items={curveType.props.items}
-                    onChange={this.handleParamChange}/>}
+                <div className={'select-tool-params'}>
+                    {paramsValue.mode === ESelectionMode.Points &&
+                    <SelectDrop
+                        name="curveType"
+                        value={paramsValue.curveType}
+                        items={curveType.props.items}
+                        onChange={this.handleParamChange}/>}
 
-                {Object.values(otherParams).map(({name, props}) => (
-                    <ButtonNumberCF
-                        value={paramsValue[name]}
-                        name={name}
-                        path={`selectTool.params.${name}`}
-                        range={props.range}
-                        onChange={this.handleParamChange}
-                        valueD={opacityValueD}/>
-                ))}
+                    {Object.values(otherParams).map(({name, props}) => (
+                        <ButtonNumberCF
+                            value={paramsValue[name]}
+                            name={name}
+                            path={`selectTool.params.${name}`}
+                            range={props.range}
+                            onChange={this.handleParamChange}
+                            valueD={opacityValueD}/>
+                    ))}
 
-            </>
+                </div>
+            </div>
         );
     }
 }
@@ -99,4 +105,4 @@ const mapDispatchToProps: MapDispatchToProps<SelectToolActionProps, SelectToolOw
 export const SelectTool = connect<SelectToolStateProps, SelectToolActionProps, SelectToolOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(SelectToolComponent);
+)(withTranslation("common")(SelectToolComponent));

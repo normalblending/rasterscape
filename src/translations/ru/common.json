@@ -1,0 +1,47 @@
+{
+  "tools": {
+    "brush": "кисть",
+    "line": "линия",
+    "select": "выдел-е"
+  },
+
+  "brushTypes": {
+    "circle": "круг",
+    "square": "квадрат",
+    "pattern": "паттерн"
+  },
+
+  "lineTypes": {
+    "default": "тип1",
+    "interrupted": "тип2",
+    "interruptedonestroke": "тип3",
+    "pattern": "паттерн"
+  },
+
+  "selectTypes": {
+    "rect": "прямо-к",
+    "line": "линия",
+    "points": "точки"
+  },
+
+  "add": "добавить",
+
+  "plugins": {
+    "repeating": "повторы",
+    "rotating": "поворот",
+    "video": "видео",
+    "mask": "маска"
+  },
+
+  "patternControls": {
+    "delete": "удалить",
+    "double": "дублир-ть",
+    "save": "сохранить",
+    "load": "открыть...",
+    "stretch": "растяг-ть",
+    "undo": "назад",
+    "redo": "вперед"
+  }
+
+
+}

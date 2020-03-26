@@ -22,7 +22,7 @@ export const imageToImageData = (image): ImageData => {
 };
 
 
-export const resizeImageData = (imageData: ImageData, width: number, height: number): ImageData => {
+export const resizeImageData = (imageData: ImageData, width: number, height: number, noStretch?: boolean): ImageData => {
     const oldCanvas = imageDataToCanvas(imageData);
     const newCanvas = document.createElement('canvas');
     newCanvas.width = width;
@@ -33,8 +33,9 @@ export const resizeImageData = (imageData: ImageData, width: number, height: num
 
     context.imageSmoothingEnabled = false;
 
-
-    context.drawImage(oldCanvas, 0, 0, width, height);
+    !noStretch
+        ? context.drawImage(oldCanvas, 0, 0, width, height)
+        : context.drawImage(oldCanvas, 0, height - oldCanvas.height, oldCanvas.width, oldCanvas.height);
 
     return canvasToImageData(newCanvas);
 };

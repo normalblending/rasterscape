@@ -4,12 +4,9 @@ import "../../styles/pattern.scss";
 import {HistoryControls} from "./HistoryControls";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/InputNumber";
-import {InputText} from "../_shared/InputText";
-import {MaskDraw} from "../Area/MaskDraw";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {RotationControls} from "./RotatingControls";
 import {RepeatingControls} from "./RepeatingControls";
-import {SaveLoadControls} from "./SaveLoadControls";
 import {SelectionControls} from "./SelectionControls";
 import {MaskParams} from "../../store/patterns/mask/types";
 import {RotationValue} from "../../store/patterns/rotating/types";
@@ -21,11 +18,10 @@ import {StoreState} from "../../store/patterns/store/types";
 import {Segments, SelectionState} from "../../store/patterns/selection/types";
 import {VideoControls} from "./VideoControls";
 import {VideoParams} from "../../store/patterns/video/types";
-import {RoomControls} from "./RoomControls";
-import {Selection} from "../Area/Selection";
-import {Draw} from "../Area/Draw";
+import {withTranslation, WithTranslation} from "react-i18next";
+import {File} from "../_shared/File";
 
-export interface PatternWindowProps {
+export interface PatternWindowProps extends WithTranslation {
     id: string
     imageValue: ImageData
     maskValue?: ImageData
@@ -95,7 +91,7 @@ export interface PatternWindowState {
 
 const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true};
 
-export class Pattern extends React.PureComponent<PatternWindowProps, PatternWindowState> {
+export class PatternComponent extends React.PureComponent<PatternWindowProps, PatternWindowState> {
 
 
     handleImageChange = imageData => this.props.onImageChange(this.props.id, imageData);
@@ -149,9 +145,15 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
     handleSave = () => {
         this.props.onSave(this.props.id)
     };
-    handleLoadingParamsChange = (params: ImportParams) => {
-        this.props.onLoadingParamsChange(this.props.id, params)
+    handleFitChange = (data) => {
+        const {loading, id} = this.props;
+        const {selected} = data;
+        this.props.onLoadingParamsChange(id, {
+            ...loading,
+            fit: !selected
+        });
     };
+
     handleCreatePatternFromSelection = () => {
         this.props.onCreatePatternFromSelection(this.props.id)
     };
@@ -169,10 +171,10 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
 
     render() {
         const {
-            connected,
-            resultImage, imageValue, maskValue, maskParams,
+            imageValue, maskValue,
             height, width, id, config,
-            history, store, selection, rotation, repeating, loading, video
+            history, selection, rotation, repeating, loading, video,
+            t
         } = this.props;
 
         console.log("pattern render ", id, rotation);
@@ -180,27 +182,80 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
             <div className="pattern">
                 <div className="left">
                     <div className="plugins">
+
                         {config.repeating &&
                         <RepeatingControls
                             patternId={id}
                             repeating={repeating}
                             onChange={this.handleRepeatingChange}/>}
+
                         {config.video &&
                         <VideoControls
                             patternId={id}
                             params={video}
                             onNewFrame={this.handleNewVideoFrame}
                             onParamsChange={this.handleVideoParamsChange}/>}
+
                         {config.rotation &&
                         <RotationControls
                             patternId={id}
                             rotation={rotation}
                             onChange={this.handleRotationChange}/>}
+
+                        {/*{config.room &&*/}
+                        {/*<RoomControls*/}
+                        {/*    onRoomCreate={this.handleCreateRoom}*/}
+                        {/*    connected={connected}/>}*/}
+
+                        <div className={'plugins-toggles'}>
+                            {/*<ButtonSelect*/}
+                            {/*    name={"mask"}*/}
+                            {/*    selected={config.mask}*/}
+                            {/*    onClick={this.handleConfigToggle}>mask</ButtonSelect>*/}
+                            <ButtonSelect
+                                name={"repeating"}
+                                selected={config.repeating}
+                                onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonSelect>
+                            <ButtonSelect
+                                name={"rotation"}
+                                selected={config.rotation}
+                                onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonSelect>
+                            <ButtonSelect
+                                name={"video"}
+                                selected={config.video}
+                                onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonSelect>
+                        </div>
                     </div>
                     <div className="pattern-controls">
 
+                        <Button onClick={this.handleRemove}>{t('patternControls.delete')}</Button>
+                        <Button onClick={this.handleDouble}>{t('patternControls.double')}</Button>
+                        <div className={'save-load-sizes'}>
+                            <div>
+                                <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
+                                <File
+                                    name={id + '-fileInput'}
+                                    onChange={this.handleLoad}>{t('patternControls.load')}</File>
+                                <ButtonSelect
+                                    selected={this.props.loading.fit}
+                                    onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
+                            </div>
+                            <div className={'pattern-sizes'}>
+                                <InputNumber
+                                    className={"size-input-number"}
+                                    onChange={this.handleSetWidth}
+                                    value={width}
+                                    {...inputNumberProps}/>
+                                <InputNumber
+                                    className={"size-input-number"}
+                                    onChange={this.handleSetHeight}
+                                    value={height}
+                                    {...inputNumberProps}/>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
                 <div className="right">
 
                     <SelectionControls
@@ -208,6 +263,7 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                         onCreatePattern={this.handleCreatePatternFromSelection}
                         onClear={this.handleClearSelection}
                         onCut={this.handleCutBySelection}/>
+
                     <div className={"areas"}>
                         <Area
                             name={id}
@@ -228,7 +284,6 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
                             mask
                             name={id}
                             rotation={rotation}
-                            // params={maskParams}
                             imageValue={maskValue}
 
                             selectionValue={selection.value.segments}
@@ -236,73 +291,20 @@ export class Pattern extends React.PureComponent<PatternWindowProps, PatternWind
 
                             width={width}
                             height={height}
-                            // onParamsChange={this.handleMaskParamsChange}
                             onSelectionChange={this.handleSelectionChange}
                             onImageChange={this.handleMaskChange}/>}
-                        {/*{resultImage instanceof HTMLCanvasElement ? resultImage : ""}*/}
                     </div>
-                    <div className="pattern-controls">
-                        <Button onClick={this.handleRemove}>delete</Button>
-                        <Button onClick={this.handleDouble}>double</Button>
 
-
-                        {config.room &&
-                        <RoomControls
-                            onRoomCreate={this.handleCreateRoom}
-                            connected={connected}/>}
-
-
-                        {config.history &&
-                        <HistoryControls
-                            history={history.value}
-                            onUndo={this.handleUndo}
-                            onRedo={this.handleRedo}/>}
-
-
-                            <br/>
-
-
-                        <SaveLoadControls
-                            patternId={id}
-                            loading={loading}
-
-                            onParamsChange={this.handleLoadingParamsChange}
-                            onLoad={this.handleLoad}
-                            onSave={this.handleSave}/>
-                        <InputNumber
-                            className={"size-input-number"}
-                            onChange={this.handleSetWidth}
-                            value={width}
-                            {...inputNumberProps}/>
-                        <InputNumber
-                            className={"size-input-number"}
-                            onChange={this.handleSetHeight}
-                            value={height}
-                            {...inputNumberProps}/>
-
-
-                        <div>
-                            <ButtonSelect
-                                name={"mask"}
-                                selected={config.mask}
-                                onClick={this.handleConfigToggle}>mask</ButtonSelect>
-                            <ButtonSelect
-                                name={"repeating"}
-                                selected={config.repeating}
-                                onClick={this.handleConfigToggle}>repeating</ButtonSelect>
-                            <ButtonSelect
-                                name={"rotation"}
-                                selected={config.rotation}
-                                onClick={this.handleConfigToggle}>rotation</ButtonSelect>
-                            <ButtonSelect
-                                name={"video"}
-                                selected={config.video}
-                                onClick={this.handleConfigToggle}>video</ButtonSelect>
-                        </div>
-                    </div>
+                    {config.history &&
+                    <HistoryControls
+                        history={history.value}
+                        onUndo={this.handleUndo}
+                        onRedo={this.handleRedo}/>}
                 </div>
 
             </div>
         );
     }
 }
+
+export const Pattern = withTranslation("common")(PatternComponent);

@@ -2,6 +2,7 @@ import * as React from "react";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {RotationValue} from "../../store/patterns/rotating/types";
+import '../../styles/rotatingControls.scss';
 
 export interface RotationControlsProps {
     rotation: RotationValue
@@ -19,7 +20,7 @@ export interface RotationControlsState {
 const angleRange = [0, 360] as [number, number];
 const angleValueD = ValueD.VerticalLinear(0.4);
 
-const offsetRange = [-200, 200] as [number, number];
+const offsetRange = [-800, 800] as [number, number];
 const offsetValueD = ValueD.VerticalLinear(0.6);
 
 export class RotationControls extends React.PureComponent<RotationControlsProps, RotationControlsState> {
@@ -42,7 +43,7 @@ export class RotationControls extends React.PureComponent<RotationControlsProps,
     render() {
         const {angle, offset} = this.props.rotation;
         return (
-            <div>
+            <div className={'rotating-controls'}>
                 <ButtonNumberCF
                     path={`patterns.${this.props.patternId}.rotation.value.angle`}
                     name={"angle"}

@@ -11,6 +11,8 @@ import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {BrushParams, EBrushType} from "../../store/brush/types";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
+import {withTranslation, WithTranslation} from "react-i18next";
+import '../../styles/lineTool.scss';
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -29,7 +31,7 @@ export interface LineOwnProps {
 
 }
 
-export interface LineProps extends LineStateProps, LineActionProps, LineOwnProps {
+export interface LineProps extends LineStateProps, LineActionProps, LineOwnProps, WithTranslation {
 
 }
 
@@ -52,45 +54,47 @@ class LineComponent extends React.PureComponent<LineProps> {
     };
 
     render() {
-        const {paramsConfigMap, paramsConfig, paramsValue, patternsSelectItems} = this.props;
+        const {paramsConfigMap, paramsConfig, paramsValue, patternsSelectItems, t} = this.props;
         return (
-            <>
+            <div className='line-tool'>
                 <SelectButtons
                     br={3}
                     value={paramsValue.type}
                     name={"type"}
+                    getText={item => t(`lineTypes.${item.text.toLowerCase()}`)}
                     items={paramsConfigMap["type"].props.items}
                     onChange={this.handleParamChange}/>
 
-                <ButtonNumberCF
-                    path={"line.params.size"}
-                    value={paramsValue.size}
-                    name={"size"}
-                    onChange={this.handleParamChange}
-                    range={sizeRange}
-                    valueD={sizeValueD}/>
+                <div className='line-params'>
+                    <ButtonNumberCF
+                        path={"line.params.size"}
+                        value={paramsValue.size}
+                        name={"size"}
+                        onChange={this.handleParamChange}
+                        range={sizeRange}
+                        valueD={sizeValueD}/>
 
-                <ButtonNumberCF
-                    path={"line.params.opacity"}
-                    value={paramsValue.opacity}
-                    name={"opacity"}
-                    onChange={this.handleParamChange}
-                    range={opacityRange}
-                    valueD={opacityValueD}/>
-                <SelectDrop
-                    name={"compositeOperation"}
-                    value={paramsValue.compositeOperation}
-                    items={paramsConfigMap["compositeOperation"].props.items}
-                    onChange={this.handleParamChange}/>
+                    <ButtonNumberCF
+                        path={"line.params.opacity"}
+                        value={paramsValue.opacity}
+                        name={"opacity"}
+                        onChange={this.handleParamChange}
+                        range={opacityRange}
+                        valueD={opacityValueD}/>
+                    <SelectDrop
+                        name={"compositeOperation"}
+                        value={paramsValue.compositeOperation}
+                        items={paramsConfigMap["compositeOperation"].props.items}
+                        onChange={this.handleParamChange}/>
+                </div>
 
-
-                {paramsValue.type === ELineType.Pattren &&
+                {paramsValue.type === ELineType.Pattern &&
                 <SelectButtons
                     name={"pattern"}
                     value={paramsValue.pattern}
                     onChange={this.handleParamChange}
                     items={patternsSelectItems}/>}
-            </>
+            </div>
         );
     }
 };
@@ -116,4 +120,4 @@ const mapDispatchToProps: MapDispatchToProps<LineActionProps, LineOwnProps> = {
 export const Line = connect<LineStateProps, LineActionProps, LineOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(LineComponent);
+)(withTranslation("common")(LineComponent));

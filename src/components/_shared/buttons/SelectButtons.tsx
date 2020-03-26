@@ -50,13 +50,13 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
     render() {
         const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText, br, width} = this.props;
 
-        console.log("select buttons render", name);
+        console.log("select buttons render", items);
 
         return (
             <div className={classNames(className, "select-buttons")} style={{width: br? br * (+width || 70) : 'auto'}}>
                 <div className={"select-buttons-items"}>
                     {items.map((item, index) => (
-                        <React.Fragment key={getValue(item)}>
+                        <React.Fragment key={index}>
                             <ButtonSelect
                                 width={width}
                                 value={item}

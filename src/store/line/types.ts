@@ -5,7 +5,7 @@ export enum ELineType {
     Default = "Default",
     Interrupted = "Interrupted",
     InterruptedOneStroke = "InterruptedOneStroke",
-    Pattren = "Pattren",
+    Pattern = "Pattern",
 }
 
 export enum ELineCompositeOperation {

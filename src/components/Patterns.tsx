@@ -24,6 +24,7 @@ import {RepeatingParams} from "../store/patterns/repeating/types";
 import {ImportParams} from "../store/patterns/import/types";
 import {onNewFrame, setVideoParams} from "../store/patterns/video/actions";
 import {VideoParams} from "../store/patterns/video/types";
+import {withTranslation, WithTranslation} from "react-i18next";
 
 export interface PatternsStateProps {
     patterns: any
@@ -79,7 +80,7 @@ export interface PatternsOwnProps {
 
 }
 
-export interface PatternsProps extends PatternsStateProps, PatternsActionProps, PatternsOwnProps {
+export interface PatternsProps extends PatternsStateProps, PatternsActionProps, PatternsOwnProps, WithTranslation {
 
 }
 
@@ -99,7 +100,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setHeight, editConfig, setRotation, setRepeating,
             save, load, setLoadingParams,
             createPatternFromSelection, doublePattern, cutPatternBySelection, setVideoParams,
-            onNewVideoFrame
+            onNewVideoFrame,
+            t,
         } = this.props;
         return (
             <>
@@ -151,7 +153,9 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onNewVideoFrame={onNewVideoFrame}/>
                     );
                 })}
-                <Button onClick={this.handleAddClick}>add</Button>
+                <div className={'zero-pattern'}>
+                    <Button onClick={this.handleAddClick}>{t("add")}</Button>
+                </div>
             </>
         );
     }
@@ -189,4 +193,4 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(PatternsComponent);
+)(withTranslation("common")(PatternsComponent));

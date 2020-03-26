@@ -8,11 +8,12 @@ export interface InputTextProps {
     onBlur?()
 
     className?: string
+    placeholder?: string
 
     value: string
 }
 
-export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, value, className}) => {
+export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, value, placeholder, className}) => {
 
     const changeHandler = e => {
         onChange && onChange(e.target.value)
@@ -25,6 +26,7 @@ export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, 
             value={value || ''}
             onFocus={onFocus}
             onBlur={onBlur}
+            placeholder={placeholder}
             onChange={changeHandler}/>
     );
 };

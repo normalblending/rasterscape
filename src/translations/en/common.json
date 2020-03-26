@@ -1,0 +1,47 @@
+{
+  "tools": {
+    "brush": "brush",
+    "line": "line",
+    "select": "select"
+  },
+
+  "brushTypes": {
+    "circle": "circle",
+    "square": "square",
+    "pattern": "pattern"
+  },
+
+  "lineTypes": {
+    "default": "default",
+    "interrupted": "interrupted",
+    "interruptedonestroke": "interruptedOneStroke",
+    "pattern": "pattern"
+  },
+
+  "selectTypes": {
+    "rect": "rect",
+    "line": "line",
+    "points": "points"
+  },
+
+  "add": "add",
+
+  "plugins": {
+    "repeating": "repeating",
+    "rotating": "rotating",
+    "video": "video",
+    "mask": "mask"
+  },
+
+  "patternControls": {
+    "delete": "delete",
+    "double": "double",
+    "save": "save",
+    "load": "load...",
+    "stretch": "stretch",
+    "undo": "undo",
+    "redo": "redo"
+  }
+
+
+}

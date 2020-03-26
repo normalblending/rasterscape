@@ -35,7 +35,7 @@ const HANDLER_SIZE = 5;
 export const selectionModesSelectItems = arrayToSelectItems(
     [ESelectionMode.Rect, ESelectionMode.Line, ESelectionMode.Points]);
 
-export const curveTypesSelectItems = arrayToSelectItems(Object.values(ECurveType));
+export const curveTypesSelectItems = arrayToSelectItems(Object.values(ECurveType), undefined, (item: string) => item[5].toLowerCase() + item.slice(6));
 
 export interface CanvasSelectionStateProps {
     currentTool: EToolType

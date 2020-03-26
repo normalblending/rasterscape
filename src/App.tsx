@@ -1,13 +1,17 @@
 import React from 'react';
 import './App.scss';
 import {Main} from "./components/Main";
-import {Provider} from "react-redux";
+import {Provider as ReduxProvider} from "react-redux";
 import {store} from "./store";
 
+import './translations';
+
 const App: React.FC = () => (
-    <Provider store={store}>
-        <Main/>
-    </Provider>
+    <ReduxProvider store={store}>
+        {/*<I18nextProvider i18n={i18next}>*/}
+            <Main/>
+        {/*</I18nextProvider>*/}
+    </ReduxProvider>
 );
 
 export default App;

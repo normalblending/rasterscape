@@ -7,6 +7,7 @@ export interface ShortcutInputProps {
     onChange(value: string)
 
     value: string
+    placeholder?: string
 
 
 }
@@ -30,11 +31,12 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
 
 
     render() {
-        const {value} = this.props;
+        const {value, placeholder} = this.props;
         return (
             <InputText
                 className={"shortcut-input"}
                 value={value}
+                placeholder={placeholder}
                 onFocus={this.handleFocus}
                 onBlur={this.handleBlur}
                 onChange={() => {return;

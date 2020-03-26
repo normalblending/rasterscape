@@ -1,36 +1,87 @@
+
+.zero-pattern {
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 40px;
+  border-left: 1px solid rgba(0, 0, 0, .04);
+}
+
 .pattern {
+
+  position: relative;
 
   height: 100%;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
 
+  padding-right: 140px;
+  padding-bottom: 20px;
+
+  border-left: 1px solid rgba(0, 0, 0, .04);
+
+
   .areas {
     display: flex;
     align-items: flex-end;
   }
 
+  .plugins {
+    width: 210px;
+
+  }
+
   .pattern-controls {
-    height: 100px;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
     padding-top: 1px;
     visibility: hidden;
-    border-top: 1px solid rebeccapurple;
+    //border-top: 1px solid rebeccapurple;
     font-size: 12px;
+    //margin-bottom: 40px;
+    .save-load-sizes {
 
-    .size-input-number {
-      width: 40.6px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
 
-      background: lightgoldenrodyellow;
+      .pattern-sizes {
+        display: flex;
+
+        .size-input-number {
+          width: 64px;
+          text-align: left;
+
+          background: lightgoldenrodyellow;
+        }
+      }
+
     }
   }
 
-  &:hover .pattern-controls {
-    visibility: visible;
+  .plugins, .pattern-controls, .history-controls {
+    visibility: hidden;
+  }
+
+  &:hover {
+    .plugins, .pattern-controls, .history-controls {
+      visibility: visible;
+    }
   }
 
   .video-controls {
     display: flex;
-    flex-direction: column;
+    //flex-direction: column;
+  }
+
+  .left {
+    //margin-right: 20px;
+    padding-bottom: 40px;
   }
 
   .right {
@@ -38,6 +89,12 @@
     display: flex;
     flex-direction: column;
     align-items: baseline;
+    margin-bottom: 40px;
+
+    .history-controls {
+      position: sticky;
+      left: 0;
+    }
   }
 
 

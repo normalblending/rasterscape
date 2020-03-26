@@ -5,17 +5,23 @@
 
   &:hover {
     .select-drop-items {
+
+
       display: flex;
       .select-buttons-items {
-        display: flex;
         border: 1px solid red;
+        background: lightgrey;
+
+
         position: absolute;
         top: 0;
         left: 0;
-        flex-direction: row;
         z-index: 11;
-        //max-height: 100px;
-        flex-wrap: wrap;
+
+
+        display: grid;
+        grid-auto-flow: column;
+        grid-template-rows: min-content min-content min-content min-content;
       }
     }
   }

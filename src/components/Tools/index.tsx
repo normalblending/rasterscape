@@ -1,5 +1,6 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {withTranslation, WithTranslation} from 'react-i18next';
 import {AppState} from "../../store";
 import {EToolType} from "../../store/tool/types";
 import {setCurrentTool} from "../../store/tool/actions";
@@ -7,7 +8,6 @@ import {Brush} from "./Brush";
 import {Line} from "./Line";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {SelectTool} from "./SelectTool";
-import {Button} from "../_shared/buttons/Button";
 import {reverseFullScreen} from "../../store/fullscreen";
 import * as classNames from "classnames";
 import "../../styles/tools.scss";
@@ -24,6 +24,7 @@ export interface ToolsStateProps {
 
 export interface ToolsActionProps {
     setCurrentTool(tool: EToolType)
+
     reverseFullScreen()
 }
 
@@ -31,11 +32,11 @@ export interface ToolsOwnProps {
     className?: string
 }
 
-export interface ToolsProps extends ToolsStateProps, ToolsActionProps, ToolsOwnProps {
+export interface ToolsProps extends ToolsStateProps, ToolsActionProps, ToolsOwnProps, WithTranslation {
 
 }
 
-const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reverseFullScreen, className}) => {
+const ToolsComponent: React.FC<ToolsProps> = ({t, i18n, currentTool, setCurrentTool, reverseFullScreen, className}) => {
 
     const ToolControls = ToolsParams[currentTool].component;
     return (
@@ -46,7 +47,8 @@ const ToolsComponent: React.FC<ToolsProps> = ({currentTool, setCurrentTool, reve
                         key={toolType}
                         selected={toolType === currentTool}
                         onClick={() => setCurrentTool(ToolsParams[toolType].type)}>
-                        {toolType}</ButtonSelect>
+                        {t(`tools.${toolType.toLowerCase()}`)}
+                    </ButtonSelect>
                 ))}
             </div>
             <ToolControls/>
@@ -65,4 +67,4 @@ const mapDispatchToProps: MapDispatchToProps<ToolsActionProps, ToolsOwnProps> = 
 export const Tools = connect<ToolsStateProps, ToolsActionProps, ToolsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(ToolsComponent);
+)(withTranslation('common')(ToolsComponent));

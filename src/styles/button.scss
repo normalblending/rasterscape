@@ -1,6 +1,7 @@
 .button {
   background: lightgoldenrodyellow;
 
+  white-space: nowrap;
 
   //display: inline-flex; todo pricolno
 
@@ -10,7 +11,7 @@
 }
 
 .button-select {
-  background: lightgoldenrodyellow;
+  //background: lightgoldenrodyellow;
 
   &.button-select-selected {
     background: lightpink;
