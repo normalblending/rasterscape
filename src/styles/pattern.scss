@@ -30,6 +30,13 @@
   .plugins {
     width: 210px;
 
+    .plugins-toggles {
+      display: flex;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: 20px;
+      justify-content: flex-end;
+    }
   }
 
   .pattern-controls {
@@ -81,7 +88,7 @@
 
   .left {
     //margin-right: 20px;
-    padding-bottom: 40px;
+    padding-bottom: 20px;
   }
 
   .right {
@@ -89,7 +96,7 @@
     display: flex;
     flex-direction: column;
     align-items: baseline;
-    margin-bottom: 40px;
+    margin-bottom: 60px;
 
     .history-controls {
       position: sticky;

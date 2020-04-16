@@ -2,7 +2,6 @@
   "name": "zd2",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://wrreee.github.io/u3u",
   "dependencies": {
     "bezier-js": "^2.4.4",
     "classnames": "2.2.6",
@@ -41,6 +40,7 @@
     "@types/react-redux": "7.1.5",
     "@types/redux-logger": "3.0.7",
     "@types/reselect": "2.2.0",
+    "bbuutoonnss": "1.0.3",
     "gh-pages": "2.1.1"
   },
   "scripts": {

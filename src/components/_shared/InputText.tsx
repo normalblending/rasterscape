@@ -1,5 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
+import '../../styles/inputText.scss';
+
 
 export interface InputTextProps {
     onChange?(value: string): void
@@ -11,9 +13,11 @@ export interface InputTextProps {
     placeholder?: string
 
     value: string
+
+    disabled?: boolean
 }
 
-export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, value, placeholder, className}) => {
+export const InputText: React.FC<InputTextProps> = ({disabled, onChange, onFocus, onBlur, value, placeholder, className}) => {
 
     const changeHandler = e => {
         onChange && onChange(e.target.value)
@@ -23,6 +27,7 @@ export const InputText: React.FC<InputTextProps> = ({onChange, onFocus, onBlur, 
         <input
             className={classNames(className, "input-text")}
             type="text"
+            disabled={disabled}
             value={value || ''}
             onFocus={onFocus}
             onBlur={onBlur}

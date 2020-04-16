@@ -12,9 +12,9 @@
   },
 
   "lineTypes": {
-    "default": "default",
-    "interrupted": "interrupted",
-    "interruptedonestroke": "interruptedOneStroke",
+    "solid": "solid",
+    "broken": "broken",
+    "transp": "transp",
     "pattern": "pattern"
   },
 
@@ -30,7 +30,8 @@
     "repeating": "repeating",
     "rotating": "rotating",
     "video": "video",
-    "mask": "mask"
+    "mask": "mask",
+    "room": "room"
   },
 
   "patternControls": {
@@ -41,6 +42,11 @@
     "stretch": "stretch",
     "undo": "undo",
     "redo": "redo"
+  },
+
+  "room": {
+    "leave": "leave",
+    "enter": "enter"
   }
 
 

@@ -1,5 +1,5 @@
 import {CreateRoomAction, ERoomAction} from "./actions";
-import {PatternState} from "../pattern/types";
+import {PatternAction, PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
 
 export const roomReducers = {
@@ -12,6 +12,14 @@ export const roomReducers = {
                     connected: action.roomName,
                     socket: action.socket,
                 }
+            }
+        })),
+    [ERoomAction.LEAVE_ROOM]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            room: {
+                ...pattern.room,
+                value: null
             }
         }))
 };

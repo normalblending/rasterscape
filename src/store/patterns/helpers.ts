@@ -10,6 +10,7 @@ import {getRotationState} from "./rotating/helpers";
 import {getRepeatingState} from "./repeating/helpers";
 import {getImportState} from "./import/helpers";
 import {getVideoState} from "./video/helpers";
+import {getRoomState} from "./room/helpers";
 import {getMaskedImage, imageDataToCanvas} from "../../utils/canvas/helpers/imageData";
 
 export const patternId = (state: PatternsState) =>
@@ -38,6 +39,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         repeating: getRepeatingState(repeating, undefined, (params || {}).repeating),
         import: getImportState(true, undefined, (params || {}).import),
         video: getVideoState(true, undefined, (params || {}).video),
+        room: getRoomState(true, undefined, (params || {}).room),
     }
 };
 
@@ -59,6 +61,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         repeating: getRepeatingState(repeating, state.repeating, params.repeating),
         import: getImportState(true, state.import, params.import),
         video: getVideoState(true, state.video, params.video),
+        room: getRoomState(true, state.room, params.room),
     }
 };
 

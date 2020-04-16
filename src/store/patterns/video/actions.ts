@@ -21,7 +21,7 @@ export interface SetVideoParamsAction extends PatternAction {
 
 export const start = (patternId: string) => (dispatch, getState: () => AppState) => {
 
-    Captures.start(patternId, (pixels) => dispatch(updateImage(patternId, new ImageData(pixels, 320))), (x, y, length) => {
+    Captures.start(patternId, (pixels) => dispatch(updateImage(patternId, new ImageData(pixels, 320), false)), (x, y, length) => {
         const state = getState();
 
 

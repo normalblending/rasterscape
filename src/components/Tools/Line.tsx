@@ -88,12 +88,6 @@ class LineComponent extends React.PureComponent<LineProps> {
                         onChange={this.handleParamChange}/>
                 </div>
 
-                {paramsValue.type === ELineType.Pattern &&
-                <SelectButtons
-                    name={"pattern"}
-                    value={paramsValue.pattern}
-                    onChange={this.handleParamChange}
-                    items={patternsSelectItems}/>}
             </div>
         );
     }

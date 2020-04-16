@@ -20,26 +20,64 @@ import {VideoControls} from "./VideoControls";
 import {VideoParams} from "../../store/patterns/video/types";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {File} from "../_shared/File";
+import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {AppState} from "../../store";
+import {setMaskParams, updateMask} from "../../store/patterns/mask/actions";
+import {createRoom} from "../../store/patterns/room/actions";
+import {addPattern, removePattern} from "../../store/patterns/actions";
+import {doublePattern, editConfig, setHeight, setWidth, updateImage} from "../../store/patterns/pattern/actions";
+import {
+    createPatternFromSelection,
+    cutPatternBySelection,
+    updateSelection
+} from "../../store/patterns/selection/actions";
+import {redo, undo} from "../../store/patterns/history/actions";
+import {setRotation} from "../../store/patterns/rotating/actions";
+import {setRepeating} from "../../store/patterns/repeating/actions";
+import {load, save, setImportParams} from "../../store/patterns/import/actions";
+import {onNewFrame, setVideoParams} from "../../store/patterns/video/actions";
+import {PatternsActionProps, PatternsOwnProps, PatternsStateProps} from "../Patterns";
+import ts from "typescript/lib/tsserverlibrary";
+import {RoomControls} from "./RoomControls";
 
-export interface PatternWindowProps extends WithTranslation {
-    id: string
+export interface PatternComponentStateProps {
+
+
+    config: PatternConfig
+    selection: SelectionState
+
     imageValue: ImageData
     maskValue?: ImageData
     maskParams?: MaskParams
     rotation?: RotationValue
-    repeating?: RepeatingParams
-    loading: ImportParams
-    video: VideoParams
+    importParams: ImportParams
 
     height: number
     width: number
+}
+
+export interface PatternComponentActionProps {
+
+    updateImage(id: string, imageData: ImageData)
+
+    updateMask(id: string, imageData: ImageData)
+
+    editConfig(id: string, config: PatternConfig)
+    setImportParams(id: string, value: ImportParams)
+
+}
+
+export interface PatternComponentOwnProps {
+    id: string
+}
+
+export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
+
+
 
     connected?: string
 
-    config: PatternConfig
-    history: HistoryState
     store: StoreState
-    selection: SelectionState
 
     resultImage: HTMLCanvasElement
 
@@ -55,43 +93,28 @@ export interface PatternWindowProps extends WithTranslation {
 
     onDouble(id: string)
 
-    onUndo(id: string)
-
-    onRedo(id: string)
-
     onSetWidth(id: string, width: number)
 
     onSetHeight(id: string, height: number)
 
     onCreateRoom(id: string, name: string)
 
-    onConfigChange(id: string, value: PatternConfig)
-
-    onRotationChange(id: string, value: RotationValue)
-
-    onRepeatingChange(id: string, value: RepeatingParams)
 
     onLoad(id: string, image)
 
     onSave(id: string)
 
-    onLoadingParamsChange(id: string, params: ImportParams)
-
     onCreatePatternFromSelection(id: string)
 
     onCutBySelection(id: string)
-
-    onVideoParamsChange(id: string, params: VideoParams)
-
-    onNewVideoFrame(id: string, imageData: ImageData)
 }
 
-export interface PatternWindowState {
+export interface PatternComponentState {
 }
 
 const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true};
 
-export class PatternComponent extends React.PureComponent<PatternWindowProps, PatternWindowState> {
+export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
 
     handleImageChange = imageData => this.props.onImageChange(this.props.id, imageData);
@@ -108,10 +131,6 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
 
     handleDouble = () => this.props.onDouble(this.props.id);
 
-    handleUndo = () => this.props.onUndo(this.props.id);
-
-    handleRedo = () => this.props.onRedo(this.props.id);
-
     handleSetWidth = width => this.props.onSetWidth(this.props.id, width);
 
     handleSetHeight = height => this.props.onSetHeight(this.props.id, height);
@@ -125,18 +144,10 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
     };
 
     handleConfigToggle = (data) => {
-        this.props.onConfigChange(this.props.id, {
+        this.props.editConfig(this.props.id, {
             ...this.props.config,
             [data.name]: !data.selected
         })
-    };
-
-    handleRotationChange = (rotation: RotationValue) => {
-        this.props.onRotationChange(this.props.id, rotation)
-    };
-
-    handleRepeatingChange = (repeating: RepeatingParams) => {
-        this.props.onRepeatingChange(this.props.id, repeating)
     };
 
     handleLoad = (image) => {
@@ -146,10 +157,10 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
         this.props.onSave(this.props.id)
     };
     handleFitChange = (data) => {
-        const {loading, id} = this.props;
+        const {importParams, id} = this.props;
         const {selected} = data;
-        this.props.onLoadingParamsChange(id, {
-            ...loading,
+        this.props.setImportParams(id, {
+            ...importParams,
             fit: !selected
         });
     };
@@ -161,19 +172,10 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
         this.props.onCutBySelection(this.props.id)
     };
 
-    handleVideoParamsChange = (params) => {
-        this.props.onVideoParamsChange(this.props.id, params)
-    };
-
-    handleNewVideoFrame = (imageData: ImageData) => {
-        this.props.onNewVideoFrame(this.props.id, imageData)
-    };
-
     render() {
         const {
             imageValue, maskValue,
-            height, width, id, config,
-            history, selection, rotation, repeating, loading, video,
+            height, width, id, config, selection, rotation, importParams,
             t
         } = this.props;
 
@@ -184,34 +186,22 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
                     <div className="plugins">
 
                         {config.repeating &&
-                        <RepeatingControls
-                            patternId={id}
-                            repeating={repeating}
-                            onChange={this.handleRepeatingChange}/>}
+                        <RepeatingControls patternId={id}/>}
 
                         {config.video &&
-                        <VideoControls
-                            patternId={id}
-                            params={video}
-                            onNewFrame={this.handleNewVideoFrame}
-                            onParamsChange={this.handleVideoParamsChange}/>}
+                        <VideoControls patternId={id}/>}
 
                         {config.rotation &&
-                        <RotationControls
-                            patternId={id}
-                            rotation={rotation}
-                            onChange={this.handleRotationChange}/>}
+                        <RotationControls patternId={id}/>}
 
-                        {/*{config.room &&*/}
-                        {/*<RoomControls*/}
-                        {/*    onRoomCreate={this.handleCreateRoom}*/}
-                        {/*    connected={connected}/>}*/}
+                        {config.room &&
+                        <RoomControls patternId={id}/>}
 
                         <div className={'plugins-toggles'}>
-                            {/*<ButtonSelect*/}
-                            {/*    name={"mask"}*/}
-                            {/*    selected={config.mask}*/}
-                            {/*    onClick={this.handleConfigToggle}>mask</ButtonSelect>*/}
+                            <ButtonSelect
+                                name={"mask"}
+                                selected={config.mask}
+                                onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonSelect>
                             <ButtonSelect
                                 name={"repeating"}
                                 selected={config.repeating}
@@ -220,6 +210,10 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
                                 name={"rotation"}
                                 selected={config.rotation}
                                 onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonSelect>
+                            <ButtonSelect
+                                name={"room"}
+                                selected={config.room}
+                                onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonSelect>
                             <ButtonSelect
                                 name={"video"}
                                 selected={config.video}
@@ -237,7 +231,7 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
                                     name={id + '-fileInput'}
                                     onChange={this.handleLoad}>{t('patternControls.load')}</File>
                                 <ButtonSelect
-                                    selected={this.props.loading.fit}
+                                    selected={this.props.importParams.fit}
                                     onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
                             </div>
                             <div className={'pattern-sizes'}>
@@ -296,10 +290,7 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
                     </div>
 
                     {config.history &&
-                    <HistoryControls
-                        history={history.value}
-                        onUndo={this.handleUndo}
-                        onRedo={this.handleRedo}/>}
+                    <HistoryControls patternId={id}/>}
                 </div>
 
             </div>
@@ -307,4 +298,30 @@ export class PatternComponent extends React.PureComponent<PatternWindowProps, Pa
     }
 }
 
-export const Pattern = withTranslation("common")(PatternComponent);
+
+const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternComponentOwnProps, AppState> = (state, {id}) => {
+    const pattern = state.patterns[id];
+    return {
+        importParams: pattern.import.params,
+        config: pattern.config,
+        width: pattern.current.width,
+        height: pattern.current.height,
+        selection: pattern?.selection,
+        rotation: pattern?.rotation?.value,
+        imageValue: pattern?.current?.imageData || null,
+        maskValue: pattern?.mask?.value?.imageData || null,
+    }
+};
+
+const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, PatternComponentOwnProps> = {
+    updateImage,
+    updateMask,
+    editConfig,
+    setImportParams
+};
+
+export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(
+    mapStateToProps,
+    mapDispatchToProps
+)(withTranslation("common")(PatternComponent));
+

@@ -298,7 +298,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             })(),
         },
         [EToolType.Line]: {
-            [ELineType.Default]: {
+            [ELineType.Solid]: {
                 click: (ev) => {
                     const {ctx, e} = ev;
                     const {size, opacity, compositeOperation} = this.props.line.params;
@@ -330,7 +330,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     e.ctx.closePath();
                 }
             },
-            [ELineType.Interrupted]: {
+            [ELineType.Broken]: {
                 click: (ev) => {
                     const {ctx, e} = ev;
                     const {size, opacity, compositeOperation} = this.props.line.params;
@@ -367,7 +367,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     e.ctx.closePath();
                 }
             },
-            [ELineType.InterruptedOneStroke]: {
+            [ELineType.BrokenTransparent]: {
                 click: (ev) => {
                     const {ctx, e} = ev;
                     const {size, opacity, compositeOperation} = this.props.line.params;

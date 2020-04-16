@@ -7,6 +7,7 @@ import {getOffset} from "../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude} from "./ParaboloidAmplitude";
 import {SinAmplitude} from "./SinAmplitude";
+import '../../../../styles/buttonNumber.scss';
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);

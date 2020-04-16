@@ -48,9 +48,9 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
                 <Button
                     className="app-control-button"
                     onClick={this.handleLanguage}>{language}</Button>
-                <Button
-                    className="app-control-button"
-                    onClick={reverseFullScreen}>?</Button>
+                {/*<Button*/}
+                {/*    className="app-control-button"*/}
+                {/*    onClick={reverseFullScreen}>?</Button>*/}
                 <Button
                     className={classNames("app-control-button", "full-button", {
                         ["full-button-off"]: isFull

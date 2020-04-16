@@ -2,10 +2,10 @@ import {Action} from "redux";
 import {EBrushType} from "../brush/types";
 
 export enum ELineType {
-    Default = "Default",
-    Interrupted = "Interrupted",
-    InterruptedOneStroke = "InterruptedOneStroke",
-    Pattern = "Pattern",
+    Solid = "solid",
+    Broken = "broken",
+    BrokenTransparent = "transp",
+    // Pattern = "Pattern",
 }
 
 export enum ELineCompositeOperation {

@@ -3,19 +3,31 @@ import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import '../../styles/rotatingControls.scss';
+import {VideoParams} from "../../store/patterns/video/types";
+import {ChangeFunctions} from "../../store/changeFunctions/reducer";
+import {withTranslation, WithTranslation} from "react-i18next";
+import {setRotation} from "../../store/patterns/rotating/actions";
+import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {AppState} from "../../store";
 
-export interface RotationControlsProps {
+export interface RotationControlsStateProps {
     rotation: RotationValue
+}
+
+export interface RotationControlsActionProps {
+    setRotation(id: string, value: RotationValue)
+}
+
+export interface RotationControlsOwnProps {
     patternId: string
+}
 
-    onChange(rotation: RotationValue)
-
+export interface RotationControlsProps extends RotationControlsStateProps, RotationControlsActionProps, RotationControlsOwnProps, WithTranslation {
 }
 
 export interface RotationControlsState {
 
 }
-
 
 const angleRange = [0, 360] as [number, number];
 const angleValueD = ValueD.VerticalLinear(0.4);
@@ -23,16 +35,16 @@ const angleValueD = ValueD.VerticalLinear(0.4);
 const offsetRange = [-800, 800] as [number, number];
 const offsetValueD = ValueD.VerticalLinear(0.6);
 
-export class RotationControls extends React.PureComponent<RotationControlsProps, RotationControlsState> {
+export class RotationControlsComponent extends React.PureComponent<RotationControlsProps, RotationControlsState> {
 
     handleAngleChange = ({value: angle}) => {
-        const {onChange, rotation} = this.props;
-        onChange({...rotation, angle})
+        const {setRotation, rotation, patternId} = this.props;
+        setRotation(patternId, {...rotation, angle})
     };
 
     handleOffsetChange = ({value, name}) => {
-        const {onChange, rotation} = this.props;
-        onChange({
+        const {setRotation, rotation, patternId} = this.props;
+        setRotation(patternId, {
             ...rotation, offset: {
                 ...rotation.offset,
                 [name]: value
@@ -70,3 +82,16 @@ export class RotationControls extends React.PureComponent<RotationControlsProps,
         );
     }
 }
+
+const mapStateToProps: MapStateToProps<RotationControlsStateProps, RotationControlsOwnProps, AppState> = (state, {patternId}) => ({
+    rotation: state.patterns[patternId]?.rotation?.value
+});
+
+const mapDispatchToProps: MapDispatchToProps<RotationControlsActionProps, RotationControlsOwnProps> = {
+    setRotation,
+};
+
+export const RotationControls = connect<RotationControlsStateProps, RotationControlsActionProps, RotationControlsOwnProps, AppState>(
+    mapStateToProps,
+    mapDispatchToProps
+)(withTranslation('common')(RotationControlsComponent));

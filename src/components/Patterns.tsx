@@ -45,35 +45,22 @@ export interface PatternsActionProps {
 
     updateSelection(id: string, value: Segments, bBox: SVGRect)
 
-    redo(id: string)
-
-    undo(id: string)
-
     setWidth(id: string, value: number)
 
     setHeight(id: string, value: number)
 
-    editConfig(id: string, config: PatternConfig)
 
     createRoom(id: string, name: string)
 
-    setRotation(id: string, value: RotationValue)
-
-    setRepeating(id: string, value: RepeatingParams)
 
     save(id: string)
 
     load(id: string, image)
 
-    setLoadingParams(id: string, value: ImportParams)
-
     createPatternFromSelection(id: string)
 
     cutPatternBySelection(id: string)
 
-    setVideoParams(id: string, value: VideoParams)
-
-    onNewVideoFrame(id: string, imageData: ImageData)
 }
 
 export interface PatternsOwnProps {
@@ -96,43 +83,28 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         const {
             patterns,
             createRoom, removePattern, updateImage, updateMask,
-            setMaskParams, updateSelection, undo, redo, setWidth,
-            setHeight, editConfig, setRotation, setRepeating,
-            save, load, setLoadingParams,
-            createPatternFromSelection, doublePattern, cutPatternBySelection, setVideoParams,
-            onNewVideoFrame,
+            setMaskParams, updateSelection, setWidth,
+            setHeight,
+            save, load,
+            createPatternFromSelection, doublePattern, cutPatternBySelection,
             t,
         } = this.props;
         return (
             <>
-                {patterns.map(({id, current, mask, config, history, store, selection, connected, resultImage, rotation, repeating, import: loading, video}) => {
+                {patterns.map(({id, current, mask, config, store, selection, connected, resultImage, rotation, import: loading}) => {
                     return (
                         <Pattern
                             key={id}
                             id={id}
-                            config={config}
 
                             connected={connected}
 
-                            history={history}
                             store={store}
-                            selection={selection}
-                            imageValue={current ? current.imageData : null}
-                            maskValue={mask ? mask.value.imageData : null}
                             resultImage={resultImage}
-                            maskParams={mask ? mask.params : null}
-                            rotation={rotation ? rotation.value : null}
-                            repeating={repeating ? repeating.params : null}
-                            loading={loading ? loading.params : null}
-                            video={video ? video.params : null}
 
-                            width={current ? current.width : null}
-                            height={current ? current.height : null}
 
-                            onConfigChange={editConfig}
 
-                            onUndo={undo}
-                            onRedo={redo}
+
                             onImageChange={updateImage}
                             onMaskChange={updateMask}
                             onMaskParamsChange={setMaskParams}
@@ -141,16 +113,13 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             onSetWidth={setWidth}
                             onSetHeight={setHeight}
                             onCreateRoom={createRoom}
-                            onRotationChange={setRotation}
-                            onRepeatingChange={setRepeating}
+
                             onSave={save}
                             onLoad={load}
-                            onLoadingParamsChange={setLoadingParams}
                             onCreatePatternFromSelection={createPatternFromSelection}
                             onDouble={doublePattern}
                             onCutBySelection={cutPatternBySelection}
-                            onVideoParamsChange={setVideoParams}
-                            onNewVideoFrame={onNewVideoFrame}/>
+                        />
                     );
                 })}
                 <div className={'zero-pattern'}>
@@ -172,22 +141,14 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     removePattern,
     updateImage,
     updateSelection,
-    redo,
-    undo,
     setWidth,
     setHeight,
-    editConfig,
     updateMask,
-    setRotation,
-    setRepeating,
     save,
     load,
-    setLoadingParams: setImportParams,
     createPatternFromSelection,
     doublePattern,
     cutPatternBySelection,
-    setVideoParams,
-    onNewVideoFrame: onNewFrame
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

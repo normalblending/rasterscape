@@ -9,10 +9,13 @@ import {AppState} from "../../store";
 import {ECFType} from "../../store/changeFunctions/types";
 import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {createCapture} from "../../store/patterns/video/capture/createCapture";
-import {pause, play, start, stop} from "../../store/patterns/video/actions";
+import {onNewFrame, pause, play, setVideoParams, start, stop} from "../../store/patterns/video/actions";
 import {getCFs} from "../../store/changeFunctions/selectors";
 
 export interface VideoControlsStateProps {
+
+    videoParams: VideoParams
+
     changeFunctions: ChangeFunctions
 }
 
@@ -22,15 +25,14 @@ export interface VideoControlsActionProps {
 
     pause
     play
+
+    setVideoParams(id: string, value: VideoParams)
+
+    onNewVideoFrame(id: string, imageData: ImageData)
 }
 
 export interface VideoControlsOwnProps {
     patternId: string
-    params: VideoParams
-
-    onParamsChange(value: VideoParams)
-
-    onNewFrame(imageData: ImageData)
 }
 
 export interface VideoControlsProps extends VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps {
@@ -52,35 +54,33 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         pause: false
     };
 
-    componentDidMount(): void {
-
-    }
 
     componentDidUpdate(prevProps: Readonly<VideoControlsProps>, prevState: Readonly<VideoControlsState>, snapshot?: any): void {
-        if (!prevProps.params.on && this.props.params.on) {
 
+        if (!prevProps.videoParams.on && this.props.videoParams.on) {
             this.props.start(this.props.patternId);
-
         }
-        if (prevProps.params.on && !this.props.params.on) {
+
+        if (prevProps.videoParams.on && !this.props.videoParams.on) {
             this.props.stop(this.props.patternId);
         }
     }
 
     handleChangeOnParam = (data) => {
-        console.log(1, data);
+        const {setVideoParams, videoParams, patternId} = this.props;
         const {selected} = data;
-        this.props.onParamsChange({
-            ...this.props.params,
+        setVideoParams(patternId, {
+            ...videoParams,
             on: !selected
         });
         this.setState({pause: selected})
     };
 
     handleChangeParam = (data) => {
+        const {setVideoParams, videoParams, patternId} = this.props;
         const {value, name} = data;
-        this.props.onParamsChange({
-            ...this.props.params,
+        setVideoParams(patternId, {
+            ...videoParams,
             [name]: value
         });
     };
@@ -102,9 +102,9 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     availableChangeTypes = [ECFType.XY_PARABOLOID];
 
     render() {
-        const {changeFunctions, params} = this.props;
-        const {on} = this.props.params;
-        console.log('render video control ', this.props);
+        const {changeFunctions, videoParams: params} = this.props;
+        const {on} = params;
+
         return (
             <div className={"video-controls"}>
                 <ButtonSelect
@@ -134,15 +134,19 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
     }
 }
 
-const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = state => ({
-    changeFunctions: getCFs(state)
+const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, {patternId}) => ({
+    changeFunctions: getCFs(state),
+    videoParams: state.patterns[patternId]?.video?.params || null
 });
 
 const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoControlsOwnProps> = {
     start,
     stop,
     pause,
-    play
+    play,
+
+    setVideoParams,
+    onNewVideoFrame: onNewFrame
 };
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

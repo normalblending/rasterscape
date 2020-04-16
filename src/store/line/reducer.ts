@@ -25,7 +25,7 @@ export const lineReducer = handleActions<LineState>({
     params: {
         size: 5,
         opacity: 1,
-        type: ELineType.Default
+        type: ELineType.Solid
     },
     paramsConfig: getLineParamsConfig()
 });

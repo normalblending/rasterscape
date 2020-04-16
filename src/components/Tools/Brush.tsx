@@ -159,9 +159,9 @@ class BrushComponent extends React.PureComponent<BrushProps> {
                     </>)}
                 </div>
 
-                {paramsValue.type !== EBrushType.Pattern && (
-                    <ColorPalette/>
-                )}
+                {/*{paramsValue.type !== EBrushType.Pattern && (*/}
+                {/*    <ColorPalette/>*/}
+                {/*)}*/}
             </div>
         );
     }

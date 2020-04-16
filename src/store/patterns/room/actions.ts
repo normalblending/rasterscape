@@ -7,6 +7,7 @@ import {updateImage} from "../pattern/actions";
 
 export enum ERoomAction {
     CREATE_ROOM = "pattern/create-room",
+    LEAVE_ROOM = "pattern/leave-room",
 }
 
 export interface CreateRoomAction extends PatternAction {
@@ -25,4 +26,13 @@ export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoom
         });
 
         return dispatch({type: ERoomAction.CREATE_ROOM, id, roomName, socket})
+    };
+
+export const leaveRoom = (id: string): ThunkResult<PatternAction, AppState> =>
+    (dispatch, getState) => {
+        const socket = getState().patterns[id].room.value.socket;
+
+        socket.close();
+
+        return dispatch({type: ERoomAction.LEAVE_ROOM, id})
     };

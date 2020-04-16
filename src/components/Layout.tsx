@@ -2,7 +2,6 @@ import * as React from "react";
 import "../styles/layout.scss";
 import {Patterns} from "./Patterns";
 import {Tools} from "./Tools";
-import {Rooms} from "./Rooms";
 import {ChangeF} from "./ChangeF";
 import {connect} from "react-redux";
 import {setFullScreen} from "../store/fullscreen";
@@ -33,7 +32,6 @@ export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) =>
                     </div>
                     <div className="windows">
                         <Patterns/>
-                        <Rooms/>
                     </div>
                     <AppControls/>
                 </div>

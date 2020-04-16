@@ -26,6 +26,8 @@ export interface CanvasProps {
 
     rotation?: RotationValue
 
+    pointerLock?: boolean
+
     updateOnDrag?: boolean
 
     onDown?(e: CanvasEvent)
@@ -116,8 +118,12 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     }
 
     private mouseDownHandler = e => {
+        if (this.props.pointerLock) {
+            this.canvasRef.current.requestPointerLock();
+        }
+
         document.addEventListener("mouseup", this.mouseUpHandler);
-        window.addEventListener("mousemove", this.mouseDragHandler);
+        document.addEventListener("mousemove", this.mouseDragHandler);
 
         this.e = e;
         this.setState({
@@ -231,10 +237,15 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         if (this.state.drawing) {
             this.pre = this.e;
-            this.e = e;
+            this.e = this.props.pointerLock ? {
+                ...e,
+                pageX: this.pre.pageX + e.movementX,
+                pageY: this.pre.pageY + e.movementY,
+            } : e;
 
             // если водим при нажатии
             // в этом случае onMove срабатывает в анимации
+
         }
     };
 
@@ -242,7 +253,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         console.log('canvas up');
 
         document.removeEventListener("mouseup", this.mouseUpHandler);
-        window.removeEventListener("mousemove", this.mouseDragHandler);
+        document.removeEventListener("mousemove", this.mouseDragHandler);
+
+        if (this.props.pointerLock) {
+            document.exitPointerLock();
+        }
 
         this.stop();
         if (this.state.drawing) {

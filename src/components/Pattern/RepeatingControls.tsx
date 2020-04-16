@@ -3,15 +3,28 @@ import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {BezierCurveRepeating} from "../_shared/canvases/BezierCurveRepeating";
-import * as Bezier from "bezier-js";
 import {ERepeatingType, RepeatingParams} from "../../store/patterns/repeating/types";
 import '../../styles/repeatingControls.scss';
+import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {WithTranslation, withTranslation} from "react-i18next";
+import {AppState} from "../../store";
+import {setRepeating} from "../../store/patterns/repeating/actions";
 
-export interface RepeatingControlsProps {
+export interface RepeatingControlsStateProps {
+
     repeating: RepeatingParams
-    patternId: string
+}
 
-    onChange(repeating: RepeatingParams)
+export interface RepeatingControlsActionProps {
+    setRepeating(id: string, repeating: RepeatingParams)
+
+}
+
+export interface RepeatingControlsOwnProps {
+    patternId: string
+}
+
+export interface RepeatingControlsProps extends RepeatingControlsStateProps, RepeatingControlsActionProps, RepeatingControlsOwnProps, WithTranslation {
 
 }
 
@@ -23,11 +36,11 @@ const repeatingRange = [1, 10] as [number, number];
 const repeatingOutRange = [0, 3] as [number, number];
 const repeatingValueD = ValueD.VerticalLinear(9);
 
-export class RepeatingControls extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
+export class RepeatingControlsComponent extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
 
     handleGridParamsChange = ({value, name}) => {
-        const {onChange, repeating} = this.props;
-        onChange({
+        const {setRepeating, repeating, patternId} = this.props;
+        setRepeating(patternId, {
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
@@ -38,20 +51,19 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
 
     handleIntegerChange = (data) => {
         const {selected, name} = data;
-        const {onChange, repeating} = this.props;
-        onChange({
+        const {setRepeating, repeating, patternId} = this.props;
+        setRepeating(patternId, {
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
-                [name]: selected,
-                bezierPoints: [{x: 10, y: 10}, {x: 20, y: 20}, {x: 80, y: 80}, {x: 90, y: 90}]
+                [name]: selected
             }
         })
     };
 
     handleBezierChange = (points) => {
-        const {onChange, repeating} = this.props;
-        onChange({
+        const {setRepeating, repeating, patternId} = this.props;
+        setRepeating(patternId, {
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
@@ -125,3 +137,17 @@ export class RepeatingControls extends React.PureComponent<RepeatingControlsProp
         );
     }
 }
+
+
+const mapStateToProps: MapStateToProps<RepeatingControlsStateProps, RepeatingControlsOwnProps, AppState> = (state, {patternId}) => ({
+    repeating: state.patterns[patternId]?.repeating?.params || null
+});
+
+const mapDispatchToProps: MapDispatchToProps<RepeatingControlsActionProps, RepeatingControlsOwnProps> = {
+    setRepeating
+};
+
+export const RepeatingControls = connect<RepeatingControlsStateProps, RepeatingControlsActionProps, RepeatingControlsOwnProps, AppState>(
+    mapStateToProps,
+    mapDispatchToProps
+)(withTranslation('common')(RepeatingControlsComponent));
