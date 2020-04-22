@@ -4,14 +4,14 @@ import {AppState} from "../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../store/brush/reducer";
 import {EToolType} from "../../store/tool/types";
-import {EBrushCompositeOperation, EBrushType} from "../../store/brush/types";
+import {EBrushType} from "../../store/brush/types";
 import {LineState} from "../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../store/line/types";
 import {ELineCompositeOperation} from "../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../store/changing/actions";
 import {getRepeatingCoords} from "../../utils/draw";
-import {setPosition} from "./canvasPosition.servise";
+import {coordHelper, setPosition} from "./canvasPosition.servise";
 import {SVG} from "../_shared/SVG";
 import classNames from "classnames";
 import '../../styles/draw.scss';
@@ -21,6 +21,7 @@ import {
 } from "../../utils/canvas/helpers/draw";
 import {PatternsState} from "../../store/patterns/types";
 import {circle} from "../../utils/canvas/helpers/geometry";
+import {ECompositeOperation} from "../../store/compositeOperations";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -72,6 +73,9 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     const pattern = patterns[patternId];
                     const {size, opacity, compositeOperation} = this.props.brush.params;
 
+                    coordHelper.setText(compositeOperation);
+                    // console.log(compositeOperation);
+
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
@@ -111,7 +115,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     }
 
 
-                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
                 };
                 return {
@@ -119,8 +123,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     click: squareBrush,
                     cursors: ({x, y, outer}) => {
 
-                        let width = this.props.brush.params.size;
-                        let height = this.props.brush.params.size;
+                        let width = Math.max(this.props.brush.params.size, 1);
+                        let height = Math.max(this.props.brush.params.size, 1);
 
                         const {rotation} = this.props;
                         return x - width / 2 ? (
@@ -181,7 +185,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                         });
                     }
 
-                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
                 };
                 return {
@@ -261,7 +265,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
                         getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(dr);
                     }
-                    ctx.globalCompositeOperation = EBrushCompositeOperation.SourceOver;
+                    ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
                     ctx.globalAlpha = 1;
                 };
                 return {

@@ -1,6 +1,6 @@
 import {get, PixelsStack, set} from "./pixels";
 import * as P5 from 'p5';
-
+//deprecated
 export function createCapture(onNewFrame, stream) {
     const w = 320,
         h = 240;
@@ -29,7 +29,7 @@ export function createCapture(onNewFrame, stream) {
         sketch.setup = () => {
             sketch.pixelDensity(1);
             canvas = sketch.createCanvas(w, h);
-            canvas.parent("v1");
+            // canvas.parent("v1");
 
             capture = sketch.createCapture({
                 video: {
@@ -46,7 +46,7 @@ export function createCapture(onNewFrame, stream) {
                 stream(s);
                 console.log(s, b);
             });
-            capture.parent("v2");
+            // capture.parent("v2");
             capture.size(w, h);
 
             sketch.frameRate(30);

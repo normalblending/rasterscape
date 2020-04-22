@@ -1,0 +1,72 @@
+
+.video-controls {
+  display: flex;
+  flex-wrap: wrap;
+
+  .slit-mode, .edge-mode, .stack-type {
+    background-color: #ebebeb;
+
+  }
+
+  .on-off, .pause-play, .cut-function .select-drop-value {
+    background-color: lightgrey;
+
+  }
+
+
+  .slit-mode {
+    border-right: none;
+    //border-bottom: none;
+  }
+
+  .edge-mode {
+    border-right: none;
+    border-left: none;
+    //border-bottom: none;
+  }
+
+  .stack-type {
+    border-left: none;
+    //border-bottom: none;
+  }
+
+  .on-off {
+    border-right: none;
+    &.button-select-selected {
+      color: red;
+    }
+  }
+
+  .pause-play {
+    border-right: none;
+    border-left: none;
+  }
+
+  .cut-function .select-drop-value {
+    border-left: none;
+  }
+
+  .cut-function {
+    &.select-drop>.select-drop-items>.select-buttons-items {
+      border: none;
+      background: transparent;
+      pointer-events: none;
+
+      .button-select {
+
+
+        border-top-color: #ebebeb;
+        border-right-color: #cccccc;
+
+        background: lightgrey;
+        pointer-events: visible;
+
+      }
+      .button-select-selected {
+        border-bottom-color: #ebebeb;
+        border-right-color: #cccccc;
+        border-top-color: rgb(186, 186, 186);
+      }
+    }
+  }
+}

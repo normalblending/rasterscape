@@ -30,10 +30,10 @@ export interface RotationControlsState {
 }
 
 const angleRange = [0, 360] as [number, number];
-const angleValueD = ValueD.VerticalLinear(0.4);
+const angleValueD = ValueD.VerticalLinear(0.2);
 
 const offsetRange = [-800, 800] as [number, number];
-const offsetValueD = ValueD.VerticalLinear(0.6);
+const offsetValueD = ValueD.VerticalLinear(0.1);
 
 export class RotationControlsComponent extends React.PureComponent<RotationControlsProps, RotationControlsState> {
 
@@ -57,6 +57,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
         return (
             <div className={'rotating-controls'}>
                 <ButtonNumberCF
+                    precision={360}
                     path={`patterns.${this.props.patternId}.rotation.value.angle`}
                     name={"angle"}
                     value={angle}
@@ -65,6 +66,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     onChange={this.handleAngleChange}/>
 
                 <ButtonNumberCF
+                    precision={1600}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.x`}
                     name={"x"}
                     value={offset.x}
@@ -72,6 +74,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     valueD={offsetValueD}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
+                    precision={1600}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.y`}
                     name={"y"}
                     value={offset.y}

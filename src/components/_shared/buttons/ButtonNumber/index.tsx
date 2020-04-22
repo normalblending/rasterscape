@@ -8,12 +8,19 @@ import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude} from "./ParaboloidAmplitude";
 import {SinAmplitude} from "./SinAmplitude";
 import '../../../../styles/buttonNumber.scss';
+import {startPoint} from "./startPoint";
+import {coordHelper} from "../../../Area/canvasPosition.servise";
 
 const DEFAULT_WIDTH = 70;
 const defaultGetText = value => value.toFixed(1);
 
 export const ValueD = {
-    VerticalLinear: (step: number) => (oldValue: any, dx: number, dy) => oldValue - dy / step,
+    VerticalLinear: (step: number) => {
+        return (oldValue: any, dx: number, dy: number) => {
+            const d = Math.abs(dx) >= Math.abs(dy) ? -dx : dy;
+            return oldValue - d / step
+        }
+    },
 };
 
 const amplitudeComponent = {
@@ -31,6 +38,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
 
     width?: number
     precision?: number | ((value?: any) => number)
+    precisionGain?: number
 
     text?: string
 
@@ -115,6 +123,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         const {e} = data;
         e.persist();
 
+
+        startPoint.set(e.clientX, e.clientY);
+
         const {onMouseDown, name, selected} = this.props;
         const {value} = this.state;
 
@@ -150,8 +161,18 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     handleUp = (e) => {
         // //  modulation
 
+        startPoint.hide();
 
-        const {changingStartValue, onClick, onMouseUp, onChange, name, selected, width = DEFAULT_WIDTH, precision = 100, range} = this.props;
+        const {changingStartValue,
+            onClick,
+            onMouseUp,
+            onChange,
+            name,
+            selected,
+            width = DEFAULT_WIDTH,
+            precision = 100,
+            precisionGain = 2,
+            range} = this.props;
         let value = this.calcValue(e);
 
 
@@ -161,8 +182,12 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
             const {left} = getOffset(e.target);
 
+            const increment = (left + width / 2) < e.pageX
+                ? ((left + width * 3 / 4) < e.pageX ? (precisionGain * one) : one)
+                : ((left + width / 4) < e.pageX ? -one : (-precisionGain * one));
+
             value = Math.min(Math.max(
-                this.state.startValue + (left + width / 2 < e.pageX ? one : -one)
+                this.state.startValue + increment
                 , range[0]), range[1]);
 
             onChange && onChange({e, value, name, selected});
@@ -207,6 +232,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handlePressed = e => {
         if (!this.state.startPoint) {
+            startPoint.set(e.clientX, e.clientY);
             this.setState({
                 startPoint: [e.clientX, e.clientY]
             });
@@ -221,6 +247,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     handleRelease = e => {
+
+        startPoint.hide();
+
         const {onRelease, name, selected} = this.props;
         const {value} = this.state;
 

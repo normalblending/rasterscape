@@ -38,14 +38,16 @@ export interface BrushProps extends BrushStateProps, BrushActionProps, BrushOwnP
 
 }
 
-const sizeRange = [1, 200] as [number, number];
-const sizeValueD = ValueD.VerticalLinear(.2);
+const sizeRange = [0, 200] as [number, number];
+const sizeValueD = ValueD.VerticalLinear(0.5);
 
 const patternSizeRange = [0, 5] as [number, number];
-const patternSizeValueD = ValueD.VerticalLinear(200);
+const patternSizeValueD = ValueD.VerticalLinear(125);
 
 const opacityRange = [0, 1] as [number, number];
 const opacityValueD = ValueD.VerticalLinear(100);
+const opacityValueText = value => value.toFixed(2);
+
 
 class BrushComponent extends React.PureComponent<BrushProps> {
 
@@ -107,13 +109,17 @@ class BrushComponent extends React.PureComponent<BrushProps> {
 
                     {paramsValue.type === EBrushType.Pattern ?
                         <ButtonNumberCF
+                            precision={5 * 100}
+                            precisionGain={10}
                             path={"brush.params.patternSize"}
                             value={paramsValue.patternSize}
                             name={"patternSize"}
                             onChange={this.handleParamChange}
+                            getText={opacityValueText}
                             range={patternSizeRange}
                             valueD={patternSizeValueD}/> :
                         <ButtonNumberCF
+                            precision={200 * 10}
                             path={"brush.params.size"}
                             value={paramsValue.size}
                             name={"size"}
@@ -122,8 +128,11 @@ class BrushComponent extends React.PureComponent<BrushProps> {
                             valueD={sizeValueD}/>}
 
                     <ButtonNumberCF
+                        precision={10 * 10}
+                        getText={opacityValueText}
                         path={"brush.params.opacity"}
                         value={paramsValue.opacity}
+                        precisionGain={5}
                         name={"opacity"}
                         onChange={this.handleOpacityChange}
                         range={opacityRange}

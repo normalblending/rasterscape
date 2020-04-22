@@ -1,15 +1,64 @@
-import {get, PixelsStack, set} from "./capture/pixels";
+import {get, PixelsStack, set, StackType} from "./capture/pixels";
 import * as P5 from 'p5';
+import {patternReducers} from "../pattern/reducers";
+import {VideoParams} from "./types";
 
 export interface ICaptures {
     [patternId: string]: any
 }
 
+export enum EdgeMode {
+    NO = 'no',
+    TOP = 'top',
+    BOT = 'bot',
+    ALL = 'all',
+}
+
+export enum SlitMode {
+    SIDE = 'side',
+    FRONT = 'front',
+}
+
+const GetPixel = {
+    [SlitMode.SIDE]: (pixelsStack, w, x, y, frameN) =>
+        get(pixelsStack[x], w, 4, frameN, y),
+    [SlitMode.FRONT]: (pixelsStack, w, x, y, frameN) =>
+        get(pixelsStack[frameN], w, 4, x, y)
+};
+
+
+const GetFrameN = {
+    [EdgeMode.NO]: (z, length) => Math.round(z),
+    [EdgeMode.TOP]: (z, length) => {
+        let frameN = Math.round(z);
+        if (frameN >= length) frameN = length - 1;
+        return frameN;
+    },
+    [EdgeMode.BOT]: (z, length) => {
+        let frameN = Math.round(z);
+        if (frameN < 0) frameN = 0;
+        return frameN;
+    },
+    [EdgeMode.ALL]: (z, length) => {
+        let frameN = Math.round(z);
+        if (frameN >= length) frameN = length - 1;
+        if (frameN < 0) frameN = 0;
+        return frameN;
+    },
+};
+
 export class CaptureService {
 
     captures: ICaptures = {};
 
-    createCapture(patternId, onNewFrame, changeFunction) {
+    createCapture(
+        patternId,
+        onNewFrame,
+        cutFunction,
+        edgeMode: () => EdgeMode,
+        slitMode: () => SlitMode,
+        stackType: () => StackType,
+    ) {
         const w = 320,
             h = 240;
 
@@ -19,19 +68,14 @@ export class CaptureService {
 
         const f = (x, y?, length?) => x;
 
-        const getFrameN = (x, y, length) => {
-
-            // return getChangeFunction(x, y, length)
-
-
-            let frameN = Math.round(changeFunction(x, y, length));
-            if (frameN >= length) frameN = length - 1;
-            return frameN;
+        let getFrameN, getPixel;
+        const update = () => {
+             getFrameN = GetFrameN[edgeMode()];
+             getPixel = GetPixel[slitMode()];
+             stack.setType(stackType())
         };
+        update();
 
-
-        const getPixel = (pixelsStack, x, y, frameN) =>
-            get(pixelsStack[x], w, 4, frameN, y);
 
         let canvas;
         let capture;
@@ -81,12 +125,13 @@ export class CaptureService {
 
                 for (let x = 0; x < w; x++) {
                     for (let y = 0; y < h; y++) {
-                        const frameN = getFrameN(x, y, pixelsStack.length);
+                        const z = Math.round(cutFunction(x, y, pixelsStack.length));
+                        const frameN = getFrameN(z, pixelsStack.length);
                         set(
                             sketch.pixels,
                             w,
                             4, x, y,
-                            getPixel(pixelsStack, x, y, frameN)
+                            getPixel(pixelsStack, w, x, y, frameN)
                         )
                     }
                 }
@@ -104,7 +149,8 @@ export class CaptureService {
         this.captures[patternId] = {
             sketch,
             canvas,
-            capture
+            capture,
+            update
         };
 
         return this.captures[patternId];
@@ -118,13 +164,13 @@ export class CaptureService {
         this.captures[patternId].sketch.loop();
     };
 
-    start = (patternId, onNewFrame, cf) => {
+    start = (patternId, onNewFrame, cf, em, sm, st) => {
 
         if (this.captures[patternId]) {
             this.stop(patternId);
         }
 
-        this.captures[patternId] = this.createCapture(patternId, onNewFrame, cf);
+        this.captures[patternId] = this.createCapture(patternId, onNewFrame, cf, em, sm, st);
 
         return this.captures[patternId];
     };
@@ -140,6 +186,10 @@ export class CaptureService {
 
             this.captures = others;
         }
+    };
+
+    updateParams = (patternId: string) => {
+        this.captures[patternId]?.update();
     };
 
 }

@@ -1,16 +1,19 @@
 import * as React from "react";
 import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import {VideoParams} from "../../store/patterns/video/types";
-import * as P5 from 'p5';
-import {get, PixelsStack, set} from "../../store/patterns/video/capture/pixels";
 import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ECFType} from "../../store/changeFunctions/types";
 import {ChangeFunctions} from "../../store/changeFunctions/reducer";
-import {createCapture} from "../../store/patterns/video/capture/createCapture";
 import {onNewFrame, pause, play, setVideoParams, start, stop} from "../../store/patterns/video/actions";
 import {getCFs} from "../../store/changeFunctions/selectors";
+import {arrayToSelectItems} from "../../utils/utils";
+import {EdgeMode, SlitMode} from "../../store/patterns/video/services";
+import {StackType} from "../../store/patterns/video/capture/pixels";
+import '../../styles/videoControls.scss';
+import {ECompositeOperation} from "../../store/compositeOperations";
+import {CycledToggle} from "../_shared/buttons/CycledToggle";
 
 export interface VideoControlsStateProps {
 
@@ -42,6 +45,7 @@ export interface VideoControlsProps extends VideoControlsStateProps, VideoContro
 export interface VideoControlsState {
     pause: boolean
 }
+
 
 // todo нужно нормально сделать состояния в редаксе и экшены-свитчи
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
@@ -85,6 +89,15 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         });
     };
 
+    handleChangeSlitModeParam = (data) => {
+        const {setVideoParams, videoParams, patternId} = this.props;
+        const {selected} = data;
+        setVideoParams(patternId, {
+            ...videoParams,
+            slitMode: !selected ? SlitMode.FRONT : SlitMode.SIDE
+        });
+    };
+
     handlePause = () => {
         if (this.state.pause) {
             this.props.play(this.props.patternId);
@@ -99,7 +112,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         this.props.stop(this.props.patternId);
     }
 
-    availableChangeTypes = [ECFType.XY_PARABOLOID];
+    availableChangeTypes = [ECFType.XY_PARABOLOID, ECFType.DEPTH];
 
     render() {
         const {changeFunctions, videoParams: params} = this.props;
@@ -108,12 +121,44 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         return (
             <div className={"video-controls"}>
                 <ButtonSelect
+                    className={'slit-mode'}
+                    name={'slitMode'}
+                    selected={params.slitMode === SlitMode.FRONT}
+                    onClick={this.handleChangeSlitModeParam}>
+                    {params.slitMode === SlitMode.FRONT
+                        ? "front"
+                        : "side"}
+                </ButtonSelect>
+
+                <CycledToggle
+                    className={'edge-mode'}
+                    getValue={(id) => id}
+                    getText={(id) => id}
+                    items={Object.values(EdgeMode)}
+                    value={params.edgeMode}
+                    name={"edgeMode"}
+                    onChange={this.handleChangeParam}/>
+
+                <CycledToggle
+                    className={'stack-type'}
+                    getValue={(id) => id}
+                    getText={(id) => id}
+                    items={Object.values(StackType)}
+                    value={params.stackType}
+                    name={"stackType"}
+                    onChange={this.handleChangeParam}/>
+
+                <ButtonSelect
+                    className={'on-off'}
                     selected={on}
                     name={'on'}
                     onClick={this.handleChangeOnParam}
-                >{on ? "off" : "on"}</ButtonSelect>
+                >
+                    {on ? "stop" : "start"}
+                </ButtonSelect>
 
                 <ButtonSelect
+                    className={'pause-play'}
                     disabled={!on}
                     selected={this.state.pause && on}
                     name={'pause'}
@@ -121,6 +166,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                 >{this.state.pause ? "play" : "pause"}</ButtonSelect>
 
                 <SelectDrop
+                    className={'cut-function'}
                     nullAble
                     getValue={({id}) => id}
                     getText={({id}) => id}
@@ -129,6 +175,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     items={Object.values(changeFunctions)
                         .filter((value) => this.availableChangeTypes.indexOf(value.type) !== -1)}
                     onChange={this.handleChangeParam}/>
+
             </div>
         );
     }

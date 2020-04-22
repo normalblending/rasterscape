@@ -1,8 +1,8 @@
-export const StackType = {
-    Right: "right",
-    Left: "left",
-    FromCenter: "fromcenter",
-    ToCenter: "tocenter",
+export enum StackType {
+    Right = ">>",
+    Left = "<<",
+    FromCenter = "<>",
+    ToCenter = "><",
 };
 
 export class PixelsStack {
@@ -15,7 +15,7 @@ export class PixelsStack {
         this.type = type || StackType.Right;
     }
 
-    setType = type => this.type = type;
+    setType = (type: StackType) => this.type = type;
 
     push(newEl) {
         switch (this.type) {
@@ -47,11 +47,12 @@ export class PixelsStack {
 
 
 export const get = (pixels, width, d, x, y) => {
+    const n = (x + y * width) * d;
     return pixels ? [
-        pixels[(x + y * width) * d],
-        pixels[(x + y * width) * d + 1],
-        pixels[(x + y * width) * d + 2],
-        pixels[(x + y * width) * d + 3]
+        pixels[n],
+        pixels[n + 1],
+        pixels[n + 2],
+        pixels[n + 3]
     ] : [0, 0, 0, 255];
 };
 

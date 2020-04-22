@@ -49,14 +49,14 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
         })
     };
 
-    handleIntegerChange = (data) => {
+    handleBoolParamChange = (data) => {
         const {selected, name} = data;
         const {setRepeating, repeating, patternId} = this.props;
         setRepeating(patternId, {
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
-                [name]: selected
+                [name]: !selected
             }
         })
     };
@@ -82,12 +82,12 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                             <div className={'repeating-controls-grid-buttons-row'}>
                                 <ButtonSelect
                                     className={'repeating-button'}
-                                    name={"integer"}
-                                    onClick={this.handleIntegerChange}
-                                    selected={!gridParams.integer}>{gridParams.integer ? "int" : "float"}</ButtonSelect>
+                                    name={"float"}
+                                    onClick={this.handleBoolParamChange}
+                                    selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonSelect>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
-                                    integer={gridParams.integer}
+                                    integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.x`}
                                     name={"x"}
                                     value={gridParams.x}
@@ -96,7 +96,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     onChange={this.handleGridParamsChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
-                                    integer={gridParams.integer}
+                                    integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.y`}
                                     name={"y"}
                                     value={gridParams.y}
@@ -107,9 +107,14 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                             </div>
 
                             <div className={'repeating-controls-grid-buttons-row'}>
+                                <ButtonSelect
+                                    className={'repeating-button'}
+                                    name={"flat"}
+                                    onClick={this.handleBoolParamChange}
+                                    selected={gridParams.flat}>{gridParams.flat ? "flat" : "flat"}</ButtonSelect>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
-                                    integer={gridParams.integer}
+                                    integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.xOut`}
                                     name={"xOut"}
                                     value={gridParams.xOut}
@@ -118,7 +123,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     onChange={this.handleGridParamsChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
-                                    integer={gridParams.integer}
+                                    integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.yOut`}
                                     name={"yOut"}
                                     value={gridParams.yOut}
@@ -128,6 +133,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                             </div>
                         </div>
                         <BezierCurveRepeating
+                            disabled={gridParams.flat}
                             xn={gridParams.x}
                             yn={gridParams.y}
                             value={gridParams.bezierPoints}

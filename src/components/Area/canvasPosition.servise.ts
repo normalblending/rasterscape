@@ -36,8 +36,8 @@ export class TextHelper {
 
         elem.style.cssText = `position:absolute;bottom:${y}px;left:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
 
-        this.setText = (string) => {
-            elem.innerText = string;
+        this.setText = (...string) => {
+            elem.innerText = string.join(' ');
         };
     }
 }
@@ -49,6 +49,11 @@ export const greenHelper = new CursorHelper('#0f0', 10);
 export const coordHelper = new TextHelper(10, 30);
 export const coordHelper2 = new TextHelper(10, 50);
 export const coordHelper3 = new TextHelper(10, 70);
+
+
+
+
+
 
 
 // const elem = document.createElement('div');

@@ -12,6 +12,8 @@ export interface BezierCurveRepeatingProps {
     xn: number
     yn: number
     value: BezierPoints
+
+    disabled?: boolean
 }
 
 export interface BezierCurveRepeatingState {
@@ -129,7 +131,7 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
     };
 
     handleUpdate = () => {
-        this.forceUpdate()
+        this.forceUpdate();
         this.drawFunctions.reset();
         this.draw();
         this.props.onChange(this.curve.points);
@@ -160,6 +162,8 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
     }
 
     render() {
+
+        const {disabled} = this.props;
 
         const points = this.curve.points;
         const point_w = 5;
@@ -237,13 +241,27 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
 
                         const size = 1;
                         const cords = [];
-                        for (let i = 0; i <= this.props.xn; i++) {
-                            const ai = this.curve.get(i / this.props.xn);
-                            for (let j = 0; j <= this.props.yn; j++) {
 
-                                const aj = this.curve.get(j / this.props.yn);
+                        if (disabled) {
+                            for (let i = 0; i <= this.props.xn; i++) {
+                                const ai = WW / this.props.xn * i;
+                                for (let j = 0; j <= this.props.yn; j++) {
 
-                                cords.push({x: O.x + ai.x, y: O.y + aj.y});
+                                    const aj = HH / this.props.yn * j;
+
+                                    cords.push({x: O.x + ai, y: O.y + aj});
+                                }
+                            }
+                        } else {
+
+                            for (let i = 0; i <= this.props.xn; i++) {
+                                const ai = this.curve.get(i / this.props.xn);
+                                for (let j = 0; j <= this.props.yn; j++) {
+
+                                    const aj = this.curve.get(j / this.props.yn);
+
+                                    cords.push({x: O.x + ai.x, y: O.y + aj.y});
+                                }
                             }
                         }
                         return (
@@ -268,7 +286,7 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
                         fill="transparent"/>
                     <path
                         d={`M${points[0].x + O.x} ${points[0].y + O.y} C ${points[1].x + O.x} ${points[1].y + O.y}, ${points[2].x + O.x} ${points[2].y + O.y}, ${points[3].x + O.x} ${points[3].y + O.y}`}
-                        stroke="#ffcd00"
+                        stroke={disabled ? 'grey' : "#ffcd00"}
                         fill="transparent"/>
                     {points.map(({x, y}) =>
                         <rect

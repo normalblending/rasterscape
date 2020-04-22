@@ -1,10 +1,12 @@
 import React from 'react';
-import {canvasToImageData} from "../../utils/canvas/helpers/imageData";
+import {canvasToImageData, imageDataToCanvas, resizeImageData} from "../../utils/canvas/helpers/imageData";
 import "../../styles/canvas.scss";
 import * as classNames from "classnames";
 import {getOffset} from "../../utils/offset";
 import {rotate} from "../../utils/draw";
 import {RotationValue} from "../../store/patterns/rotating/types";
+import {clearCanvas} from "../../utils/canvas/helpers/base";
+import {ECompositeOperation} from "../../store/compositeOperations";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -84,9 +86,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.canvasRef.current.addEventListener("mouseenter", this.mouseEnterHandler);
         this.canvasRef.current.addEventListener("mouseleave", this.mouseLeaveHandler);
 
-        if (this.props.value instanceof ImageData) {
-            this.ctx.putImageData(this.props.value, 0, 0);
-        }
+
+        this.receiveImageData();
     }
 
     componentWillUnmount() {
@@ -109,13 +110,23 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             prevProps.value !== this.props.value ||
             prevProps.width !== this.props.width ||
             prevProps.height !== this.props.height
-        ) && this.props.value instanceof ImageData) {
+        )) {
 
-            this.ctx = this.canvasRef.current.getContext("2d");
-
-            this.ctx.putImageData(this.props.value, 0, 0);
+            this.receiveImageData();
         }
     }
+
+    receiveImageData = () => {
+        if (this.props.value instanceof ImageData) {
+            this.ctx = this.canvasRef.current.getContext("2d");
+
+            const imgD = this.props.value.width !== this.props.width || this.props.value.height !== this.props.height
+                ? resizeImageData(this.props.value, this.props.width, this.props.height)
+                : this.props.value;
+
+            this.ctx.putImageData(imgD, 0, 0);
+        }
+    };
 
     private mouseDownHandler = e => {
         if (this.props.pointerLock) {

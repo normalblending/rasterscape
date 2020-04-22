@@ -41,11 +41,30 @@ export const loopChangeFunction =
     ({params, range, pattern}) =>
         ({startValue, time, position}) => {
 
-            const t = (time % params.t) / params.t;
 
+            if (!params.t) return startValue;
+
+            const t = (time % params.t) / params.t; // смещение по времени внутри цыкла
+
+            const R = range[1] - range[0];
             const S = params.start * (range[1] - range[0]);
             const E = params.end * (range[1] - range[0]);
             const ES = E - S;
 
-            return (((startValue - S) + ES * t) % ES + S);
+            const d = ES * t;
+
+
+            const start = Math.max(Math.min(startValue, E), S);
+
+            let newValue = start - d;
+
+            if (newValue < S) {
+                newValue += ES;
+            }
+
+            if (newValue > E) {
+                newValue -= ES;
+            }
+
+            return newValue;
         };

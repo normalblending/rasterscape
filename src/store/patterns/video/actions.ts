@@ -1,7 +1,6 @@
 import {PatternAction} from "../pattern/types";
 import {VideoParams} from "./types";
 import {AppState} from "../../index";
-import {Capture} from "./capture";
 import {Formulas} from "./capture/formulas";
 import {get, PixelsStack, set} from "./capture/pixels";
 import 'p5/lib/addons/p5.dom';
@@ -9,6 +8,7 @@ import {EdgeMode} from "./capture/types";
 import {updateImage} from "../pattern/actions";
 import {Captures} from "./services";
 import {videoChangeFunctionByType} from "../../changeFunctions/helpers";
+import {coordHelper, redHelper} from "../../../components/Area/canvasPosition.servise";
 
 export enum EVideoAction {
     SET_VIDEO_PARAMS = 'pattern/video/set-video-param'
@@ -21,23 +21,43 @@ export interface SetVideoParamsAction extends PatternAction {
 
 export const start = (patternId: string) => (dispatch, getState: () => AppState) => {
 
-    Captures.start(patternId, (pixels) => dispatch(updateImage(patternId, new ImageData(pixels, 320), false)), (x, y, length) => {
-        const state = getState();
+    Captures.start(
+        patternId,
+        (pixels) => dispatch(updateImage(patternId, new ImageData(pixels, 320), false)),
+        (x, y, length) => {
+            const state = getState();
 
 
-        const cfId = state.patterns[patternId].video.params.changeFunctionId;
+            const cfId = state.patterns[patternId].video.params.changeFunctionId;
 
-        if (cfId) {
+            const cf = state.changeFunctions.functions[cfId];
 
-            const width = state.patterns[patternId].current.width;
-            const height = state.patterns[patternId].current.height;
-            const cfParams = state.changeFunctions.functions[cfId].params;
-            const cfType = state.changeFunctions.functions[cfId].type;
-            return videoChangeFunctionByType[cfType](x, y, width, height, cfParams);
-        } else {
-            return x;
-        }
-    });
+            if (cf) {
+
+                const width = state.patterns[patternId].current.width;
+                const height = state.patterns[patternId].current.height;
+                const cfParams = cf.params;
+                const cfType = cf.type;
+                return videoChangeFunctionByType[cfType](x, y, width, height, cfParams);
+            } else {
+                return state.patterns[patternId].current.width;
+            }
+        },
+        () => {
+            const state = getState();
+            const edgeMode = state.patterns[patternId].video.params.edgeMode;
+            return edgeMode;
+        },
+        () => {
+            const state = getState();
+            const slitMode = state.patterns[patternId].video.params.slitMode;
+            return slitMode;
+        },
+        () => {
+            const state = getState();
+            const stackType = state.patterns[patternId].video.params.stackType;
+            return stackType;
+        });
 };
 export const stop = (patternId: string) => (dispatch, getState: () => AppState) => {
     Captures.stop(patternId);
@@ -50,10 +70,15 @@ export const play = (patternId: string) => (dispatch, getState: () => AppState) 
     Captures.play(patternId);
 
 };
+export const updateParams = (patternId: string) => (dispatch, getState: () => AppState) => {
+
+    Captures.updateParams(patternId);
+
+};
 
 export const onNewFrame = (id: string, imageData: ImageData) => (dispatch, getState: () => AppState) => {
 
-    dispatch(updateImage(id,imageData));
+    dispatch(updateImage(id, imageData));
 
 };
 
@@ -62,6 +87,8 @@ export const setVideoParams = (id: string, value: VideoParams) => (dispatch, get
         type: EVideoAction.SET_VIDEO_PARAMS,
         id,
         value
-    })
+    });
+
+    dispatch(updateParams(id));
 };
 

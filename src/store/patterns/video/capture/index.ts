@@ -3,7 +3,7 @@ import {randomZ, throttled} from "./helpers";
 import {get, PixelsStack, set} from "./pixels";
 import * as P5 from 'p5';
 
-
+// deprecated
 export class Capture {
 
     on;

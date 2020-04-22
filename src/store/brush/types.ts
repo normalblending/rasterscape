@@ -1,4 +1,5 @@
 import {Action} from "redux";
+import {ECompositeOperation} from "../compositeOperations";
 
 export enum EBrushType {
     Square = "Square",
@@ -12,7 +13,7 @@ export interface BrushParams {
     opacity: number
     type: EBrushType
     pattern: number
-    compositeOperation: EBrushCompositeOperation
+    compositeOperation: ECompositeOperation
 }
 
 export interface SetBrushParamsAction extends Action {

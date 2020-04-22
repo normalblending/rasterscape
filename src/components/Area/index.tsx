@@ -67,7 +67,19 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
     }
 
     render() {
-        const {mask, currentTool, name, height, width, imageValue, selectionValue, selectionParams, onImageChange, onSelectionChange, rotation} = this.props;
+        const {
+            mask,
+            currentTool,
+            name,
+            height,
+            width,
+            imageValue,
+            selectionValue,
+            selectionParams,
+            onImageChange,
+            onSelectionChange,
+            rotation
+        } = this.props;
 
         console.log("area", this.state);
         return (
@@ -95,7 +107,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
     }
 }
 
-const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = state => ({
+const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = (state) => ({
     currentTool: state.tool.current
 });
 

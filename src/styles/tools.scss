@@ -22,4 +22,19 @@
     display: flex;
     align-items: baseline;
   }
+
+  .function-delete {
+
+
+    &:hover span {
+
+      & {
+        visibility: hidden;
+        &:after {
+          visibility: visible;
+          content: 'del';
+        }
+      }
+    }
+  }
 }

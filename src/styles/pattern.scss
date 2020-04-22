@@ -17,7 +17,7 @@
   justify-content: flex-end;
 
   padding-right: 140px;
-  padding-bottom: 20px;
+  padding-bottom: 40px;
 
   border-left: 1px solid rgba(0, 0, 0, .04);
 
@@ -41,7 +41,7 @@
 
   .pattern-controls {
     position: absolute;
-    bottom: 20px;
+    bottom: -1px;
     left: 0;
     display: flex;
     align-items: flex-start;
@@ -56,39 +56,36 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-
-      .pattern-sizes {
-        display: flex;
-
-        .size-input-number {
-          width: 64px;
-          text-align: left;
-
-          background: lightgoldenrodyellow;
-        }
-      }
-
     }
   }
 
-  .plugins, .pattern-controls, .history-controls {
+  .pattern-sizes {
+    display: flex;
+
+    .size-input-number {
+      width: 64px;
+      text-align: left;
+
+      background: lightgoldenrodyellow;
+    }
+  }
+
+  .plugins, .pattern-controls, .history-controls, .pattern-sizes {
     visibility: hidden;
   }
 
   &:hover {
-    .plugins, .pattern-controls, .history-controls {
+    .plugins, .pattern-controls, .history-controls, .pattern-sizes {
       visibility: visible;
     }
   }
 
-  .video-controls {
-    display: flex;
-    //flex-direction: column;
-  }
+
 
   .left {
+    position: relative;
     //margin-right: 20px;
-    padding-bottom: 20px;
+    //padding-bottom: 20px;
   }
 
   .right {
@@ -96,7 +93,7 @@
     display: flex;
     flex-direction: column;
     align-items: baseline;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
 
     .history-controls {
       position: sticky;
@@ -112,3 +109,4 @@
   //  animation:spin 4s linear infinite;
   //}
 }
+

@@ -234,18 +234,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                     selected={this.props.importParams.fit}
                                     onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
                             </div>
-                            <div className={'pattern-sizes'}>
-                                <InputNumber
-                                    className={"size-input-number"}
-                                    onChange={this.handleSetWidth}
-                                    value={width}
-                                    {...inputNumberProps}/>
-                                <InputNumber
-                                    className={"size-input-number"}
-                                    onChange={this.handleSetHeight}
-                                    value={height}
-                                    {...inputNumberProps}/>
-                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -260,6 +249,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
                     <div className={"areas"}>
                         <Area
+
                             name={id}
                             width={width}
                             height={height}
@@ -275,6 +265,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                             onSelectionChange={this.handleSelectionChange}/>
                         {config.mask &&
                         <Area
+
                             mask
                             name={id}
                             rotation={rotation}
@@ -291,6 +282,18 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
                     {config.history &&
                     <HistoryControls patternId={id}/>}
+                    <div className={'pattern-sizes'}>
+                        <InputNumber
+                            className={"size-input-number"}
+                            onChange={this.handleSetWidth}
+                            value={width}
+                            {...inputNumberProps}/>
+                        <InputNumber
+                            className={"size-input-number"}
+                            onChange={this.handleSetHeight}
+                            value={height}
+                            {...inputNumberProps}/>
+                    </div>
                 </div>
 
             </div>

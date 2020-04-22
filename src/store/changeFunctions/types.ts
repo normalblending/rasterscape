@@ -6,13 +6,13 @@ export enum ECFType {
     SIN = "sin",
     LOOP = 'loop',
     XY_PARABOLOID = 'parab',
+    DEPTH = 'depth',
 }
 
 export interface ChangeFunction {
     id: string
     type: ECFType
     params: any
-    // paramsConfig: any
     paramsConfig: ParamConfig[]
 }
 

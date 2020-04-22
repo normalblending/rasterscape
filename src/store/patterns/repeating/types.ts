@@ -14,8 +14,9 @@ export interface RepeatingGridParams {
     y: number
     xOut: number
     yOut: number
-    integer: boolean
+    float: boolean
     bezierPoints?: BezierPoints
+    flat: boolean
     // x = (1−t)2x1 + 2(1−t)tx2 + t2x3
 }
 

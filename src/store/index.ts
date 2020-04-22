@@ -1,7 +1,8 @@
-import {createStore, combineReducers, applyMiddleware} from "redux";
+import {createStore, combineReducers, applyMiddleware, compose} from "redux";
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
+import persistState from 'redux-localstorage';
 
 import {patternsReducer} from "./patterns/reducer";
 import {ToolState, toolReducer} from "./tool/reducer";
@@ -16,11 +17,14 @@ import {colorReducer, ColorState} from "./color/reducer";
 import {changeReducer} from "./change/reducer";
 import {fullscreenReducer, FullScreenState} from "./fullscreen";
 import {languageReducer, LanguageState} from "./language";
+import {hotkeysReducer, HotkeysState} from "./hotkeys";
 import {PatternsState} from "./patterns/types";
+import {ChangeFunction, ECFType} from "./changeFunctions/types";
 
 export interface AppState {
     fullScreen: FullScreenState
     language: LanguageState
+    hotkeys: HotkeysState
 
     patterns: PatternsState
 
@@ -42,8 +46,8 @@ export interface AppState {
 const rootReducer = reduceReducers(
     combineReducers<AppState>({
         fullScreen: fullscreenReducer,
-
         language: languageReducer,
+        hotkeys: hotkeysReducer,
 
         patterns: patternsReducer,
 
@@ -64,5 +68,50 @@ const rootReducer = reduceReducers(
     changeReducer
 );
 
-export const store = createStore(rootReducer, applyMiddleware(thunk, logger));
+
+const configPersist = {
+    slicer: function myCustomSlicer(paths) {
+        return (state: AppState) => {
+
+            const hotkeys = state.hotkeys;
+
+            const changeFunctions = Object.keys(state.changeFunctions)
+                .reduce((res, cfId) => {
+                    const cf: ChangeFunction = state.changeFunctions[cfId];
+                    switch (cf.type) {
+                        case ECFType.DEPTH:
+                            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', cf);
+                            res[cfId] = {
+                                ...cf,
+                                params: {
+                                    ...cf.params,
+                                    imageData: null
+                                }
+                            };
+                            break;
+                        default:
+                            res[cfId] = cf;
+                            break;
+                    }
+
+                    return res;
+                }, {})
+
+            let subset = {
+                //changeFunctions,
+                hotkeys
+            };
+            /*Custom logic goes here*/
+            return subset
+        }
+    }
+};
+
+export const store = createStore(
+    rootReducer,
+    compose(
+        applyMiddleware(thunk, logger),
+        persistState(['hotkeys'], configPersist), //, 'changeFunctions'
+    )
+);
 // export const store = createStore(rootReducer, applyMiddleware(thunk));

@@ -19,6 +19,17 @@ export interface SinCFState {
 
 }
 
+const aRange = [0, 1] as [number, number];
+const aVD = ValueD.VerticalLinear(100);
+
+const tRange = [0, 5000] as [number, number];
+const tVD = ValueD.VerticalLinear(0.03);
+
+const oRange = [0, 1] as [number, number];
+const oVD = ValueD.VerticalLinear(100);
+
+const valueText2 = value => value.toFixed(2);
+
 export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
 
     handleParamChange = ({value, name}) => {
@@ -30,27 +41,32 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
         return (
             <div className={"sin-change-function"}>
                 <ButtonNumberCF
+                    precision={100}
                     path={`changeFunctions.functions.${name}.params.a`}
                     value={params.a}
                     name={"a"}
-                    range={[0.0001, 1]}
-                    valueD={ValueD.VerticalLinear(100)}
+                    range={aRange}
+                    getText={valueText2}
+                    valueD={aVD}
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
+                    precision={500}
                     path={`changeFunctions.functions.${name}.params.t`}
                     value={params.t}
                     name={"t"}
-                    range={[1, 5000]}
-                    valueD={ValueD.VerticalLinear(0.05)}
+                    range={tRange}
+                    valueD={tVD}
                     onChange={this.handleParamChange}
                 />
                 <ButtonNumberCF
+                    precision={100}
                     path={`changeFunctions.functions.${name}.params.o`}
                     value={params.o}
                     name={"o"}
-                    range={[0, 1]}
-                    valueD={ValueD.VerticalLinear(100)}
+                    getText={valueText2}
+                    range={oRange}
+                    valueD={oVD}
                     onChange={this.handleParamChange}
                 />
                 <Wave

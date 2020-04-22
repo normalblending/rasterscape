@@ -3,6 +3,7 @@ import {ButtonSelect} from "./buttons/ButtonSelect";
 import {ButtonNumber} from "./buttons/ButtonNumber";
 import {SelectButtons} from "./buttons/SelectButtons";
 import {EventData} from "../../utils/types";
+import {File} from "./File";
 
 export interface ParamConfig {
     type: EParamType
@@ -14,12 +15,14 @@ export enum EParamType {
     Boolean = "boolean",
     Number = "number",
     Select = "select",
+    ImageData = "imageData",
 }
 
 export const ParamComponents = {
     [EParamType.Boolean]: ButtonSelect,
     [EParamType.Select]: SelectButtons,
     [EParamType.Number]: ButtonNumber,
+    [EParamType.ImageData]: File,
 };
 
 export interface ParamsProps {
