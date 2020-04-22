@@ -7,13 +7,11 @@ import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
 import {Button} from "../_shared/buttons/Button";
 import {setChangingMode, startChanging, stopChanging} from "../../store/changing/actions";
-import {SelectDrop} from "../_shared/buttons/SelectDrop";
-import {enumToSelectItems, objectToSelectItems} from "../../utils/utils";
 import {ChangingMode} from "../../store/changing/types";
-import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {LoopCF} from "./LoopCF";
 import {XYCF} from "./XYCF";
 import {getCFs} from "../../store/changeFunctions/selectors";
+import {DepthCF} from "./DeepthCF";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctions
@@ -49,6 +47,7 @@ const CFComponentByType = {
     [ECFType.SIN]: SinCF,
     [ECFType.LOOP]: LoopCF,
     [ECFType.XY_PARABOLOID]: XYCF,
+    [ECFType.DEPTH]: DepthCF,
 };
 
 // const modesItems = enumToSelectItems(ChangingMode);
@@ -75,6 +74,10 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
         this.props.addCF(ECFType.XY_PARABOLOID);
     };
 
+    handleDeepth = () => {
+        this.props.addCF(ECFType.DEPTH);
+    };
+
     handleModeChange = ({value}) => {
         this.props.setChangingMode(value);
     };
@@ -87,6 +90,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                     <Button onClick={this.handleAddSin}>sin</Button>
                     <Button onClick={this.handleAddLoop}>loop</Button>
                     <Button onClick={this.handleAddXY}>parab</Button>
+                    <Button onClick={this.handleDeepth}>deepth</Button>
                     {/*<br/>*/}
                     {/*<SelectButtons*/}
                     {/*    items={modesItems}*/}
@@ -109,7 +113,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                                     <Button
                                         value={id}
                                         onClick={this.handleDelete}
-                                        className={'function-delete'}>del</Button>
+                                        className={'function-delete'}><span>{id}</span></Button>
                                 </div>
                             </div>
                         ) : null;
