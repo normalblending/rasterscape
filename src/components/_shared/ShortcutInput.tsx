@@ -4,11 +4,10 @@ import * as keyboardjs from "keyboardjs";
 import "../../styles/inputShortcut.scss";
 
 export interface ShortcutInputProps {
-    onChange(value: string)
+    onChange(value: string, e)
 
     value: string
     placeholder?: string
-
 
 }
 
@@ -19,14 +18,12 @@ export interface ShortcutInputState {
 export class ShortcutInput extends React.PureComponent<ShortcutInputProps, ShortcutInputState> {
 
     handleChange = (e) => {
-        this.props.onChange(e.key === "Backspace" ? null : e.key);
+        this.props.onChange(e.key === "Backspace" ? null : e.key, e);
+        keyboardjs.unbind("", this.handleChange)
     };
 
     handleFocus = () => {
         keyboardjs.bind("", this.handleChange)
-    };
-    handleBlur = () => {
-        keyboardjs.unbind("", this.handleChange)
     };
 
 
@@ -37,10 +34,7 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
                 className={"shortcut-input"}
                 value={value}
                 placeholder={placeholder}
-                onFocus={this.handleFocus}
-                onBlur={this.handleBlur}
-                onChange={() => {return;
-                }}/>
+                onFocus={this.handleFocus}/>
         );
     }
 }
