@@ -3,6 +3,7 @@ import {BrushParams, EBrushType, SetBrushParamsAction} from "./types";
 import {EBrushAction} from "./actions";
 import {ParamConfig} from "../../components/_shared/Params";
 import {getBrushParamsConfig} from "./helpers";
+import {ECompositeOperation} from "../compositeOperations";
 
 export interface BrushState {
     params: BrushParams
@@ -26,7 +27,8 @@ export const brushReducer = handleActions<BrushState>({
         patternSize: 1,
         size: 43,
         opacity: 1,
-        type: EBrushType.Circle
+        type: EBrushType.Circle,
+        compositeOperation: ECompositeOperation.SourceOver
     },
     paramsConfig: getBrushParamsConfig()
 });

@@ -30,6 +30,10 @@ export class CursorHelper {
 
 export class TextHelper {
     setText;
+    getText;
+    write;
+    writeln;
+    clear;
     constructor(x, y) {
         const elem = document.createElement('div');
         document.body.appendChild(elem);
@@ -39,6 +43,21 @@ export class TextHelper {
         this.setText = (...string) => {
             elem.innerText = string.join(' ');
         };
+        this.write = (...string) => {
+            elem.innerText = elem.innerText + ' ' + string.join(' ');
+        };
+        this.writeln = (...string) => {
+            elem.innerText = elem.innerText + ' ' + string.join(' ') + '\n';
+        };
+        this.clear = () => {
+            elem.innerText = '';
+        };
+        this.getText = () => {
+            return elem.innerText;
+        };
+        elem.addEventListener('mouseup', () => {
+            this.setText('');
+        })
     }
 }
 

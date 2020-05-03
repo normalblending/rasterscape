@@ -18,8 +18,10 @@ export interface ShortcutInputState {
 export class ShortcutInput extends React.PureComponent<ShortcutInputProps, ShortcutInputState> {
 
     handleChange = (e) => {
-        this.props.onChange(e.key === "Backspace" ? null : e.key, e);
-        keyboardjs.unbind("", this.handleChange)
+        if (e.key.length === 1 || e.key === "Backspace") {
+            this.props.onChange(e.key === "Backspace" ? null : e.key, e);
+            keyboardjs.unbind("", this.handleChange)
+        }
     };
 
     handleFocus = () => {

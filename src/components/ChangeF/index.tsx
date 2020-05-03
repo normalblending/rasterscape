@@ -3,25 +3,27 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {addCF, changeCFParams, removeCF} from "../../store/changeFunctions/actions";
-import {SinCF} from "./SinCF";
 import {ECFType} from "../../store/changeFunctions/types";
 import {Button} from "../_shared/buttons/Button";
 import {setChangingMode, startChanging, stopChanging} from "../../store/changing/actions";
 import {ChangingMode} from "../../store/changing/types";
-import {LoopCF} from "./LoopCF";
-import {XYCF} from "./XYCF";
+import {FxyCF} from "./Fxy";
 import {getCFs} from "../../store/changeFunctions/selectors";
 import {DepthCF} from "./DeepthCF";
+import {HelpTooltip} from "../tutorial/HelpTooltip";
+import {WaveCF} from "./Wave";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctions
     changingMode: ChangingMode
+    tutorial: boolean
 }
 
 export interface ChangeFActionProps {
     changeCFParams(id: string, params: any)
 
     addCF(cfType: ECFType)
+
     removeCF(id: string)
 
     startChanging()
@@ -44,9 +46,8 @@ export interface ChangeFState {
 }
 
 const CFComponentByType = {
-    [ECFType.SIN]: SinCF,
-    [ECFType.LOOP]: LoopCF,
-    [ECFType.XY_PARABOLOID]: XYCF,
+    [ECFType.WAVE]: WaveCF,
+    [ECFType.FXY]: FxyCF,
     [ECFType.DEPTH]: DepthCF,
 };
 
@@ -62,16 +63,12 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
         this.props.removeCF(value);
     };
 
-    handleAddSin = () => {
-        this.props.addCF(ECFType.SIN);
+    handleAddWave = () => {
+        this.props.addCF(ECFType.WAVE);
     };
 
-    handleAddLoop = () => {
-        this.props.addCF(ECFType.LOOP);
-    };
-
-    handleAddXY = () => {
-        this.props.addCF(ECFType.XY_PARABOLOID);
+    handleAddFxy = () => {
+        this.props.addCF(ECFType.FXY);
     };
 
     handleDeepth = () => {
@@ -83,38 +80,42 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
     };
 
     render() {
-        const {cfs, changingMode} = this.props;
+        const {cfs, changingMode, tutorial} = this.props;
         return (
             <div className="change-functions">
-                <div className="control-buttons">
-                    <Button onClick={this.handleAddSin}>sin</Button>
-                    <Button onClick={this.handleAddLoop}>loop</Button>
-                    <Button onClick={this.handleAddXY}>parab</Button>
-                    <Button onClick={this.handleDeepth}>deepth</Button>
-                    {/*<br/>*/}
-                    {/*<SelectButtons*/}
-                    {/*    items={modesItems}*/}
-                    {/*    value={changingMode}*/}
-                    {/*    onChange={this.handleModeChange}/>*/}
-                </div>
+                <HelpTooltip message={'change functions'}>
+                    <div className="control-buttons">
+                        <Button onClick={this.handleAddWave}>ft</Button>
+                        <Button onClick={this.handleAddFxy}>fxy</Button>
+                        <Button onClick={this.handleDeepth}>rgba</Button>
+                        {/*<br/>*/}
+                        {/*<SelectButtons*/}
+                        {/*    items={modesItems}*/}
+                        {/*    value={changingMode}*/}
+                        {/*    onChange={this.handleModeChange}/>*/}
+                    </div>
+                </HelpTooltip>
                 <div className="functions-list">
                     {Object.values(cfs).reverse().map(cf => {
                         const {type, id, params, paramsConfig} = cf;
                         const Component = CFComponentByType[type];
                         return Component ? (
                             <div className={'function-container'} key={id}>
+                                <div className={'function-title'}>
+                                    <Button className={'function-id'}>{id}</Button>
+                                    <Button
+                                        value={id}
+                                        onClick={this.handleDelete}
+                                        className={'function-delete'}>delete</Button>
+                                </div>
                                 <Component
+                                    tutorial={tutorial}
                                     key={id}
                                     name={id}
                                     params={params}
                                     paramsConfig={paramsConfig}
                                     onChange={this.handleChange}/>
-                                <div className={'function-controls'}>
-                                    <Button
-                                        value={id}
-                                        onClick={this.handleDelete}
-                                        className={'function-delete'}><span>{id}</span></Button>
-                                </div>
+
                             </div>
                         ) : null;
                     })}
@@ -128,7 +129,8 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
 
 const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = (state) => ({
     cfs: getCFs(state),
-    changingMode: state.changing.mode
+    changingMode: state.changing.mode,
+    tutorial: state.tutorial.on
 });
 
 const mapDispatchToProps: MapDispatchToProps<ChangeFActionProps, ChangeFOwnProps> = {

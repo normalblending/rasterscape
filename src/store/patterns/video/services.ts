@@ -60,13 +60,9 @@ export class CaptureService {
         stackType: () => StackType,
     ) {
         const w = 320,
-            h = 240;
+            h = 320;
 
         const stack = new PixelsStack(w);
-
-        const a = (Array.from(Array(w))).map((o, i) => i * h / w);
-
-        const f = (x, y?, length?) => x;
 
         let getFrameN, getPixel;
         const update = () => {
@@ -85,8 +81,8 @@ export class CaptureService {
             sketch.setup = () => {
                 sketch.pixelDensity(1);
                 canvas = sketch.createCanvas(w, h);
-                canvas.parent("v1");
-
+                // canvas.parent("v1");
+                canvas.hide();
                 capture = sketch.createCapture({
                     video: {
                         mandatory: {
@@ -94,19 +90,18 @@ export class CaptureService {
                             minHeight: h
                         },
                         optional: [{
-                            maxFrameRate: 30
+                            maxFrameRate: 25
                         }]
                     },
                     audio: false
                 }, (s, b) => {
-                    // stream(s);
                     this.captures[patternId].stream = s;
-                    console.log(s, b);
                 });
-                capture.parent("v2");
+                // capture.parent("v2");
                 capture.size(w, h);
+                capture.hide();
 
-                sketch.frameRate(30);
+                sketch.frameRate(20);
             };
 
 

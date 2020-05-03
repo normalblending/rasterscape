@@ -12,6 +12,7 @@ import {getImportState} from "./import/helpers";
 import {getVideoState} from "./video/helpers";
 import {getRoomState} from "./room/helpers";
 import {getMaskedImage, imageDataToCanvas} from "../../utils/canvas/helpers/imageData";
+import {getBlurState} from "./blur/helpers";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -20,7 +21,7 @@ export const patternId = (state: PatternsState) =>
 
 
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating, startImage, startMask} = config || {};
+    const {history, store, selection, mask, rotation, repeating, startImage, startMask, blur} = config || {};
 
     const width = startImage ? startImage.width : (config.width || 300);
     const height = startImage ? startImage.height : (config.height || 300);
@@ -40,6 +41,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         import: getImportState(true, undefined, (params || {}).import),
         video: getVideoState(true, undefined, (params || {}).video),
         room: getRoomState(true, undefined, (params || {}).room),
+        blur: getBlurState(true, undefined, (params || {}).blur),
     }
 };
 
@@ -62,6 +64,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         import: getImportState(true, state.import, params.import),
         video: getVideoState(true, state.video, params.video),
         room: getRoomState(true, state.room, params.room),
+        blur: getBlurState(true, state.blur, params.blur),
     }
 };
 

@@ -5,30 +5,11 @@ import {coordHelper, coordHelper2, redHelper} from "../../../components/Area/can
 import {get} from "../../patterns/video/capture/pixels";
 
 export const depthInitialParams = {
-    zd: 0,
-    zed: 1,
-    imageData: null,
-    component: 0
+    // zd: 0,
+    // zed: 1,
+    items: [],
+    // component: 0
 };
-
-export const depthParamsConfig = [{
-    name: "zd",
-    type: EParamType.Number,
-    props: {
-        valueD: ValueD.VerticalLinear(100),
-        range: [0, 1] as [number, number]
-    }
-}, {
-    name: "zed",
-    type: EParamType.Number,
-    props: {
-        valueD: ValueD.VerticalLinear(100),
-        range: [0, 1] as [number, number]
-    }
-}, {
-    name: "image",
-    type: EParamType.ImageData,
-}];
 
 export const depthNumberChangeFunction =
     ({params, range, pattern}) =>
@@ -56,30 +37,47 @@ export const depthNumberChangeFunction =
             );
         };
 export const depthVideoChangeFunction =
-    (x, y, patternWidth, patternHeight, params) => {
+    (x, y, patternWidth, patternHeight, params, patterns) => {
 
-        const {zed, zd, imageData, component} = params;
+        const {items} = params;
 
 
 
         const f = (x, y) => {
-            // console.log(imageData.data[(x + y * imageData.width)]);
-            // console.log(imageData.data);
-            return imageData
-                ? imageData.data[(x + y * imageData.width) * 4 + component] / 255
-                : 1;
+            return items?.reduce((res, item) => {
+                const {patternId, zed, zd, component} = item;
+                const imageData = patterns[patternId].current.imageData;
+
+                const xnorm = Math.round(x / patternWidth * (imageData.width || 0));
+                const ynorm = Math.round(y / patternHeight * (imageData.height || 0));
+
+                return res + imageData.data[(xnorm + ynorm * imageData.width) * 4 + component]/255 * zed + zd;
+            }, 0) || 0;
+
         };
 
 
-        const xnorm = Math.round(x / patternWidth * (imageData?.width || 0));
-        const ynorm = Math.round(y / patternHeight * (imageData?.height || 0));
-        const znorm = f(xnorm, ynorm) * zed + zd;
-
-        // (range[1] - startValue) * end;
-
-        // if (x === 50 && y === 50) {
-        //     coordHelper2.setText(znorm + ' ' + xnorm + ' ' + ynorm);
-        // }
+        const znorm = f(x, y);
 
         return znorm * patternWidth;
     };
+
+
+export const depthParamsConfig = [{
+    name: "zd",
+    type: EParamType.Number,
+    props: {
+        valueD: ValueD.VerticalLinear(100),
+        range: [0, 1] as [number, number]
+    }
+}, {
+    name: "zed",
+    type: EParamType.Number,
+    props: {
+        valueD: ValueD.VerticalLinear(100),
+        range: [0, 1] as [number, number]
+    }
+}, {
+    name: "image",
+    type: EParamType.ImageData,
+}];

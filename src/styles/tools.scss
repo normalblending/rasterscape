@@ -2,8 +2,8 @@
 
   display: inline-block;
   //border: 1px solid lightseagreen;
-
   flex: 0 0 auto;
+  width: 210px;
 }
 
 .change-functions {
@@ -23,18 +23,29 @@
     align-items: baseline;
   }
 
+  .function-title {
+    & > .function-delete {
+      display: none;
+    }
+    &:hover > .function-delete {
+      display: block;
+    }
+    & > .function-id {
+      display: block;
+    }
+    &:hover > .function-id {
+      display: none;
+    }
+
+  }
+
   .function-delete {
 
+    background:transparent;
+    border: none;
+    cursor: pointer;
+    color: red;
+    //text-decoration: underline;
 
-    &:hover span {
-
-      & {
-        visibility: hidden;
-        &:after {
-          visibility: visible;
-          content: 'del';
-        }
-      }
-    }
   }
 }

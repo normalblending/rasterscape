@@ -12,7 +12,7 @@ export interface BrushParams {
     patternSize: number
     opacity: number
     type: EBrushType
-    pattern: number
+    pattern: string
     compositeOperation: ECompositeOperation
 }
 

@@ -31,12 +31,13 @@
     "rotating": "rotating",
     "video": "video",
     "mask": "mask",
-    "room": "room"
+    "room": "room",
+    "blur": "blur"
   },
 
   "patternControls": {
     "delete": "delete",
-    "double": "double",
+    "double": "copy",
     "save": "save",
     "load": "load...",
     "stretch": "stretch",

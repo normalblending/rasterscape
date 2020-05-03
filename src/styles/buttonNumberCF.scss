@@ -7,9 +7,12 @@
     position: absolute;
     left: 100%;
     z-index: 10;
-    flex-direction: column;
+    flex-direction: row;
 
     align-items: flex-start;
+
+    //border: 1px solid darkmagenta;
+    display: flex;
   }
 
   .button-number-cf-settings-handler {
@@ -34,11 +37,17 @@
         margin-left:3px;
 
         font-size:16px;
-        content: "◧";
+        content: "▮";
         color: red;
       }
     }
 
+  }
+
+  .button-number-cf-select {
+    position: absolute;
+    top: 100%;
+    left: 0;
   }
 
   .hover-hideable:hover {
@@ -46,7 +55,8 @@
 
       & > div {
         &:after {
-          content: "▮";
+          margin-left: 8px;
+          content: "◧";
         }
       }
 

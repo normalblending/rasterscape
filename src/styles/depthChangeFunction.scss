@@ -2,7 +2,82 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  .canvas {
-    border: none;
+
+  width: 140px;
+
+  position: relative;
+
+  .depth-select-pattern-button {
+    position: absolute;
+    top: -20px;
+    right: 0;
+
+    .pattern-select {
+      position: absolute;
+      top: 0;
+      left: 0;
+      //border: 1px solid red;
+      visibility: hidden;
+      display: flex;
+      width: 210px;
+      z-index: 50;
+      pointer-events: none;
+      & > * {
+        pointer-events: all;
+      }
+    }
+
+    &:hover {
+      .pattern-select {
+        visibility: visible;
+      }
+    }
   }
+
+
+  .depth-item {
+    display: flex;
+
+    .depth-item-canvas {
+      position: relative;
+      display: flex;
+
+      .canvas-image-data {
+
+        border-width: 1px;
+        border-style: solid;
+        border-bottom-color: #ededed;
+        border-right-color: transparent;
+        border-left-color: transparent;
+        border-top-color: rgb(186, 186, 186);
+      }
+
+      .button {
+        position: absolute;
+        top: 20px;
+        left: 0;
+        color: red;
+
+        background: lightgrey;
+        width: 70px;
+        cursor: pointer;
+        //height: 60px;
+        //border: none;
+
+        visibility: hidden;
+      }
+
+      &:hover .button {
+        visibility: visible;
+      }
+    }
+
+
+    .depth-item-controls {
+      display: flex;
+      flex-direction: column;
+    }
+
+  }
+
 }

@@ -30,7 +30,7 @@ export enum ECompositeOperation {
 }
 
 export const CompositeOperationShortName = {
-    [ECompositeOperation.SourceOver]: "src-over",
+    [ECompositeOperation.SourceOver]: "normal",
     [ECompositeOperation.SourceAtop]: "src-atop",
     // SourceIn = "source-in",
     // SourceOut = "source-out",

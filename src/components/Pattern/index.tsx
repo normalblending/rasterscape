@@ -39,6 +39,7 @@ import {onNewFrame, setVideoParams} from "../../store/patterns/video/actions";
 import {PatternsActionProps, PatternsOwnProps, PatternsStateProps} from "../Patterns";
 import ts from "typescript/lib/tsserverlibrary";
 import {RoomControls} from "./RoomControls";
+import {BlurControls} from "./BlurControls";
 
 export interface PatternComponentStateProps {
 
@@ -194,6 +195,9 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         {config.rotation &&
                         <RotationControls patternId={id}/>}
 
+                        {config.blur &&
+                        <BlurControls patternId={id}/>}
+
                         {config.room &&
                         <RoomControls patternId={id}/>}
 
@@ -211,6 +215,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 selected={config.rotation}
                                 onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonSelect>
                             <ButtonSelect
+                                name={"blur"}
+                                selected={config.blur}
+                                onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonSelect>
+                            <ButtonSelect
                                 name={"room"}
                                 selected={config.room}
                                 onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonSelect>
@@ -222,7 +230,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     </div>
                     <div className="pattern-controls">
 
-                        <Button onClick={this.handleRemove}>{t('patternControls.delete')}</Button>
+                        <Button onClick={this.handleRemove} className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
                         <Button onClick={this.handleDouble}>{t('patternControls.double')}</Button>
                         <div className={'save-load-sizes'}>
                             <div>

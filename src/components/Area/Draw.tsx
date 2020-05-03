@@ -22,12 +22,14 @@ import {
 import {PatternsState} from "../../store/patterns/types";
 import {circle} from "../../utils/canvas/helpers/geometry";
 import {ECompositeOperation} from "../../store/compositeOperations";
+import {PatternState} from "../../store/patterns/pattern/types";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
     line: LineState
     tool: EToolType
-    patterns: PatternsState
+    pattern: PatternState
+    brushPattern: PatternState
 }
 
 export interface CanvasDrawActionProps {
@@ -69,8 +71,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 const squareBrush = (ev) => {
                     const {ctx, e, canvas, rotation} = ev;
                     console.log(ev);
-                    const {patterns, patternId} = this.props;
-                    const pattern = patterns[patternId];
+                    const {pattern} = this.props;
                     const {size, opacity, compositeOperation} = this.props.brush.params;
 
                     coordHelper.setText(compositeOperation);
@@ -143,8 +144,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [EBrushType.Circle]: (() => {
                 const circleBrush = (ev) => {
                     const {ctx, e, canvas, rotation} = ev;
-                    const {patterns, patternId} = this.props;
-                    const pattern = patterns[patternId];
+                    const {pattern} = this.props;
                     const {size, opacity, compositeOperation} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
@@ -207,16 +207,13 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [EBrushType.Pattern]: (() => {
                 const patternBrush = (ev) => {
                     const {ctx, e, canvas} = ev;
-                    const {patterns, patternId} = this.props;
-                    const {patternSize, opacity, compositeOperation, pattern} = this.props.brush.params;
+                    const {pattern: destinationPattern, brushPattern} = this.props;
+                    const {patternSize, opacity, compositeOperation} = this.props.brush.params;
 
                     ctx.fillStyle = getRandomColor();
                     ctx.globalAlpha = opacity;
                     ctx.globalCompositeOperation = compositeOperation;
                     ctx.imageSmoothingEnabled = true;
-
-                    const destinationPattern = patterns[patternId];
-                    const brushPattern = patterns[pattern];
 
                     const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
                     const destinationRotation = destinationPattern && destinationPattern.rotation && destinationPattern.rotation.value;
@@ -274,11 +271,9 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                     cursors: ({x, y, outer}) => {
 
 
-                        const {patterns} = this.props;
-                        const {pattern, patternSize} = this.props.brush.params;
+                        const {brushPattern} = this.props;
+                        const {patternSize} = this.props.brush.params;
 
-
-                        const brushPattern = patterns[pattern];
 
                         const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
                         const brushPatternImage = brushPattern && brushPattern.resultImage;
@@ -411,8 +406,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     componentDidUpdate(prevProps: CanvasDrawProps) {
-        const {patternId} = this.props;
-        if (prevProps.patterns[patternId].selection.params.mask) {
+        const {pattern} = this.props;
+        if (pattern.selection.params.mask) {
             //todo чо я тут хотел
         }
 
@@ -436,7 +431,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         if (!drawing) {
             this.setState({
-                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])
+                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern)
             });
         } else {
 
@@ -456,7 +451,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         stopChanging();
 
-        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.patterns[this.props.patternId])})
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern)})
     };
 
     getHandlers = () => {
@@ -519,11 +514,12 @@ const ToolTypeGetter = {
     [EToolType.Brush]: props => get(props, "brush.params.type"),
 };
 
-const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = state => ({
+const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = (state, {patternId}) => ({
     brush: state.brush,
     line: state.line,
     tool: state.tool.current,
-    patterns: state.patterns //todo придуматть как оптимизировать тут
+    pattern: state.patterns[patternId], //todo придуматть как оптимизировать тут
+    brushPattern: state.patterns[state.brush.params.pattern] //todo придуматть как оптимизировать тут
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {

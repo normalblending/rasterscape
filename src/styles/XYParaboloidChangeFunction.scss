@@ -1,13 +1,27 @@
-.XY_PARABOLOID-change-function {
-  //border: 1px solid midnightblue;
+.parab-change-function {
+
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  .XY_PARABOLOID-change-function-row {
+
+  .parab-controls {
     display: flex;
+    flex-direction: column;
   }
+
+  //.parab-end {
+  //  margin-top: 10px;
+  //}
+
   canvas {
 
+    //border: 1px solid transparent;
     //border: 1px solid red;
+
+
+    border-width: 1px;
+    border-style: solid;
+    border-bottom-color: #ededed;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-top-color: rgb(186, 186, 186);
   }
 }

@@ -1,0 +1,80 @@
+.help-red-text {
+  color: red;
+}
+
+.help-tooltip {
+  display: flex;
+  & span {
+    background: lightgrey;
+  }
+}
+
+.help-tooltip-container {
+
+  & span {
+    background: lightgrey;
+  }
+}
+
+.sin-help {
+  background: lightgrey;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 110px;
+
+  width: 70px;
+  border: 1px solid white;
+  overflow: visible;
+  position: relative;
+
+  & span {
+    background: lightgrey;
+
+    white-space: nowrap;
+  }
+
+  .sin-help-message {
+    z-index: 310;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .sin-params-help {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    & + div {
+      height: 20px;
+    }
+  }
+}
+
+.add-help {
+
+  padding: 4px 22px;
+  font-size: 12px;
+}
+
+.big-text-help {
+  //line-height: 2;
+}
+.subheader-help {
+
+  font-size: 13px;
+  margin-top: 5px;
+}
+.small-text-help {
+  //line-height: 2;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+.red-point-text {
+  font-size: 14px;
+  margin-bottom: 13px;
+}
+

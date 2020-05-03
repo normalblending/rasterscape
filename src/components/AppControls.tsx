@@ -6,16 +6,21 @@ import {Button} from "./_shared/buttons/Button";
 import {reverseFullScreen} from "../store/fullscreen";
 import * as classNames from "classnames";
 import {setLanguage} from "../store/language";
+import {activateTutorial} from "../store/tutorial";
+import '../styles/tutorial.scss';
 
 export interface AppControlsStateProps {
     isFull: boolean
     language: string
+    helpOn: boolean
 }
 
 export interface AppControlsActionProps {
     reverseFullScreen()
 
     setLanguage(language: string)
+
+    activateTutorial()
 }
 
 export interface AppControlsOwnProps {
@@ -42,15 +47,15 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
     };
 
     render() {
-        const {reverseFullScreen, isFull, setLanguage, language} = this.props;
+        const {reverseFullScreen, isFull, activateTutorial, language, helpOn} = this.props;
         return (
             <div className='app-controls'>
                 <Button
                     className="app-control-button"
                     onClick={this.handleLanguage}>{language}</Button>
-                {/*<Button*/}
-                {/*    className="app-control-button"*/}
-                {/*    onClick={reverseFullScreen}>?</Button>*/}
+                <Button
+                    className="app-control-button"
+                    onClick={activateTutorial}>{helpOn ? 'x' : '?'}</Button>
                 <Button
                     className={classNames("app-control-button", "full-button", {
                         ["full-button-off"]: isFull
@@ -66,12 +71,14 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
 
 const mapStateToProps: MapStateToProps<AppControlsStateProps, AppControlsOwnProps, AppState> = state => ({
     isFull: state.fullScreen,
-    language: state.language
+    language: state.language,
+    helpOn: state.tutorial.on,
 });
 
 const mapDispatchToProps: MapDispatchToProps<AppControlsActionProps, AppControlsOwnProps> = {
     reverseFullScreen,
-    setLanguage
+    setLanguage,
+    activateTutorial
 };
 
 export const AppControls = connect<AppControlsStateProps, AppControlsActionProps, AppControlsOwnProps, AppState>(

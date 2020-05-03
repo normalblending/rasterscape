@@ -14,6 +14,8 @@ import {
     depthParamsConfig,
     depthVideoChangeFunction
 } from "./functions/depth";
+import {waveChangeFunction, waveInitialParams, waveParamsConfig} from "./functions/wave";
+import {fxyChangeFunction, fxyInitialParams, fxyParamsConfig, fxyVideoChangeFunction} from "./functions/fxy";
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
@@ -28,15 +30,15 @@ export const cfId = (type: ECFType, state: ChangeFunctions) => {
 };
 
 const chInitialParams = {
-    [ECFType.SIN]: sinInitialParams,
-    [ECFType.LOOP]: loopInitialParams,
+    [ECFType.WAVE]: waveInitialParams,
+    [ECFType.FXY]: fxyInitialParams,
     [ECFType.XY_PARABOLOID]: xyParaboloidInitialParams,
     [ECFType.DEPTH]: depthInitialParams,
 };
 
 const chParamsConfig = {
-    [ECFType.SIN]: sinParamsConfig,
-    [ECFType.LOOP]: loopParamsConfig,
+    [ECFType.WAVE]: waveParamsConfig,
+    [ECFType.FXY]: fxyParamsConfig,
     [ECFType.XY_PARABOLOID]: xyParaboloidParamsConfig,
     [ECFType.DEPTH]: depthParamsConfig,
 };
@@ -52,8 +54,8 @@ export const createCFInitialState = (id, type: ECFType) => {
 };
 
 export const changeFunctionByType = {
-    [ECFType.SIN]: sinChangeFunction,
-    [ECFType.LOOP]: loopChangeFunction,
+    [ECFType.WAVE]: waveChangeFunction,
+    [ECFType.FXY]: fxyChangeFunction,
     [ECFType.XY_PARABOLOID]: xyParaboloidNumberChangeFunction,
     [ECFType.DEPTH]: depthNumberChangeFunction,
     // [ECFType.SQ]:
@@ -67,7 +69,7 @@ export const changeFunctionByType = {
 };
 
 export const videoChangeFunctionByType = {
-    [ECFType.XY_PARABOLOID]: xyParaboloidVideoChangeFunction,
+    [ECFType.FXY]: fxyVideoChangeFunction,
     [ECFType.DEPTH]: depthVideoChangeFunction,
 };
 //({a, b, c, h}) => (x, y) => (Math.sin(x / a) * Math.cos(y / b) * c + h),

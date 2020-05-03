@@ -10,23 +10,26 @@ import {SinAmplitude} from "./SinAmplitude";
 import '../../../../styles/buttonNumber.scss';
 import {startPoint} from "./startPoint";
 import {coordHelper} from "../../../Area/canvasPosition.servise";
+import {WaveType} from "../../../../store/changeFunctions/functions/wave";
+import {FxyType} from "../../../../store/changeFunctions/functions/fxy";
 
 const DEFAULT_WIDTH = 70;
-const defaultGetText = value => value.toFixed(1);
 
+const dd = (x, y) => (-x + y) / Math.sqrt(2);
 export const ValueD = {
     VerticalLinear: (step: number) => {
         return (oldValue: any, dx: number, dy: number) => {
-            const d = Math.abs(dx) >= Math.abs(dy) ? -dx : dy;
+
+            const d = dd(dx, dy);
             return oldValue - d / step
         }
     },
 };
 
 const amplitudeComponent = {
-    [ECFType.SIN]: SinAmplitude,
-    [ECFType.LOOP]: LoopAmplitude,
-    [ECFType.XY_PARABOLOID]: ParaboloidAmplitude,
+    [WaveType.Sin]: SinAmplitude,
+    [WaveType.Saw]: LoopAmplitude,
+    [FxyType.Parab]: ParaboloidAmplitude,
 };
 
 export interface ButtonNumberEventData extends ButtonSelectEventData {
@@ -37,6 +40,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     integer?: boolean
 
     width?: number
+    pres?: number
     precision?: number | ((value?: any) => number)
     precisionGain?: number
 
@@ -49,7 +53,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     shortcut?: string | string[]
 
 
-    valueD?(oldValue: any, dx: number, dy: number): any
+    valueD?: ((oldValue: any, dx: number, dy: number) => any) | number
 
     onChange?(data?: ButtonNumberEventData)
 
@@ -150,12 +154,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     calculateOneStep = (value) => {
-        const {precision = 100, range} = this.props;
-        if (typeof precision === "function") {
-            return (range[1] - range[0]) / precision(value)
-        } else {
-            return (range[1] - range[0]) / precision
-        }
+        const {pres = 0} = this.props;
+        return Math.pow(10, -pres);
     };
 
     handleUp = (e) => {
@@ -163,22 +163,23 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
         startPoint.hide();
 
-        const {changingStartValue,
+        const {
+            changingStartValue,
             onClick,
             onMouseUp,
             onChange,
             name,
             selected,
             width = DEFAULT_WIDTH,
-            precision = 100,
             precisionGain = 2,
-            range} = this.props;
+            range
+        } = this.props;
         let value = this.calcValue(e);
 
 
-
         const one = this.calculateOneStep(value);
-        if (Math.abs(value - this.state.startValue) < one) {
+        const d = Math.abs(value - this.state.startValue);
+        if (d < one) {
 
             const {left} = getOffset(e.target);
 
@@ -192,11 +193,10 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
             onChange && onChange({e, value, name, selected});
         } else {
-            onMouseUp && onMouseUp({e, value, name, selected});
-
             onClick && onClick({value, name, e, selected});
-
         }
+
+        onMouseUp && onMouseUp({e, value, name, selected});
 
 
         this.setState({
@@ -266,7 +266,14 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     calcValue = e => {
         // console.log(this.state.startValue);
-        const {range, valueD = ValueD.VerticalLinear(5), integer} = this.props;
+        const {range, integer} = this.props;
+        let valueD = this.props.valueD;
+
+        if (!valueD) {
+            valueD = ValueD.VerticalLinear(5)
+        } else if (typeof valueD === 'number') {
+            valueD = ValueD.VerticalLinear(valueD);
+        }
 
         let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
         nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
@@ -277,14 +284,21 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         return nextValue;
     };
 
+    getText = (value) => {
+        const {getText, pres} = this.props;
+        return (getText || (value => value.toFixed(pres)))(value);
+    };
+
     render() {
-        const {changingStartValue, changeFunctionId, changeFunctionType, changeFunctionParams, range, width = DEFAULT_WIDTH, className, getText = defaultGetText, text, shortcut, ...otherProps} = this.props;
+        const {changingStartValue, changeFunctionId, changeFunctionType, changeFunctionParams, range, width = DEFAULT_WIDTH, className, text, shortcut, ...otherProps} = this.props;
         const {value = 0, startValue, startPoint} = this.state;
 
-        console.log("number button ", getText(value));
 
+        const Amplitude = amplitudeComponent[changeFunctionParams?.type || changeFunctionType];
 
-        const Amplitude = amplitudeComponent[changeFunctionType];
+        const amplitudeParams = changeFunctionParams?.type
+            ? changeFunctionParams.typeParams[changeFunctionParams.type]
+            : changeFunctionParams;
 
 
         return (
@@ -299,15 +313,15 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                 <div
                     className={"button-number-value"}
                     style={{width: (value - range[0]) / (range[1] - range[0]) * 100 + "%"}}>
-                    {getText ? getText(value) : text}
+                    {this.getText(value)}
                 </div>
 
-                {changeFunctionId &&
+                {changeFunctionId && Amplitude &&
                 <Amplitude
                     changing={!!startPoint}
                     range={range}
                     buttonWidth={width}
-                    params={changeFunctionParams}
+                    params={amplitudeParams}
                     changingStartValue={changingStartValue}
                     changeFunctionId={changeFunctionId}/>}
 

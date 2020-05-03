@@ -3,10 +3,10 @@ import {ParamConfig} from "../../components/_shared/Params";
 
 
 export enum ECFType {
-    SIN = "sin",
-    LOOP = 'loop',
+    WAVE = "ft",
+    FXY = 'fxy',
     XY_PARABOLOID = 'parab',
-    DEPTH = 'depth',
+    DEPTH = 'rgba',
 }
 
 export interface ChangeFunction {

@@ -16,6 +16,10 @@ import "../../styles/patternSelectButton.scss"
 import '../../styles/brush.scss'
 import {ColorPalette} from "../ColorPalette";
 import {withTranslation, WithTranslation} from "react-i18next";
+import {Tooltip} from "../_shared/Tooltip";
+import {HelpTooltip} from "../tutorial/HelpTooltip";
+import {BrushSizeHelp} from "../tutorial/tooltips/BrushSizeHelp";
+import {PatternsSelect} from "../PatternsSelect";
 
 export interface BrushStateProps {
     paramsConfigMap: {
@@ -23,7 +27,7 @@ export interface BrushStateProps {
     }
     paramsConfig: ParamConfig[]
     paramsValue: BrushParams
-    patternsSelectItems: any[]
+    tutorial: boolean
 }
 
 export interface BrushActionProps {
@@ -46,7 +50,9 @@ const patternSizeValueD = ValueD.VerticalLinear(125);
 
 const opacityRange = [0, 1] as [number, number];
 const opacityValueD = ValueD.VerticalLinear(100);
+
 const opacityValueText = value => value.toFixed(2);
+const patternSizeValueText = value => (value * 100).toFixed(0) + '%';
 
 
 class BrushComponent extends React.PureComponent<BrushProps> {
@@ -58,10 +64,10 @@ class BrushComponent extends React.PureComponent<BrushProps> {
         })
     };
 
-    handlePatternChange = (id) => () => {
+    handlePatternChange = (pattern) => {
         this.props.setBrushParams({
             ...this.props.paramsValue,
-            pattern: +id
+            pattern
         })
     };
 
@@ -94,7 +100,7 @@ class BrushComponent extends React.PureComponent<BrushProps> {
     };
 
     render() {
-        const {paramsConfigMap, paramsValue, patternsSelectItems, t} = this.props;
+        const {paramsConfigMap, paramsValue, t, tutorial} = this.props;
 
         console.log(paramsConfigMap["type"].props.items);
         return (
@@ -108,65 +114,68 @@ class BrushComponent extends React.PureComponent<BrushProps> {
                 <div className='brush-params'>
 
                     {paramsValue.type === EBrushType.Pattern ?
+
                         <ButtonNumberCF
-                            precision={5 * 100}
+                            buttonWrapper={
+                                tutorial
+                                    ? button => <HelpTooltip message={'brush size pattern'}>{button}</HelpTooltip>
+                                    : null}
+                            pres={2}
+                            valueD={62.5}
                             precisionGain={10}
                             path={"brush.params.patternSize"}
                             value={paramsValue.patternSize}
                             name={"patternSize"}
                             onChange={this.handleParamChange}
-                            getText={opacityValueText}
-                            range={patternSizeRange}
-                            valueD={patternSizeValueD}/> :
+                            getText={patternSizeValueText}
+                            range={patternSizeRange}/>
+                        :
+
                         <ButtonNumberCF
-                            precision={200 * 10}
+                            buttonWrapper={
+                                tutorial
+                                    ? button => <HelpTooltip component={BrushSizeHelp}>{button}</HelpTooltip>
+                                    : null}
+                            pres={0}
+                            valueD={0.25}
                             path={"brush.params.size"}
                             value={paramsValue.size}
                             name={"size"}
                             onChange={this.handleSizeChange}
-                            range={sizeRange}
-                            valueD={sizeValueD}/>}
+                            range={sizeRange}/>
+                    }
 
                     <ButtonNumberCF
-                        precision={10 * 10}
+                        buttonWrapper={
+                            tutorial
+                                ? button => <HelpTooltip message={'opacity'}>{button}</HelpTooltip>
+                                : null}
+                        pres={2}
+                        valueD={100}
+                        precisionGain={5}
                         getText={opacityValueText}
                         path={"brush.params.opacity"}
                         value={paramsValue.opacity}
-                        precisionGain={5}
                         name={"opacity"}
                         onChange={this.handleOpacityChange}
-                        range={opacityRange}
-                        valueD={opacityValueD}/>
-                    <SelectDrop
-                        value={paramsValue.compositeOperation}
-                        items={paramsConfigMap["compositeOperation"].props.items}
-                        onChange={this.handleCompositeChange}/>
+                        range={opacityRange}/>
+
+                    <HelpTooltip message={'blend mode'}>
+                        <SelectDrop
+                            value={paramsValue.compositeOperation}
+                            items={paramsConfigMap["compositeOperation"].props.items}
+                            onChange={this.handleCompositeChange}/>
+                    </HelpTooltip>
 
                 </div>
-                <div className={'pattern-list'}>
-                    {paramsValue.type === EBrushType.Pattern && (<>
-                        {patternsSelectItems.map(({imageData, id}, i) => {
-                            const w = imageData.width;
-                            const h = imageData.height;
-                            // const coef  = w/h > 1 ?
-                            return (
-                                <>
-                                    <ButtonSelect
-                                        className={'pattern-select-button'}
-                                        width={42} height={42}
-                                        onClick={this.handlePatternChange(id)}
-                                        selected={+id === paramsValue.pattern}>
-                                        <ImageDataCanvas
-                                            width={40 * (w / h <= 1 ? w / h : 1)}
-                                            height={40 * (w / h > 1 ? h / w : 1)}
-                                            imageData={imageData}/>
-                                    </ButtonSelect>
-                                    {!((i + 1) % 5) ? <br/> : null}
-                                </>
-                            )
-                        })}
-                    </>)}
-                </div>
+
+                {paramsValue.type === EBrushType.Pattern &&
+                <PatternsSelect
+                    value={paramsValue.pattern}
+                    onChange={this.handlePatternChange}
+                />
+                }
+
 
                 {/*{paramsValue.type !== EBrushType.Pattern && (*/}
                 {/*    <ColorPalette/>*/}
@@ -187,7 +196,7 @@ const mapStateToProps: MapStateToProps<BrushStateProps, BrushOwnProps, AppState>
     paramsConfig: state.brush.paramsConfig,
     paramsConfigMap: paramsConfigMapSelector(state),
     paramsValue: state.brush.params,
-    patternsSelectItems: getPatternsSelectItems(state)
+    tutorial: state.tutorial.on
 });
 
 const mapDispatchToProps: MapDispatchToProps<BrushActionProps, BrushOwnProps> = {

@@ -34,11 +34,11 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
 
             if (cf) {
 
-                const width = state.patterns[patternId].current.width;
-                const height = state.patterns[patternId].current.height;
-                const cfParams = cf.params;
-                const cfType = cf.type;
-                return videoChangeFunctionByType[cfType](x, y, width, height, cfParams);
+                return videoChangeFunctionByType[cf.type](
+                    x, y,
+                    state.patterns[patternId].current.width,
+                    state.patterns[patternId].current.height,
+                    cf.params, state.patterns);
             } else {
                 return state.patterns[patternId].current.width;
             }

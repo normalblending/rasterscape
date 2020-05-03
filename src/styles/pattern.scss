@@ -101,6 +101,15 @@
     }
   }
 
+  .pattern-delete-button {
+    &:hover {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: red;
+      //text-decoration: underline;
+    }
+  }
 
   //@keyframes spin { 100% {
   //  transform:rotate(360deg); } }

@@ -1,0 +1,17 @@
+.fxy-change-function {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 140px;
+
+  position: relative;
+
+  .select-type {
+
+    position: absolute;
+    top: -20px;
+    right: 0;
+
+  }
+}

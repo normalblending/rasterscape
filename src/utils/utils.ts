@@ -108,3 +108,7 @@ export const dateZs = () => {
     return f(date.getTime().toString(4), 0);
 
 };
+
+
+export const toFixed2 = value => value.toFixed(2);
+export const toFixed0 = value => value.toFixed(0);

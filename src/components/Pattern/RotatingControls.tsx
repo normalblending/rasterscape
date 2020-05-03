@@ -3,8 +3,6 @@ import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import '../../styles/rotatingControls.scss';
-import {VideoParams} from "../../store/patterns/video/types";
-import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {setRotation} from "../../store/patterns/rotating/actions";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
@@ -30,9 +28,10 @@ export interface RotationControlsState {
 }
 
 const angleRange = [0, 360] as [number, number];
+const angleText = value => value.toFixed(0) + '°';
 const angleValueD = ValueD.VerticalLinear(0.2);
 
-const offsetRange = [-800, 800] as [number, number];
+const offsetRange = [-1000, 1000] as [number, number];
 const offsetValueD = ValueD.VerticalLinear(0.1);
 
 export class RotationControlsComponent extends React.PureComponent<RotationControlsProps, RotationControlsState> {
@@ -57,29 +56,29 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
         return (
             <div className={'rotating-controls'}>
                 <ButtonNumberCF
-                    precision={360}
+                    pres={0}
                     path={`patterns.${this.props.patternId}.rotation.value.angle`}
                     name={"angle"}
                     value={angle}
                     range={angleRange}
-                    valueD={angleValueD}
+                    getText={angleText}
+                    valueD={0.36}
                     onChange={this.handleAngleChange}/>
-
                 <ButtonNumberCF
-                    precision={1600}
+                    pres={0}
+                    valueD={1}
+                    range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.x`}
                     name={"x"}
                     value={offset.x}
-                    range={offsetRange}
-                    valueD={offsetValueD}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
-                    precision={1600}
+                    pres={0}
+                    valueD={1}
+                    range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.y`}
                     name={"y"}
                     value={offset.y}
-                    range={offsetRange}
-                    valueD={offsetValueD}
                     onChange={this.handleOffsetChange}/>
             </div>
         );

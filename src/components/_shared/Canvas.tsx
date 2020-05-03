@@ -7,6 +7,8 @@ import {rotate} from "../../utils/draw";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {clearCanvas} from "../../utils/canvas/helpers/base";
 import {ECompositeOperation} from "../../store/compositeOperations";
+import * as StackBlur from 'stackblur-canvas';
+import {coordHelper} from "../Area/canvasPosition.servise";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -124,6 +126,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
                 ? resizeImageData(this.props.value, this.props.width, this.props.height)
                 : this.props.value;
 
+            // const aa = StackBlur.imageDataRGBA(imgD, 0, 0, imgD.width, imgD.height, 20);
+
             this.ctx.putImageData(imgD, 0, 0);
         }
     };
@@ -167,13 +171,16 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     start = () => {
 
-        const {onDraw, onMove} = this.props;
+        const {onDraw, onMove, onChange} = this.props;
 
 
         if (!this.requestID) {
 
+            let prevT = 0;
             const changing = (time) => {
 
+                coordHelper.setText(time - prevT);
+                prevT = time;
                 const e = this.e;
                 const {top, left, box} = getOffset(this.canvasRef.current);
 
@@ -209,6 +216,10 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
                     drawing: true,
                     rotation: this.props.rotation
                 });
+
+
+                // onChange && onChange(canvasToImageData(this.canvasRef.current));
+
 
 
 
@@ -277,7 +288,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             this.pre = null;
             const {onChange} = this.props;
 
-            onChange && onChange(canvasToImageData(this.canvasRef.current));
+            const imageData = canvasToImageData(this.canvasRef.current);
+
+            const res = imageData;
+
+            onChange && onChange(res);
 
             const event = {
                 e,

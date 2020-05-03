@@ -17,3 +17,16 @@ export const getPatternsSelectItems = createSelector(
             }
         })
     });
+
+export const getPatternsImageData = createSelector(
+    [getPatternsState],
+    patterns => {
+        return Object.values(patterns).map((pattern) => {
+            const {current, id, resultImage} = pattern as PatternState;
+            return {
+                imageData: current.imageData,
+                image: resultImage,
+                id
+            }
+        })
+    });

@@ -25,6 +25,7 @@ import {ImportParams} from "../store/patterns/import/types";
 import {onNewFrame, setVideoParams} from "../store/patterns/video/actions";
 import {VideoParams} from "../store/patterns/video/types";
 import {withTranslation, WithTranslation} from "react-i18next";
+import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
 
 export interface PatternsStateProps {
     patterns: any
@@ -124,6 +125,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                 })}
                 <div className={'zero-pattern'}>
                     <Button onClick={this.handleAddClick}>{t("add")}</Button>
+                    <AddPatternHelp/>
                 </div>
             </>
         );

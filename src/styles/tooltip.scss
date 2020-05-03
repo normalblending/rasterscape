@@ -1,0 +1,18 @@
+.tooltip {
+    display:block;
+    position:fixed;
+    overflow:hidden;
+    z-index:100;
+    pointer-events: none;
+
+    //background: white;
+    //
+    //border: 1px solid darkgrey;
+
+
+    //box-shadow: 0 0 4px lightgrey;
+}
+
+.tooltip-wrapper {
+    display: flex;
+}

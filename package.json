@@ -29,6 +29,7 @@
     "redux-thunk": "2.3.0",
     "reselect": "4.0.0",
     "socket.io": "2.3.0",
+    "stackblur-canvas": "^2.2.0",
     "typescript": "3.7.3"
   },
   "devDependencies": {
@@ -42,7 +43,8 @@
     "@types/redux-logger": "3.0.7",
     "@types/reselect": "2.2.0",
     "bbuutoonnss": "1.0.3",
-    "gh-pages": "2.1.1"
+    "gh-pages": "2.1.1",
+    "worker-loader": "^2.0.0"
   },
   "scripts": {
     "predeploy": "npm run build",

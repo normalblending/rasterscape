@@ -10,6 +10,7 @@ import {MaskParams, MaskState} from "../mask/types";
 import {VideoParams, VideoState} from "../video/types";
 import {ImportParams, ImportState} from "../import/types";
 import {RoomParams, RoomState} from "../room/types";
+import {BlurParams, BlurState} from "../blur/types";
 
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
@@ -32,6 +33,8 @@ export interface PatternParams {
     video?: VideoParams
 
     room?: RoomParams
+
+    blur?: BlurParams
 }
 
 export interface PatternConfig {
@@ -57,6 +60,8 @@ export interface PatternConfig {
     video?: boolean
 
     room?: boolean
+
+    blur?: boolean
 }
 
 
@@ -74,6 +79,7 @@ export interface PatternState {
     import?: ImportState
     video?: VideoState
     room?: RoomState
+    blur?: BlurState
 }
 
 // ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS

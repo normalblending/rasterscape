@@ -1,23 +1,20 @@
 import * as React from "react";
-import {Canvas} from "../Canvas";
-import * as Bezier from "bezier-js";
 import {bindDrawFunctions, handleInteraction} from "../../../utils/bezier";
+import '../../../styles/waveCanvas.scss';
 
-export interface WaveProps {
-    A: number
-    T: number
-    Tmax: number
-    Amax: number
+export interface SawWaveProps {
+    start: number
+    end: number
+    t: number
     W: number
     H: number
-    O: number
 }
 
-export interface WaveState {
+export interface SawWaveState {
 
 }
 
-export class Wave extends React.PureComponent<WaveProps, WaveState> {
+export class SawWave extends React.PureComponent<SawWaveProps, SawWaveState> {
 
     canvasRef;
     drawFunctions;
@@ -29,7 +26,7 @@ export class Wave extends React.PureComponent<WaveProps, WaveState> {
     }
 
     draw = () => {
-        const {A, T, W, H, Tmax, Amax, O} = this.props;
+        const {start, end, t, W, H} = this.props;
         const ctx = this.canvasRef.current.getContext("2d");
 
 
@@ -40,15 +37,23 @@ export class Wave extends React.PureComponent<WaveProps, WaveState> {
         ctx.font = "28px";
         ctx.textBaseline = "hanging";
         ctx.fillStyle = 'black';
-        ctx.fillText(Math.sqrt(Tmax / T) * 2, 120, Math.sqrt(Amax / A)*A / Amax * H / 2);
-        ctx.fillText(A, 20, -(Math.sqrt(Amax / A)*A / Amax * H / 2)+ H / 2);
+        // ctx.fillText(Math.sqrt(Tmax / T) * 2, 120, Math.sqrt(Amax / A)*A / Amax * H / 2);
+        // ctx.fillText(A, 20, -(Math.sqrt(Amax / A)*A / Amax * H / 2)+ H / 2);
 
+        const ss = 40000/t;
         for (let p = 0; p <= N; p++) {
 
-            const pn = p / N;
-            const deg = (pn) * (2 * Math.PI) * Tmax / T;
-            const x = (pn) * W;
-            const y = Math.sin(deg + O *2* Math.PI) *A / Amax * H / 2 * (-1) + H / 2;
+
+
+            // const deg = (pn) * (2 * Math.PI) * Tmax / T;
+            const x = (p / N) * W;
+
+
+
+
+            const pn = (p % (N / ss)) / N * ss;
+            const y = H-(pn * (end - start) + start) * H;
+            // const y = Math.sin(deg + O *2* Math.PI) *A / Amax * H / 2 * (-1) + H / 2;
 
             ctx.lineTo(x, y)
 
@@ -69,7 +74,7 @@ export class Wave extends React.PureComponent<WaveProps, WaveState> {
         }
     }
 
-    componentDidUpdate(prevProps: Readonly<WaveProps>, prevState: Readonly<WaveState>, snapshot?: any): void {
+    componentDidUpdate(prevProps: Readonly<SawWaveProps>, prevState: Readonly<SawWaveState>, snapshot?: any): void {
 
         this.drawFunctions.reset();
         this.draw();
@@ -80,7 +85,7 @@ export class Wave extends React.PureComponent<WaveProps, WaveState> {
         const {W = 120, H = 100} = this.props;
         return (
             <canvas
-                className={"grid-bezier-curve-canvas"}
+                className={"saw-canvas"}
                 width={W}
                 height={H}
                 ref={this.canvasRef}/>

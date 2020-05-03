@@ -11,8 +11,8 @@ export const LoopAmplitude: React.FC<LoopAmplitudeProps> = ({range, params, chan
         <div
             className={"button-number-amplitude"}
             style={{
-                width: (params.end - params.start) * 100 + "%",
-                left: `${params.start * 100}%`
+                width: Math.abs(params.end - params.start) * 100 + "%",
+                left: `${Math.min(params.start, params.end) * 100}%`
             }}>
                     <span>
                     {changeFunctionId}

@@ -112,7 +112,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         this.props.stop(this.props.patternId);
     }
 
-    availableChangeTypes = [ECFType.XY_PARABOLOID, ECFType.DEPTH];
+    availableChangeTypes = [ECFType.FXY, ECFType.DEPTH];
 
     render() {
         const {changeFunctions, videoParams: params} = this.props;
