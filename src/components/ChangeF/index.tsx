@@ -109,12 +109,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                                         className={'function-delete'}>delete</Button>
                                 </div>
                                 <Component
-                                    tutorial={tutorial}
-                                    key={id}
-                                    name={id}
-                                    params={params}
-                                    paramsConfig={paramsConfig}
-                                    onChange={this.handleChange}/>
+                                    name={id}/>
 
                             </div>
                         ) : null;

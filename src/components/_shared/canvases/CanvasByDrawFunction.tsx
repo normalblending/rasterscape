@@ -41,7 +41,7 @@ export class CanvasByDrawFunction extends React.Component<CanvasByDrawFunctionPr
 
     componentDidUpdate(): void {
 
-        this.drawFunctions.reset();
+        // this.drawFunctions.reset();
         this.draw();
         // this.canvasRef.current.canvasRef.setImageData(crea)
     }

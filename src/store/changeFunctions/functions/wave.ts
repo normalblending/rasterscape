@@ -1,7 +1,3 @@
-import {EParamType} from "../../../components/_shared/Params";
-import {ValueD} from "../../../components/_shared/buttons/ButtonNumber";
-import {coordHelper} from "../../../components/Area/canvasPosition.servise";
-
 export enum WaveType {
     Sin = 'sin',
     Saw = 'saw'
@@ -77,25 +73,7 @@ const waveFunctionByType = {
         if (newValue > Math.max(S, E)) {
             newValue -= Math.abs(ES);
         }
-        // if (ES < 0) {
-        //     if (newValue > S) {
-        //         newValue += ES;
-        //     }
-        //
-        //     if (newValue < E) {
-        //         newValue -= ES;
-        //     }
-        //
-        // } else {
-        //     if (newValue < Math.min(S, E)) {
-        //         newValue += Math.abs(ES);
-        //     }
-        //
-        //     if (newValue > Math.max(S, E)) {
-        //         newValue -= Math.abs(ES);
-        //     }
-        // }
-        // coordHelper.writeln(newValue);
+
         return newValue;
     },
 };

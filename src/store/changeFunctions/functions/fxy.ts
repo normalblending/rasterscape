@@ -1,9 +1,8 @@
-import {EParamType} from "../../../components/_shared/Params";
-import {ValueD} from "../../../components/_shared/buttons/ButtonNumber";
-import {xyParaboloid} from "./helpers";
+import {xyParaboloid, xySis2} from "./_helpers";
 
 export enum FxyType {
     Parab = 'parab',
+    Sis2 = 'sis2',
 }
 
 export interface ParabParams {
@@ -13,7 +12,21 @@ export interface ParabParams {
     y: number
 }
 
-export type AnyFxyParams = ParabParams;
+export interface Sis2Params {
+    end: number
+    cosA: number
+    h: number
+    xN: number
+    yN: number
+    xD: number
+    yD: number
+    XA: number
+    xdd: number
+    ydd: number
+
+}
+
+export type AnyFxyParams = ParabParams | Sis2Params;
 
 export interface FxyParams {
     type: FxyType
@@ -30,6 +43,18 @@ export const fxyInitialParams: FxyParams = {
             end: 1,
             x: 1.5,
             y: 1.5,
+        },
+        [FxyType.Sis2]: {
+            end: 1,
+            XA: 1.6,
+            h: 0,
+            cosA: 0,
+            xN: 1,
+            xD: 1,
+            yN: 1,
+            yD: 1,
+            xdd: 0,
+            ydd: 0,
         },
     },
 
@@ -52,6 +77,28 @@ const fxyFunctionByType = {
         const znorm = f(xnorm, ynorm) + zd;
 
         // (range[1] - startValue) * end;
+
+        return Math.max(
+            Math.min(
+                (znorm * end ) * (range[1] - range[0]) + startValue,
+                startValue + (range[1] - startValue) * end
+            ),
+            startValue
+        );
+
+    },
+    [FxyType.Sis2]: ({startValue, range, params, pattern, position}) => {
+
+        const {end} = params;
+        const f = xySis2(params);
+
+        const width = pattern.current.width;
+        const height = pattern.current.height;
+
+        const xnorm = position.x / width;
+        const ynorm = position.y / height;
+        const znorm = f(xnorm, ynorm) * end;
+
 
         return Math.max(
             Math.min(
@@ -90,6 +137,20 @@ export const xyVideoFunctionByType = {
         const xnorm = x / width;
         const ynorm = y / height;
         const znorm = f(xnorm, ynorm) * end + zd;
+
+        // (range[1] - startValue) * end;
+
+        return znorm * width;
+    },
+    [FxyType.Sis2]: ({x, y, width, height, params}) => {
+
+
+        const f = xySis2(params);
+
+
+        const xnorm = x / width;
+        const ynorm = y / height;
+        const znorm = f(xnorm, ynorm) * params.end;
 
         // (range[1] - startValue) * end;
 

@@ -5,7 +5,6 @@ import {ParamConfig} from "../../components/_shared/Params";
 export enum ECFType {
     WAVE = "ft",
     FXY = 'fxy',
-    XY_PARABOLOID = 'parab',
     DEPTH = 'rgba',
 }
 

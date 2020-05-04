@@ -1,12 +1,11 @@
 import * as React from "react";
-import {ParamConfig, Params} from "../../_shared/Params";
 import {ButtonNumberCF} from "../../_shared/buttons/ButtonNumberCF";
 import "../../../styles/sinChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/ButtonNumber";
-import {SinWave} from "../../_shared/canvases/SinWave";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
+import {Sin} from "../../_shared/canvases/WebWorkerCanvas";
 
 export interface SinCFProps {
     tutorial: boolean
@@ -55,14 +54,12 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
             // <HelpTooltip component={SinHelp} getY={() => 27} offsetX={40}>
             <div className={"sin-change-function"}>
                 <HelpTooltip component={SinHelp} componentProps={{name}}>
-                    <SinWave
-                        W={68}
-                        H={58}
-                        O={params.o}
+                    <Sin
+                        width={68}
+                        height={58}
+                        params={params}
                         Tmax={5000}
-                        Amax={1.1}
-                        A={params.a}
-                        T={params.t}/>
+                        Amax={1.1}/>
                 </HelpTooltip>
                 <div className={'sin-controls'}>
                     <ButtonNumberCF

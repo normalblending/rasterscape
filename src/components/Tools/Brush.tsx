@@ -7,16 +7,11 @@ import {ParamConfig} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {SelectButtons} from "../_shared/buttons/SelectButtons";
-import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {createSelector} from "reselect";
-import {ImageDataCanvas} from "../_shared/canvases/ImageData";
-import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
 import "../../styles/patternSelectButton.scss"
 import '../../styles/brush.scss'
-import {ColorPalette} from "../ColorPalette";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {Tooltip} from "../_shared/Tooltip";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {BrushSizeHelp} from "../tutorial/tooltips/BrushSizeHelp";
 import {PatternsSelect} from "../PatternsSelect";

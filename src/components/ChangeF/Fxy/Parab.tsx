@@ -1,12 +1,10 @@
 import * as React from "react";
-import {ParamConfig} from "../../_shared/Params";
 import {ButtonNumberCF} from "../../_shared/buttons/ButtonNumberCF";
 import "../../../styles/XYParaboloidChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/ButtonNumber";
-import {Surface2d} from "../../_shared/canvases/Surface2d";
-import {ECFType} from "../../../store/changeFunctions/types";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
+import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
 
 export interface ParabCFProps {
     tutorial: boolean
@@ -46,21 +44,11 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
             <div className={"parab-change-function"}>
 
                 <div className={'parab-controls'}>
-                    <Surface2d
-                        type={ECFType.XY_PARABOLOID}
-                        params={params}
-                        width={68} height={68}/>
-
-                    <ButtonNumberCF
-                        pres={2}
-                        valueD={50}
-                        buttonWrapper={this.buttonWrapper('kz')}
-                        path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.end`}
-                        value={params.end}
-                        name={"end"}
-                        range={seRange}
-                        onChange={this.handleParamChange}
-                    />
+                    <div className={'canvas-container'}>
+                        <Paraboloid
+                            params={params}
+                            width={68} height={58}/>
+                    </div>
                 </div>
                 <div className={'parab-controls'}>
                     <ButtonNumberCF
@@ -91,6 +79,16 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                         value={params.y}
                         name={"y"}
                         range={[-20, 20]}
+                        onChange={this.handleParamChange}
+                    />
+                    <ButtonNumberCF
+                        pres={2}
+                        valueD={50}
+                        buttonWrapper={this.buttonWrapper('kz')}
+                        path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.end`}
+                        value={params.end}
+                        name={"end"}
+                        range={seRange}
                         onChange={this.handleParamChange}
                     />
                 </div>

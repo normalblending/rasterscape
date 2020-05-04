@@ -30,6 +30,7 @@ const amplitudeComponent = {
     [WaveType.Sin]: SinAmplitude,
     [WaveType.Saw]: LoopAmplitude,
     [FxyType.Parab]: ParaboloidAmplitude,
+    [FxyType.Sis2]: ParaboloidAmplitude,
 };
 
 export interface ButtonNumberEventData extends ButtonSelectEventData {

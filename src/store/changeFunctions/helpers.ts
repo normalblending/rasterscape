@@ -1,13 +1,5 @@
 import {ChangeFunctions} from "./reducer";
 import {ECFType} from "./types";
-import {sinChangeFunction, sinInitialParams, sinParamsConfig} from "./functions/sin";
-import {loopChangeFunction, loopInitialParams, loopParamsConfig} from "./functions/loop";
-import {
-    xyParaboloidNumberChangeFunction,
-    xyParaboloidInitialParams,
-    xyParaboloidParamsConfig,
-    xyParaboloidVideoChangeFunction
-} from "./functions/xyParaboloid";
 import {
     depthInitialParams,
     depthNumberChangeFunction,
@@ -32,14 +24,12 @@ export const cfId = (type: ECFType, state: ChangeFunctions) => {
 const chInitialParams = {
     [ECFType.WAVE]: waveInitialParams,
     [ECFType.FXY]: fxyInitialParams,
-    [ECFType.XY_PARABOLOID]: xyParaboloidInitialParams,
     [ECFType.DEPTH]: depthInitialParams,
 };
 
 const chParamsConfig = {
     [ECFType.WAVE]: waveParamsConfig,
     [ECFType.FXY]: fxyParamsConfig,
-    [ECFType.XY_PARABOLOID]: xyParaboloidParamsConfig,
     [ECFType.DEPTH]: depthParamsConfig,
 };
 
@@ -56,16 +46,7 @@ export const createCFInitialState = (id, type: ECFType) => {
 export const changeFunctionByType = {
     [ECFType.WAVE]: waveChangeFunction,
     [ECFType.FXY]: fxyChangeFunction,
-    [ECFType.XY_PARABOLOID]: xyParaboloidNumberChangeFunction,
     [ECFType.DEPTH]: depthNumberChangeFunction,
-    // [ECFType.SQ]:
-    //     (params, range, pattern) =>
-    //         (startValue, time, position) => {
-    //             const {x: X, y: Y, c: C, xa, ya} = params;
-    //             // console.log(params, range);
-    //             const z = Math.pow(position.x - pattern.current.width / 2, 2) / xa / X + Math.pow(position.y - pattern.current.height / 2, 2) / ya / Y ;
-    //             return z / pattern.current.width * (range[1] - range[0]) + startValue;
-    //         },
 };
 
 export const videoChangeFunctionByType = {

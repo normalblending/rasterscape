@@ -47,7 +47,12 @@ export class TextHelper {
             elem.innerText = elem.innerText + ' ' + string.join(' ');
         };
         this.writeln = (...string) => {
-            elem.innerText = elem.innerText + ' ' + string.join(' ') + '\n';
+            try {
+                elem.innerText = elem.innerText + ' ' + string.join(' ') + '\n';
+            } catch (e) {
+
+            }
+
         };
         this.clear = () => {
             elem.innerText = '';

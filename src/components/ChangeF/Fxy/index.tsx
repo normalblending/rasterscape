@@ -9,6 +9,7 @@ import {AnyFxyParams, FxyParams, FxyType} from "../../../store/changeFunctions/f
 import {ParabCF} from "./Parab";
 import {SelectDrop} from "bbuutoonnss";
 import {arrayToSelectItems} from "../../../utils/utils";
+import {Sis2CF} from "./Sis2";
 
 // import {FxyHelp} from "../tutorial/tooltips/FxyHelp";
 
@@ -79,8 +80,9 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
 
     fxyComponentsByType = {
         [FxyType.Parab]: ParabCF,
+        [FxyType.Sis2]: Sis2CF,
     };
-    selectItems = arrayToSelectItems([FxyType.Parab]);
+    selectItems = arrayToSelectItems([FxyType.Parab, FxyType.Sis2]);
 
 
     render() {

@@ -3,17 +3,14 @@ import {ParamConfig} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import "../../styles/depthChangeFunction.scss";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {File} from "../_shared/File";
-import {imageToImageData} from "../../utils/canvas/helpers/imageData";
-import {Canvas} from "../_shared/Canvas";
 import {CycledToggle} from "../_shared/buttons/CycledToggle";
-import {ImageDataCanvas} from "../_shared/canvases/ImageData";
-import {Button, SelectDrop} from "bbuutoonnss";
+import {Button} from "bbuutoonnss";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {changeCFParams} from "../../store/changeFunctions/actions";
 import {PatternsSelect} from "../PatternsSelect";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
+import {ChannelImageData} from "../_shared/canvases/WebWorkerCanvas";
 
 export interface DepthCFStateProps {
     tutorial: boolean
@@ -112,14 +109,11 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                 {params.items.map((item, index) => !!patternsImageData[item.patternId] &&
                     <div className={'depth-item'}>
                         <div className={'depth-item-canvas'}>
-                            <ImageDataCanvas
-                                from={item.zd}
-                                scale={item.zed}
-                                channel={channelName[item.component]}
-                                // onClick={this.handleDeleteItem(index)}
+                            <ChannelImageData
+                                params={item}
+                                imageData={patternsImageData[item.patternId]}
                                 width={68}
-                                height={58}
-                                imageData={patternsImageData[item.patternId]}/>
+                                height={58}/>
                             <Button onClick={this.handleDeleteItem(index)}>delete</Button>
                         </div>
                         <div className={'depth-item-controls'}>

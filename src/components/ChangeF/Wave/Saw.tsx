@@ -1,12 +1,10 @@
 import * as React from "react";
-import {ParamConfig, Params} from "../../_shared/Params";
 import {ButtonNumberCF} from "../../_shared/buttons/ButtonNumberCF";
 import "../../../styles/sawChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
-import {SawWave} from "../../_shared/canvases/SawWave";
-import {SinWave} from "../../_shared/canvases/SinWave";
+import {Saw} from "../../_shared/canvases/WebWorkerCanvas";
 
 // import {toFixed2} from "../../utils/utils";
 
@@ -53,12 +51,10 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
         const {params, onChange, name} = this.props;
         return (
             <div className={"saw-change-function"}>
-                <SawWave
-                    W={68}
-                    H={58}
-                    start={params.start}
-                    end={params.end}
-                    t={params.t}
+                <Saw
+                    width={68}
+                    height={58}
+                    params={params}
                 />
                 <div className={'saw-controls'}>
                     <ButtonNumberCF

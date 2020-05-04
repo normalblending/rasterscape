@@ -1,11 +1,10 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {BrushParams, EBrushType} from "../store/brush/types";
 import {ButtonSelect} from "./_shared/buttons/ButtonSelect";
-import {ImageDataCanvas} from "./_shared/canvases/ImageData";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
+import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -71,7 +70,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                                 value={id}
                                 onClick={handleClick}
                                 selected={Array.isArray(value) ? value?.includes(id) : (id === value)}>
-                                <ImageDataCanvas
+                                <ChannelImageData
                                     width={40 * (w / h <= 1 ? w / h : 1)}
                                     height={40 * (w / h > 1 ? h / w : 1)}
                                     imageData={imageData}/>
