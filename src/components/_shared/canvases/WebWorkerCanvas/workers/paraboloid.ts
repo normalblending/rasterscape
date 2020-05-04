@@ -1,7 +1,7 @@
 import {xyParaboloid} from "../../../../../store/changeFunctions/functions/_helpers";
 import * as Color from "color";
 
-const ctxParaboloid: Worker = self as any;
+export const ctxParaboloid: Worker = self as any;
 
 ctxParaboloid.onmessage = (ev) => {
     const {imageData, width, height, params} = ev.data;

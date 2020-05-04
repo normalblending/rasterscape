@@ -1,8 +1,7 @@
-import {xyParaboloid, xySis2} from "../../../../../store/changeFunctions/functions/_helpers";
+import {xySis2} from "../../../../../store/changeFunctions/functions/_helpers";
 import * as Color from "color";
-import {throttle} from "../../../../../utils/utils";
 
-const ctxSis2: Worker = self as any;
+export const ctxSis2: Worker = self as any;
 
 ctxSis2.onmessage = (ev) => {
     const {imageData, width, height, params} = ev.data;

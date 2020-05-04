@@ -1,5 +1,4 @@
-
-const ctxSaw: Worker = self as any;
+export const ctxSaw: Worker = self as any;
 
 ctxSaw.onmessage = (ev) => {
     const {width, height, params} = ev.data;

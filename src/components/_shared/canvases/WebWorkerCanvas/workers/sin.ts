@@ -1,5 +1,4 @@
-
-const ctxSin: Worker = self as any;
+export const ctxSin: Worker = self as any;
 
 ctxSin.onmessage = (ev) => {
     const {width, height, params} = ev.data;

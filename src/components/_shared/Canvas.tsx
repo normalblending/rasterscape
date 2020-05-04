@@ -44,6 +44,7 @@ export interface CanvasProps {
 
     onMove?(e: CanvasEvent)
 
+    downProcess?(e: CanvasEvent)
     releaseProcess?(e: CanvasEvent)
 
     onChange?(imageData?: ImageData)
@@ -154,9 +155,10 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             rotation: this.props.rotation
         };
 
-        const {onDown} = this.props;
+        const {onDown, downProcess} = this.props;
 
         onDown && onDown(event);
+        downProcess && downProcess(event);
 
         this.start();
 
