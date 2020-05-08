@@ -11,6 +11,7 @@ import {SelectDrop} from "../_shared/buttons/SelectDrop";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {withTranslation, WithTranslation} from "react-i18next";
 import '../../styles/lineTool.scss';
+import {capsSelectItems, joinsSelectItems, randomSelectItems} from "../../store/line/helpers";
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -34,7 +35,7 @@ export interface LineProps extends LineStateProps, LineActionProps, LineOwnProps
 }
 
 
-const sizeRange = [1, 200] as [number, number];
+const sizeRange = [0, 200] as [number, number];
 const opacityRange = [0, 1] as [number, number];
 
 class LineComponent extends React.PureComponent<LineProps> {
@@ -83,6 +84,21 @@ class LineComponent extends React.PureComponent<LineProps> {
                         name={"compositeOperation"}
                         value={paramsValue.compositeOperation}
                         items={paramsConfigMap["compositeOperation"].props.items}
+                        onChange={this.handleParamChange}/>
+                    <SelectDrop
+                        name={"random"}
+                        value={paramsValue.random}
+                        items={randomSelectItems}
+                        onChange={this.handleParamChange}/>
+                    <SelectDrop
+                        name={"cap"}
+                        value={paramsValue.cap}
+                        items={capsSelectItems}
+                        onChange={this.handleParamChange}/>
+                    <SelectDrop
+                        name={"join"}
+                        value={paramsValue.join}
+                        items={joinsSelectItems}
                         onChange={this.handleParamChange}/>
                 </div>
 

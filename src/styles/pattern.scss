@@ -86,6 +86,9 @@
     position: relative;
     //margin-right: 20px;
     //padding-bottom: 20px;
+    &:hover {
+      z-index: 10;
+    }
   }
 
   .right {

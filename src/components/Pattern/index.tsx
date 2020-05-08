@@ -10,34 +10,18 @@ import {RepeatingControls} from "./RepeatingControls";
 import {SelectionControls} from "./SelectionControls";
 import {MaskParams} from "../../store/patterns/mask/types";
 import {RotationValue} from "../../store/patterns/rotating/types";
-import {RepeatingParams} from "../../store/patterns/repeating/types";
 import {ImportParams} from "../../store/patterns/import/types";
 import {PatternConfig} from "../../store/patterns/pattern/types";
-import {HistoryState} from "../../store/patterns/history/types";
 import {StoreState} from "../../store/patterns/store/types";
 import {Segments, SelectionState} from "../../store/patterns/selection/types";
 import {VideoControls} from "./VideoControls";
-import {VideoParams} from "../../store/patterns/video/types";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {File} from "../_shared/File";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {setMaskParams, updateMask} from "../../store/patterns/mask/actions";
-import {createRoom} from "../../store/patterns/room/actions";
-import {addPattern, removePattern} from "../../store/patterns/actions";
-import {doublePattern, editConfig, setHeight, setWidth, updateImage} from "../../store/patterns/pattern/actions";
-import {
-    createPatternFromSelection,
-    cutPatternBySelection,
-    updateSelection
-} from "../../store/patterns/selection/actions";
-import {redo, undo} from "../../store/patterns/history/actions";
-import {setRotation} from "../../store/patterns/rotating/actions";
-import {setRepeating} from "../../store/patterns/repeating/actions";
-import {load, save, setImportParams} from "../../store/patterns/import/actions";
-import {onNewFrame, setVideoParams} from "../../store/patterns/video/actions";
-import {PatternsActionProps, PatternsOwnProps, PatternsStateProps} from "../Patterns";
-import ts from "typescript/lib/tsserverlibrary";
+import {updateMask} from "../../store/patterns/mask/actions";
+import {editConfig, updateImage} from "../../store/patterns/pattern/actions";
+import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./RoomControls";
 import {BlurControls} from "./BlurControls";
 
@@ -60,7 +44,6 @@ export interface PatternComponentStateProps {
 export interface PatternComponentActionProps {
 
     updateImage(id: string, imageData: ImageData)
-
     updateMask(id: string, imageData: ImageData)
 
     editConfig(id: string, config: PatternConfig)
@@ -82,12 +65,6 @@ export interface PatternComponentProps extends PatternComponentStateProps, Patte
 
     resultImage: HTMLCanvasElement
 
-    onImageChange(id: string, imageData: ImageData)
-
-    onMaskChange(id: string, imageData: ImageData)
-
-    onMaskParamsChange(id: string, params: MaskParams)
-
     onSelectionChange(id: string, selectionValue: Segments, bBox: SVGRect)
 
     onRemove(id: string)
@@ -97,8 +74,6 @@ export interface PatternComponentProps extends PatternComponentStateProps, Patte
     onSetWidth(id: string, width: number)
 
     onSetHeight(id: string, height: number)
-
-    onCreateRoom(id: string, name: string)
 
 
     onLoad(id: string, image)
@@ -118,9 +93,9 @@ const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true}
 export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
 
-    handleImageChange = imageData => this.props.onImageChange(this.props.id, imageData);
+    handleImageChange = imageData => this.props.updateImage(this.props.id, imageData);
 
-    handleMaskChange = imageData => this.props.onMaskChange(this.props.id, imageData);
+    handleMaskChange = imageData => this.props.updateMask(this.props.id, imageData);
 
     handleSelectionChange = (value, bBox: SVGRect) =>
         this.props.onSelectionChange(this.props.id, value, bBox);
@@ -136,13 +111,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
     handleSetHeight = height => this.props.onSetHeight(this.props.id, height);
 
-
-    handleMaskParamsChange = (params: MaskParams) =>
-        this.props.onMaskParamsChange(this.props.id, params);
-
-    handleCreateRoom = (roomName) => {
-        this.props.onCreateRoom(this.props.id, roomName);
-    };
 
     handleConfigToggle = (data) => {
         this.props.editConfig(this.props.id, {
@@ -328,7 +296,7 @@ const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, Patter
     updateImage,
     updateMask,
     editConfig,
-    setImportParams
+    setImportParams,
 };
 
 export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(

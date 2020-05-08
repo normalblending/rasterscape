@@ -10,22 +10,13 @@ import {Pattern} from "./Pattern/";
 import {PatternConfig} from "../store/patterns/pattern/types";
 import {setMaskParams, updateMask} from "../store/patterns/mask/actions";
 import {createPatternFromSelection, cutPatternBySelection, updateSelection} from "../store/patterns/selection/actions";
-import {redo, undo} from "../store/patterns/history/actions";
-import {setRotation} from "../store/patterns/rotating/actions";
-import {setRepeating} from "../store/patterns/repeating/actions";
-import {load, save, setImportParams} from "../store/patterns/import/actions";
-import {createRoom} from "../store/patterns/room/actions";
-import {doublePattern, editConfig, setHeight, setWidth, updateImage} from "../store/patterns/pattern/actions";
-import {EPatternType} from "../store/patterns/types";
+import {load, save} from "../store/patterns/import/actions";
+import {doublePattern, setHeight, setWidth, updateImage} from "../store/patterns/pattern/actions";
 import {MaskParams} from "../store/patterns/mask/types";
 import {Segments} from "../store/patterns/selection/types";
-import {RotationValue} from "../store/patterns/rotating/types";
-import {RepeatingParams} from "../store/patterns/repeating/types";
-import {ImportParams} from "../store/patterns/import/types";
-import {onNewFrame, setVideoParams} from "../store/patterns/video/actions";
-import {VideoParams} from "../store/patterns/video/types";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
+import {whyDidYouRender} from "../utils/props";
 
 export interface PatternsStateProps {
     patterns: any
@@ -51,7 +42,6 @@ export interface PatternsActionProps {
     setHeight(id: string, value: number)
 
 
-    createRoom(id: string, name: string)
 
 
     save(id: string)
@@ -78,13 +68,16 @@ export interface PatternsState {
 
 class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState> {
 
+    componentDidUpdate(prevProps: Readonly<PatternsProps>, prevState: Readonly<PatternsState>, snapshot?: any): void {
+        whyDidYouRender(this.props, prevProps, 'PatternsComponent')
+    }
+
     handleAddClick = () => this.props.addPattern({history: true, selection: true, rotation: true, repeating: false});
 
     render() {
         const {
-            patterns,
-            createRoom, removePattern, updateImage, updateMask,
-            setMaskParams, updateSelection, setWidth,
+            patterns, removePattern,
+            updateSelection, setWidth,
             setHeight,
             save, load,
             createPatternFromSelection, doublePattern, cutPatternBySelection,
@@ -92,7 +85,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         } = this.props;
         return (
             <>
-                {patterns.map(({id, current, mask, config, store, selection, connected, resultImage, rotation, import: loading}) => {
+                {patterns.map(({id, store, connected, resultImage}) => {
                     return (
                         <Pattern
                             key={id}
@@ -106,14 +99,10 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
 
 
-                            onImageChange={updateImage}
-                            onMaskChange={updateMask}
-                            onMaskParamsChange={setMaskParams}
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
                             onSetWidth={setWidth}
                             onSetHeight={setHeight}
-                            onCreateRoom={createRoom}
 
                             onSave={save}
                             onLoad={load}
@@ -132,13 +121,14 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
     }
 }
 
+
+
 const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state => ({
     patterns: Object.values(state.patterns)
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {
     setMaskParams,
-    createRoom,
     addPattern,
     removePattern,
     updateImage,

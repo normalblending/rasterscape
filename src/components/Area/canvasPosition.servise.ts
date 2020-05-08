@@ -38,7 +38,7 @@ export class TextHelper {
         const elem = document.createElement('div');
         document.body.appendChild(elem);
 
-        elem.style.cssText = `position:absolute;bottom:${y}px;left:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
 
         this.setText = (...string) => {
             elem.innerText = string.join(' ');

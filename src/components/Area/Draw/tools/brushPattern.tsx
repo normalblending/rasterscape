@@ -1,31 +1,44 @@
 import * as React from "react";
 
 import {getRepeatingCoords} from "../../../../utils/draw";
-import {drawMaskedWithRotation, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
+import {
+    drawMaskedWithRotation,
+    drawWithRotation,
+    drawWithRotationAndOffset
+} from "../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
 
 export const brushPattern = function () {
     const patternBrush = (ev) => {
         const {ctx, e, canvas} = ev;
-        const {pattern: destinationPattern, brushPattern} = this.props;
-        const {patternSize, opacity, compositeOperation} = this.props.brush.params;
+
+        if (!e) return;
+
+        const {
+            pattern: destinationPattern,
+            brushPattern,
+
+            brush,
+        } = this.props;
+
+        const {patternSize, opacity, compositeOperation} = brush.params;
 
         ctx.fillStyle = getRandomColor();
         ctx.globalAlpha = opacity;
         ctx.globalCompositeOperation = compositeOperation;
         ctx.imageSmoothingEnabled = true;
 
-        const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
-        const destinationRotation = destinationPattern && destinationPattern.rotation && destinationPattern.rotation.value;
+        const brushRotation = brushPattern?.rotation?.value;
+        const destinationRotation = destinationPattern?.rotation?.value;
 
-        const brushPatternImage = brushPattern && brushPattern.resultImage;
+        const brushPatternImage = brushPattern?.resultImage;
 
         if (brushPatternImage) {
 
-
             const dr = ({x, y}) => {
 
+                // 1 patternSize - divide two
                 const width = patternSize * brushPatternImage.width;
                 const height = patternSize * brushPatternImage.height;
 
@@ -46,15 +59,23 @@ export const brushPattern = function () {
                     ctx.drawImage(image, 0, 0);
                 } else {
                     const destAngle = destinationRotation ? destinationRotation.angle : 0;
+
                     const brushAngle = brushRotation ? brushRotation.angle : 0;
+                    const brushCenter = brushRotation ? {
+                        x: brushRotation.offset.xc, y: brushRotation.offset.yc
+                    } : {x: 0, y: 0};
                     const brushOffset = brushRotation ? {
-                        x: brushRotation.offset.x, y: brushRotation.offset.y
+                        x: brushRotation.offset.xd, y: brushRotation.offset.yd
                     } : {x: 0, y: 0};
 
-                    drawWithRotation(-destAngle + brushAngle,
-                        x + brushOffset.x, y + brushOffset.y,
-                        ({context}) => {
-                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                    drawWithRotationAndOffset(
+                        brushAngle,
+                        destAngle,
+                        brushCenter.x, - brushCenter.y,
+                        brushOffset.x, - brushOffset.y,
+                        x, y,
+                        ({context, canvas}) => {
+                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
                         }
                     )({context: ctx, canvas})
                 }
@@ -72,20 +93,23 @@ export const brushPattern = function () {
         cursors: ({x, y, outer}) => {
 
 
-            const {brushPattern} = this.props;
+            const {brushPattern, pattern} = this.props;
             const {patternSize} = this.props.brush.params;
 
+            const patternRotation = pattern?.rotation?.value;
 
-            const brushRotation = brushPattern && brushPattern.rotation && brushPattern.rotation.value;
-            const brushPatternImage = brushPattern && brushPattern.resultImage;
+            const brushRotation = brushPattern?.rotation?.value;
+            const brushPatternImage = brushPattern?.resultImage;
 
-            const width = patternSize * (brushPatternImage && brushPatternImage.width);
-            const height = patternSize * (brushPatternImage && brushPatternImage.height);
+            const width = patternSize * (brushPatternImage?.width);
+            const height = patternSize * (brushPatternImage?.height);
 
             const {rotation} = this.props;
             return x - width / 2 ? (
                 <rect
-                    transform={rotation && brushRotation ? `rotate(${-rotation.angle + brushRotation.angle} ${x} ${y})` : ""}
+                    transform={rotation && brushRotation
+                        ? `translate(${brushRotation.offset.xd}, ${-brushRotation.offset.yd}) rotate(${-rotation.angle + brushRotation.angle} ${x + brushRotation.offset.xc} ${y - brushRotation.offset.yc})`
+                        : ""}
                     x={x - width / 2}
                     y={y - height / 2}
                     width={width}

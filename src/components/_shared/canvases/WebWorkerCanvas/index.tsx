@@ -8,6 +8,7 @@ const ChannelsWorker = require("worker-loader?name=dist/[name].js!./workers/chan
 const SawWorker = require("worker-loader?name=dist/[name].js!./workers/saw");
 const SinWorker = require("worker-loader?name=dist/[name].js!./workers/sin");
 const Sis2Worker = require("worker-loader?name=dist/[name].js!./workers/sis2");
+const NoiseWorker = require("worker-loader?name=dist/[name].js!./workers/noise");
 
 export interface WebWorkerCanvasProps {
     width: number
@@ -69,3 +70,4 @@ export const ChannelImageData = webWorkerCanvas(ChannelsWorker);
 export const Saw = webWorkerCanvas(SawWorker);
 export const Sin = webWorkerCanvas(SinWorker);
 export const Sis2 = webWorkerCanvas(Sis2Worker);
+export const Noise = webWorkerCanvas(NoiseWorker);

@@ -45,3 +45,36 @@ export const drawMaskedWithRotation = (
 
     return {canvas, context};
 };
+
+
+/**
+ *  angle
+ *  angle + xd yd
+ *  xc yc
+ *  angle + xc yc
+ *  angle + xd yd + xc yc
+ * */
+export const drawWithRotationAndOffset = (
+    angleB: number,
+    angleD: number,
+    xc: number, yc: number,
+    xd: number, yd: number,
+    x: number, y: number,
+    draw: DrawMaskedDrawFunction,
+) => ({context, canvas}) => {
+
+    context.translate(x, y);
+
+    context.rotate(-Math.PI * angleD / 180);
+    context.translate(xd, yd);
+
+    context.translate(xc, yc);
+    context.rotate(Math.PI * angleB / 180);
+    context.translate(-xc, -yc);
+
+    draw({canvas, context});
+
+    context.resetTransform();
+
+    return {canvas, context};
+};

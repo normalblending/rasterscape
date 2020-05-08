@@ -32,11 +32,16 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
 
     buttonWrapper = (message) => {
         const {tutorial} = this.props;
-        return tutorial ? button => (
+        return tutorial ? ({button}) => (
             <HelpTooltip
                 secondaryMessage={message !== 'kz' && <span>z = kx⋅x² + ky⋅y² + dz</span>}
                 message={message}>{button}</HelpTooltip>) : null
     };
+
+    buttonWrapperDZ = this.buttonWrapper('dz');
+    buttonWrapperKX = this.buttonWrapper('kx');
+    buttonWrapperKY = this.buttonWrapper('ky');
+    buttonWrapperKZ = this.buttonWrapper('kz');
 
     render() {
         const {params, name} = this.props;
@@ -54,7 +59,7 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                     <ButtonNumberCF
                         pres={2}
                         valueD={50}
-                        buttonWrapper={this.buttonWrapper('dz')}
+                        buttonWrapper={this.buttonWrapperDZ}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.zd`}
                         value={params.zd}
                         name={"zd"}
@@ -64,7 +69,7 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                     <ButtonNumberCF
                         pres={2}
                         valueD={25}
-                        buttonWrapper={this.buttonWrapper('kx')}
+                        buttonWrapper={this.buttonWrapperKX}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.x`}
                         value={params.x}
                         name={"x"}
@@ -74,7 +79,7 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                     <ButtonNumberCF
                         pres={2}
                         valueD={25}
-                        buttonWrapper={this.buttonWrapper('ky')}
+                        buttonWrapper={this.buttonWrapperKY}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.y`}
                         value={params.y}
                         name={"y"}
@@ -84,7 +89,7 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                     <ButtonNumberCF
                         pres={2}
                         valueD={50}
-                        buttonWrapper={this.buttonWrapper('kz')}
+                        buttonWrapper={this.buttonWrapperKZ}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.end`}
                         value={params.end}
                         name={"end"}

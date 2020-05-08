@@ -8,6 +8,9 @@ import {getRandomColor} from "../../../../utils/utils";
 export const brushSquare = function () {
     const squareBrush = (ev) => {
         const {ctx, e, canvas, rotation} = ev;
+
+        if (!e) return;
+
         const {pattern} = this.props;
         const {size, opacity, compositeOperation} = this.props.brush.params;
 

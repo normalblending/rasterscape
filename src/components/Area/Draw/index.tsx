@@ -146,6 +146,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         return (
             <Canvas
+                // pointerLock={true}
+                // drawOnMove={true}
                 className={classNames("draw", {'mask': mask}, className)}
                 onDown={this.downHandler}
                 downProcess={handlers && handlers.down}

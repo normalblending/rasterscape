@@ -3,26 +3,22 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {BrushParams, EBrushType} from "../../store/brush/types";
 import {setBrushParams} from "../../store/brush/actions";
-import {ParamConfig} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {SelectButtons} from "../_shared/buttons/SelectButtons";
 import {SelectDrop} from "../_shared/buttons/SelectDrop";
-import {createSelector} from "reselect";
 import "../../styles/patternSelectButton.scss"
 import '../../styles/brush.scss'
 import {withTranslation, WithTranslation} from "react-i18next";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {BrushSizeHelp} from "../tutorial/tooltips/BrushSizeHelp";
 import {PatternsSelect} from "../PatternsSelect";
+import {brushTypeSelectItems} from "../../store/brush/helpers";
+import {compositeOperationSelectItems} from "../../store/compositeOperations";
+import {coordHelper2} from "../Area/canvasPosition.servise";
 
 export interface BrushStateProps {
-    paramsConfigMap: {
-        [key: string]: ParamConfig
-    }
-    paramsConfig: ParamConfig[]
     paramsValue: BrushParams
-    tutorial: boolean
 }
 
 export interface BrushActionProps {
@@ -50,148 +46,138 @@ const opacityValueText = value => value.toFixed(2);
 const patternSizeValueText = value => (value * 100).toFixed(0) + '%';
 
 
-class BrushComponent extends React.PureComponent<BrushProps> {
+const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) => {
 
-    handleSizeChange = ({value}) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+
+    const {paramsValue, t, setBrushParams} = props;
+
+    const handleSizeChange = React.useCallback(({value}) => {
+        setBrushParams({
+            ...paramsValue,
             size: value
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    handlePatternChange = (pattern) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+    const handlePatternChange = React.useCallback((pattern) => {
+        setBrushParams({
+            ...paramsValue,
             pattern
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    handleCompositeChange = ({value}) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+    const handleCompositeChange = React.useCallback(({value}) => {
+        setBrushParams({
+            ...paramsValue,
             compositeOperation: value
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    handleOpacityChange = ({value}) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+    const handleOpacityChange = React.useCallback(({value}) => {
+        setBrushParams({
+            ...paramsValue,
             opacity: value
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    handleTypeChange = ({value}) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+    const handleTypeChange = React.useCallback(({value}) => {
+        setBrushParams({
+            ...paramsValue,
             type: value
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    handleParamChange = ({value, name}) => {
-        this.props.setBrushParams({
-            ...this.props.paramsValue,
+    const handleParamChange = React.useCallback(({value, name}) => {
+        setBrushParams({
+            ...paramsValue,
             [name]: value
         })
-    };
+    }, [setBrushParams, paramsValue]);
 
-    render() {
-        const {paramsConfigMap, paramsValue, t, tutorial} = this.props;
+    const selectTypeText = React.useMemo(() =>
+        item => t(`brushTypes.${item.text.toLowerCase()}`), [t]);
 
-        console.log(paramsConfigMap["type"].props.items);
-        return (
-            <div className='brush-tool'>
-                <SelectButtons
-                    value={paramsValue.type}
-                    getText={item => t(`brushTypes.${item.text.toLowerCase()}`)}
-                    items={paramsConfigMap["type"].props.items}
-                    onChange={this.handleTypeChange}/>
+    const patternSizeHelp = React.useMemo(() =>
+        ({button}) => <HelpTooltip message={'brush size pattern'}>{button}</HelpTooltip>, []);
+    const brushSizeHelp = React.useMemo(() =>
+        ({button}) => <HelpTooltip component={BrushSizeHelp}>{button}</HelpTooltip>, []);
+    const opacityHelp = React.useMemo(() =>
+        ({button}) => <HelpTooltip message={'opacity'}>{button}</HelpTooltip>, []);
 
-                <div className='brush-params'>
 
-                    {paramsValue.type === EBrushType.Pattern ?
 
-                        <ButtonNumberCF
-                            buttonWrapper={
-                                tutorial
-                                    ? button => <HelpTooltip message={'brush size pattern'}>{button}</HelpTooltip>
-                                    : null}
-                            pres={2}
-                            valueD={62.5}
-                            precisionGain={10}
-                            path={"brush.params.patternSize"}
-                            value={paramsValue.patternSize}
-                            name={"patternSize"}
-                            onChange={this.handleParamChange}
-                            getText={patternSizeValueText}
-                            range={patternSizeRange}/>
-                        :
+    return (
+        <div className='brush-tool'>
+            <SelectButtons
+                value={paramsValue.type}
+                getText={selectTypeText}
+                items={brushTypeSelectItems}
+                onChange={handleTypeChange}/>
 
-                        <ButtonNumberCF
-                            buttonWrapper={
-                                tutorial
-                                    ? button => <HelpTooltip component={BrushSizeHelp}>{button}</HelpTooltip>
-                                    : null}
-                            pres={0}
-                            valueD={0.25}
-                            path={"brush.params.size"}
-                            value={paramsValue.size}
-                            name={"size"}
-                            onChange={this.handleSizeChange}
-                            range={sizeRange}/>
-                    }
+            <div className='brush-params'>
+
+                {paramsValue.type === EBrushType.Pattern ?
 
                     <ButtonNumberCF
-                        buttonWrapper={
-                            tutorial
-                                ? button => <HelpTooltip message={'opacity'}>{button}</HelpTooltip>
-                                : null}
+                        buttonWrapper={patternSizeHelp}
                         pres={2}
                         valueD={100}
-                        precisionGain={5}
-                        getText={opacityValueText}
-                        path={"brush.params.opacity"}
-                        value={paramsValue.opacity}
-                        name={"opacity"}
-                        onChange={this.handleOpacityChange}
-                        range={opacityRange}/>
+                        precisionGain={10}
+                        path={"brush.params.patternSize"}
+                        value={paramsValue.patternSize}
+                        name={"patternSize"}
+                        onChange={handleParamChange}
+                        getText={patternSizeValueText}
+                        range={patternSizeRange}/>
+                    :
 
-                    <HelpTooltip message={'blend mode'}>
-                        <SelectDrop
-                            value={paramsValue.compositeOperation}
-                            items={paramsConfigMap["compositeOperation"].props.items}
-                            onChange={this.handleCompositeChange}/>
-                    </HelpTooltip>
-
-                </div>
-
-                {paramsValue.type === EBrushType.Pattern &&
-                <PatternsSelect
-                    value={paramsValue.pattern}
-                    onChange={this.handlePatternChange}
-                />
+                    <ButtonNumberCF
+                        buttonWrapper={brushSizeHelp}
+                        pres={0}
+                        valueD={1}
+                        path={"brush.params.size"}
+                        value={paramsValue.size}
+                        name={"size"}
+                        onChange={handleSizeChange}
+                        range={sizeRange}/>
                 }
 
+                <ButtonNumberCF
+                    buttonWrapper={opacityHelp}
+                    pres={2}
+                    valueD={100}
+                    precisionGain={5}
+                    getText={opacityValueText}
+                    path={"brush.params.opacity"}
+                    value={paramsValue.opacity}
+                    name={"opacity"}
+                    onChange={handleOpacityChange}
+                    range={opacityRange}/>
 
-                {/*{paramsValue.type !== EBrushType.Pattern && (*/}
-                {/*    <ColorPalette/>*/}
-                {/*)}*/}
+                <HelpTooltip message={'blend mode'}>
+                    <SelectDrop
+                        value={paramsValue.compositeOperation}
+                        items={compositeOperationSelectItems}
+                        onChange={handleCompositeChange}/>
+                </HelpTooltip>
+
             </div>
-        );
-    }
-}
 
-const paramsConfigMapSelector = createSelector(
-    [(state: AppState) => state.brush.paramsConfig],
-    (paramsConfig) => paramsConfig.reduce((res, paramConfig) => {
-        res[paramConfig.name] = paramConfig;
-        return res;
-    }, {}));
+            {paramsValue.type === EBrushType.Pattern &&
+            <PatternsSelect
+                value={paramsValue.pattern}
+                onChange={handlePatternChange}
+            />
+            }
+
+        </div>
+    );
+});
+
+BrushComponent.displayName = 'BrushComponent';
+
 
 const mapStateToProps: MapStateToProps<BrushStateProps, BrushOwnProps, AppState> = state => ({
-    paramsConfig: state.brush.paramsConfig,
-    paramsConfigMap: paramsConfigMapSelector(state),
     paramsValue: state.brush.params,
-    tutorial: state.tutorial.on
 });
 
 const mapDispatchToProps: MapDispatchToProps<BrushActionProps, BrushOwnProps> = {

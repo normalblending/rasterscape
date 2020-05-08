@@ -22,11 +22,13 @@ import {addHotkey} from "../../../store/hotkeys";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {HotkeyHelp} from "../../tutorial/tooltips/HotkeyHelp";
 import {ChangeFunctionsHelp} from "../../tutorial/tooltips/ChangeFunctionHelp";
+import {ChangingValue} from "../../../store/changingValues/types";
+import {coordHelper2} from "../../Area/canvasPosition.servise";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: SelectItem[]
     changeFunction: ChangeFunction
-    changingValues: ChangingValuesState
+    changingValue: ChangingValue
     hotkey: string
 }
 
@@ -57,139 +59,152 @@ export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNum
 
 }
 
-export interface ButtonNumberCFState {
-    active: boolean
-    shortcut: string
-}
+const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = React.memo((props) => {
 
-class ButtonNumberCFComponent extends React.PureComponent<ButtonNumberCFProps, ButtonNumberCFState> {
+    const {
+        onChange,
+        setStartValue, path, value,
+        deactivateValueChanging,
+        activateValueChanging,
+        addHotkey,
+        setValueInChangingList, range
+    } = props;
 
-    state = {
-        active: false,
-        shortcut: null
-    };
+    const {
+        changeFunction,
+        changeFunctionsSelectItems,
+        changingValue,
+        // path,
+        className,
+        hotkey,
+        buttonWrapper: ButtonWrapper,
+        ...buttonNumberProps
+    } = props;
 
-    handleCFChange = ({value: changeFunctionId}) => {
-        const {setValueInChangingList, path, range, value} = this.props;
+    const {
+        // onChange,
+        onMouseDown,
+        onMouseUp,
+        onPress,
+        onRelease,
+        ...othersButtonNumberProps
+    } = buttonNumberProps;
+    //
+    // React.useEffect(() => coordHelper2.writeln('changeFunctionsSelectItems'), [changeFunctionsSelectItems]);
+    // React.useEffect(() => coordHelper2.writeln('changeFunction'), [changeFunction]);
+    // React.useEffect(() => coordHelper2.writeln('changingValue'), [changingValue]);
+    // React.useEffect(() => coordHelper2.writeln('hotkey'), [hotkey]);
+
+    const [active, setActive] = React.useState();
+
+    const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
+
         setValueInChangingList(path, changeFunctionId, range, value);
-    };
 
-    handleChange = (data) => {
+    }, [setValueInChangingList, path, range, value]);
 
-        this.props.onChange(data);
+    const handleChange = React.useCallback((data) => {
 
-        const {setStartValue, path, value} = this.props;
+        onChange(data);
+
         setStartValue(path, value);
-    };
+    }, [onChange, setStartValue, path, value]);
 
-    handleStartManualChanging = () => {
-        const {deactivateValueChanging, path} = this.props;
+    const handleStartManualChanging = React.useCallback(() => {
         deactivateValueChanging(path);
-        this.setState({active: true});
-    };
+        setActive(true);
+    }, [deactivateValueChanging, path]);
 
-    handleStopManualChanging = () => {
-        const {activateValueChanging, path} = this.props;
+    const handleStopManualChanging = React.useCallback(() => {
         activateValueChanging(path);
-        this.setState({active: false});
-    };
+        setActive(false);
+        // console.log('-----------------------------------------',this);
+    }, [activateValueChanging, path]);
 
-    handleShortcutChange = (shortcut, e) => {
+    const handleShortcutChange = React.useCallback((shortcut, e) => {
         if (shortcut === null || shortcut.length === 1) {
-            this.props.addHotkey(this.props.path, shortcut);
+            addHotkey(path, shortcut);
             e.target.blur();
         }
-    };
+    }, [addHotkey, path]);
 
-    render() {
-        const {
-            changeFunction,
-            changeFunctionsSelectItems,
-            changingValues,
-            path,
-            className,
-            hotkey,
-            buttonWrapper,
-            ...buttonNumberProps
-        } = this.props;
 
-        const {
-            onChange,
-            onMouseDown,
-            onMouseUp,
-            onPress,
-            onRelease,
-            ...othersButtonNumberProps
-        } = buttonNumberProps;
 
-        console.log("render b cf", buttonNumberProps.name, changeFunctionsSelectItems);
 
-        const changingValueData = changingValues[path];
-        const changingStartValue = changingValueData && changingValueData.startValue;
-        const changeFunctionId = changingValueData && changingValues[path].changeFunctionId;
-        const changingParams = changingValueData && changeFunction.params;
-        const changingType = changingValueData && changeFunction.type;
 
-        const button = (
-            <ButtonNumber
-                {...othersButtonNumberProps}
+    console.log("render b cf", buttonNumberProps.name, changeFunctionsSelectItems);
 
-                shortcut={hotkey}
+    const changingValueData = changingValue;
+    const changingStartValue = changingValueData && changingValueData.startValue;
+    const changeFunctionId = changingValueData && changingValue.changeFunctionId;
+    const changingParams = changingValueData && changeFunction.params;
+    const changingType = changingValueData && changeFunction.type;
 
-                className={classNames('button-number-cf-value', {
-                    ["button-number-cf-value-active"]: this.state.active
-                })}
 
-                changeFunctionId={changeFunctionId}
-                changeFunctionType={changingType}
-                changingStartValue={changingStartValue}
-                changeFunctionParams={changingParams}
+    const buttonClassName = React.useMemo(() => classNames('button-number-cf-value', {
+        ["button-number-cf-value-active"]: active
+    }), [active]);
 
-                onChange={this.handleChange}
-                onMouseDown={this.handleStartManualChanging}
-                onPress={this.handleStartManualChanging}
-                onMouseUp={this.handleStopManualChanging}
-                onRelease={this.handleStopManualChanging}/>
-        );
+    const button = (
+        <ButtonNumber
+            {...othersButtonNumberProps}
 
-        return (
+            shortcut={hotkey}
+
+            className={buttonClassName}
+
+            changeFunctionId={changeFunctionId}
+            changeFunctionType={changingType}
+            changingStartValue={changingStartValue}
+            changeFunctionParams={changingParams}
+
+            onChange={handleChange}
+            onMouseDown={handleStartManualChanging}
+            onPress={handleStartManualChanging}
+            onMouseUp={handleStopManualChanging}
+            onRelease={handleStopManualChanging}/>
+    );
+
+    const buttonElement = ButtonWrapper ? <ButtonWrapper button={button}/> : button;
+
+    return (
+        <HoverHideable
+            className={classNames("button-number-cf", className)}
+            button={buttonElement}>
+            {!active &&
             <HoverHideable
-                className={classNames("button-number-cf", className)}
-                button={buttonWrapper ? buttonWrapper(button) : button}>
-                {!this.state.active &&
-                <HoverHideable
-                    className={"button-number-cf-settings"}
-                    button={<div className="button-number-cf-settings-handler">
-                        <div></div>
-                    </div>}>
+                className={"button-number-cf-settings"}
+                button={<div className="button-number-cf-settings-handler">
+                    <div></div>
+                </div>}>
 
-                    <HelpTooltip component={HotkeyHelp}>
-                        <ShortcutInput
-                            placeholder={'hotkey'}
-                            value={hotkey}
-                            onChange={this.handleShortcutChange}/>
-                    </HelpTooltip>
+                <HelpTooltip component={HotkeyHelp}>
+                    <ShortcutInput
+                        placeholder={'hotkey'}
+                        value={hotkey}
+                        onChange={handleShortcutChange}/>
+                </HelpTooltip>
 
-                    <HelpTooltip component={ChangeFunctionsHelp} componentProps={{path}}>
-                        <SelectDrop
-                            name={buttonNumberProps.name + '-select-cf'}
-                            nullAble
-                            className={"button-number-cf-select"}
-                            value={changingValues[this.props.path] && changingValues[this.props.path].changeFunctionId}
-                            onChange={this.handleCFChange}
-                            items={changeFunctionsSelectItems}/>
-                    </HelpTooltip>
-                </HoverHideable>
-                }
+                <HelpTooltip component={ChangeFunctionsHelp} componentProps={{path}}>
+                    <SelectDrop
+                        name={buttonNumberProps.name + '-select-cf'}
+                        nullAble
+                        className={"button-number-cf-select"}
+                        value={changingValue?.changeFunctionId}
+                        onChange={handleCFChange}
+                        items={changeFunctionsSelectItems}/>
+                </HelpTooltip>
             </HoverHideable>
-        );
-    }
-}
+            }
+        </HoverHideable>
+    );
+
+});
 
 const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFOwnProps, AppState> = (state, {path}) => ({
     changeFunctionsSelectItems: getChangeFunctionsSelectItemsNumber(state),
     changeFunction: state.changeFunctions.functions[state.changingValues[path]?.changeFunctionId],
-    changingValues: state.changingValues,
+    changingValue: state.changingValues[path],
     hotkey: state.hotkeys.keys[path],
 });
 

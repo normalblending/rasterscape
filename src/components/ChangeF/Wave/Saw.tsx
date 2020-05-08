@@ -30,9 +30,9 @@ const seValueD = ValueD.VerticalLinear(100);
 
 export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
 
-    shouldComponentUpdate(nextProps: Readonly<SawCFProps>, nextState: Readonly<SawCFState>, nextContext: any): boolean {
-        return nextProps.params !== this.props.params
-    }
+    // shouldComponentUpdate(nextProps: Readonly<SawCFProps>, nextState: Readonly<SawCFState>, nextContext: any): boolean {
+    //     return nextProps.params !== this.props.params
+    // }
 
     handleParamChange = ({value, name}) => {
         this.props.onChange({...this.props.params, [name]: value}, this.props.name)
@@ -40,12 +40,16 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
 
     buttonWrapper = (message) => {
         const {tutorial} = this.props;
-        return tutorial ? button => (
+        return tutorial ? ({button}) => (
             <HelpTooltip
                 // secondaryMessage={message === 'period' &&
                 // <span>negative value for movement<br/> in the opposite direction</span>}
                 message={message}>{button}</HelpTooltip>) : null
     };
+
+    buttonWrapperMin = this.buttonWrapper('min');
+    buttonWrapperMax = this.buttonWrapper('max');
+    buttonWrapperPeriod = this.buttonWrapper('period');
 
     render() {
         const {params, onChange, name} = this.props;
@@ -59,8 +63,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                 <div className={'saw-controls'}>
                     <ButtonNumberCF
                         pres={2}
-                        valueD={100}
-                        buttonWrapper={this.buttonWrapper('min')}
+                        // valueD={100}
+                        buttonWrapper={this.buttonWrapperMin}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.start`}
                         value={params.start}
                         name={"start"}
@@ -69,8 +73,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                     />
                     <ButtonNumberCF
                         pres={2}
-                        valueD={100}
-                        buttonWrapper={this.buttonWrapper('max')}
+                        // valueD={100}
+                        buttonWrapper={this.buttonWrapperMax}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.end`}
                         value={params.end}
                         name={"end"}
@@ -78,10 +82,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
-                        precision={0}
-                        valueD={1 / 64}
-                        precisionGain={10}
-                        buttonWrapper={this.buttonWrapper('period')}
+                        pres={0}
+                        buttonWrapper={this.buttonWrapperPeriod}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.t`}
                         value={params.t}
                         name={"t"}

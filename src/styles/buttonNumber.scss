@@ -61,8 +61,12 @@
     white-space: nowrap;
     overflow: visible;
     height: 100%;
+    //text-align: left;
   }
 
+  & > canvas {
+    display: none;
+  }
 
   &.button-number-active {
 

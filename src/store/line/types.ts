@@ -1,5 +1,5 @@
 import {Action} from "redux";
-import {EBrushType} from "../brush/types";
+import {ECompositeOperation} from "../compositeOperations";
 
 export enum ELineType {
     Solid = "solid",
@@ -8,41 +8,33 @@ export enum ELineType {
     // Pattern = "Pattern",
 }
 
-export enum ELineCompositeOperation {
-    SourceOver = "source-over",
-    SourceAtop = "source-atop",
-    // SourceIn = "source-in",
-    // SourceOut = "source-out",
-    DestinationOver = "destination-over",
-    // DestinationAtop = "destination-atop",
-    // DestinationIn = "destination-in",
-    DestinationOut = "destination-out",
-    Lighter = "lighter",
-    // Copy = "copy",
-    Xor = "xor",
-    multiply = "multiply",
-    screen = "screen",
-    overlay = "overlay",
-    darken = "darken",
-    lighten = "lighten",
-    colorDodge = "color-dodge",
-    colorBurn = "color-burn",
-    hardLight = "hard-light",
-    softLight = "soft-light",
-    difference = "difference",
-    exclusion = "exclusion",
-    hue = "hue",
-    saturation = "saturation",
-    color = "color",
-    luminosity = "luminosity",
+export enum ELineCapType {
+   Butt = "butt",
+   Round = "round",
+   Square = "square",
+}
+
+export enum ELineJoinType {
+   Bevel = "bevel",
+   Round = "round",
+   Miter = "miter",
+}
+
+export enum ELineRandomType {
+   OnLine = "online",
+   OnFrame = "onframe",
 }
 
 export interface LineParams {
     size: number
     opacity: number
     type: ELineType
-    compositeOperation: ELineCompositeOperation
+    compositeOperation: ECompositeOperation
     pattern: number
+
+    cap: ELineCapType
+    join: ELineJoinType
+    random: ELineRandomType
 }
 
 export interface SetLineParamsAction extends Action {

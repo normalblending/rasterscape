@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import "../../styles/hover-hideable.scss";
+import {whyDidYouRender} from "../../utils/props";
 
 export interface HoverHideableProps {
     children?: React.ReactNode

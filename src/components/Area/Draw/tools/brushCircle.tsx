@@ -9,6 +9,9 @@ import {circle} from "../../../../utils/canvas/helpers/geometry";
 export const brushCircle = function () {
     const circleBrush = (ev) => {
         const {ctx, e, canvas, rotation} = ev;
+
+        if (!e) return;
+
         const {pattern} = this.props;
         const {size, opacity, compositeOperation} = this.props.brush.params;
 

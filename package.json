@@ -30,7 +30,10 @@
     "reselect": "4.0.0",
     "socket.io": "2.3.0",
     "stackblur-canvas": "^2.2.0",
-    "typescript": "3.7.3"
+    "transformation-matrix": "^2.3.0",
+    "transformation-matrix-js": "^2.7.6",
+    "typescript": "3.7.3",
+    "bbuutoonnss": "1.0.4"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",
@@ -42,7 +45,7 @@
     "@types/react-redux": "7.1.5",
     "@types/redux-logger": "3.0.7",
     "@types/reselect": "2.2.0",
-    "bbuutoonnss": "1.0.3",
+    "@welldone-software/why-did-you-render": "^4.2.0",
     "gh-pages": "2.1.1",
     "worker-loader": "^2.0.0"
   },

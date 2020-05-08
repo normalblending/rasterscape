@@ -9,7 +9,7 @@ export interface ParaboloidAmplitudeProps extends AmplitudeComponentProps {
 
 }
 
-export const ParaboloidAmplitude: React.FC<ParaboloidAmplitudeProps> = (props) => {
+export const xyAmplitude = (type): React.FC<ParaboloidAmplitudeProps> => (props) => {
     const {range, params, changingStartValue, changeFunctionId, changing, buttonWidth} = props;
 
 
@@ -70,7 +70,10 @@ export const ParaboloidAmplitude: React.FC<ParaboloidAmplitudeProps> = (props) =
             width={width}
             height={height}
             value={imageData}>
-            <span>{changeFunctionId}</span>
+            <span>{changeFunctionId}{type}</span>
         </Canvas>
     );
 };
+
+export const ParaboloidAmplitude = xyAmplitude('parab');
+export const Sis2Amplitude = xyAmplitude('sis2');

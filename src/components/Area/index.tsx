@@ -38,20 +38,25 @@ export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps
 export interface AreaState {
     rotation?: RotationValue
     style?: any
+    areaStyle?: any
 }
 
-const getStyle = (rotation) => rotation ? {
-    transform: `rotate(${rotation.angle}deg) translateY(${-rotation.offset.y}px) translateX(${rotation.offset.x}px)`,
+const getStyle = (rotation, width, height) => rotation ? {
+    transformOrigin: `${width / 2 + rotation.offset.xc}px ${height / 2 - rotation.offset.yc}px`,
+    transform: `rotate(${rotation.angle}deg)`,
+} : null;
+const getAreaStyle = (rotation, width, height) => rotation ? {
+    transform: `translateX(${rotation.offset.xd}px) translateY(${-rotation.offset.yd}px)`,
 } : null;
 
 class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
 
 
-
     constructor(props) {
         super(props);
         this.state = {
-            style: getStyle(props.rotation),
+            style: getStyle(props.rotation, props.width, props.height),
+            areaStyle: getAreaStyle(props.rotation, props.width, props.height),
             rotation: props.rotation
         };
     }
@@ -59,10 +64,11 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
 
     static getDerivedStateFromProps(props, state) {
         // if (state.rotation !== props.rotation) {
-            return {
-                rotation: props.rotation,
-                style: getStyle(props.rotation)
-            }
+        return {
+            rotation: props.rotation,
+            style: getStyle(props.rotation, props.width, props.height),
+            areaStyle: getAreaStyle(props.rotation, props.width, props.height)
+        }
         // }
     }
 
@@ -83,7 +89,8 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
 
         console.log("area", this.state);
         return (
-            <div className="area">
+            <div className="area"
+                 style={this.state.areaStyle}>
                 <Draw
                     mask={mask}
                     patternId={name}

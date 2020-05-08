@@ -5,32 +5,41 @@ import {Key} from "../../Key";
 import {ECFType} from "../../../../store/changeFunctions/types";
 import {getOffset} from "../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
-import {ParaboloidAmplitude} from "./ParaboloidAmplitude";
+import {ParaboloidAmplitude, Sis2Amplitude} from "./ParaboloidAmplitude";
 import {SinAmplitude} from "./SinAmplitude";
 import '../../../../styles/buttonNumber.scss';
 import {startPoint} from "./startPoint";
-import {coordHelper} from "../../../Area/canvasPosition.servise";
+import {coordHelper, coordHelper2, coordHelper3} from "../../../Area/canvasPosition.servise";
 import {WaveType} from "../../../../store/changeFunctions/functions/wave";
 import {FxyType} from "../../../../store/changeFunctions/functions/fxy";
+import {NoiseAmplitude} from "./NoiseAmplitude";
 
 const DEFAULT_WIDTH = 70;
 
 const dd = (x, y) => (-x + y) / Math.sqrt(2);
 export const ValueD = {
-    VerticalLinear: (step: number) => {
-        return (oldValue: any, dx: number, dy: number) => {
+    VerticalLinear: (() => {
+        let prevD = 0;
+        return (oneInPixels: number) => {
+            return (oldValue: any, dx: number, dy: number) => {
+                const d = dd(dx, dy);
 
-            const d = dd(dx, dy);
-            return oldValue - d / step
+                const k = Math.pow(Math.E, .005 * Math.abs(d));
+
+                prevD = d;
+
+                return oldValue - d / oneInPixels * k
+            }
         }
-    },
+    })(),
 };
 
 const amplitudeComponent = {
     [WaveType.Sin]: SinAmplitude,
     [WaveType.Saw]: LoopAmplitude,
+    [WaveType.Noise]: NoiseAmplitude,
     [FxyType.Parab]: ParaboloidAmplitude,
-    [FxyType.Sis2]: ParaboloidAmplitude,
+    [FxyType.Sis2]: Sis2Amplitude,
 };
 
 export interface ButtonNumberEventData extends ButtonSelectEventData {
@@ -53,6 +62,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
 
     shortcut?: string | string[]
 
+    disablePointerLock?: boolean
 
     valueD?: ((oldValue: any, dx: number, dy: number) => any) | number
 
@@ -85,6 +95,9 @@ export interface ButtonNumberState {
 export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumberState> {
 
     buttonRef;
+    canvasRef;
+    e;
+    pre;
 
     constructor(props) {
         super(props);
@@ -98,6 +111,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         };
 
         this.buttonRef = React.createRef();
+        this.canvasRef = React.createRef();
 
     }
 
@@ -120,6 +134,10 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     }
 
     handleDown = data => {
+        // coordHelper2.writeln('DOWN');
+        if (!this.props.disablePointerLock) {
+            this.canvasRef.current.requestPointerLock();
+        }
 
         if (this.state.startValue) {
             return;
@@ -127,9 +145,10 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
         const {e} = data;
         e.persist();
+        this.e = e;
 
 
-        startPoint.set(e.clientX, e.clientY);
+        // startPoint.set(e.clientX, e.clientY);
 
         const {onMouseDown, name, selected} = this.props;
         const {value} = this.state;
@@ -143,11 +162,23 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             document.addEventListener("mousemove", this.handleMove);
             document.addEventListener("mouseup", this.handleUp);
         });
+
+
+        // coordHelper2.writeln('start', e.clientX, e.clientY);
     };
 
     handleMove = e => {
+
+        this.pre = this.e;
+        this.e = !this.props.disablePointerLock ? {
+            ...e,
+            pageX: this.pre.pageX + e.movementX,
+            pageY: this.pre.pageY + e.movementY,
+        } : e;
+
+
         const {onChange, name, selected} = this.props;
-        const value = this.calcValue(e);
+        const value = this.calcValue(e, true);
 
         onChange && onChange({e, value, name, selected});
 
@@ -160,9 +191,17 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     handleUp = (e) => {
+        this.pre = null;
+
+        if (!this.props.disablePointerLock) {
+            document.exitPointerLock();
+        }
+
+
         // //  modulation
 
-        startPoint.hide();
+        // startPoint.hide();
+
 
         const {
             changingStartValue,
@@ -175,7 +214,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             precisionGain = 2,
             range
         } = this.props;
-        let value = this.calcValue(e);
+        let value = this.calcValue(e, true);
 
 
         const one = this.calculateOneStep(value);
@@ -197,6 +236,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             onClick && onClick({value, name, e, selected});
         }
 
+
         onMouseUp && onMouseUp({e, value, name, selected});
 
 
@@ -213,7 +253,35 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
 
+    handleLeave = e => {
+
+        // coordHelper3.writeln('leave')
+        //
+        // // startPoint.hide();
+        //
+        // const {onRelease, name, selected} = this.props;
+        // const {value} = this.state;
+        //
+        // // onRelease && onRelease({value, name, e, selected});
+        //
+        // this.setState({
+        //     value,
+        //     startValue: null,
+        //     startPoint: null
+        // }, () => {
+        //     document.removeEventListener("mousemove", this.handleMove);
+        //     document.removeEventListener("mouseup", this.handleUp);
+        // });
+    };
+
+    /**
+     BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY
+     BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY
+     * */
+
     handlePress = e => {
+
+        // coordHelper2.writeln('PRESS');
         if (this.state.startValue) {
             return;
         }
@@ -233,13 +301,13 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handlePressed = e => {
         if (!this.state.startPoint) {
-            startPoint.set(e.clientX, e.clientY);
+            // startPoint.set(e.clientX, e.clientY);
             this.setState({
                 startPoint: [e.clientX, e.clientY]
             });
         } else {
             const {onChange, name, selected} = this.props;
-            const value = this.calcValue(e);
+            const value = this.calcValue(e, false);
 
             onChange && onChange({e, value, name, selected});
 
@@ -248,8 +316,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     handleRelease = e => {
+        // coordHelper2.writeln('RELEASE');
 
-        startPoint.hide();
+        // startPoint.hide();
 
         const {onRelease, name, selected} = this.props;
         const {value} = this.state;
@@ -265,18 +334,28 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         });
     };
 
-    calcValue = e => {
+    /**
+     CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC
+     CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC CALC
+     */
+
+    calcValue = (e, locked?) => {
         // console.log(this.state.startValue);
-        const {range, integer} = this.props;
+        const {range, integer, pres} = this.props;
         let valueD = this.props.valueD;
 
         if (!valueD) {
-            valueD = ValueD.VerticalLinear(5)
+            valueD = ValueD.VerticalLinear(Math.pow(10, pres))
         } else if (typeof valueD === 'number') {
             valueD = ValueD.VerticalLinear(valueD);
         }
+        valueD = ValueD.VerticalLinear(Math.pow(10, pres))
 
-        let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
+
+        // let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
+        let nextValue = !locked
+            ? valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
+            : valueD(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1]);
         nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
 
         if (integer) {
@@ -291,7 +370,30 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
 
     render() {
-        const {changingStartValue, changeFunctionId, changeFunctionType, changeFunctionParams, range, width = DEFAULT_WIDTH, className, text, shortcut, ...otherProps} = this.props;
+        const {
+            changingStartValue,
+            changeFunctionId,
+            changeFunctionType,
+            changeFunctionParams,
+            range,
+            width = DEFAULT_WIDTH,
+            className,
+            text,
+            shortcut,
+            // ----
+            valueD,
+            setValueInChangingList,
+            deactivateValueChanging,
+            activateValueChanging,
+            toStartValue,
+            setStartValue,
+            onPress,
+            onRelease,
+            addHotkey,
+            precisionGain,
+            getText,
+            ...otherProps
+        } = this.props;
         const {value = 0, startValue, startPoint} = this.state;
 
 
@@ -310,6 +412,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                 })}
                 width={width}
                 ref={this.buttonRef}
+                onMouseLeave={this.handleLeave}
                 onMouseDown={this.handleDown}>
                 <div
                     className={"button-number-value"}
@@ -331,6 +434,10 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                     keys={shortcut}
                     onPress={this.handlePress}
                     onRelease={this.handleRelease}/>}
+                <canvas
+                    width={width}
+                    height={20}
+                    ref={this.canvasRef}/>
             </ButtonSelect>
         );
     }

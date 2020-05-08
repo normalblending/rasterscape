@@ -1,6 +1,7 @@
 export enum WaveType {
     Sin = 'sin',
-    Saw = 'saw'
+    Saw = 'saw',
+    Noise = 'noise',
 }
 
 export interface SinParams {
@@ -10,12 +11,19 @@ export interface SinParams {
 }
 
 export interface SawParams {
-    start: 0,
-    end: 1,
-    t: 3000,
+    start: number
+    end: number
+    t: number
 }
 
-export type AnyWaveParams = SinParams | SawParams;
+
+export interface NoiseParams {
+    start: number
+    end: number
+    f: number
+}
+
+export type AnyWaveParams = SinParams | SawParams | NoiseParams;
 
 export interface WaveParams {
     type: WaveType
@@ -36,6 +44,11 @@ export const waveInitialParams: WaveParams = {
             start: 0,
             end: 1,
             t: 3000,
+        },
+        [WaveType.Noise]: {
+            start: 0,
+            end: 1,
+            f: 0.5,
         }
     },
 
@@ -76,6 +89,13 @@ const waveFunctionByType = {
 
         return newValue;
     },
+    [WaveType.Noise]: ({startValue, range, params, time}) => {
+        const {start, end, f} = params;
+        const min = range[0] + (range[1] - range[0]) * start;
+        const max = range[0] + (range[1] - range[0]) * end;
+        const newValue = Math.random() * (max - min) + min;
+        return newValue;
+    }
 };
 
 export const waveChangeFunction =

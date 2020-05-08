@@ -5,7 +5,9 @@ export const getRotationState = getFunctionState<RotationValue, RotationParams>(
     {
         angle: 0,
         offset: {
-            x: 0,
-            y: 0
+            xc: 0,
+            yc: 0,
+            xd: 0,
+            yd: 0,
         }
     }, {});

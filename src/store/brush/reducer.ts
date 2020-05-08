@@ -16,9 +16,8 @@ export const brushReducer = handleActions<BrushState>({
             ...state.params,
             ...action.params
         };
-        const paramsConfig = getBrushParamsConfig(params);
         return {
-            paramsConfig,
+            ...state,
             params
         }
     }

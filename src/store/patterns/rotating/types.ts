@@ -8,8 +8,10 @@ export interface RotationParams {
 export interface RotationValue {
     angle: number
     offset: {
-        x: number
-        y: number
+        xc: number
+        yc: number
+        xd: number
+        yd: number
     }
 }
 

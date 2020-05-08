@@ -1,0 +1,20 @@
+.noise-change-function {
+  display: flex;
+
+
+  canvas {
+    border-width: 1px;
+    border-style: solid;
+    border-bottom-color: #ededed;
+    border-right-color: transparent;
+    border-left-color: transparent;
+    border-top-color: rgb(186, 186, 186);
+  }
+
+  .noise-controls {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+  }
+}

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {getRandomColor} from "../../../../utils/utils";
-import {ELineCompositeOperation} from "../../../../store/line/types";
+import {ECompositeOperation} from "../../../../store/compositeOperations";
 
 export const lineBrokenTransparent = function () {
     return {
@@ -35,7 +35,7 @@ export const lineBrokenTransparent = function () {
         },
         release: e => {
 
-            e.ctx.globalCompositeOperation = ELineCompositeOperation.SourceOver;
+            e.ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
             e.ctx.globalAlpha = 1;
         }
     }

@@ -69,7 +69,7 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
 
     buttonWrapper = (message) => {
         const {name, tutorial} = this.props;
-        return tutorial ? button => (
+        return tutorial ? ({button}) => (
             <HelpTooltip
                 // componentProps={{name}}
                 // getY={() => 27}

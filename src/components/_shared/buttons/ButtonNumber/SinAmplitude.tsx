@@ -18,7 +18,7 @@ export const SinAmplitude: React.FC<SinAmplitudeProps> = ({range, params, changi
                 left: `calc(${(Math.max(startVPerc - params.a, 0)) * 100}%)`
             }}>
                     <span>
-                    {changeFunctionId}
+                    {changeFunctionId}sin
                     </span>
         </div>
     );

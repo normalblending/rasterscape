@@ -10,6 +10,7 @@ import {SinCF} from "./Sin";
 import {SelectDrop} from "bbuutoonnss";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {SawCF} from "./Saw";
+import {NoiseCF} from "./Noise";
 
 // import {WaveHelp} from "../tutorial/tooltips/WaveHelp";
 
@@ -69,7 +70,7 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
 
     buttonWrapper = (message) => {
         const {name, tutorial} = this.props;
-        return tutorial ? button => (
+        return tutorial ? ({button}) => (
             <HelpTooltip
                 // componentProps={{name}}
                 // getY={() => 27}
@@ -81,8 +82,9 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
     waveComponentsByType = {
         [WaveType.Sin]: SinCF,
         [WaveType.Saw]: SawCF,
+        [WaveType.Noise]: NoiseCF,
     };
-    selectItems = arrayToSelectItems([WaveType.Sin, WaveType.Saw]);
+    selectItems = arrayToSelectItems([WaveType.Sin, WaveType.Saw, WaveType.Noise]);
 
 
     render() {

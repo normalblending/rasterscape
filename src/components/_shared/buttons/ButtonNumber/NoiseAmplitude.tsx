@@ -1,11 +1,11 @@
 import * as React from "react";
 import {AmplitudeComponentProps} from "./types";
 
-export interface LoopAmplitudeProps extends AmplitudeComponentProps {
+export interface NoiseAmplitudeProps extends AmplitudeComponentProps {
 
 }
 
-export const LoopAmplitude: React.FC<LoopAmplitudeProps> = ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
+export const NoiseAmplitude: React.FC<NoiseAmplitudeProps> = ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
 
     return (
         <div
@@ -15,7 +15,7 @@ export const LoopAmplitude: React.FC<LoopAmplitudeProps> = ({range, params, chan
                 left: `${Math.min(params.start, params.end) * 100}%`
             }}>
                     <span>
-                    {changeFunctionId}saw
+                    {changeFunctionId}noise
                     </span>
         </div>
     );

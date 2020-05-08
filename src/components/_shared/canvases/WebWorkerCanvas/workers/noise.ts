@@ -1,10 +1,10 @@
-export const ctxSaw: Worker = self as any;
+export const ctxNoise: Worker = self as any;
 
-ctxSaw.onmessage = (ev) => {
+ctxNoise.onmessage = (ev) => {
     const {width, height, params} = ev.data;
 
     const N = 150;
-    const {t, end, start} = params;
+    const {f, end, start} = params;
 
     const canvas = new OffscreenCanvas(width, height);
     const context = canvas.getContext('2d');
@@ -15,24 +15,24 @@ ctxSaw.onmessage = (ev) => {
     context.font = "28px";
     context.textBaseline = "hanging";
     context.fillStyle = 'lightgrey';
-    context.fillRect(0,0, width, height);
+    context.fillRect(0, 0, width, height);
     context.fillStyle = 'black';
 
-    const ss = 10000 / t;
     for (let p = 0; p <= N; p++) {
 
         const x = (p / N) * width;
 
-
-        const pn = (p % (N / ss)) / N * ss;
-        const y = height - (pn * (end - start) + start) * height;
+        const min = height * start;
+        const max = height * end;
+        const y = height - Math.random() * (max - min) - min;
 
         context.lineTo(x, y);
+        context.lineTo(x + width / N, y);
 
     }
     context.stroke();
 
-    ctxSaw.postMessage({
+    ctxNoise.postMessage({
         imageData: context.getImageData(0, 0, width, height)
     });
 };

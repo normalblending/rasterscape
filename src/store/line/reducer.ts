@@ -1,5 +1,5 @@
 import {handleActions} from "redux-actions";
-import {ELineType, LineParams, SetLineParamsAction} from "./types";
+import {ELineCapType, ELineJoinType, ELineRandomType, ELineType, LineParams, SetLineParamsAction} from "./types";
 import {ELineAction} from "./actions";
 import {ParamConfig} from "../../components/_shared/Params";
 import {getLineParamsConfig} from "./helpers";
@@ -25,7 +25,10 @@ export const lineReducer = handleActions<LineState>({
     params: {
         size: 5,
         opacity: 1,
-        type: ELineType.Solid
+        type: ELineType.Solid,
+        cap: ELineCapType.Butt,
+        join: ELineJoinType.Bevel,
+        random: ELineRandomType.OnLine
     },
     paramsConfig: getLineParamsConfig()
 });

@@ -62,23 +62,39 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     value={angle}
                     range={angleRange}
                     getText={angleText}
-                    valueD={0.36}
+                    valueD={1}
                     onChange={this.handleAngleChange}/>
                 <ButtonNumberCF
                     pres={0}
                     valueD={1}
                     range={offsetRange}
-                    path={`patterns.${this.props.patternId}.rotation.value.offset.x`}
-                    name={"x"}
-                    value={offset.x}
+                    path={`patterns.${this.props.patternId}.rotation.value.offset.xc`}
+                    name={"xc"}
+                    value={offset.xc}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
                     pres={0}
                     valueD={1}
                     range={offsetRange}
-                    path={`patterns.${this.props.patternId}.rotation.value.offset.y`}
-                    name={"y"}
-                    value={offset.y}
+                    path={`patterns.${this.props.patternId}.rotation.value.offset.yc`}
+                    name={"yc"}
+                    value={offset.yc}
+                    onChange={this.handleOffsetChange}/>
+                <ButtonNumberCF
+                    pres={0}
+                    valueD={1}
+                    range={offsetRange}
+                    path={`patterns.${this.props.patternId}.rotation.value.offset.xd`}
+                    name={"xd"}
+                    value={offset.xd}
+                    onChange={this.handleOffsetChange}/>
+                <ButtonNumberCF
+                    pres={0}
+                    valueD={1}
+                    range={offsetRange}
+                    path={`patterns.${this.props.patternId}.rotation.value.offset.yd`}
+                    name={"yd"}
+                    value={offset.yd}
                     onChange={this.handleOffsetChange}/>
             </div>
         );
@@ -97,3 +113,4 @@ export const RotationControls = connect<RotationControlsStateProps, RotationCont
     mapStateToProps,
     mapDispatchToProps
 )(withTranslation('common')(RotationControlsComponent));
+
