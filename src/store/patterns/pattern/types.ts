@@ -67,7 +67,7 @@ export interface PatternConfig {
 
 export interface PatternState {
     id: string
-    resultImage: HTMLCanvasElement
+    resultImage: HTMLCanvasElement | boolean
     config: PatternConfig
     current: CanvasState
     history?: HistoryState,

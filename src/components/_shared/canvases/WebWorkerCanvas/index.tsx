@@ -1,6 +1,9 @@
 import * as React from "react";
-import {useRef, useEffect, useMemo} from "react";
+import {useRef, useEffect, useMemo, useCallback} from "react";
 import {imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
+import {throttle} from "../../../../utils/utils";
+import _throttle from 'lodash/throttle';
+import {coordHelper, coordHelper2, coordHelper3, TextHelper} from "../../../Area/canvasPosition.servise";
 
 /* eslint import/no-webpack-loader-syntax: off */
 const ParaboloidWorker = require("worker-loader?name=dist/[name].js!./workers/paraboloid");
@@ -11,6 +14,7 @@ const Sis2Worker = require("worker-loader?name=dist/[name].js!./workers/sis2");
 const NoiseWorker = require("worker-loader?name=dist/[name].js!./workers/noise");
 
 export interface WebWorkerCanvasProps {
+    throttled?: boolean
     width: number
     height: number
     params?: any
@@ -18,8 +22,26 @@ export interface WebWorkerCanvasProps {
     [x: string]: any
 }
 
+
+// const post = (canvasRef, width, height, params, otherProps, imageData, worker) => {
+//     coordHelper2.setText(+new Date() + ' po');
+//     const canvas = canvasRef.current;
+//     const context = canvas.getContext("2d");
+//
+//     worker.postMessage({
+//         imageData: imageData || context.getImageData(0, 0, width, height),
+//         params: {
+//             ...otherProps,
+//             ...params
+//         },
+//         width, height
+//     });
+// };
+//
+// const postThrottled = _throttle(post, 500);
+
 export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWorkerCanvasProps> => {
-    const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({width, height, params, imageData, ...otherProps}) => {
+    const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({throttled, width, height, params, imageData, ...otherProps}) => {
 
         const canvasRef = useRef(null);
 
@@ -40,19 +62,29 @@ export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWor
             return worker;
         }, [Worker]);
 
-        useEffect(() => {
-            const canvas = canvasRef.current;
-            const context = canvas.getContext("2d");
+        const post = React.useMemo(() => {
+            const post = (canvasRef, width, height, params, otherProps, imageData, worker) => {
+                coordHelper2.setText(+new Date() + ' po');
+                const canvas = canvasRef.current;
+                const context = canvas.getContext("2d");
 
-            worker.postMessage({
-                imageData: imageData || context.getImageData(0, 0, width, height),
-                params: {
-                    ...otherProps,
-                    ...params
-                },
-                width, height
-            });
-        }, [params, width, height, imageData]);
+                worker.postMessage({
+                    imageData: imageData || context.getImageData(0, 0, width, height),
+                    params: {
+                        ...otherProps,
+                        ...params
+                    },
+                    width, height
+                });
+            };
+            return !throttled ? _throttle(post, 500) : post;
+        }, [throttled]);
+
+
+        useEffect(() => {
+            coordHelper3.setText(+new Date() + ' ef');
+            post(canvasRef, width, height, params, otherProps, imageData, worker);
+        }, [params, width, height, throttled, imageData]);
 
         return (
             <canvas
@@ -62,7 +94,7 @@ export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWor
                 ref={canvasRef}/>
         );
     };
-    return WebWorkerCanvas;
+    return React.memo(WebWorkerCanvas);
 };
 
 export const Paraboloid = webWorkerCanvas(ParaboloidWorker);

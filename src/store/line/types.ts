@@ -5,7 +5,7 @@ export enum ELineType {
     Solid = "solid",
     Broken = "broken",
     BrokenTransparent = "transp",
-    // Pattern = "Pattern",
+    Pattern = "Pattern",
 }
 
 export enum ELineCapType {
@@ -30,7 +30,7 @@ export interface LineParams {
     opacity: number
     type: ELineType
     compositeOperation: ECompositeOperation
-    pattern: number
+    pattern: string
 
     cap: ELineCapType
     join: ELineJoinType

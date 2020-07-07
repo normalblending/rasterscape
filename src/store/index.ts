@@ -114,7 +114,7 @@ export const store = createStore(
     rootReducer,
     compose(
         applyMiddleware(thunk, logger),
-        persistState(['hotkeys'], configPersist), //, 'changeFunctions'
+        persistState(['hotkeys']), //, 'changeFunctions'
     )
 );
 // export const store = createStore(rootReducer, applyMiddleware(thunk));

@@ -4,7 +4,7 @@ import './index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import "path-data-polyfill";
-
+import 'js-gc';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 

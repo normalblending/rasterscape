@@ -97,13 +97,11 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
         item => t(`brushTypes.${item.text.toLowerCase()}`), [t]);
 
     const patternSizeHelp = React.useMemo(() =>
-        ({button}) => <HelpTooltip message={'brush size pattern'}>{button}</HelpTooltip>, []);
+        ({button}) => <HelpTooltip message={'size of pattern'}>{button}</HelpTooltip>, []);
     const brushSizeHelp = React.useMemo(() =>
         ({button}) => <HelpTooltip component={BrushSizeHelp}>{button}</HelpTooltip>, []);
     const opacityHelp = React.useMemo(() =>
         ({button}) => <HelpTooltip message={'opacity'}>{button}</HelpTooltip>, []);
-
-
 
     return (
         <div className='brush-tool'>

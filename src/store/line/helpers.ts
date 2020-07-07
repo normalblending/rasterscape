@@ -28,7 +28,7 @@ export const getLineParamsConfig = (params?: LineParams) => {
         name: "type",
         type: EParamType.Select,
         props: {
-            items: typeSelectItems,
+            items: typeSelectItems.filter(({value}) => value !== ELineType.Pattern),
         }
     }, {
         name: "compositeOperation",

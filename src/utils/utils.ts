@@ -118,8 +118,9 @@ export const toFixed0 = value => value.toFixed(0);
 // during a given window of time. Normally, the throttled function will run
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
-// `{leading: false}`. To disable execution on the trailing edge, ditto.
-export function throttle(func, wait, options?) {
+// `{leading: false}`. To disable execution on the
+// edge, ditto.
+export function throttle(func, wait, options?): Function {
     var context, args, result;
     var timeout = null;
     var previous = 0;

@@ -8,6 +8,7 @@ import {
 } from "../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
+import {patternValues} from "../../../../store/patterns/values";
 
 export const brushPattern = function () {
     const patternBrush = (ev) => {
@@ -32,7 +33,7 @@ export const brushPattern = function () {
         const brushRotation = brushPattern?.rotation?.value;
         const destinationRotation = destinationPattern?.rotation?.value;
 
-        const brushPatternImage = brushPattern?.resultImage;
+        const brushPatternImage = patternValues.values[brushPattern?.id];
 
         if (brushPatternImage) {
 
@@ -99,7 +100,7 @@ export const brushPattern = function () {
             const patternRotation = pattern?.rotation?.value;
 
             const brushRotation = brushPattern?.rotation?.value;
-            const brushPatternImage = brushPattern?.resultImage;
+            const brushPatternImage = patternValues.values[brushPattern?.id];
 
             const width = patternSize * (brushPatternImage?.width);
             const height = patternSize * (brushPatternImage?.height);

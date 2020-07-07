@@ -169,9 +169,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.start();
 
+        const {onClick} = this.props;
         setTimeout(() => {
 
-            const {onClick} = this.props;
 
             // coordHelper2.writeln('click', event.e.offsetX, event.e.offsetY);
             !this.state.drawing && onClick && onClick(event);

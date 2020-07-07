@@ -2,10 +2,10 @@ import {EHistoryAction, PatternUndoAction} from "./actions";
 import {PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
 import {historyRedo, historyUndo} from "./helpers";
-import {getMaskedImage} from "../../../utils/canvas/helpers/imageData";
+import {patternValues} from "../values";
 
 export const historyReducers = {
-    [EHistoryAction.UNDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
+    [EHistoryAction.UNDO]: reducePattern<PatternUndoAction>((pattern: PatternState, action) => {
         const undoResult = historyUndo(pattern.history, {
             current: pattern.current,
             maskValue: pattern.mask && pattern.mask.value
@@ -21,12 +21,12 @@ export const historyReducers = {
             ...pattern,
             history: undoResult.history,
             current,
-            resultImage: getMaskedImage(current.imageData, mask && mask.value.imageData),
+            resultImage: patternValues.setValue(action.id, current.imageData, mask && mask.value.imageData),
             mask
         }
 
     }),
-    [EHistoryAction.REDO]: reducePattern<PatternUndoAction>((pattern: PatternState) => {
+    [EHistoryAction.REDO]: reducePattern<PatternUndoAction>((pattern: PatternState, action) => {
         const redoResult = historyRedo(pattern.history, {
             current: pattern.current,
             maskValue: pattern.mask && pattern.mask.value
@@ -41,7 +41,7 @@ export const historyReducers = {
             ...pattern,
             history: redoResult.history,
             current,
-            resultImage: getMaskedImage(current.imageData, mask && mask.value.imageData),
+            resultImage: patternValues.setValue(action.id, current.imageData, mask && mask.value.imageData),
             mask: mask
         }
     }),

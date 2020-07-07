@@ -33,9 +33,6 @@ export interface SelectToolProps extends SelectToolStateProps, SelectToolActionP
 
 }
 
-const opacityRange = [0, 1] as [number, number];
-const opacityValueD = ValueD.VerticalLinear(100);
-
 class SelectToolComponent extends React.PureComponent<SelectToolProps> {
 
     handleParamChange = (data) => {
@@ -74,8 +71,9 @@ class SelectToolComponent extends React.PureComponent<SelectToolProps> {
                             name={name}
                             path={`selectTool.params.${name}`}
                             range={props.range}
-                            onChange={this.handleParamChange}
-                            valueD={opacityValueD}/>
+                            pres={2}
+                            valueD={50}
+                            onChange={this.handleParamChange}/>
                     ))}
 
                 </div>

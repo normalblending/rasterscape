@@ -2,20 +2,32 @@ import * as React from "react";
 import {getRandomColor} from "../../../../utils/utils";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {ELineRandomType} from "../../../../store/line/types";
+import {imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
 
-export const lineSolid = function () {
+function getPattern(imageData: ImageData, ctx) {
+    const patternCanvas = imageDataToCanvas(imageData);
+
+    return ctx.createPattern(patternCanvas, 'repeat');
+}
+
+export const linePattern = function () {
     let draw: boolean = false;
+    let contextPattern = null;
     return {
         draw: (ev) => {
             const {ctx, e} = ev;
             const {size, opacity, compositeOperation, cap, join, random} = this.props.line.params;
 
-            if (!e) return;
-            
+            if (!this.props.linePattern?.current?.imageData) return;
+
             if (!draw) {
+                const {linePattern} = this.props;
+                ctx.strokeStyle = Math.random() > .5
+                    ? getPattern(linePattern.current.imageData, ctx)
+                    : getRandomColor();
+
                 ctx.globalCompositeOperation = compositeOperation;
                 ctx.globalAlpha = opacity;
-                ctx.strokeStyle = getRandomColor();
                 ctx.lineWidth = size;
 
                 ctx.lineJoin = join;
@@ -26,7 +38,10 @@ export const lineSolid = function () {
                 draw = true;
             } else {
                 if (random === ELineRandomType.OnFrame) {
-                    ctx.strokeStyle = getRandomColor();
+                    const {linePattern} = this.props;
+                    ctx.strokeStyle = Math.random() > .5
+                        ? getPattern(linePattern.current.imageData, ctx)
+                        : getRandomColor();
                 }
 
                 ctx.lineWidth = size;

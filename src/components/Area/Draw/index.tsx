@@ -21,6 +21,7 @@ import {brushPattern} from "./tools/brushPattern";
 import {lineSolid} from "./tools/lineSolid";
 import {lineBroken} from "./tools/lineBroken";
 import {lineBrokenTransparent} from "./tools/lineBrokenTransparent";
+import {linePattern} from "./tools/linePattern";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -28,6 +29,7 @@ export interface CanvasDrawStateProps {
     tool: EToolType
     pattern: PatternState
     brushPattern: PatternState
+    linePattern: PatternState
 }
 
 export interface CanvasDrawActionProps {
@@ -63,7 +65,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         [EToolType.Line]: {
             [ELineType.Solid]: lineSolid.call(this),
             [ELineType.Broken]: lineBroken.call(this),
-            [ELineType.BrokenTransparent]: lineBrokenTransparent.call(this)
+            [ELineType.BrokenTransparent]: lineBrokenTransparent.call(this),
+            [ELineType.Pattern]: linePattern.call(this),
         },
     };
 
@@ -183,8 +186,9 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
     brush: state.brush,
     line: state.line,
     tool: state.tool.current,
-    pattern: state.patterns[patternId], //todo придуматть как оптимизировать тут
-    brushPattern: state.patterns[state.brush.params.pattern] //todo придуматть как оптимизировать тут
+    pattern: state.patterns[patternId],
+    brushPattern: state.patterns[state.brush.params.pattern],
+    linePattern: state.patterns[state.line.params.pattern],
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {

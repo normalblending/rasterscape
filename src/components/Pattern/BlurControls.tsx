@@ -69,13 +69,13 @@ export class BlurControlsComponent extends React.PureComponent<BlurControlsProps
             <div className={'blur-controls'}>
                 <ButtonNumberCF
                     integer
-                    precision={100}
+                    pres={2}
                     path={`patterns.${this.props.patternId}.blur.value.radius`}
                     name={"radius"}
                     value={radius}
                     range={radiusRange}
-                    valueD={radiusValueD}
-                    getText={toFixed0}
+                    // valueD={radiusValueD}
+                    // getText={toFixed0}
                     onChange={this.handleChange}/>
                 <ButtonSelect
                     selected={onUpdate}

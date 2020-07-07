@@ -157,7 +157,7 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
 
             this.drawFunctions.reset();
             this.draw();
-            this.forceUpdate();
+            // this.forceUpdate();
         }
     }
 

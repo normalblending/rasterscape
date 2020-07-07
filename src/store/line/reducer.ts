@@ -15,9 +15,8 @@ export const lineReducer = handleActions<LineState>({
             ...state.params,
             ...action.params
         };
-        const paramsConfig = getLineParamsConfig(params);
         return {
-            paramsConfig,
+            ...state,
             params
         }
     }

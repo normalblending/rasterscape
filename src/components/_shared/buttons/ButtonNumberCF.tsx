@@ -165,7 +165,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             onRelease={handleStopManualChanging}/>
     );
 
-    const buttonElement = ButtonWrapper ? <ButtonWrapper button={button}/> : button;
+    const buttonElement = React.useMemo(() => ButtonWrapper ? <ButtonWrapper button={button}/> : button, [ButtonWrapper, button]);
 
     return (
         <HoverHideable

@@ -11,8 +11,8 @@ import {getRepeatingState} from "./repeating/helpers";
 import {getImportState} from "./import/helpers";
 import {getVideoState} from "./video/helpers";
 import {getRoomState} from "./room/helpers";
-import {getMaskedImage, imageDataToCanvas} from "../../utils/canvas/helpers/imageData";
 import {getBlurState} from "./blur/helpers";
+import {patternValues} from "./values";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -30,7 +30,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
     return {
         id,
         config,
-        resultImage: startMask ? getMaskedImage(current.imageData, startMask) : imageDataToCanvas(current.imageData),
+        resultImage: patternValues.setValue(id, current.imageData, startMask),
         current,
         history: getHistoryState(history, undefined, (params || {}).history),
         store: getStoreState(store, undefined, (params || {}).store),
@@ -53,7 +53,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         config,
         id: state.id,
         current: state.current,
-        resultImage: maskState ? getMaskedImage(state.current.imageData, maskState.value.imageData) : getMaskedImage(state.current.imageData),
+        resultImage: patternValues.setValue(state.id, state.current.imageData, maskState?.value.imageData),
         // resultImage: state.resultImage,
         history: getHistoryState(history, state.history, params.history),
         store: getStoreState(store, state.store, params.store),

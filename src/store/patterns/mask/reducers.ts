@@ -1,8 +1,8 @@
 import {EMaskAction, SetMaskParamsAction, UpdatePatternMaskAction} from "./actions";
 import {PatternState} from "../pattern/types";
-import {getMaskedImage} from "../../../utils/canvas/helpers/imageData";
 import {reducePattern} from "../pattern/helpers";
 import {historyPush} from "../history/helpers";
+import {patternValues} from "../values";
 
 export const maskReducers = {
     [EMaskAction.SET_MASK_PARAMS]: reducePattern<SetMaskParamsAction>(
@@ -31,7 +31,7 @@ export const maskReducers = {
                     imageData: action.imageData
                 }
             },
-            resultImage: getMaskedImage(pattern.current.imageData, action.imageData),
+            resultImage: patternValues.setValue(action.id, pattern.current.imageData, action.imageData),
             history: pattern.history && historyPush(pattern.history, {
                 maskValue: pattern.mask.value
             })

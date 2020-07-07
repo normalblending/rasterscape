@@ -5,23 +5,23 @@ body {
   display: none;
 }
 
-.selected-button {
-  border: 1px solid red;
-}
-
-.value-button {
-  user-select: none;
-  border: 1px solid black;
-  width: 50px;
-  overflow: hidden;
-  .value-button-value {
-    width: 100%;
-    background: yellow;
-    white-space: nowrap;
-    overflow: visible;
-  }
-
-  &.value-button-selected {
-    border: 1px solid red;
-  }
-}
+//.selected-button {
+//  border: 1px solid red;
+//}
+//
+//.value-button {
+//  user-select: none;
+//  border: 1px solid black;
+//  width: 50px;
+//  overflow: hidden;
+//  .value-button-value {
+//    width: 100%;
+//    background: yellow;
+//    white-space: nowrap;
+//    overflow: visible;
+//  }
+//
+//  &.value-button-selected {
+//    border: 1px solid red;
+//  }
+//}

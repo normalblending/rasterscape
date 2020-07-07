@@ -2,7 +2,7 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ParamConfig} from "../_shared/Params";
-import {LineParams} from "../../store/line/types";
+import {ELineType, LineParams} from "../../store/line/types";
 import {setLineParams} from "../../store/line/actions";
 import {createSelector} from "reselect";
 import {SelectButtons} from "../_shared/buttons/SelectButtons";
@@ -12,6 +12,8 @@ import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {withTranslation, WithTranslation} from "react-i18next";
 import '../../styles/lineTool.scss';
 import {capsSelectItems, joinsSelectItems, randomSelectItems} from "../../store/line/helpers";
+import {EBrushType} from "../../store/brush/types";
+import {PatternsSelect} from "../PatternsSelect";
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -49,8 +51,16 @@ class LineComponent extends React.PureComponent<LineProps> {
         })
     };
 
+    handlePatternChange = (pattern) => {
+        const {setLineParams, paramsValue} = this.props;
+        setLineParams({
+            ...paramsValue,
+            pattern
+        })
+    };
+
     render() {
-        const {paramsConfigMap, paramsConfig, paramsValue, patternsSelectItems, t} = this.props;
+        const {paramsConfigMap, paramsValue, t} = this.props;
         return (
             <div className='line-tool'>
                 <SelectButtons
@@ -101,7 +111,12 @@ class LineComponent extends React.PureComponent<LineProps> {
                         items={joinsSelectItems}
                         onChange={this.handleParamChange}/>
                 </div>
-
+                {paramsValue.type === ELineType.Pattern &&
+                <PatternsSelect
+                    value={paramsValue.pattern}
+                    onChange={this.handlePatternChange}
+                />
+                }
             </div>
         );
     }

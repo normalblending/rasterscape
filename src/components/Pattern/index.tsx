@@ -24,6 +24,7 @@ import {editConfig, updateImage} from "../../store/patterns/pattern/actions";
 import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./RoomControls";
 import {BlurControls} from "./BlurControls";
+import '../../styles/inputNumber.scss';
 
 export interface PatternComponentStateProps {
 

@@ -5,20 +5,26 @@ export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData =>
 
 export function imageDataToCanvas(imageData: ImageData): HTMLCanvasElement {
 
-    const {canvas, context} = createCanvas(imageData.width, imageData.height);
+    let {canvas, context} = createCanvas(imageData.width, imageData.height);
 
     context.putImageData(imageData, 0, 0);
+
+    context = null;
 
     return canvas;
 }
 
 export const imageToImageData = (image): ImageData => {
 
-    const {context} = createCanvas(image.width, image.height);
+    let {context} = createCanvas(image.width, image.height);
 
     context.drawImage(image, 0, 0);
 
-    return context.getImageData(0, 0, image.width, image.height);
+    const imageData = context.getImageData(0, 0, image.width, image.height);
+
+    context = null;
+
+    return imageData;
 };
 
 
@@ -67,7 +73,7 @@ export const base64ToImageData = (src: string): Promise<ImageData> => {
 
 export const getMaskedImage = (imageData: ImageData, maskImageData?: ImageData): HTMLCanvasElement => {
 
-    const {canvas, context} = createCanvas(imageData.width, imageData.height);
+    let {canvas, context} = createCanvas(imageData.width, imageData.height);
 
     if (maskImageData) {
         context.putImageData(maskImageData, 0, 0);

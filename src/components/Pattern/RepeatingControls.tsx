@@ -86,13 +86,13 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     onClick={this.handleBoolParamChange}
                                     selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonSelect>
                                 <ButtonNumberCF
+                                    pres={gridParams.float ? 2 : 1}
+                                    range={repeatingRange}
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.x`}
                                     name={"x"}
                                     value={gridParams.x}
-                                    range={repeatingRange}
-                                    valueD={repeatingValueD}
                                     onChange={this.handleGridParamsChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
@@ -100,8 +100,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.y`}
                                     name={"y"}
                                     value={gridParams.y}
+                                    pres={gridParams.float ? 2 : 1}
                                     range={repeatingRange}
-                                    valueD={repeatingValueD}
                                     onChange={this.handleGridParamsChange}/>
 
                             </div>
@@ -119,7 +119,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     name={"xOut"}
                                     value={gridParams.xOut}
                                     range={repeatingOutRange}
-                                    valueD={repeatingValueD}
+                                    pres={gridParams.float ? 2 : 1}
                                     onChange={this.handleGridParamsChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
@@ -128,7 +128,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     name={"yOut"}
                                     value={gridParams.yOut}
                                     range={repeatingOutRange}
-                                    valueD={repeatingValueD}
+                                    pres={gridParams.float ? 2 : 1}
                                     onChange={this.handleGridParamsChange}/>
                             </div>
                         </div>

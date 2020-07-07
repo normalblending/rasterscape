@@ -64,8 +64,10 @@
   }
 
   .button-number-cf-value {
+    //border: 1px solid red;
     &.button-number-cf-value-active {
-      border: 1px solid red;
+      border: 1px solid red !important;
+
 
     }
   }

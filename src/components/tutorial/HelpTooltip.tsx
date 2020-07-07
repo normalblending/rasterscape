@@ -25,11 +25,12 @@ const HelpTooltipComponent: React.FC<HelpTooltipProps> = ({active, children, ...
 
     // coordHelper.setText(active);
     return (active ?
-        <Tooltip {...tooltipProps}
-                 offsetY={20}
-                 className={'help-tooltip'}>
-            {children}
-        </Tooltip> : children
+            <Tooltip
+                {...tooltipProps}
+                offsetY={20}
+                className={'help-tooltip'}>
+                {children}
+            </Tooltip> : children
     );
 };
 

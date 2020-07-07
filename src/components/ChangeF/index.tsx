@@ -12,6 +12,9 @@ import {getCFs} from "../../store/changeFunctions/selectors";
 import {DepthCF} from "./DeepthCF";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {WaveCF} from "./Wave";
+import {SelectButtons} from "bbuutoonnss";
+import {enumToSelectItems} from "../../utils/utils";
+import {CycledToggle} from "../_shared/buttons/CycledToggle";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctions
@@ -51,7 +54,7 @@ const CFComponentByType = {
     [ECFType.DEPTH]: DepthCF,
 };
 
-// const modesItems = enumToSelectItems(ChangingMode);
+const modesItems = enumToSelectItems(ChangingMode);
 
 class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
 
@@ -89,10 +92,10 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                         <Button onClick={this.handleAddFxy}>fxy</Button>
                         <Button onClick={this.handleDeepth}>rgba</Button>
                         {/*<br/>*/}
-                        {/*<SelectButtons*/}
-                        {/*    items={modesItems}*/}
-                        {/*    value={changingMode}*/}
-                        {/*    onChange={this.handleModeChange}/>*/}
+                        <CycledToggle
+                            items={modesItems}
+                            value={changingMode}
+                            onChange={this.handleModeChange}/>
                     </div>
                 </HelpTooltip>
                 <div className="functions-list">

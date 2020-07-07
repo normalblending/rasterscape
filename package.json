@@ -3,11 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "bbuutoonnss": "^1.0.7",
     "bezier-js": "^2.4.4",
     "classnames": "2.2.6",
     "color": "^3.1.2",
     "d3": "5.12.0",
     "i18next": "19.3.3",
+    "js-gc": "^1.0.1",
     "keyboardjs": "2.5.1",
     "lodash": "4.17.15",
     "node-sass": "4.13.0",
@@ -15,8 +17,8 @@
     "p5": "0.8.0",
     "paper": "0.12.3",
     "path-data-polyfill": "1.0.3",
-    "react": "16.11.0",
-    "react-dom": "16.11.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
     "react-full-screen": "0.2.4",
     "react-i18next": "11.3.4",
     "react-redux": "7.1.1",
@@ -32,8 +34,7 @@
     "stackblur-canvas": "^2.2.0",
     "transformation-matrix": "^2.3.0",
     "transformation-matrix-js": "^2.7.6",
-    "typescript": "3.7.3",
-    "bbuutoonnss": "1.0.4"
+    "typescript": "3.7.3"
   },
   "devDependencies": {
     "@types/d3": "5.7.2",

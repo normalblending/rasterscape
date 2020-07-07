@@ -21,7 +21,7 @@ export enum EPatternAction {
     SET_HEIGHT = "pattern/set-height",
 }
 
-export const updateImage = (id: string, imageData?: ImageData, emit: boolean = true, blur?: boolean): ThunkResult<UpdatePatternImageAction, AppState> =>
+export const updateImage = (id: string, imageData?: ImageData, emit: boolean = true, blur?: boolean) => //: ThunkResult<UpdatePatternImageAction, AppState> =>
     (dispatch, getState) => {
 
         const pattern = getState().patterns[id];

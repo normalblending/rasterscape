@@ -16,7 +16,7 @@ export interface TooltipProps {
 }
 
 export const Tooltip: React.FC<TooltipProps> = ({secondaryMessage, getX, getY, className, children, message, offsetY = 10, offsetX = 0, component: Component, componentProps}) => {
-    const tooltip = React.createRef<any>();
+    const tooltip = React.useRef<any>(null);
 
     React.useEffect(() => {
         tooltip.current.style.display = 'none';
@@ -25,7 +25,7 @@ export const Tooltip: React.FC<TooltipProps> = ({secondaryMessage, getX, getY, c
         }
     }, []);
 
-    const listener = function (e) {
+    const listener = (e) => {
         if (!tooltip?.current) return;
 
         var x = e.clientX,
