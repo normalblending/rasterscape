@@ -25,6 +25,7 @@ import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./RoomControls";
 import {BlurControls} from "./BlurControls";
 import '../../styles/inputNumber.scss';
+import {HelpTooltip} from "../tutorial/HelpTooltip";
 
 export interface PatternComponentStateProps {
 
@@ -45,9 +46,11 @@ export interface PatternComponentStateProps {
 export interface PatternComponentActionProps {
 
     updateImage(id: string, imageData: ImageData)
+
     updateMask(id: string, imageData: ImageData)
 
     editConfig(id: string, config: PatternConfig)
+
     setImportParams(id: string, value: ImportParams)
 
 }
@@ -57,7 +60,6 @@ export interface PatternComponentOwnProps {
 }
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
-
 
 
     connected?: string
@@ -199,7 +201,8 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     </div>
                     <div className="pattern-controls">
 
-                        <Button onClick={this.handleRemove} className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
+                        <Button onClick={this.handleRemove}
+                                className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
                         <Button onClick={this.handleDouble}>{t('patternControls.double')}</Button>
                         <div className={'save-load-sizes'}>
                             <div>
@@ -207,9 +210,11 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 <File
                                     name={id + '-fileInput'}
                                     onChange={this.handleLoad}>{t('patternControls.load')}</File>
-                                <ButtonSelect
-                                    selected={this.props.importParams.fit}
-                                    onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
+                                <HelpTooltip secondaryMessage={t('patternControlsHelp.stretch')}>
+                                    <ButtonSelect
+                                        selected={this.props.importParams.fit}
+                                        onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
+                                </HelpTooltip>
                             </div>
 
                         </div>
@@ -260,16 +265,20 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     {config.history &&
                     <HistoryControls patternId={id}/>}
                     <div className={'pattern-sizes'}>
-                        <InputNumber
-                            className={"size-input-number"}
-                            onChange={this.handleSetWidth}
-                            value={width}
-                            {...inputNumberProps}/>
-                        <InputNumber
-                            className={"size-input-number"}
-                            onChange={this.handleSetHeight}
-                            value={height}
-                            {...inputNumberProps}/>
+                        <HelpTooltip message={t('patternControlsHelp.width')}>
+                            <InputNumber
+                                className={"size-input-number"}
+                                onChange={this.handleSetWidth}
+                                value={width}
+                                {...inputNumberProps}/>
+                        </HelpTooltip>
+                        <HelpTooltip  message={t('patternControlsHelp.height')}>
+                            <InputNumber
+                                className={"size-input-number"}
+                                onChange={this.handleSetHeight}
+                                value={height}
+                                {...inputNumberProps}/>
+                        </HelpTooltip>
                     </div>
                 </div>
 

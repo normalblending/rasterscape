@@ -22,15 +22,20 @@
     box-sizing: border-box;
     border-width: 1px;
     border-style: solid;
-    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+    border-color:  #dedede #ababab #ababab #dedede;
+    cursor: pointer;
+
 
     &:active {
-      border-style: inset;
-      outline: -webkit-focus-ring-color auto 5px;
+      outline: none;
       z-index: 100;
+      border-style: solid;
+      border-color: #ababab #dedede #dedede #ababab;
     }
 
     &:focus {
     }
+
+
   }
 }

@@ -64,12 +64,14 @@ export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWor
 
         const post = React.useMemo(() => {
             const post = (canvasRef, width, height, params, otherProps, imageData, worker) => {
+
                 coordHelper2.setText(+new Date() + ' po');
                 const canvas = canvasRef.current;
-                const context = canvas.getContext("2d");
+
+                const context = canvas?.getContext("2d");
 
                 worker.postMessage({
-                    imageData: imageData || context.getImageData(0, 0, width, height),
+                    imageData: imageData || context?.getImageData(0, 0, width, height) || null,
                     params: {
                         ...otherProps,
                         ...params

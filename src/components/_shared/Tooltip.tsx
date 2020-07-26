@@ -3,7 +3,8 @@ import '../../styles/tooltip.scss';
 import * as classNames from 'classnames';
 
 export interface TooltipProps {
-    children
+    translate?: any
+    children?
     message?
     secondaryMessage?
     offsetY?
@@ -19,7 +20,7 @@ export const Tooltip: React.FC<TooltipProps> = ({secondaryMessage, getX, getY, c
     const tooltip = React.useRef<any>(null);
 
     React.useEffect(() => {
-        tooltip.current.style.display = 'none';
+        // tooltip.current.style.display = 'none';
         return () => {
             window.removeEventListener('mousemove', listener);
         }
@@ -37,7 +38,7 @@ export const Tooltip: React.FC<TooltipProps> = ({secondaryMessage, getX, getY, c
         window.addEventListener('mousemove', listener);
 
         if (!tooltip?.current) return;
-        tooltip.current.style.display = 'block';
+        tooltip.current.style.display = 'flex';
     }, [tooltip]);
     const leave = React.useCallback(() => {
         window.removeEventListener('mousemove', listener);

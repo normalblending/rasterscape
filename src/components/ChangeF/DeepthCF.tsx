@@ -84,6 +84,20 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
         }
     };
 
+
+    buttonWrapper = (message) => {
+        const {tutorial} = this.props;
+        return tutorial ? ({button}) => (
+            <HelpTooltip
+                // secondaryMessage={message === 'period' &&
+                // <span>negative value for movement<br/> in the opposite direction</span>}
+                message={message}>{button}</HelpTooltip>) : null
+    };
+
+    buttonWrapperChannel = this.buttonWrapper('channel');
+    buttonWrapperFrom = this.buttonWrapper('from');
+    buttonWrapperTo = this.buttonWrapper('to');
+
     helpText = {
         addPatterns: <span>add pattern to be able to chose it here</span>,
         chosePattern: <span>chose pattern to use its color data<br/> as a coordinate function</span>,
@@ -96,7 +110,8 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
 
         return (
             <div className={"depth-change-function"}>
-                <HelpTooltip secondaryMessage={!patternsCount ? this.helpText.addPatterns : (!items.length && this.helpText.chosePattern)}>
+                <HelpTooltip
+                    secondaryMessage={!patternsCount ? this.helpText.addPatterns : (!items.length && this.helpText.chosePattern)}>
                     <Button className={'depth-select-pattern-button'}>
                         pattern
                         <PatternsSelect
@@ -117,13 +132,16 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                             <Button onClick={this.handleDeleteItem(index)}>delete</Button>
                         </div>
                         <div className={'depth-item-controls'}>
-                            <CycledToggle
-                                name={'component'}
-                                value={item.component}
-                                items={componentsSelectItems}
-                                onChange={this.handleParamChange(index)}
-                            />
+                            <HelpTooltip message={'color component'}>
+                                <CycledToggle
+                                    name={'component'}
+                                    value={item.component}
+                                    items={componentsSelectItems}
+                                    onChange={this.handleParamChange(index)}
+                                />
+                            </HelpTooltip>
                             <ButtonNumberCF
+                                buttonWrapper={this.buttonWrapperFrom}
                                 pres={2}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zd`}
                                 value={item.zd}
@@ -133,6 +151,7 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                                 onChange={this.handleParamChange(index)}
                             />
                             <ButtonNumberCF
+                                buttonWrapper={this.buttonWrapperTo}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zed`}
                                 value={item.zed}
                                 name={"zed"}

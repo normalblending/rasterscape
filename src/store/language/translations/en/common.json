@@ -1,14 +1,36 @@
 {
+  "buttonNumberCF": {
+    "hotkey": "hotkey",
+    "click": "enter hotkey in this field",
+    "backspace": "Backspase for remove",
+    "changeFunction": "change function",
+    "cf1": "change function allows you\nto change the value during drawing\ndepending on the time, coordinates\nand other parameters"
+  },
+
   "tools": {
+    "tools": "tool",
     "brush": "brush",
     "line": "line",
     "select": "select"
   },
 
   "brushTypes": {
+    "brushType": "brush type",
     "circle": "circle",
     "square": "square",
     "pattern": "pattern"
+  },
+
+  "brush": {
+    "size": "brush size",
+    "howToChange": "hold and move to change value",
+    "howToSeeMenu": {
+      "hover": "hover ",
+      "toSeeMenu": " to see slider menu"
+    },
+    "blendMode": "blend mode",
+    "opacity": "opacity",
+    "sizePattern": "size of pattern"
   },
 
   "lineTypes": {
@@ -43,6 +65,20 @@
     "stretch": "stretch",
     "undo": "undo",
     "redo": "redo"
+  },
+
+  "patternControlsHelp": {
+    "stretch": "растягивать изображение при изменении размера и при загрузке",
+    "width": "width",
+    "height": "height"
+  },
+
+  "patternRotating": {
+    "angle": "angle",
+    "offsetX": "offset x",
+    "offsetY": "offset y",
+    "centerOffsetX": "rotate center x",
+    "centerOffsetY": "rotate center y"
   },
 
   "room": {

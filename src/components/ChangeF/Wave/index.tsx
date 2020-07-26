@@ -94,11 +94,16 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
         return (
             // <HelpTooltip component={WaveHelp} getY={() => 27} offsetX={40}>
             <div className={"wave-change-function"}>
-                <SelectDrop
+                <HelpTooltip
+                    // componentProps={{name}}
+                    // getY={() => 27}
+                    // offsetX={25}
+                    message={'time depending functions'}
+                ><SelectDrop
                     className={'type-select'}
                     value={params.type}
                     onChange={this.handleTypeChange}
-                    items={this.selectItems}/>
+                    items={this.selectItems}/></HelpTooltip>
                 {WaveComponent &&
                 <WaveComponent
                     name={name}

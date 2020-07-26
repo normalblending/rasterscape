@@ -6,6 +6,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Sis2} from "../../_shared/canvases/WebWorkerCanvas";
 import {xySis2} from "../../../store/changeFunctions/functions/_helpers";
+import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 
 export interface Sis2CFProps {
     tutorial: boolean
@@ -86,7 +87,9 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
         const {tutorial} = this.props;
         return tutorial ? ({button}) => (
             <HelpTooltip
-                secondaryMessage={message !== 'kz' && <span>z = kx⋅x² + ky⋅y² + dz</span>}
+                secondaryMessage={message !== 'kz' && <span>
+                    XA ⋅ √( xdd² + ydd² ) + h + cosA ⋅ cos( √( ( xdd + x * ( xN / xD - 1 ) )² + ( ydd + y * ( yN / yD - 1 ) )² ) )
+                </span>}
                 message={message}>{button}</HelpTooltip>) : null
     };
 
@@ -107,10 +110,13 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
 
                 <div className={'sis2-controls'}>
                     <div className={'canvas-container'}>
-                        <Sis2
-                            params={params}
-                            width={68}
-                            height={58}/>
+
+                        <HelpTooltip component={SinHelp} componentProps={{name}}>
+                            <Sis2
+                                params={params}
+                                width={68}
+                                height={58}/>
+                        </HelpTooltip>
                     </div>
                     {this.leftCol.map(key => {
                         return (

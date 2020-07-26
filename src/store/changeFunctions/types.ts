@@ -3,8 +3,8 @@ import {ParamConfig} from "../../components/_shared/Params";
 
 
 export enum ECFType {
-    WAVE = "ft",
-    FXY = 'fxy',
+    WAVE = "time",
+    FXY = 'pos',
     DEPTH = 'rgba',
 }
 

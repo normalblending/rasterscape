@@ -1,5 +1,7 @@
 .input-number {
 
+  height: 20px;
+  width: 70px;
   flex: 1;
   text-align: left;
 
@@ -7,6 +9,8 @@
 
   border: 1px solid lightgrey;
   border-color: #ababab  #dedede  #dedede #ababab;
+
+  box-sizing: border-box;
 }
 
 .input-number:focus {

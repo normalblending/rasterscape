@@ -5,6 +5,7 @@ import {ValueD} from "../../_shared/buttons/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
+import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 
 export interface ParabCFProps {
     tutorial: boolean
@@ -50,9 +51,11 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
 
                 <div className={'parab-controls'}>
                     <div className={'canvas-container'}>
-                        <Paraboloid
-                            params={params}
-                            width={68} height={58}/>
+                        <HelpTooltip component={SinHelp} componentProps={{name}}>
+                            <Paraboloid
+                                params={params}
+                                width={68} height={58}/>
+                        </HelpTooltip>
                     </div>
                 </div>
                 <div className={'parab-controls'}>

@@ -1,5 +1,7 @@
 .tooltip {
-    display:block;
+    display: none;
+    flex-direction: column;
+    //border: 1px solid greenyellow;
     position:fixed;
     overflow:hidden;
     z-index:100;

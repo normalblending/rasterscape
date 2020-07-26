@@ -1,6 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
+import {WithTranslation, withTranslation} from "react-i18next";
 
 export interface ChangeFunctionsHelpStateProps {
     isThereChangeF: boolean
@@ -14,18 +15,19 @@ export interface ChangeFunctionsHelpOwnProps {
     path: string
 }
 
-export interface ChangeFunctionsHelpProps extends ChangeFunctionsHelpStateProps, ChangeFunctionsHelpActionProps, ChangeFunctionsHelpOwnProps {
+export interface ChangeFunctionsHelpProps extends ChangeFunctionsHelpStateProps, ChangeFunctionsHelpActionProps, ChangeFunctionsHelpOwnProps, WithTranslation {
 
 }
 
-const ChangeFunctionsHelpComponent: React.FC<ChangeFunctionsHelpProps> = ({isThereChangeF, isCFSelected}) => {
+const ChangeFunctionsHelpComponent: React.FC<ChangeFunctionsHelpProps> = ({isThereChangeF, isCFSelected, t}) => {
 
     return (
         <div className={'help-tooltip-container'}>
-            <div className={'big-text-help'}><span>change function</span></div>
+            <div className={'big-text-help'}><span>{t('buttonNumberCF.changeFunction')}</span></div>
             <div className={'subheader-help'}>
                 <div className={'small-text-help'}>
                     <span>
+                        {t('buttonNumberCF.cf1')}
                     change function allows you <br/>
                     to change the value during drawing<br/>
                     depending on the time, coordinates<br/>
@@ -72,4 +74,4 @@ const mapDispatchToProps: MapDispatchToProps<ChangeFunctionsHelpActionProps, Cha
 export const ChangeFunctionsHelp = connect<ChangeFunctionsHelpStateProps, ChangeFunctionsHelpActionProps, ChangeFunctionsHelpOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(ChangeFunctionsHelpComponent);
+)(withTranslation('common')(ChangeFunctionsHelpComponent));

@@ -2,7 +2,7 @@ import * as React from "react";
 
 import {getRepeatingCoords} from "../../../../utils/draw";
 import {
-    drawMaskedWithRotation,
+    drawMaskedWithRotation, drawMaskedWithRotationAndOffset,
     drawWithRotation,
     drawWithRotationAndOffset
 } from "../../../../utils/canvas/helpers/draw";
@@ -44,30 +44,37 @@ export const brushPattern = function () {
                 const height = patternSize * brushPatternImage.height;
 
 
+                //
+                const destAngle = destinationRotation ? destinationRotation.angle : 0;
+
+                const brushAngle = brushRotation ? brushRotation.angle : 0;
+                const brushCenter = brushRotation ? {
+                    x: brushRotation.offset.xc, y: brushRotation.offset.yc
+                } : {x: 0, y: 0};
+                const brushOffset = brushRotation ? {
+                    x: brushRotation.offset.xd, y: brushRotation.offset.yd
+                } : {x: 0, y: 0};
+
+
                 const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
 
                 if (selectionMask) {
-                    const {canvas: image} = drawMaskedWithRotation(
+                    const {canvas: image} = drawMaskedWithRotationAndOffset(
                         selectionMask,
-                        -destinationRotation.angle + brushRotation.angle,
-                        x + brushRotation.offset.x, y + brushRotation.offset.y,
-                        ({context}) => {
-                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height)
+                        brushAngle,
+                        destAngle,
+                        brushCenter.x, - brushCenter.y,
+                        brushOffset.x, - brushOffset.y,
+                        x, y,
+                        ({context, canvas}) => {
+                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
                         }
                     );
 
                     ctx.globalCompositeOperation = compositeOperation;
                     ctx.drawImage(image, 0, 0);
                 } else {
-                    const destAngle = destinationRotation ? destinationRotation.angle : 0;
 
-                    const brushAngle = brushRotation ? brushRotation.angle : 0;
-                    const brushCenter = brushRotation ? {
-                        x: brushRotation.offset.xc, y: brushRotation.offset.yc
-                    } : {x: 0, y: 0};
-                    const brushOffset = brushRotation ? {
-                        x: brushRotation.offset.xd, y: brushRotation.offset.yd
-                    } : {x: 0, y: 0};
 
                     drawWithRotationAndOffset(
                         brushAngle,

@@ -88,9 +88,9 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
             <div className="change-functions">
                 <HelpTooltip message={'change functions'}>
                     <div className="control-buttons">
-                        <Button onClick={this.handleAddWave}>ft</Button>
-                        <Button onClick={this.handleAddFxy}>fxy</Button>
-                        <Button onClick={this.handleDeepth}>rgba</Button>
+                        <Button onClick={this.handleAddWave}>{ECFType.WAVE}</Button>
+                        <Button onClick={this.handleAddFxy}>{ECFType.FXY}</Button>
+                        <Button onClick={this.handleDeepth}>{ECFType.DEPTH}</Button>
                         {/*<br/>*/}
                         <CycledToggle
                             items={modesItems}

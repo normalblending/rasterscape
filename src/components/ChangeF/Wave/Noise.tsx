@@ -6,6 +6,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 // import {NoiseHelp} from "../../tutorial/tooltips/NoiseHelp";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
+import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 // import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
 
 export interface NoiseCFProps {
@@ -25,7 +26,7 @@ export interface NoiseCFState {
 const fRange = [0, 5] as [number, number];
 const aVD = ValueD.VerticalLinear(100);
 
-const tRange = [0, 40000] as [number, number];
+const tRange = [0, 5000] as [number, number];
 
 const oRange = [0, 1] as [number, number];
 const oVD = ValueD.VerticalLinear(100);
@@ -51,9 +52,9 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
             >{button}</HelpTooltip>) : null
     };
 
-    buttonWrapperMin = this.buttonWrapper('min');
-    buttonWrapperMax = this.buttonWrapper('max');
-    buttonWrapperFreq = this.buttonWrapper('freq');
+    buttonWrapperMin = this.buttonWrapper('min value');
+    buttonWrapperMax = this.buttonWrapper('max value');
+    buttonWrapperFreq = this.buttonWrapper('period');
 
 
     render() {
@@ -61,12 +62,12 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
         return (
             // <HelpTooltip component={NoiseHelp} getY={() => 27} offsetX={40}>
             <div className={"noise-change-function"}>
-                {/*<HelpTooltip component={NoiseHelp} componentProps={{name}}>*/}
+                <HelpTooltip component={SinHelp} componentProps={{name}}>
                     <Noise
                         width={68}
                         height={58}
                         params={params}/>
-                {/*</HelpTooltip>*/}
+                </HelpTooltip>
                 <div className={'noise-controls'}>
                     <ButtonNumberCF
                         pres={2}
@@ -90,12 +91,13 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
                     />
                     <ButtonNumberCF
                         buttonWrapper={this.buttonWrapperFreq}
-                        pres={3}
-                        valueD={1000}
+                        pres={0}
+                        precisionGain={10}
+                        valueD={2 / 128}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Noise}.f`}
                         value={params.f}
                         name={"f"}
-                        range={fRange}
+                        range={tRange}
                         onChange={this.handleParamChange}
                     />
 

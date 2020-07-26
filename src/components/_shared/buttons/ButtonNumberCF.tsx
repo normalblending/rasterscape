@@ -24,6 +24,7 @@ import {HotkeyHelp} from "../../tutorial/tooltips/HotkeyHelp";
 import {ChangeFunctionsHelp} from "../../tutorial/tooltips/ChangeFunctionHelp";
 import {ChangingValue} from "../../../store/changingValues/types";
 import {coordHelper2} from "../../Area/canvasPosition.servise";
+import {WithTranslation, withTranslation} from "react-i18next";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: SelectItem[]
@@ -55,7 +56,7 @@ export interface ButtonNumberCFOwnProps extends ButtonNumberProps {
     buttonWrapper?
 }
 
-export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps {
+export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps, WithTranslation {
 
 }
 
@@ -67,7 +68,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         deactivateValueChanging,
         activateValueChanging,
         addHotkey,
-        setValueInChangingList, range
+        setValueInChangingList, range,
+        t,
     } = props;
 
     const {
@@ -180,7 +182,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
                 <HelpTooltip component={HotkeyHelp}>
                     <ShortcutInput
-                        placeholder={'hotkey'}
+                        placeholder={t('buttonNumberCF.hotkey')}
                         value={hotkey}
                         onChange={handleShortcutChange}/>
                 </HelpTooltip>
@@ -215,4 +217,4 @@ const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNu
 export const ButtonNumberCF = connect<ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(ButtonNumberCFComponent);
+)(withTranslation('common')(ButtonNumberCFComponent));

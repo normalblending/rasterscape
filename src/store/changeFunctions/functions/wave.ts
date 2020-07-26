@@ -89,13 +89,33 @@ const waveFunctionByType = {
 
         return newValue;
     },
-    [WaveType.Noise]: ({startValue, range, params, time}) => {
-        const {start, end, f} = params;
-        const min = range[0] + (range[1] - range[0]) * start;
-        const max = range[0] + (range[1] - range[0]) * end;
-        const newValue = Math.random() * (max - min) + min;
-        return newValue;
-    }
+    [WaveType.Noise]: (() => {
+        let random = 0;
+        let prevPeriod = 0;
+        return ({startValue, range, params, time}) => {
+            const {start, end, f} = params;
+            const T = f;
+            const period = Math.floor(time / T);
+
+
+            if (prevPeriod !== period) {
+                random = Math.random();
+
+                console.log(period, 'period')
+                prevPeriod = period;
+            }
+
+
+            const min = range[0] + (range[1] - range[0]) * start;
+            const max = range[0] + (range[1] - range[0]) * end;
+
+            const newValue = random * (max - min) + min;
+
+
+
+            return newValue;
+        }
+    })()
 };
 
 export const waveChangeFunction =

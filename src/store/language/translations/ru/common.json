@@ -1,14 +1,35 @@
 {
+  "buttonNumberCF": {
+    "hotkey": "алиас",
+    "click": "введите горячую клавишу в это поле",
+    "backspace": "Backspase для удаления",
+    "changeFunction": "функция изменения"
+  },
+
   "tools": {
+    "tools": "инстр-т",
     "brush": "кисть",
     "line": "линия",
     "select": "выдел-е"
   },
 
   "brushTypes": {
+    "brushType": "тип кисти",
     "circle": "круг",
     "square": "квадрат",
     "pattern": "паттерн"
+  },
+
+  "brush": {
+    "size": "размер кисти",
+    "howToChange": "потяните чтобы изменить значение",
+    "howToSeeMenu": {
+      "hover": "наведите курсор на ",
+      "toSeeMenu": " чтобы открыть меню слайдера"
+    },
+    "blendMode": "режим наложения",
+    "opacity": "непрозрачность",
+    "sizePattern": "размер"
   },
 
   "lineTypes": {
@@ -43,6 +64,20 @@
     "stretch": "растяг-ть",
     "undo": "назад",
     "redo": "вперед"
+  },
+
+  "patternControlsHelp": {
+    "stretch": "растягивать изображение при изменении размера и при загрузке",
+    "width": "ширина",
+    "height": "высота"
+  },
+
+  "patternRotating": {
+    "angle": "угол",
+    "centerOffsetX": "центр вращения х",
+    "centerOffsetY": "центр вращения у",
+    "offsetX": "смещение х",
+    "offsetY": "смещение у"
   },
 
   "room": {

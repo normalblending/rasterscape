@@ -5,6 +5,7 @@ import {ValueD} from "../../_shared/buttons/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Saw} from "../../_shared/canvases/WebWorkerCanvas";
+import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 
 // import {toFixed2} from "../../utils/utils";
 
@@ -47,19 +48,21 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                 message={message}>{button}</HelpTooltip>) : null
     };
 
-    buttonWrapperMin = this.buttonWrapper('min');
-    buttonWrapperMax = this.buttonWrapper('max');
+    buttonWrapperMin = this.buttonWrapper('min value');
+    buttonWrapperMax = this.buttonWrapper('max value');
     buttonWrapperPeriod = this.buttonWrapper('period');
 
     render() {
         const {params, onChange, name} = this.props;
         return (
             <div className={"saw-change-function"}>
-                <Saw
-                    width={68}
-                    height={58}
-                    params={params}
-                />
+                <HelpTooltip component={SinHelp} componentProps={{name}}>
+                    <Saw
+                        width={68}
+                        height={58}
+                        params={params}
+                    />
+                </HelpTooltip>
                 <div className={'saw-controls'}>
                     <ButtonNumberCF
                         pres={2}

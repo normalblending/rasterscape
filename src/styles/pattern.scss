@@ -41,7 +41,7 @@
 
   .pattern-controls {
     position: absolute;
-    bottom: -1px;
+    bottom: 0;
     left: 0;
     display: flex;
     align-items: flex-start;
@@ -56,6 +56,10 @@
       display: flex;
       flex-direction: column;
       align-items: flex-end;
+
+      & > div {
+        display: flex;
+      }
     }
   }
 
@@ -63,7 +67,7 @@
     display: flex;
 
     .size-input-number {
-      width: 64px;
+      width: 70px;
       text-align: left;
 
       background: lightgoldenrodyellow;
@@ -93,12 +97,15 @@
 
   .right {
 
+    z-index: 1;
+
     display: flex;
     flex-direction: column;
     align-items: baseline;
     margin-bottom: 20px;
 
     .history-controls {
+      display: flex;
       position: sticky;
       left: 0;
     }

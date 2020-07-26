@@ -1,6 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
+import {WithTranslation, withTranslation} from "react-i18next";
 
 export interface HotkeyHelpStateProps {
 }
@@ -12,28 +13,23 @@ export interface HotkeyHelpOwnProps {
 
 }
 
-export interface HotkeyHelpProps extends HotkeyHelpStateProps, HotkeyHelpActionProps, HotkeyHelpOwnProps {
+export interface HotkeyHelpProps extends HotkeyHelpStateProps, HotkeyHelpActionProps, HotkeyHelpOwnProps, WithTranslation {
 
 }
 
-const HotkeyHelpComponent: React.FC<HotkeyHelpProps> = ({}) => {
+const HotkeyHelpComponent: React.FC<HotkeyHelpProps> = ({t}) => {
 
     return (
         <div className={'help-tooltip-container'}>
-            <div className={'big-text-help'}><span>hotkey</span></div>
+            <div className={'big-text-help'}><span>{t('buttonNumberCF.hotkey')}</span></div>
             <div className={'subheader-help'}>
                 <div className={'small-text-help'}><span>
-                    click this field then press keyboard button<br/>to assign it to control
+                    {t('buttonNumberCF.click')}
                 </span></div>
             </div>
             <div className={'subheader-help'}>
                 <div className={'small-text-help'}><span>
-                    then u be able to change value<br/>by moving cursor while pressing this button
-                </span></div>
-            </div>
-            <div className={'subheader-help'}>
-                <div className={'small-text-help'}><span>
-                    click field and press Backspase<br/>to remove assignment
+                    {t('buttonNumberCF.backspace')}
                 </span></div>
             </div>
         </div>
@@ -47,4 +43,4 @@ const mapDispatchToProps: MapDispatchToProps<HotkeyHelpActionProps, HotkeyHelpOw
 export const HotkeyHelp = connect<HotkeyHelpStateProps, HotkeyHelpActionProps, HotkeyHelpOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(HotkeyHelpComponent);
+)(withTranslation('common')(HotkeyHelpComponent));

@@ -78,3 +78,19 @@ export const drawWithRotationAndOffset = (
 
     return {canvas, context};
 };
+export const drawMaskedWithRotationAndOffset = (
+    maskImageData: ImageData,
+    angleB: number,
+    angleD: number,
+    xc: number, yc: number,
+    xd: number, yd: number,
+    x: number, y: number,
+    draw: DrawMaskedDrawFunction,
+) => {
+    const {canvas, context} = drawMasked(
+        maskImageData,
+        drawWithRotationAndOffset(angleB, angleD, xc, yc, xd, yd, x, y, draw)
+    );
+
+    return {canvas, context};
+};

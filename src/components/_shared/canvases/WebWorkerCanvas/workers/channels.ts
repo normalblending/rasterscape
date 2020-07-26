@@ -3,6 +3,10 @@ export const ctxChannels: Worker = self as any;
 ctxChannels.onmessage = (ev) => {
     const {imageData, params, width, height} = ev.data;
 
+    if (!imageData) {
+        return;
+    }
+
     const {zd: from, zed: scale, component} = params || {};
 
     const channelName = ['r', 'g', 'b', 'a'];

@@ -1,6 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
+import {WithTranslation, withTranslation} from "react-i18next";
 
 export interface BrushSizeStateProps {
 }
@@ -12,22 +13,24 @@ export interface BrushSizeOwnProps {
 
 }
 
-export interface BrushSizeProps extends BrushSizeStateProps, BrushSizeActionProps, BrushSizeOwnProps {
+export interface BrushSizeProps extends BrushSizeStateProps, BrushSizeActionProps, BrushSizeOwnProps, WithTranslation {
 
 }
 
-const BrushSizeComponent: React.FC<BrushSizeProps> = ({}) => {
+const BrushSizeComponent: React.FC<BrushSizeProps> = ({t}) => {
 
     return (
         <div className={'help-tooltip-container'}>
             <div className={'big-text-help'}><span>
-                brush size
+                {t('brush.size')}
             </span></div>
             <div className={'subheader-help'}><span>
-                hold and move to change value
+                {t('brush.howToChange')}
             </span></div>
             <div className={'subheader-help'}><span>
-                hover <span className={'help-red-text'}>◧</span> to see slider menu
+                {t('brush.howToSeeMenu.hover')}
+                <span className={'help-red-text'}>◧</span>
+                {t('brush.howToSeeMenu.toSeeMenu')}
             </span></div>
         </div>
     );
@@ -40,4 +43,4 @@ const mapDispatchToProps: MapDispatchToProps<BrushSizeActionProps, BrushSizeOwnP
 export const BrushSizeHelp = connect<BrushSizeStateProps, BrushSizeActionProps, BrushSizeOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(BrushSizeComponent);
+)(withTranslation('common')(BrushSizeComponent));

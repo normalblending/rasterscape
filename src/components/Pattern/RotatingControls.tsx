@@ -7,6 +7,7 @@ import {withTranslation, WithTranslation} from "react-i18next";
 import {setRotation} from "../../store/patterns/rotating/actions";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
+import {buttonNumberHelpWrapper} from "../tutorial/ButtonNumberHelpWrapper";
 
 export interface RotationControlsStateProps {
     rotation: RotationValue
@@ -34,6 +35,12 @@ const angleValueD = ValueD.VerticalLinear(0.2);
 const offsetRange = [-1000, 1000] as [number, number];
 const offsetValueD = ValueD.VerticalLinear(0.1);
 
+const angleHelp = buttonNumberHelpWrapper({message: 'patternRotating.angle'});
+const offsetXHelp = buttonNumberHelpWrapper({message: 'patternRotating.offsetX'});
+const offsetYHelp = buttonNumberHelpWrapper({message: 'patternRotating.offsetY'});
+const centerOffsetXHelp = buttonNumberHelpWrapper({message: 'patternRotating.centerOffsetY'});
+const centerOffsetYHelp = buttonNumberHelpWrapper({message: 'patternRotating.centerOffsetY'});
+
 export class RotationControlsComponent extends React.PureComponent<RotationControlsProps, RotationControlsState> {
 
     handleAngleChange = ({value: angle}) => {
@@ -55,7 +62,9 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
         const {angle, offset} = this.props.rotation;
         return (
             <div className={'rotating-controls'}>
+
                 <ButtonNumberCF
+                    buttonWrapper={angleHelp}
                     pres={0}
                     path={`patterns.${this.props.patternId}.rotation.value.angle`}
                     name={"angle"}
@@ -65,6 +74,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     valueD={1}
                     onChange={this.handleAngleChange}/>
                 <ButtonNumberCF
+                    buttonWrapper={centerOffsetXHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
@@ -73,6 +83,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     value={offset.xc}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
+                    buttonWrapper={centerOffsetYHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
@@ -81,6 +92,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     value={offset.yc}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
+                    buttonWrapper={offsetXHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
@@ -89,6 +101,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     value={offset.xd}
                     onChange={this.handleOffsetChange}/>
                 <ButtonNumberCF
+                    buttonWrapper={offsetYHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
