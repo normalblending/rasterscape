@@ -21,7 +21,7 @@ export const patternId = (state: PatternsState) =>
 
 
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating, startImage, startMask, blur} = config || {};
+    const {history, store, selection, mask, rotation, repeating, startImage, startMask, room} = config || {};
 
     const width = startImage ? startImage.width : (config.width || 300);
     const height = startImage ? startImage.height : (config.height || 300);
@@ -46,7 +46,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
 };
 
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating} = config || {};
+    const {history, store, selection, mask, rotation, repeating, room} = config || {};
     params = params || {};
     const maskState = getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask);
     return {

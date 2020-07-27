@@ -16,6 +16,7 @@ export interface AreaActionProps {
 }
 
 export interface AreaOwnProps {
+    disabled?: boolean
     mask?: boolean
     name: any // нужен для маски выделения
     height: number
@@ -84,7 +85,8 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             selectionParams,
             onImageChange,
             onSelectionChange,
-            rotation
+            rotation,
+            disabled
         } = this.props;
 
         console.log("area", this.state);
@@ -92,6 +94,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             <div className="area"
                  style={this.state.areaStyle}>
                 <Draw
+                    disabled={disabled}
                     mask={mask}
                     patternId={name}
                     style={this.state.style}

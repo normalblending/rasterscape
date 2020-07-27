@@ -11,6 +11,7 @@ import {copyImageData, imageDataToBase64} from "../../../utils/canvas/helpers/im
 import {addPattern} from "../actions";
 import {getPatternConfig, getPatternParams} from "./helpers";
 import * as StackBlur from 'stackblur-canvas';
+import {sendImage} from "../room/actions";
 
 export enum EPatternAction {
     UPDATE_IMAGE = "pattern/update-image",
@@ -45,7 +46,7 @@ export const updateImage = (id: string, imageData?: ImageData, emit: boolean = t
             }
         }
 
-        emit && socket && socket.emit("image", imageDataToBase64(resultImageData));
+        emit && dispatch(sendImage(id, resultImageData));
 
         return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id});
     };

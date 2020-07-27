@@ -22,7 +22,7 @@ import {AppState} from "../../store";
 import {updateMask} from "../../store/patterns/mask/actions";
 import {editConfig, updateImage} from "../../store/patterns/pattern/actions";
 import {setImportParams} from "../../store/patterns/import/actions";
-import {RoomControls} from "./RoomControls";
+import {RoomControls} from "./Room/RoomControls";
 import {BlurControls} from "./BlurControls";
 import '../../styles/inputNumber.scss';
 import {HelpTooltip} from "../tutorial/HelpTooltip";
@@ -41,6 +41,8 @@ export interface PatternComponentStateProps {
 
     height: number
     width: number
+
+    meDrawer: boolean
 }
 
 export interface PatternComponentActionProps {
@@ -148,6 +150,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         const {
             imageValue, maskValue,
             height, width, id, config, selection, rotation, importParams,
+            meDrawer,
             t
         } = this.props;
 
@@ -232,6 +235,8 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     <div className={"areas"}>
                         <Area
 
+                            disabled={!meDrawer}
+
                             name={id}
                             width={width}
                             height={height}
@@ -290,8 +295,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
 const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternComponentOwnProps, AppState> = (state, {id}) => {
     const pattern = state.patterns[id];
+    console.log(!pattern.room?.value?.connected, pattern.room?.value?.meDrawer);
     return {
         importParams: pattern.import.params,
+        meDrawer: !pattern.room?.value?.connected || pattern.room?.value?.meDrawer,
         config: pattern.config,
         width: pattern.current.width,
         height: pattern.current.height,

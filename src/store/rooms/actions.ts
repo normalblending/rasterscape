@@ -15,7 +15,7 @@ export const updateRooms = (rooms: Room[]): UpdateRoomsAction => ({
     type: ERoomsAction.UPDATE_ROOMS,
     rooms
 });
-
+// это нужно было для списка комнат
 export const roomsConnect = (): ThunkResult<ConnectRoomsAction> =>
     dispatch => {
 

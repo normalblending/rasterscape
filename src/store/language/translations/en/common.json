@@ -83,7 +83,13 @@
 
   "room": {
     "leave": "leave",
-    "enter": "enter"
+    "enter": "enter",
+    "draw": "draw",
+    "chat": "chat"
+  },
+
+  "chat": {
+    "send": ">"
   }
 
 

@@ -15,9 +15,13 @@ export interface InputTextProps {
     value: string
 
     disabled?: boolean
+
+    maxLength?: number
+
+    [other: string]: any
 }
 
-export const InputText: React.FC<InputTextProps> = ({disabled, onChange, onFocus, onBlur, value, placeholder, className}) => {
+export const InputText: React.FC<InputTextProps> = ({maxLength, disabled, onChange, onFocus, onBlur, value, placeholder, className, ...otherProps}) => {
 
     const changeHandler = e => {
         onChange && onChange(e.target.value)
@@ -27,11 +31,13 @@ export const InputText: React.FC<InputTextProps> = ({disabled, onChange, onFocus
         <input
             className={classNames(className, "input-text")}
             type="text"
+            maxLength={maxLength}
             disabled={disabled}
             value={value || ''}
             onFocus={onFocus}
             onBlur={onBlur}
             placeholder={placeholder}
-            onChange={changeHandler}/>
+            onChange={changeHandler}
+            {...otherProps}/>
     );
 };

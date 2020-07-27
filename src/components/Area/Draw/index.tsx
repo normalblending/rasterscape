@@ -41,6 +41,7 @@ export interface CanvasDrawActionProps {
 export interface CanvasDrawOwnProps extends CanvasProps {
     patternId: string
     mask?: boolean
+    disabled?: boolean
 }
 
 export interface CanvasDrawProps extends CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps {
@@ -143,7 +144,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     render() {
-        const {children, width, height, className, mask} = this.props;
+        const {children, width, height, className, mask, disabled} = this.props;
 
         const handlers = this.getHandlers();
 
@@ -151,7 +152,10 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             <Canvas
                 // pointerLock={true}
                 // drawOnMove={true}
-                className={classNames("draw", {'mask': mask}, className)}
+                className={classNames("draw", {
+                    'mask': mask,
+                    'disabled': disabled
+                }, className)}
                 onDown={this.downHandler}
                 downProcess={handlers && handlers.down}
                 onClick={handlers && handlers.click}
