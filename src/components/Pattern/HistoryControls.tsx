@@ -40,7 +40,7 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = ({undo, 
 
     const {t} = useTranslation("common");
     return (
-        <div className={'flex-row history-controls'}>
+        <div className={'flex-col history-controls'}>
             <Button
                 onClick={onUndo}
                 disabled={!history.before.length}

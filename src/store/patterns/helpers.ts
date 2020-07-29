@@ -48,7 +48,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
     const {history, store, selection, mask, rotation, repeating, room} = config || {};
     params = params || {};
-    const maskState = getMaskState(state.current.width, state.current.height)(mask, state.mask, params.mask);
+    const maskState = getMaskState(state.current.width, state.current.height)(true, state.mask, params.mask);
     return {
         config,
         id: state.id,

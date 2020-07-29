@@ -71,12 +71,22 @@ export const base64ToImageData = (src: string): Promise<ImageData> => {
     });
 };
 
-export const getMaskedImage = (imageData: ImageData, maskImageData?: ImageData): HTMLCanvasElement => {
+export const maskInverse = (maskImageData: ImageData): ImageData => {
+    const maskInverse = copyImageData(maskImageData)
+    for (let i = 0; i< maskInverse.data.length; i +=4) {
+        maskInverse.data[i + 3] = 255 - maskInverse.data[i + 3];
+    }
+    return maskInverse;
+};
+
+export const getMaskedImage = (imageData: ImageData, maskImageData?: ImageData, inverseMask?: boolean): HTMLCanvasElement => {
 
     let {canvas, context} = createCanvas(imageData.width, imageData.height);
 
     if (maskImageData) {
-        context.putImageData(maskImageData, 0, 0);
+        context.putImageData(
+            inverseMask ? maskInverse(maskImageData) : maskImageData,
+            0, 0);
         context.globalCompositeOperation = "source-in";
     }
     context.drawImage(imageDataToCanvas(imageData), 0, 0, imageData.width, imageData.height);

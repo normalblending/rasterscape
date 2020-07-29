@@ -17,6 +17,8 @@ import {Segments} from "../store/patterns/selection/types";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
 import {whyDidYouRender} from "../utils/props";
+import {Resizable, ResizableBox} from 'react-resizable';
+import 'react-resizable/css/styles.css';
 
 export interface PatternsStateProps {
     patterns: any
@@ -40,8 +42,6 @@ export interface PatternsActionProps {
     setWidth(id: string, value: number)
 
     setHeight(id: string, value: number)
-
-
 
 
     save(id: string)
@@ -72,7 +72,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         whyDidYouRender(this.props, prevProps, 'PatternsComponent')
     }
 
-    handleAddClick = () => this.props.addPattern({history: true, selection: true, rotation: true, repeating: false});
+    handleAddClick = () => this.props.addPattern({history: true, selection: true, repeating: false});
 
     render() {
         const {
@@ -97,8 +97,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             resultImage={resultImage}
 
 
-
-
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
                             onSetWidth={setWidth}
@@ -120,7 +118,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         );
     }
 }
-
 
 
 const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state => ({

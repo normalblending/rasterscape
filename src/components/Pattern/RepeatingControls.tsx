@@ -136,6 +136,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                             disabled={gridParams.flat}
                             xn={gridParams.x}
                             yn={gridParams.y}
+                            xOut={gridParams.xOut}
+                            yOut={gridParams.yOut}
                             value={gridParams.bezierPoints}
                             onChange={this.handleBezierChange}/>
                     </div>)}

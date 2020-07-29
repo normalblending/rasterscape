@@ -9,6 +9,8 @@ export interface RoomValue {
     messages?: string[]
     drawer?: string
     meDrawer?: boolean
+    members?: number
+    unreaded?: number
 }
 
 export type RoomState = FunctionState<RoomValue, RoomParams>;

@@ -1,8 +1,10 @@
 .pattern-select-button {
-  padding:0px;
+  padding:0;
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  &.button-select-selected {
-    border: 1px solid red;
+  &.button-select.button-select-selected {
+    border: 1px solid red !important;
   }
 }

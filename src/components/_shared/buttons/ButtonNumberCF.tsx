@@ -191,6 +191,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                     <SelectDrop
                         name={buttonNumberProps.name + '-select-cf'}
                         nullAble
+                        nullText={'-'}
                         className={"button-number-cf-select"}
                         value={changingValue?.changeFunctionId}
                         onChange={handleCFChange}

@@ -13,6 +13,7 @@ export interface RoomControlsStateProps {
     connected: string
     drawer: string
     meDrawer: boolean
+    members: number
 }
 
 export interface RoomControlsActionProps {
@@ -83,7 +84,7 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
     }
 
     render() {
-        const {connected, t, patternId, drawer, meDrawer} = this.props;
+        const {connected, t, patternId, drawer, meDrawer, members} = this.props;
         return (
             <div className={'room-controls'}>
 
@@ -105,18 +106,21 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
                         >{t('room.enter')}</Button>
                     </>) : (<>
                         <div className={'room-title'}>
-                            <Button className={'room-name'}>{this.state.roomName}</Button>
+                            <Button
+                                className={'room-name'}>
+                                <span>{this.state.roomName}</span> {members ? <small>({members})</small> : ''}
+                            </Button>
                             <Button
                                 className={'room-delete'}
                                 disabled={!this.state.roomName}
-                                onClick={this.handleLeaveRoom}
+                                onDoubleClick={this.handleLeaveRoom}
                             >{t('room.leave')}</Button>
                         </div>
                         <ButtonSelect
                             disabled={!!drawer && !meDrawer}
                             selected={meDrawer}
                             onClick={this.handleSetDrawer}
-                        >{meDrawer ? t('room.chat') : t('room.draw')}</ButtonSelect>
+                        >{t('room.draw')}</ButtonSelect>
                     </>)}
 
 
@@ -131,6 +135,7 @@ const mapStateToProps: MapStateToProps<RoomControlsStateProps, RoomControlsOwnPr
     connected: state.patterns[patternId].room?.value?.connected,
     drawer: state.patterns[patternId].room?.value?.drawer,
     meDrawer: state.patterns[patternId].room?.value?.meDrawer,
+    members: state.patterns[patternId].room?.value?.members,
 });
 
 const mapDispatchToProps: MapDispatchToProps<RoomControlsActionProps, RoomControlsOwnProps> = {

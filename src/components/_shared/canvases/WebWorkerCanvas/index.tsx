@@ -6,12 +6,12 @@ import _throttle from 'lodash/throttle';
 import {coordHelper, coordHelper2, coordHelper3, TextHelper} from "../../../Area/canvasPosition.servise";
 
 /* eslint import/no-webpack-loader-syntax: off */
-const ParaboloidWorker = require("worker-loader?name=dist/[name].js!./workers/paraboloid");
-const ChannelsWorker = require("worker-loader?name=dist/[name].js!./workers/channels");
-const SawWorker = require("worker-loader?name=dist/[name].js!./workers/saw");
-const SinWorker = require("worker-loader?name=dist/[name].js!./workers/sin");
-const Sis2Worker = require("worker-loader?name=dist/[name].js!./workers/sis2");
-const NoiseWorker = require("worker-loader?name=dist/[name].js!./workers/noise");
+// const ParaboloidWorker = require("worker-loader?name=dist/[name].js!./workers/paraboloid");
+// const ChannelsWorker = require("worker-loader?name=dist/[name].js!./workers/channels");
+// const SawWorker = require("worker-loader?name=dist/[name].js!./workers/saw");
+// const SinWorker = require("worker-loader?name=dist/[name].js!./workers/sin");
+// const Sis2Worker = require("worker-loader?name=dist/[name].js!./workers/sis2");
+// const NoiseWorker = require("worker-loader?name=dist/[name].js!./workers/noise");
 
 export interface WebWorkerCanvasProps {
     throttled?: boolean
@@ -40,15 +40,18 @@ export interface WebWorkerCanvasProps {
 //
 // const postThrottled = _throttle(post, 500);
 
-export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWorkerCanvasProps> => {
+export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): React.FC<WebWorkerCanvasProps> => {
     const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({throttled, width, height, params, imageData, ...otherProps}) => {
 
         const canvasRef = useRef(null);
 
         const worker = useMemo(() => {
-            const worker = new Worker();
+            const worker = new Worker(workerPath);
 
+            console.log(worker)
+            let i;
             worker.onmessage = (ev: MessageEvent) => {
+                coordHelper.setText('new image', i++);
                 const {imageData} = ev.data;
 
                 const canvas = canvasRef?.current;
@@ -99,9 +102,9 @@ export const webWorkerCanvas = <ParamsType extends any>(Worker): React.FC<WebWor
     return React.memo(WebWorkerCanvas);
 };
 
-export const Paraboloid = webWorkerCanvas(ParaboloidWorker);
-export const ChannelImageData = webWorkerCanvas(ChannelsWorker);
-export const Saw = webWorkerCanvas(SawWorker);
-export const Sin = webWorkerCanvas(SinWorker);
-export const Sis2 = webWorkerCanvas(Sis2Worker);
-export const Noise = webWorkerCanvas(NoiseWorker);
+export const Paraboloid = webWorkerCanvas('./workers/paraboloid.js');
+export const ChannelImageData = webWorkerCanvas('./workers/channels.js');
+export const Saw = webWorkerCanvas('./workers/saw.js');
+export const Sin = webWorkerCanvas('./workers/sin.js');
+export const Sis2 = webWorkerCanvas('./workers/sis2.js');
+export const Noise = webWorkerCanvas('./workers/noise.js');

@@ -5,6 +5,18 @@ body {
   display: none;
 }
 
+.flex-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
 //.selected-button {
 //  border: 1px solid red;
 //}

@@ -11,21 +11,5 @@
     display: flex;
     width: calc(42px * 5);
     flex-wrap: wrap;
-
-
-    .pattern-select-button {
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .button-select-selected {
-      border: none;
-
-      .canvas-by-draw-function {
-        border: 1px solid red;
-      }
-    }
   }
 }

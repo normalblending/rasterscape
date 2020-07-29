@@ -11,6 +11,9 @@ export interface BezierCurveRepeatingProps {
 
     xn: number
     yn: number
+    xOut: number
+    yOut: number
+
     value: BezierPoints
 
     disabled?: boolean
@@ -242,23 +245,25 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
                         const size = 1;
                         const cords = [];
 
-                        if (disabled) {
-                            for (let i = 0; i <= this.props.xn; i++) {
-                                const ai = WW / this.props.xn * i;
-                                for (let j = 0; j <= this.props.yn; j++) {
+                        const {xn, yn, xOut, yOut} = this.props;
 
-                                    const aj = HH / this.props.yn * j;
+                        if (disabled) {
+                            for (let i = -xOut; i <= xn + xOut; i++) {
+                                const ai = WW / xn * i;
+                                for (let j = -yOut; j <= yn + yOut; j++) {
+
+                                    const aj = HH / yn * j;
 
                                     cords.push({x: O.x + ai, y: O.y + aj});
                                 }
                             }
                         } else {
 
-                            for (let i = 0; i <= this.props.xn; i++) {
-                                const ai = this.curve.get(i / this.props.xn);
-                                for (let j = 0; j <= this.props.yn; j++) {
+                            for (let i = -xOut; i <= xn + xOut; i++) {
+                                const ai = this.curve.get(i / xn);
+                                for (let j = -yOut; j <= yn + yOut; j++) {
 
-                                    const aj = this.curve.get(j / this.props.yn);
+                                    const aj = this.curve.get(j / yn);
 
                                     cords.push({x: O.x + ai.x, y: O.y + aj.y});
                                 }
@@ -268,7 +273,7 @@ export class BezierCurveRepeating extends React.PureComponent<BezierCurveRepeati
                             cords.map(({x, y}) =>
                                 <rect
                                     fill='white'
-                                    x={x - size/2} y={y-size/2} width={size} height={size}/>)
+                                    x={x - size / 2} y={y - size / 2} width={size} height={size}/>)
                         );
                     })()}
 

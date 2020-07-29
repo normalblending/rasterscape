@@ -1,9 +1,10 @@
 
 .zero-pattern {
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: flex-end;
-  padding-bottom: 40px;
+  padding-bottom: 80px;
+  box-sizing: border-box;
   border-left: 1px solid rgba(0, 0, 0, .07);
 }
 
@@ -11,13 +12,15 @@
 
   position: relative;
 
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
 
   padding-right: 140px;
-  padding-bottom: 40px;
+  padding-bottom: 80px;
+  padding-top: 270px;
+  box-sizing: border-box;
 
   border-left: 1px solid rgba(0, 0, 0, .07);
 
@@ -51,15 +54,16 @@
     //border-top: 1px solid rebeccapurple;
     font-size: 12px;
     //margin-bottom: 40px;
-    .save-load-sizes {
 
+  }
+  .save-load-sizes {
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    & > div {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-
-      & > div {
-        display: flex;
-      }
     }
   }
 
@@ -75,7 +79,7 @@
   }
 
   .plugins, .pattern-controls, .history-controls, .pattern-sizes {
-    visibility: hidden;
+    //visibility: hidden;
   }
 
   &:hover {
@@ -87,9 +91,10 @@
 
 
   .left {
-    position: relative;
-    //margin-right: 20px;
-    //padding-bottom: 20px;
+    width: 210px;
+    position: sticky;
+    bottom: 40px;
+
     &:hover {
       z-index: 10;
     }
@@ -102,7 +107,7 @@
     display: flex;
     flex-direction: column;
     align-items: baseline;
-    margin-bottom: 20px;
+    margin: 0 0 0 50px;
 
     .history-controls {
       display: flex;

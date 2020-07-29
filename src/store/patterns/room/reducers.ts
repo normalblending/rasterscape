@@ -1,4 +1,10 @@
-import {CreateRoomAction, ERoomAction, ReceiveDrawerAction, ReceiveMessageAction} from "./actions";
+import {
+    CreateRoomAction,
+    ERoomAction,
+    ReceiveDrawerAction,
+    ReceiveMembersAction,
+    ReceiveMessageAction
+} from "./actions";
 import {PatternAction, PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
 
@@ -29,9 +35,21 @@ export const roomReducers = {
                 ...pattern.room,
                 value: {
                     ...pattern.room.value,
-                    messages: pattern.room.value.messages
+                    messages: pattern.room?.value?.messages
                         ? [...pattern.room.value.messages, action.message].slice(-69)
-                        : [action.message]
+                        : [action.message],
+                    unreaded: (pattern.room?.value?.unreaded || 0) + (action.isMine ? 0 : 1),
+                },
+            }
+        })),
+    [ERoomAction.RESET_UNREADED]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            room: {
+                ...pattern.room,
+                value: {
+                    ...pattern.room.value,
+                    unreaded: 0,
                 },
             }
         })),
@@ -44,6 +62,17 @@ export const roomReducers = {
                     ...pattern.room.value,
                     drawer: action.drawer,
                     meDrawer: action.meDrawer,
+                },
+            }
+        })),
+    [ERoomAction.RECEIVE_MEMBERS]: reducePattern<ReceiveMembersAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            room: {
+                ...pattern.room,
+                value: {
+                    ...pattern.room.value,
+                    members: action.members,
                 },
             }
         }))

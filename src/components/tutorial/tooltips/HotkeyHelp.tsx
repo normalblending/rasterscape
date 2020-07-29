@@ -24,11 +24,6 @@ const HotkeyHelpComponent: React.FC<HotkeyHelpProps> = ({t}) => {
             <div className={'big-text-help'}><span>{t('buttonNumberCF.hotkey')}</span></div>
             <div className={'subheader-help'}>
                 <div className={'small-text-help'}><span>
-                    {t('buttonNumberCF.click')}
-                </span></div>
-            </div>
-            <div className={'subheader-help'}>
-                <div className={'small-text-help'}><span>
                     {t('buttonNumberCF.backspace')}
                 </span></div>
             </div>

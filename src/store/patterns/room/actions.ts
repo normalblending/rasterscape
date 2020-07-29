@@ -4,6 +4,7 @@ import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helper
 import {ThunkResult} from "../../../utils/actions/types";
 import {AppState} from "../../index";
 import {updateImage} from "../pattern/actions";
+import {coordHelper} from "../../../components/Area/canvasPosition.servise";
 
 export enum ERoomAction {
     CREATE_ROOM = "pattern/create-room",
@@ -11,7 +12,9 @@ export enum ERoomAction {
     IMAGE_SENT = "pattern/room/image-sent",
     MESSAGE_SENT = "pattern/room/message-sent",
     RECEIVE_MESSAGE = "pattern/room/receive-message",
+    RESET_UNREADED = "pattern/room/reset-unreaded",
     RECEIVE_DRAWER = "pattern/room/receive-drawer",
+    RECEIVE_MEMBERS = "pattern/room/receive-members",
     SET_DRAWER = "pattern/room/set-drawer",
     UPDATE_PROPS = "pattern/room/update-props",
 }
@@ -23,11 +26,16 @@ export interface CreateRoomAction extends PatternAction {
 
 export interface ReceiveMessageAction extends PatternAction {
     message: string
+    isMine: boolean
 }
 
 export interface ReceiveDrawerAction extends PatternAction {
     drawer: string
     meDrawer: boolean
+}
+
+export interface ReceiveMembersAction extends PatternAction {
+    members: number
 }
 
 export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoomAction, AppState> =>
@@ -40,12 +48,17 @@ export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoom
             });
         });
 
-        socket.on("message", message => {
-            dispatch(receiveMessage(id, message));
+        socket.on("message", (message, isMine) => {
+            console.log(isMine ? 'МОЁ' : 'NO');
+            dispatch(receiveMessage(id, message, isMine));
         });
 
         socket.on("drawer_setted", drawer => {
             dispatch(receiveDrawer(id, drawer));
+        });
+
+        socket.on("set_members", drawer => {
+            dispatch(receiveMembers(id, drawer));
         });
 
         return dispatch({type: ERoomAction.CREATE_ROOM, id, roomName, socket})
@@ -90,11 +103,13 @@ export const setDrawer = (id: string): ThunkResult<PatternAction, AppState> =>
         return dispatch({type: ERoomAction.SET_DRAWER, id})
     };
 
-export const receiveMessage = (id: string, message: string): ReceiveMessageAction => ({
+export const receiveMessage = (id: string, message: string, isMine: boolean): ReceiveMessageAction => ({
     type: ERoomAction.RECEIVE_MESSAGE,
     message,
+    isMine,
     id,
 })
+export const resetUnreaded = (id: string): PatternAction => ({type: ERoomAction.RESET_UNREADED, id});
 
 export const receiveDrawer = (id: string, drawer: string) =>
     (dispatch, getState) => {
@@ -108,3 +123,9 @@ export const receiveDrawer = (id: string, drawer: string) =>
             id,
         })
     }
+
+export const receiveMembers = (id: string, members: string): ReceiveMembersAction => ({
+    type: ERoomAction.RECEIVE_MEMBERS,
+    members: +members,
+    id,
+});

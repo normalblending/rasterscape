@@ -108,7 +108,7 @@ class ChangeFComponent extends React.PureComponent<ChangeFProps, ChangeFState> {
                                     <Button className={'function-id'}>{id}</Button>
                                     <Button
                                         value={id}
-                                        onClick={this.handleDelete}
+                                        onDoubleClick={this.handleDelete}
                                         className={'function-delete'}>delete</Button>
                                 </div>
                                 <Component

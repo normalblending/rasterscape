@@ -6,7 +6,7 @@ export const patternValues = new (class PatternValues {
     } = {};
 
     setValue = (id, image, mask) => {
-        this.values[id] = getMaskedImage(image, mask);
+        this.values[id] = getMaskedImage(image, mask, true);
         return true;
     }
 })();

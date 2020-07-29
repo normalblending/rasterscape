@@ -25,12 +25,10 @@ const BrushSizeComponent: React.FC<BrushSizeProps> = ({t}) => {
                 {t('brush.size')}
             </span></div>
             <div className={'subheader-help'}><span>
-                {t('brush.howToChange')}
-            </span></div>
-            <div className={'subheader-help'}><span>
+            <div className={'small-text-help'}><span>
                 {t('brush.howToSeeMenu.hover')}
-                <span className={'help-red-text'}>◧</span>
-                {t('brush.howToSeeMenu.toSeeMenu')}
+                <span className={'help-red-text'}>▮</span>
+                {t('brush.howToSeeMenu.toSeeMenu')}</span></div>
             </span></div>
         </div>
     );

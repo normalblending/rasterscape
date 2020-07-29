@@ -158,7 +158,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         return (
             <div className="pattern">
                 <div className="left">
-                    <div className="plugins">
+                    <div className="flex-col">
 
                         {config.repeating &&
                         <RepeatingControls patternId={id}/>}
@@ -175,7 +175,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         {config.room &&
                         <RoomControls patternId={id}/>}
 
-                        <div className={'plugins-toggles'}>
+                        <div className={'flex-row'}>
                             <ButtonSelect
                                 name={"mask"}
                                 selected={config.mask}
@@ -201,26 +201,50 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 selected={config.video}
                                 onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonSelect>
                         </div>
-                    </div>
-                    <div className="pattern-controls">
 
-                        <Button onClick={this.handleRemove}
-                                className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
-                        <Button onClick={this.handleDouble}>{t('patternControls.double')}</Button>
-                        <div className={'save-load-sizes'}>
-                            <div>
-                                <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
-                                <File
-                                    name={id + '-fileInput'}
-                                    onChange={this.handleLoad}>{t('patternControls.load')}</File>
+                    </div>
+                    <div className={'flex-row'}>
+                        {config.history &&
+                        <HistoryControls patternId={id}/>}
+                        <div className={'flex-col'}>
+                            <div className={'flex-row'}>
+                                <HelpTooltip message={t('patternControlsHelp.width')}>
+                                    <InputNumber
+                                        className={"size-input-number"}
+                                        onChange={this.handleSetWidth}
+                                        value={width}
+                                        {...inputNumberProps}/>
+                                </HelpTooltip>
+                                <HelpTooltip message={t('patternControlsHelp.height')}>
+                                    <InputNumber
+                                        className={"size-input-number"}
+                                        onChange={this.handleSetHeight}
+                                        value={height}
+                                        {...inputNumberProps}/>
+                                </HelpTooltip>
+                            </div>
+                            <div className={'flex-row'}>
                                 <HelpTooltip secondaryMessage={t('patternControlsHelp.stretch')}>
                                     <ButtonSelect
                                         selected={this.props.importParams.fit}
                                         onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
                                 </HelpTooltip>
+                                <File
+                                    name={id + '-fileInput'}
+                                    onChange={this.handleLoad}>{t('patternControls.load')}</File>
                             </div>
-
                         </div>
+
+                    </div>
+                    <div className="flex-row">
+
+                        <Button
+                            onDoubleClick={this.handleRemove}
+                            className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
+                        <Button
+                            onClick={this.handleDouble}>{t('patternControls.double')}</Button>
+                        <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
+
                     </div>
                 </div>
 
@@ -265,25 +289,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                             height={height}
                             onSelectionChange={this.handleSelectionChange}
                             onImageChange={this.handleMaskChange}/>}
-                    </div>
-
-                    {config.history &&
-                    <HistoryControls patternId={id}/>}
-                    <div className={'pattern-sizes'}>
-                        <HelpTooltip message={t('patternControlsHelp.width')}>
-                            <InputNumber
-                                className={"size-input-number"}
-                                onChange={this.handleSetWidth}
-                                value={width}
-                                {...inputNumberProps}/>
-                        </HelpTooltip>
-                        <HelpTooltip  message={t('patternControlsHelp.height')}>
-                            <InputNumber
-                                className={"size-input-number"}
-                                onChange={this.handleSetHeight}
-                                value={height}
-                                {...inputNumberProps}/>
-                        </HelpTooltip>
                     </div>
                 </div>
 
