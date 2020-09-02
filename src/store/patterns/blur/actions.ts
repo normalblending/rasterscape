@@ -14,5 +14,10 @@ export const setBlur = (id: string, blur: BlurValue): SetBlurAction =>
     ({type: EBlurAction.SET_BLUR, id, blur});
 
 export const blurOnce = (id: string) => (dispatch) => {
-    dispatch(updateImage(id, null, true, true));
+    dispatch(updateImage({
+        id,
+        imageData: null,
+        emit: true,
+        blur: true
+    }));
 };

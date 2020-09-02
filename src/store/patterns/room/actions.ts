@@ -4,7 +4,6 @@ import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helper
 import {ThunkResult} from "../../../utils/actions/types";
 import {AppState} from "../../index";
 import {updateImage} from "../pattern/actions";
-import {coordHelper} from "../../../components/Area/canvasPosition.servise";
 
 export enum ERoomAction {
     CREATE_ROOM = "pattern/create-room",
@@ -44,7 +43,7 @@ export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoom
 
         socket.on("image", base64 => {
             base64ToImageData(base64).then(imageData => {
-                dispatch(updateImage(id, imageData, false));
+                dispatch(updateImage({id, imageData, emit: false}));
             });
         });
 
@@ -53,11 +52,11 @@ export const createRoom = (id: string, roomName: string): ThunkResult<CreateRoom
             dispatch(receiveMessage(id, message, isMine));
         });
 
-        socket.on("drawer_setted", drawer => {
+        socket.on("drawer", drawer => {
             dispatch(receiveDrawer(id, drawer));
         });
 
-        socket.on("set_members", drawer => {
+        socket.on("members", drawer => {
             dispatch(receiveMembers(id, drawer));
         });
 
@@ -80,9 +79,12 @@ export const sendImage = (id: string, resultImageData: ImageData): ThunkResult<P
     (dispatch, getState) => {
         const socket = getState().patterns[id]?.room?.value?.socket;
 
-        socket && socket.emit("image", imageDataToBase64(resultImageData));
+        if (socket) {
 
-        return dispatch({type: ERoomAction.IMAGE_SENT, id})
+            socket.emit("image", imageDataToBase64(resultImageData));
+
+            return dispatch({type: ERoomAction.IMAGE_SENT, id})
+        }
     };
 
 export const sendMessage = (id: string, message: string): ThunkResult<PatternAction, AppState> =>
@@ -98,7 +100,7 @@ export const setDrawer = (id: string): ThunkResult<PatternAction, AppState> =>
     (dispatch, getState) => {
         const socket = getState().patterns[id].room?.value?.socket;
 
-        socket && socket.emit("set_drawer", socket.id);
+        socket && socket.emit("drawer", socket.id);
 
         return dispatch({type: ERoomAction.SET_DRAWER, id})
     };

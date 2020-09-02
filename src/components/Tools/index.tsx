@@ -12,6 +12,7 @@ import {reverseFullScreen} from "../../store/fullscreen";
 import * as classNames from "classnames";
 import "../../styles/tools.scss";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export const ToolsParams = {
     [EToolType.Brush]: {component: Brush, type: EToolType.Brush},
@@ -42,17 +43,16 @@ const ToolsComponent: React.FC<ToolsProps> = ({t, i18n, currentTool, setCurrentT
     const ToolControls = ToolsParams[currentTool].component;
     return (
         <div className={classNames("tools", className)}>
-            <div>
-                <HelpTooltip message={t('tools.tools')}>
-                    {Object.keys(ToolsParams).map(toolType => (
-                        <ButtonSelect
-                            key={toolType}
-                            selected={toolType === currentTool}
-                            onClick={() => setCurrentTool(ToolsParams[toolType].type)}>
-                            {t(`tools.${toolType.toLowerCase()}`)}
-                        </ButtonSelect>
-                    ))}
-                </HelpTooltip>
+            <div className={'tools-select'}>
+                {Object.keys(ToolsParams).map(toolType => (
+                    <ButtonHK
+                        path={'tool' + toolType}
+                        key={toolType}
+                        selected={toolType === currentTool}
+                        onClick={() => setCurrentTool(ToolsParams[toolType].type)}>
+                        {t(`tools.${toolType.toLowerCase()}`)}
+                    </ButtonHK>
+                ))}
             </div>
             <ToolControls/>
         </div>

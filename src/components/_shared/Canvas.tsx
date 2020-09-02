@@ -102,6 +102,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.canvasRef.current.addEventListener("mouseenter", this.mouseEnterHandler);
         this.canvasRef.current.addEventListener("mouseleave", this.mouseLeaveHandler);
 
+        this.canvasRef.current.addEventListener("touchstart", this.mouseDownHandler);
+        this.canvasRef.current.addEventListener("touchmove", this.mouseMoveHandler);
+
         this.receiveImageData();
     }
 
@@ -110,6 +113,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.canvasRef.current.removeEventListener("mousemove", this.mouseMoveHandler);
         this.canvasRef.current.removeEventListener("mouseenter", this.mouseEnterHandler);
         this.canvasRef.current.removeEventListener("mouseleave", this.mouseLeaveHandler);
+
+        this.canvasRef.current.removeEventListener("touchstart", this.mouseDownHandler);
+        this.canvasRef.current.removeEventListener("touchmove", this.mouseMoveHandler);
     }
 
     componentDidUpdate(prevProps) {
@@ -136,6 +142,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
      * */
 
     private mouseDownHandler = e => {
+        e.preventDefault(); // начал делать хендлеры тач ивентов
+
         if (this.props.pointerLock) {
             this.canvasRef.current.requestPointerLock();
         }
@@ -146,6 +154,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         document.addEventListener("mouseup", this.mouseUpHandler);
         document.addEventListener("mousemove", this.mouseDragHandler);
+
+        document.addEventListener("touchend", this.mouseUpHandler);
+        document.addEventListener("touchmove", this.mouseDragHandler);
 
         this.e = e;
         this.setState({
@@ -238,7 +249,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     };
 
     getCanvasRelatedEvent = (e) => {
-        const {top, left, box} = getOffset(this.canvasRef.current);
+        const offset = getOffset(this.canvasRef.current);
+
+        if (!offset) return;
+
+        const {top, left, box} = offset;
         const canvasCenter = {
             x: left + box.width / 2,
             y: top + box.height / 2
@@ -327,6 +342,9 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         document.removeEventListener("mouseup", this.mouseUpHandler);
         document.removeEventListener("mousemove", this.mouseDragHandler);
+
+        document.removeEventListener("touchend", this.mouseUpHandler);
+        document.removeEventListener("touchmove", this.mouseDragHandler);
 
         if (this.props.pointerLock) {
             document.exitPointerLock();

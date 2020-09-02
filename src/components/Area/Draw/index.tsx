@@ -19,9 +19,11 @@ import {brushSquare} from "./tools/brushSquare";
 import {brushCircle} from "./tools/brushCircle";
 import {brushPattern} from "./tools/brushPattern";
 import {lineSolid} from "./tools/lineSolid";
-import {lineBroken} from "./tools/lineBroken";
-import {lineBrokenTransparent} from "./tools/lineBrokenTransparent";
-import {linePattern} from "./tools/linePattern";
+import {lineBroken} from "./tools/old/lineBroken";
+import {lineBrokenTransparent} from "./tools/old/lineBrokenTransparent";
+import {linePattern} from "./tools/old/linePattern";
+import {lineSolidPattern} from "./tools/lineSolidPattern";
+import {lineTrailingPattern} from "./tools/lineTrailingPattern";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -68,6 +70,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             [ELineType.Broken]: lineBroken.call(this),
             [ELineType.BrokenTransparent]: lineBrokenTransparent.call(this),
             [ELineType.Pattern]: linePattern.call(this),
+            [ELineType.SolidPattern]: lineSolidPattern.call(this),
+            [ELineType.TrailingPattern]: lineTrailingPattern.call(this),
         },
     };
 
@@ -97,7 +101,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         if (!drawing) {
             this.setState({
-                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern)
+                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true)
             });
         } else {
 
@@ -117,7 +121,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         stopChanging();
 
-        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern)})
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true)})
     };
 
     getHandlers = () => {

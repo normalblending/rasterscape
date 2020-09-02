@@ -6,8 +6,11 @@ export interface DrawMaskedDrawFunctionParams {
 }
 
 export type DrawMaskedDrawFunction = ({context, canvas}: DrawMaskedDrawFunctionParams) => void;
-export const drawMasked = (maskImageData: ImageData, draw: DrawMaskedDrawFunction) => {
-    const {canvas, context} = createCanvas(maskImageData.width, maskImageData.height);
+export const drawMasked = (maskImageData: ImageData, draw: DrawMaskedDrawFunction, canvasElement?: HTMLCanvasElement) => {
+    const {canvas, context} = canvasElement ? {
+            canvas: canvasElement,
+            context: canvasElement.getContext('2d')
+        } : createCanvas(maskImageData.width, maskImageData.height);
 
     if (maskImageData) {
         context.putImageData(maskImageData, 0, 0);
@@ -39,9 +42,10 @@ export const drawMaskedWithRotation = (
     maskImageData: ImageData,
     angle: number,
     x: number, y: number,
-    draw: DrawMaskedDrawFunction
+    draw: DrawMaskedDrawFunction,
+    canvasElement?: HTMLCanvasElement
 ) => {
-    const {canvas, context} = drawMasked(maskImageData, drawWithRotation(angle, x, y, draw));
+    const {canvas, context} = drawMasked(maskImageData, drawWithRotation(angle, x, y, draw), canvasElement);
 
     return {canvas, context};
 };
@@ -86,10 +90,12 @@ export const drawMaskedWithRotationAndOffset = (
     xd: number, yd: number,
     x: number, y: number,
     draw: DrawMaskedDrawFunction,
+    canvasElement?: HTMLCanvasElement
 ) => {
     const {canvas, context} = drawMasked(
         maskImageData,
-        drawWithRotationAndOffset(angleB, angleD, xc, yc, xd, yd, x, y, draw)
+        drawWithRotationAndOffset(angleB, angleD, xc, yc, xd, yd, x, y, draw),
+        canvasElement
     );
 
     return {canvas, context};

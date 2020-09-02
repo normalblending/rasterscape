@@ -9,6 +9,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {AppState} from "../../store";
 import {setRepeating} from "../../store/patterns/repeating/actions";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export interface RepeatingControlsStateProps {
 
@@ -73,6 +74,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
     };
 
     render() {
+
+        const {patternId} = this.props;
         const {type, gridParams} = this.props.repeating;
         return (
             <div className={'repeating-controls'}>
@@ -80,11 +83,12 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                     <div className={'repeating-controls-grid'}>
                         <div className={'repeating-controls-grid-buttons'}>
                             <div className={'repeating-controls-grid-buttons-row'}>
-                                <ButtonSelect
+                                <ButtonHK
+                                    path={`pattern.${patternId}.repeating.float`}
                                     className={'repeating-button'}
                                     name={"float"}
                                     onClick={this.handleBoolParamChange}
-                                    selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonSelect>
+                                    selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonHK>
                                 <ButtonNumberCF
                                     pres={gridParams.float ? 2 : 1}
                                     range={repeatingRange}
@@ -107,11 +111,12 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                             </div>
 
                             <div className={'repeating-controls-grid-buttons-row'}>
-                                <ButtonSelect
+                                <ButtonHK
+                                    path={`pattern.${patternId}.repeating.flat`}
                                     className={'repeating-button'}
                                     name={"flat"}
                                     onClick={this.handleBoolParamChange}
-                                    selected={gridParams.flat}>{gridParams.flat ? "flat" : "flat"}</ButtonSelect>
+                                    selected={gridParams.flat}>{gridParams.flat ? "flat" : "flat"}</ButtonHK>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}

@@ -3,6 +3,8 @@ import * as classNames from "classnames";
 import {ButtonSelect} from "./ButtonSelect";
 import {ButtonEventData} from "./Button";
 import '../../../styles/selectButtonsStyles.scss';
+import {ButtonHK} from "./ButtonHK";
+import {Button} from "bbuutoonnss";
 
 export interface SelectButtonsEventData extends ButtonEventData {
     item: any
@@ -22,13 +24,19 @@ export interface SelectButtonsProps {
 
     onChange?(data?: SelectButtonsEventData)
 
+    onItemMouseEnter?(data?: SelectButtonsEventData)
+
+    onItemMouseLeave?(data?: SelectButtonsEventData)
+
     getValue?(item?: any)
 
     getText?(item?: any)
+
+    HK?: boolean
 }
 
-export const defaultGetValue = ({value}) => value;
-export const defaultGetText = ({text}) => text;
+export const defaultGetValue = (item) => item?.value;
+export const defaultGetText = (item) => item?.text;
 
 export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
 
@@ -48,25 +56,38 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
     };
 
     render() {
-        const {className, items, value, name, getValue = defaultGetValue, getText = defaultGetText, br, width} = this.props;
+        const {
+            className,
+            items,
+            value,
+            name,
+            getValue = defaultGetValue,
+            getText = defaultGetText,
+            br,
+            width,
+            onItemMouseEnter,
+            onItemMouseLeave,
+            HK = true,
+        } = this.props;
 
-        console.log("select buttons render", items);
+        const ButtonComponent = HK ? ButtonHK : ButtonSelect;
 
         return (
             <div className={classNames(className, "select-buttons")} style={{width: br ? br * (+width || 70) : 'auto'}}>
                 <div className={"select-buttons-items"}>
                     {items.map((item, index) => (
-                        <ButtonSelect
+                        <ButtonComponent
+                            path={`${name}-${getValue(item)}`}
                             width={width}
                             value={item}
                             key={index}
                             selected={getValue(item) === value}
-                            // onMouseUp={(e) => {
-                            //     console.log(e)
-                            // }}
+                            onMouseEnter={onItemMouseEnter}
+                            onMouseLeave={onItemMouseLeave}
+
                             onClick={this.handleClick}>
                             {getText(item)}
-                        </ButtonSelect>
+                        </ButtonComponent>
                     ))}
                 </div>
             </div>

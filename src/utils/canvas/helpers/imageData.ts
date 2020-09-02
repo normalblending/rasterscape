@@ -103,4 +103,17 @@ export const copyImageData = (imageData: ImageData): ImageData => {
     );
 };
 
+export const getColorByCoordinate = (imageData: ImageData, x, y) => {
+    if (!imageData)
+        return;
+
+    const i = (x + y * imageData.width) * 4;
+    return [
+        imageData.data[i],
+        imageData.data[i + 1],
+        imageData.data[i + 2],
+        imageData.data[i + 3],
+    ]
+};
+
 

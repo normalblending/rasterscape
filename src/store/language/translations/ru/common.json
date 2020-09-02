@@ -32,11 +32,18 @@
     "sizePattern": "размер"
   },
 
+  "line": {
+    "center": "центр",
+    "direction": "направ-е"
+  },
+
   "lineTypes": {
     "solid": "цельная",
     "broken": "ломаная",
     "transp": "прозр-ая",
-    "pattern": "паттерн"
+    "pattern": "паттерн",
+    "solidpattern": "паттерн 1",
+    "trailingpattern": "паттерн 2"
   },
 
   "selectTypes": {
@@ -50,7 +57,7 @@
   "plugins": {
     "repeating": "повторы",
     "rotating": "поворот",
-    "video": "видео",
+    "video": "камера",
     "mask": "маска",
     "room": "комната",
     "blur": "размытие"

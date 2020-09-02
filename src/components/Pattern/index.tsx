@@ -11,7 +11,7 @@ import {SelectionControls} from "./SelectionControls";
 import {MaskParams} from "../../store/patterns/mask/types";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {ImportParams} from "../../store/patterns/import/types";
-import {PatternConfig} from "../../store/patterns/pattern/types";
+import {PatternConfig, UpdateOptions} from "../../store/patterns/pattern/types";
 import {StoreState} from "../../store/patterns/store/types";
 import {Segments, SelectionState} from "../../store/patterns/selection/types";
 import {VideoControls} from "./VideoControls";
@@ -20,12 +20,14 @@ import {File} from "../_shared/File";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {updateMask} from "../../store/patterns/mask/actions";
-import {editConfig, updateImage} from "../../store/patterns/pattern/actions";
+import {doublePattern, editConfig, updateImage} from "../../store/patterns/pattern/actions";
 import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./Room/RoomControls";
 import {BlurControls} from "./BlurControls";
 import '../../styles/inputNumber.scss';
 import {HelpTooltip} from "../tutorial/HelpTooltip";
+import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export interface PatternComponentStateProps {
 
@@ -47,13 +49,19 @@ export interface PatternComponentStateProps {
 
 export interface PatternComponentActionProps {
 
-    updateImage(id: string, imageData: ImageData)
+    updateImage(options: UpdateOptions)
 
     updateMask(id: string, imageData: ImageData)
 
     editConfig(id: string, config: PatternConfig)
 
     setImportParams(id: string, value: ImportParams)
+
+    doublePattern(id: string)
+
+    createPatternFromSelection(id: string)
+
+    cutPatternBySelection(id: string)
 
 }
 
@@ -74,8 +82,6 @@ export interface PatternComponentProps extends PatternComponentStateProps, Patte
 
     onRemove(id: string)
 
-    onDouble(id: string)
-
     onSetWidth(id: string, width: number)
 
     onSetHeight(id: string, height: number)
@@ -84,10 +90,6 @@ export interface PatternComponentProps extends PatternComponentStateProps, Patte
     onLoad(id: string, image)
 
     onSave(id: string)
-
-    onCreatePatternFromSelection(id: string)
-
-    onCutBySelection(id: string)
 }
 
 export interface PatternComponentState {
@@ -98,7 +100,7 @@ const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true}
 export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
 
-    handleImageChange = imageData => this.props.updateImage(this.props.id, imageData);
+    handleImageChange = imageData => this.props.updateImage({id: this.props.id, imageData});
 
     handleMaskChange = imageData => this.props.updateMask(this.props.id, imageData);
 
@@ -110,7 +112,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
     handleRemove = () => this.props.onRemove(this.props.id);
 
-    handleDouble = () => this.props.onDouble(this.props.id);
+    handleDouble = () => this.props.doublePattern(this.props.id);
 
     handleSetWidth = width => this.props.onSetWidth(this.props.id, width);
 
@@ -140,10 +142,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
     };
 
     handleCreatePatternFromSelection = () => {
-        this.props.onCreatePatternFromSelection(this.props.id)
+        this.props.createPatternFromSelection(this.props.id)
     };
     handleCutBySelection = () => {
-        this.props.onCutBySelection(this.props.id)
+        this.props.cutPatternBySelection(this.props.id)
     };
 
     render() {
@@ -176,30 +178,36 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         <RoomControls patternId={id}/>}
 
                         <div className={'flex-row'}>
-                            <ButtonSelect
+                            <ButtonHK
+                                path={`pattern.${id}.mask`}
                                 name={"mask"}
                                 selected={config.mask}
-                                onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonSelect>
-                            <ButtonSelect
+                                onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonHK>
+                            <ButtonHK
+                                path={`pattern.${id}.repeating`}
                                 name={"repeating"}
                                 selected={config.repeating}
-                                onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonSelect>
-                            <ButtonSelect
+                                onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonHK>
+                            <ButtonHK
+                                path={`pattern.${id}.rotation`}
                                 name={"rotation"}
                                 selected={config.rotation}
-                                onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonSelect>
-                            <ButtonSelect
+                                onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonHK>
+                            <ButtonHK
+                                path={`pattern.${id}.blur`}
                                 name={"blur"}
                                 selected={config.blur}
-                                onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonSelect>
-                            <ButtonSelect
+                                onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonHK>
+                            <ButtonHK
+                                path={`pattern.${id}.room`}
                                 name={"room"}
                                 selected={config.room}
-                                onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonSelect>
-                            <ButtonSelect
+                                onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonHK>
+                            <ButtonHK
+                                path={`pattern.${id}.video`}
                                 name={"video"}
                                 selected={config.video}
-                                onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonSelect>
+                                onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonHK>
                         </div>
 
                     </div>
@@ -208,27 +216,21 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         <HistoryControls patternId={id}/>}
                         <div className={'flex-col'}>
                             <div className={'flex-row'}>
-                                <HelpTooltip message={t('patternControlsHelp.width')}>
-                                    <InputNumber
-                                        className={"size-input-number"}
-                                        onChange={this.handleSetWidth}
-                                        value={width}
-                                        {...inputNumberProps}/>
-                                </HelpTooltip>
-                                <HelpTooltip message={t('patternControlsHelp.height')}>
-                                    <InputNumber
-                                        className={"size-input-number"}
-                                        onChange={this.handleSetHeight}
-                                        value={height}
-                                        {...inputNumberProps}/>
-                                </HelpTooltip>
+                                <InputNumber
+                                    className={"size-input-number"}
+                                    onChange={this.handleSetWidth}
+                                    value={width}
+                                    {...inputNumberProps}/>
+                                <InputNumber
+                                    className={"size-input-number"}
+                                    onChange={this.handleSetHeight}
+                                    value={height}
+                                    {...inputNumberProps}/>
                             </div>
                             <div className={'flex-row'}>
-                                <HelpTooltip secondaryMessage={t('patternControlsHelp.stretch')}>
-                                    <ButtonSelect
-                                        selected={this.props.importParams.fit}
-                                        onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
-                                </HelpTooltip>
+                                <ButtonSelect
+                                    selected={this.props.importParams.fit}
+                                    onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
                                 <File
                                     name={id + '-fileInput'}
                                     onChange={this.handleLoad}>{t('patternControls.load')}</File>
@@ -300,7 +302,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
 const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternComponentOwnProps, AppState> = (state, {id}) => {
     const pattern = state.patterns[id];
-    console.log(!pattern.room?.value?.connected, pattern.room?.value?.meDrawer);
     return {
         importParams: pattern.import.params,
         meDrawer: !pattern.room?.value?.connected || pattern.room?.value?.meDrawer,
@@ -308,7 +309,7 @@ const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternCompon
         width: pattern.current.width,
         height: pattern.current.height,
         selection: pattern?.selection,
-        rotation: pattern?.rotation?.value,
+        rotation: pattern.config.rotation ? pattern?.rotation?.value : null,
         imageValue: pattern?.current?.imageData || null,
         maskValue: pattern?.mask?.value?.imageData || null,
     }
@@ -319,6 +320,9 @@ const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, Patter
     updateMask,
     editConfig,
     setImportParams,
+    doublePattern,
+    createPatternFromSelection,
+    cutPatternBySelection,
 };
 
 export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(

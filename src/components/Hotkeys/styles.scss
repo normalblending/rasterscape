@@ -1,0 +1,25 @@
+.hotkeys {
+
+  .hotkeys-list {
+    position: absolute;
+    top: 20px;
+    right: 0;
+
+    border: 1px solid red;
+
+
+    width: 300px;
+    padding: 10px 25px;
+    //height: 500px;
+
+    display: flex;
+    flex-direction: column;
+    .hotkeys-list-item {
+      width: 100%;
+      justify-content: space-between;
+      display: flex;
+      flex-direction: row;
+
+    }
+  }
+}

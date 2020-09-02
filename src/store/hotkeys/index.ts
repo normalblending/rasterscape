@@ -4,6 +4,8 @@ import {Action} from "redux";
 export enum EHotkeysAction {
     ADD = "hotkeys/add",
     REMOVE = "hotkeys/remove",
+    SET_SETTING = "hotkeys/setting-set",
+    CLEAR = "hotkeys/clear",
 }
 
 export interface ButtonsHotkeys {
@@ -11,7 +13,8 @@ export interface ButtonsHotkeys {
 }
 
 export interface HotkeysState {
-    keys: ButtonsHotkeys
+    keys: ButtonsHotkeys,
+    setting: boolean
 }
 
 export const hotkeysReducer = handleActions<HotkeysState>({
@@ -35,8 +38,21 @@ export const hotkeysReducer = handleActions<HotkeysState>({
             keys,
         }
     },
+    [EHotkeysAction.SET_SETTING]: (state, action: SettingModeAction) => {
+        return {
+            ...state,
+            setting: action.state,
+        }
+    },
+    [EHotkeysAction.CLEAR]: (state) => {
+        return {
+            ...state,
+            keys: {},
+        }
+    },
 }, {
-    keys: {}
+    keys: {},
+    setting: false,
 });
 
 
@@ -55,4 +71,16 @@ export interface RemoveHotkeyAction extends Action {
 
 export const removeHotkey = (path: string): RemoveHotkeyAction => ({
     type: EHotkeysAction.REMOVE, path
+});
+
+export interface SettingModeAction extends Action {
+    state: boolean
+}
+
+export const settingMode = (state: boolean): SettingModeAction => ({
+    type: EHotkeysAction.SET_SETTING, state
+});
+
+export const clearHotkeys = (): Action => ({
+    type: EHotkeysAction.CLEAR
 });

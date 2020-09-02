@@ -36,60 +36,42 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
     // }
 
     handleParamChange = ({value, name}) => {
-        this.props.onChange({...this.props.params, [name]: value}, this.props.name)
+        this.props.onChange({...this.props.params, [name.split('.').reverse()[0]]: value}, this.props.name)
     };
-
-    buttonWrapper = (message) => {
-        const {tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                // secondaryMessage={message === 'period' &&
-                // <span>negative value for movement<br/> in the opposite direction</span>}
-                message={message}>{button}</HelpTooltip>) : null
-    };
-
-    buttonWrapperMin = this.buttonWrapper('min value');
-    buttonWrapperMax = this.buttonWrapper('max value');
-    buttonWrapperPeriod = this.buttonWrapper('period');
 
     render() {
         const {params, onChange, name} = this.props;
         return (
             <div className={"saw-change-function"}>
-                <HelpTooltip component={SinHelp} componentProps={{name}}>
-                    <Saw
-                        width={68}
-                        height={58}
-                        params={params}
-                    />
-                </HelpTooltip>
+                <Saw
+                    width={68}
+                    height={58}
+                    params={params}
+                />
                 <div className={'saw-controls'}>
                     <ButtonNumberCF
                         pres={2}
                         // valueD={100}
-                        buttonWrapper={this.buttonWrapperMin}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.start`}
                         value={params.start}
-                        name={"start"}
+                        name={`changeFunctions.${name}.start`}
                         range={seRange}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
                         pres={2}
                         // valueD={100}
-                        buttonWrapper={this.buttonWrapperMax}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.end`}
                         value={params.end}
-                        name={"end"}
+                        name={`changeFunctions.${name}.end`}
                         range={seRange}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
                         pres={0}
-                        buttonWrapper={this.buttonWrapperPeriod}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.t`}
                         value={params.t}
-                        name={"t"}
+                        name={`changeFunctions.${name}.t`}
                         range={tRange}
                         onChange={this.handleParamChange}
                     />

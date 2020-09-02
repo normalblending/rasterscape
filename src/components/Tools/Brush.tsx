@@ -96,29 +96,19 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
     const selectTypeText = React.useMemo(() =>
         item => t(`brushTypes.${item.text.toLowerCase()}`), [t]);
 
-    const patternSizeHelp = React.useMemo(() =>
-        ({button}) => <HelpTooltip message={t('brush.sizePattern')}>{button}</HelpTooltip>, []);
-    const brushSizeHelp = React.useMemo(() =>
-        ({button}) => <HelpTooltip component={BrushSizeHelp}>{button}</HelpTooltip>, []);
-    const opacityHelp = React.useMemo(() =>
-        ({button}) => <HelpTooltip message={t('brush.opacity')}>{button}</HelpTooltip>, []);
-
     return (
         <div className='brush-tool'>
-            <HelpTooltip message={t('brushTypes.brushType')}>
-                <SelectButtons
-                    value={paramsValue.type}
-                    getText={selectTypeText}
-                    items={brushTypeSelectItems}
-                    onChange={handleTypeChange}/>
-            </HelpTooltip>
+            <SelectButtons
+                value={paramsValue.type}
+                getText={selectTypeText}
+                items={brushTypeSelectItems}
+                onChange={handleTypeChange}/>
 
             <div className='brush-params'>
 
                 {paramsValue.type === EBrushType.Pattern ?
 
                     <ButtonNumberCF
-                        buttonWrapper={patternSizeHelp}
                         pres={2}
                         valueD={100}
                         precisionGain={10}
@@ -131,7 +121,6 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                     :
 
                     <ButtonNumberCF
-                        buttonWrapper={brushSizeHelp}
                         pres={0}
                         valueD={1}
                         path={"brush.params.size"}
@@ -142,7 +131,6 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                 }
 
                 <ButtonNumberCF
-                    buttonWrapper={opacityHelp}
                     pres={2}
                     valueD={100}
                     precisionGain={5}
@@ -153,21 +141,20 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                     onChange={handleOpacityChange}
                     range={opacityRange}/>
 
-                <HelpTooltip message={t('brush.blendMode')}>
-                    <SelectDrop
-                        value={paramsValue.compositeOperation}
-                        items={compositeOperationSelectItems}
-                        onChange={handleCompositeChange}/>
-                </HelpTooltip>
+                <SelectDrop
+                    value={paramsValue.compositeOperation}
+                    items={compositeOperationSelectItems}
+                    onChange={handleCompositeChange}/>
 
             </div>
 
-            {paramsValue.type === EBrushType.Pattern &&
-            <PatternsSelect
-                value={paramsValue.pattern}
-                onChange={handlePatternChange}
-            />
-            }
+            {paramsValue.type === EBrushType.Pattern && (
+                <PatternsSelect
+                    name={'brushPattern'}
+                    value={paramsValue.pattern}
+                    onChange={handlePatternChange}
+                />
+            )}
 
         </div>
     );

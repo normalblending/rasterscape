@@ -5,6 +5,7 @@ import {ButtonSelect} from "./_shared/buttons/ButtonSelect";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
+import {ButtonHK} from "./_shared/buttons/ButtonHK";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -14,6 +15,8 @@ export interface PatternsSelectActionProps {
 }
 
 export interface PatternsSelectOwnProps {
+    HK?: boolean
+    name?: string
     value?: string | string []
     onChange(value: string | string [], added: string, removed: string)
 }
@@ -26,7 +29,9 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
     const {
         patternsSelectItems,
         value,
-        onChange
+        onChange,
+        name,
+        HK = true,
     } = props;
 
     const handleClick = React.useCallback((data) => {
@@ -56,6 +61,8 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         }
     }, [onChange, value]);
 
+    const ButtonComponent = HK ? ButtonHK : ButtonSelect;
+
     return (
         <div className={'pattern-select'}>
                 {patternsSelectItems.map(({imageData, id}, i) => {
@@ -64,7 +71,8 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                     // const coef  = w/h > 1 ?
                     return (
                         <>
-                            <ButtonSelect
+                            <ButtonComponent
+                                path={`patternSelect.${name}.${id}`}
                                 className={'pattern-select-button'}
                                 width={42} height={42}
                                 value={id}
@@ -74,7 +82,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                                     width={40 * (w / h <= 1 ? w / h : 1)}
                                     height={40 * (w / h > 1 ? h / w : 1)}
                                     imageData={imageData}/>
-                            </ButtonSelect>
+                            </ButtonComponent>
                             {!((i + 1) % 5) ? <br/> : null}
                         </>
                     )

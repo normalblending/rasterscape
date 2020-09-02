@@ -108,7 +108,7 @@
 
           .room-chat-message {
             &.unreaded {
-              color: red;
+              color: blue;
             }
             &:after {
               content: ' ';

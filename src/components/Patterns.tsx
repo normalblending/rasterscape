@@ -11,7 +11,7 @@ import {PatternConfig} from "../store/patterns/pattern/types";
 import {setMaskParams, updateMask} from "../store/patterns/mask/actions";
 import {createPatternFromSelection, cutPatternBySelection, updateSelection} from "../store/patterns/selection/actions";
 import {load, save} from "../store/patterns/import/actions";
-import {doublePattern, setHeight, setWidth, updateImage} from "../store/patterns/pattern/actions";
+import {doublePattern, setHeight, setWidth} from "../store/patterns/pattern/actions";
 import {MaskParams} from "../store/patterns/mask/types";
 import {Segments} from "../store/patterns/selection/types";
 import {withTranslation, WithTranslation} from "react-i18next";
@@ -29,10 +29,6 @@ export interface PatternsActionProps {
 
     removePattern(id: string)
 
-    doublePattern(id: string)
-
-    updateImage(id: string, imageData: ImageData)
-
     updateMask(id: string, imageData: ImageData)
 
     setMaskParams(id: string, params: MaskParams)
@@ -47,10 +43,6 @@ export interface PatternsActionProps {
     save(id: string)
 
     load(id: string, image)
-
-    createPatternFromSelection(id: string)
-
-    cutPatternBySelection(id: string)
 
 }
 
@@ -80,7 +72,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             updateSelection, setWidth,
             setHeight,
             save, load,
-            createPatternFromSelection, doublePattern, cutPatternBySelection,
             t,
         } = this.props;
         return (
@@ -104,15 +95,12 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
                             onSave={save}
                             onLoad={load}
-                            onCreatePatternFromSelection={createPatternFromSelection}
-                            onDouble={doublePattern}
-                            onCutBySelection={cutPatternBySelection}
                         />
                     );
                 })}
                 <div className={'zero-pattern'}>
                     <Button onClick={this.handleAddClick}>{t("add")}</Button>
-                    <AddPatternHelp/>
+                    {/*<AddPatternHelp/>*/}
                 </div>
             </>
         );
@@ -128,16 +116,12 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     setMaskParams,
     addPattern,
     removePattern,
-    updateImage,
     updateSelection,
     setWidth,
     setHeight,
     updateMask,
     save,
     load,
-    createPatternFromSelection,
-    doublePattern,
-    cutPatternBySelection,
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

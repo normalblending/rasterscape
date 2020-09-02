@@ -2,13 +2,13 @@ import {enumToSelectItems} from "../../utils/utils";
 
 export enum ECompositeOperation {
     SourceOver = "source-over",
+    DestinationOut = "destination-out",
     SourceAtop = "source-atop",
     // SourceIn = "source-in",
     // SourceOut = "source-out",
     DestinationOver = "destination-over",
     // DestinationAtop = "destination-atop",
     // DestinationIn = "destination-in",
-    DestinationOut = "destination-out",
     Lighter = "lighter",
     // Copy = "copy",
     Xor = "xor",
@@ -37,7 +37,7 @@ export const CompositeOperationShortName = {
     [ECompositeOperation.DestinationOver]: "dest-over",
     // DestinationAtop = "destination-atop",
     // DestinationIn = "destination-in",
-    [ECompositeOperation.DestinationOut]: "dest-out",
+    [ECompositeOperation.DestinationOut]: "eraser",
     [ECompositeOperation.Lighter]: "lighter",
     // Copy = "copy",
     [ECompositeOperation.Xor]: "xor",

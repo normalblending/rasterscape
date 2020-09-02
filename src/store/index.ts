@@ -21,12 +21,14 @@ import {hotkeysReducer, HotkeysState} from "./hotkeys";
 import {PatternsState} from "./patterns/types";
 import {ChangeFunction, ECFType} from "./changeFunctions/types";
 import {tutorialReducer, TutorialState} from "./tutorial";
+import {changeFunctionHighlightsReducer, ChangeFunctionHighlightsState} from "./changeFunctionsHighlights";
 
 export interface AppState {
     fullScreen: FullScreenState
     language: LanguageState
     hotkeys: HotkeysState
     tutorial: TutorialState
+    changeFunctionHighlights: ChangeFunctionHighlightsState
 
     patterns: PatternsState
 
@@ -51,6 +53,7 @@ const rootReducer = reduceReducers(
         language: languageReducer,
         hotkeys: hotkeysReducer,
         tutorial: tutorialReducer,
+        changeFunctionHighlights: changeFunctionHighlightsReducer,
 
         patterns: patternsReducer,
 

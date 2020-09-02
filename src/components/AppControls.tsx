@@ -8,6 +8,7 @@ import * as classNames from "classnames";
 import {setLanguage} from "../store/language";
 import {activateTutorial} from "../store/tutorial";
 import '../styles/tutorial.scss';
+import {Hotkeys} from './Hotkeys';
 
 export interface AppControlsStateProps {
     isFull: boolean
@@ -32,12 +33,16 @@ export interface AppControlsProps extends AppControlsStateProps, AppControlsActi
 }
 
 export interface AppControlsState {
-
+    openHotkeys: boolean
 }
 
 const languages = ['en', 'ru'];
 
 class AppControlsComponent extends React.PureComponent<AppControlsProps, AppControlsState> {
+    state = {
+        openHotkeys: false,
+    }
+
     handleLanguage = () => {
         const {setLanguage, language, i18n} = this.props;
 
@@ -46,10 +51,17 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
         i18n.changeLanguage(newLang);
     };
 
+    toggleHotkeys = () => {
+        this.setState(({openHotkeys}) => ({
+            openHotkeys: !openHotkeys
+        }))
+    };
+
     render() {
         const {reverseFullScreen, isFull, activateTutorial, language, helpOn} = this.props;
         return (
             <div className='app-controls'>
+                <Hotkeys/>
                 <Button
                     className="app-control-button"
                     onClick={this.handleLanguage}>{language}</Button>

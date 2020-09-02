@@ -31,7 +31,7 @@ export const maskReducers = {
                     imageData: action.imageData
                 }
             },
-            resultImage: patternValues.setValue(action.id, pattern.current.imageData, action.imageData),
+            resultImage: patternValues.setValue(action.id, pattern.current.imageData, pattern.config.mask && action.imageData),
             history: pattern.history && historyPush(pattern.history, {
                 maskValue: pattern.mask.value
             })

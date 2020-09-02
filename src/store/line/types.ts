@@ -6,6 +6,8 @@ export enum ELineType {
     Broken = "broken",
     BrokenTransparent = "transp",
     Pattern = "Pattern",
+    SolidPattern = "SolidPattern",
+    TrailingPattern = "trailingPattern",
 }
 
 export enum ELineCapType {
@@ -27,6 +29,7 @@ export enum ELineRandomType {
 
 export interface LineParams {
     size: number
+    patternSize: number
     opacity: number
     type: ELineType
     compositeOperation: ECompositeOperation
@@ -35,6 +38,9 @@ export interface LineParams {
     cap: ELineCapType
     join: ELineJoinType
     random: ELineRandomType
+
+    patternDirection: boolean
+    patternMouseCentered: boolean
 }
 
 export interface SetLineParamsAction extends Action {

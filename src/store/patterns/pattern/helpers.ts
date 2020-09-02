@@ -12,6 +12,11 @@ export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T
 
 export const getPatternConfig = (pattern: PatternState): PatternConfig => {
     return {
+        ...pattern.config,
+        startImage: pattern.current.imageData,
+        startMask: pattern.mask ? pattern.mask.value.imageData : null,
+    };
+    return {
         startImage: pattern.current.imageData,
         startMask: pattern.mask ? pattern.mask.value.imageData : null,
 

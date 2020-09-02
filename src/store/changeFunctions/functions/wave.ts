@@ -63,17 +63,18 @@ const waveFunctionByType = {
     [WaveType.Saw]: ({startValue, range, params, time}) => {
         if (!params.t) return startValue;
 
-        const t = (time % params.t) / params.t; // смещение по времени внутри цыкла
+        const t = (time % params.t) / params.t; // смещение по времени внутри цыкла в процентах %
 
         const R = range[1] - range[0];
-        const S = params.start * (range[1] - range[0]);
-        const E = params.end * (range[1] - range[0]);
+        const S = params.start * R;
+        const E = params.end * R;
         const ES = E - S;
 
         const d = ES * t;
 
+        const SV = startValue - range[0];
 
-        const start = Math.min(Math.max(startValue, Math.min(S, E)), Math.max(S, E));
+        const start = Math.min(Math.max(SV, Math.min(S, E)), Math.max(S, E));
 
 
         let newValue = start + d;
@@ -87,13 +88,13 @@ const waveFunctionByType = {
             newValue -= Math.abs(ES);
         }
 
-        return newValue;
+        return newValue + range[0];
     },
     [WaveType.Noise]: (() => {
         let random = 0;
         let prevPeriod = 0;
         return ({startValue, range, params, time}) => {
-            const {start, end, f} = params;
+            const {start: amplitude, end, f} = params;
             const T = f;
             const period = Math.floor(time / T);
 
@@ -106,10 +107,10 @@ const waveFunctionByType = {
             }
 
 
-            const min = range[0] + (range[1] - range[0]) * start;
-            const max = range[0] + (range[1] - range[0]) * end;
+            const min = startValue - (range[1] - range[0]) * amplitude;
+            const max = startValue + (range[1] - range[0]) * amplitude;
 
-            const newValue = random * (max - min) + min;
+            const newValue = Math.min(Math.max(min + random * (max - min), range[0]), range[1]);
 
 
 

@@ -20,10 +20,18 @@ export interface SetVideoParamsAction extends PatternAction {
 }
 
 export const start = (patternId: string) => (dispatch, getState: () => AppState) => {
-
     Captures.start(
         patternId,
-        (pixels) => dispatch(updateImage(patternId, new ImageData(pixels, 320), false)),
+        (pixels, emit) => {
+            console.log('HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH');
+            dispatch(updateImage({
+                id: patternId,
+                imageData: new ImageData(pixels, 320),
+                emit: false,
+                blur: false,
+                noHistory: true,
+            }))
+        },
         (x, y, length) => {
             const state = getState();
 
@@ -61,34 +69,37 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
 };
 export const stop = (patternId: string) => (dispatch, getState: () => AppState) => {
     Captures.stop(patternId);
+    console.log('HHHHHHHHHHHHHHHHHHH000000000HHHHHHHHHHHHHHHHHHHH');
+    // dispatch(updateImage({id: patternId}));
 };
 export const pause = (patternId: string) => (dispatch, getState: () => AppState) => {
     Captures.pause(patternId);
+    console.log('HHHHHHHHHHHHHHHHHHH-------------HHHHHHHHHHHHHHHHHHHH');
+    // dispatch(updateImage({id: patternId}));
 
 };
 export const play = (patternId: string) => (dispatch, getState: () => AppState) => {
     Captures.play(patternId);
+    console.log('HHHHHHHHHHHHHHHHHHH++++++++++++++HHHHHHHHHHHHHHHHHHHH');
+    dispatch(updateImage({id: patternId}));
+    // dispatch(updateImage({id: patternId}));
 
 };
-export const updateParams = (patternId: string) => (dispatch, getState: () => AppState) => {
+export const updateParams = (patternId: string, noHistory?: boolean) => (dispatch, getState: () => AppState) => {
 
+    console.log('HHHHHHHHHHHHUUUUUUUUUUUUUUUUUUHHHHHHHHHH');
     Captures.updateParams(patternId);
+    dispatch(updateImage({id: patternId, noHistory}));
 
 };
 
-export const onNewFrame = (id: string, imageData: ImageData) => (dispatch, getState: () => AppState) => {
-
-    dispatch(updateImage(id, imageData));
-
-};
-
-export const setVideoParams = (id: string, value: VideoParams) => (dispatch, getState: () => AppState) => {
+export const setVideoParams = (id: string, value: VideoParams, noHistory?: boolean) => (dispatch, getState: () => AppState) => {
     dispatch({
         type: EVideoAction.SET_VIDEO_PARAMS,
         id,
         value
     });
 
-    dispatch(updateParams(id));
+    dispatch(updateParams(id, noHistory));
 };
 

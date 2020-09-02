@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "bbuutoonnss": "^1.0.8",
+    "bbuutoonnss": "^1.0.9",
     "bezier-js": "^2.4.4",
     "classnames": "2.2.6",
     "color": "^3.1.2",

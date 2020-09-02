@@ -17,7 +17,7 @@
   align-items: flex-end;
   justify-content: flex-end;
 
-  padding-right: 140px;
+  padding-right: 129px;
   padding-bottom: 80px;
   padding-top: 270px;
   box-sizing: border-box;
@@ -77,6 +77,25 @@
       background: lightgoldenrodyellow;
     }
   }
+  .history-controls {
+    display: flex;
+    //border: 1px solid red;
+    & > .button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 17px;
+
+      & > span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      & > small {
+        margin-left: 5px;
+        color: #74746d;
+      }
+    }
+  }
 
   .plugins, .pattern-controls, .history-controls, .pattern-sizes {
     //visibility: hidden;
@@ -107,13 +126,7 @@
     display: flex;
     flex-direction: column;
     align-items: baseline;
-    margin: 0 0 0 50px;
-
-    .history-controls {
-      display: flex;
-      position: sticky;
-      left: 0;
-    }
+    margin: 0 0 0 43px;
   }
 
   .pattern-delete-button {
@@ -125,12 +138,5 @@
       //text-decoration: underline;
     }
   }
-
-  //@keyframes spin { 100% {
-  //  transform:rotate(360deg); } }
-  //
-  //& > .canvas {
-  //  animation:spin 4s linear infinite;
-  //}
 }
 

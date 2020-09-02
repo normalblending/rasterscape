@@ -1,7 +1,7 @@
 import * as React from "react";
-import {getRandomColor} from "../../../../utils/utils";
-import {ECompositeOperation} from "../../../../store/compositeOperations";
-import {ELineRandomType} from "../../../../store/line/types";
+import {getRandomColor} from "../../../../../utils/utils";
+import {ECompositeOperation} from "../../../../../store/compositeOperations";
+import {ELineRandomType} from "../../../../../store/line/types";
 
 export const lineBrokenTransparent = function () {
 

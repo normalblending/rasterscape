@@ -55,17 +55,18 @@
       .button-select {
 
 
-        border-top-color: #ebebeb;
-        border-right-color: #cccccc;
+        //border-top-color: #ebebeb;
+        //border-right-color: #cccccc;
 
         background: lightgrey;
         pointer-events: visible;
 
       }
+      input {
+        pointer-events: visible;
+      }
       .button-select-selected {
-        border-bottom-color: #ebebeb;
-        border-right-color: #cccccc;
-        border-top-color: rgb(186, 186, 186);
+        border-color: #ababab #dedede #dedede #ababab !important;
       }
     }
   }

@@ -27,22 +27,8 @@ const seValueD = ValueD.VerticalLinear(100);
 export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
 
     handleParamChange = ({value, name}) => {
-        this.props.onChange({...this.props.params, [name]: value}, this.props.name)
+        this.props.onChange({...this.props.params, [name.split('.').reverse()[0]]: value}, this.props.name)
     };
-
-
-    buttonWrapper = (message) => {
-        const {tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                secondaryMessage={message !== 'kz' && <span>z = kx⋅x² + ky⋅y² + dz</span>}
-                message={message}>{button}</HelpTooltip>) : null
-    };
-
-    buttonWrapperDZ = this.buttonWrapper('dz');
-    buttonWrapperKX = this.buttonWrapper('kx');
-    buttonWrapperKY = this.buttonWrapper('ky');
-    buttonWrapperKZ = this.buttonWrapper('kz');
 
     render() {
         const {params, name} = this.props;
@@ -51,51 +37,45 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
 
                 <div className={'parab-controls'}>
                     <div className={'canvas-container'}>
-                        <HelpTooltip component={SinHelp} componentProps={{name}}>
-                            <Paraboloid
-                                params={params}
-                                width={68} height={58}/>
-                        </HelpTooltip>
+                        <Paraboloid
+                            params={params}
+                            width={68} height={58}/>
                     </div>
                 </div>
                 <div className={'parab-controls'}>
                     <ButtonNumberCF
                         pres={2}
                         valueD={50}
-                        buttonWrapper={this.buttonWrapperDZ}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.zd`}
                         value={params.zd}
-                        name={"zd"}
+                        name={`changeFunctions.${name}.zd`}
                         range={[-2, 2]}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
                         pres={2}
                         valueD={25}
-                        buttonWrapper={this.buttonWrapperKX}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.x`}
                         value={params.x}
-                        name={"x"}
+                        name={`changeFunctions.${name}.x`}
                         range={[-20, 20]}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
                         pres={2}
                         valueD={25}
-                        buttonWrapper={this.buttonWrapperKY}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.y`}
                         value={params.y}
-                        name={"y"}
+                        name={`changeFunctions.${name}.y`}
                         range={[-20, 20]}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
                         pres={2}
                         valueD={50}
-                        buttonWrapper={this.buttonWrapperKZ}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.end`}
                         value={params.end}
-                        name={"end"}
+                        name={`changeFunctions.${name}.end`}
                         range={seRange}
                         onChange={this.handleParamChange}
                     />

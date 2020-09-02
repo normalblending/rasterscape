@@ -2,7 +2,7 @@ import {
     EditPatternConfigAction,
     PatternConfig,
     SetPatternHeightAction,
-    SetPatternWidthAction,
+    SetPatternWidthAction, UpdateOptions,
     UpdatePatternImageAction
 } from "./types";
 import {AppState} from "../../index";
@@ -22,12 +22,21 @@ export enum EPatternAction {
     SET_HEIGHT = "pattern/set-height",
 }
 
-export const updateImage = (id: string, imageData?: ImageData, emit: boolean = true, blur?: boolean) => //: ThunkResult<UpdatePatternImageAction, AppState> =>
+export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePatternImageAction, AppState> =>
     (dispatch, getState) => {
 
-        const pattern = getState().patterns[id];
-        const socket = pattern.room?.value?.socket;
+        const {
+            id,
+            imageData,
+            emit = true,
+            blur,
+            noHistory,
+        } = options;
 
+        const pattern = getState().patterns[id];
+
+        if (!pattern)
+            return;
 
         let resultImageData;
 
@@ -48,7 +57,7 @@ export const updateImage = (id: string, imageData?: ImageData, emit: boolean = t
 
         emit && dispatch(sendImage(id, resultImageData));
 
-        return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id});
+        return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id, noHistory});
     };
 export const editConfig = (id: string, config: PatternConfig): EditPatternConfigAction =>
     ({type: EPatternAction.EDIT_CONFIG, id, config});

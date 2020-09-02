@@ -73,6 +73,8 @@ export const greenHelper = new CursorHelper('#0f0', 10);
 export const coordHelper = new TextHelper(10, 30);
 export const coordHelper2 = new TextHelper(10, 50);
 export const coordHelper3 = new TextHelper(10, 70);
+export const coordHelper4 = new TextHelper(10, 90);
+export const coordHelper5 = new TextHelper(10, 100);
 
 
 

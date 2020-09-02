@@ -20,13 +20,14 @@ ctxNoise.onmessage = (ev) => {
     context.fillRect(0, 0, width, height);
     context.fillStyle = 'black';
 
+    const min = height/2 - height * start;
+    const max = height/2 + height * start;
+    const range = (max - min);
     for (let p = 0; p <= N; p++) {
 
         const x = (p / N) * width;
 
-        const min = height * start;
-        const max = height * end;
-        const y = height - Math.random() * (max - min) - min;
+        const y = min + Math.random() * range;
 
         context.lineTo(x, y);
         context.lineTo(x + width / N, y);

@@ -9,7 +9,11 @@ import {
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
 import {patternValues} from "../../../../store/patterns/values";
+import {CSSProperties} from "react";
+import {Cursors} from "./cursors";
+import {CanvasDrawProps} from "../index";
 
+const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 export const brushPattern = function () {
     const patternBrush = (ev) => {
         const {ctx, e, canvas} = ev;
@@ -21,7 +25,7 @@ export const brushPattern = function () {
             brushPattern,
 
             brush,
-        } = this.props;
+        }: CanvasDrawProps = this.props;
 
         const {patternSize, opacity, compositeOperation} = brush.params;
 
@@ -30,8 +34,8 @@ export const brushPattern = function () {
         ctx.globalCompositeOperation = compositeOperation;
         ctx.imageSmoothingEnabled = true;
 
-        const brushRotation = brushPattern?.rotation?.value;
-        const destinationRotation = destinationPattern?.rotation?.value;
+        const brushRotation = brushPattern.config.rotation ? brushPattern?.rotation?.value : null;
+        const destinationRotation = destinationPattern.config.rotation ? destinationPattern?.rotation?.value : null;
 
         const brushPatternImage = patternValues.values[brushPattern?.id];
 
@@ -63,8 +67,8 @@ export const brushPattern = function () {
                         selectionMask,
                         brushAngle,
                         destAngle,
-                        brushCenter.x, - brushCenter.y,
-                        brushOffset.x, - brushOffset.y,
+                        brushCenter.x, -brushCenter.y,
+                        brushOffset.x, -brushOffset.y,
                         x, y,
                         ({context, canvas}) => {
                             context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
@@ -79,8 +83,8 @@ export const brushPattern = function () {
                     drawWithRotationAndOffset(
                         brushAngle,
                         destAngle,
-                        brushCenter.x, - brushCenter.y,
-                        brushOffset.x, - brushOffset.y,
+                        brushCenter.x, -brushCenter.y,
+                        brushOffset.x, -brushOffset.y,
                         x, y,
                         ({context, canvas}) => {
                             context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
@@ -100,31 +104,29 @@ export const brushPattern = function () {
         click: patternBrush,
         cursors: ({x, y, outer}) => {
 
-
-            const {brushPattern, pattern} = this.props;
+            const {brushPattern, pattern}: CanvasDrawProps = this.props;
             const {patternSize} = this.props.brush.params;
 
-            const patternRotation = pattern?.rotation?.value;
+            const patternRotation = pattern?.config.rotation ? pattern?.rotation?.value : null;
 
-            const brushRotation = brushPattern?.rotation?.value;
+            const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
             const brushPatternImage = patternValues.values[brushPattern?.id];
 
             const width = patternSize * (brushPatternImage?.width);
             const height = patternSize * (brushPatternImage?.height);
 
-            const {rotation} = this.props;
-            return x - width / 2 ? (
-                <rect
-                    transform={rotation && brushRotation
-                        ? `translate(${brushRotation.offset.xd}, ${-brushRotation.offset.yd}) rotate(${-rotation.angle + brushRotation.angle} ${x + brushRotation.offset.xc} ${y - brushRotation.offset.yc})`
-                        : ""}
-                    x={x - width / 2}
-                    y={y - height / 2}
-                    width={width}
-                    height={height}
-                    stroke={"black"} fill="purple"
-                    fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
-            ) : null;
+            return Cursors.rect(x, y, width, height, {
+                transform: `
+                    translate(
+                        ${brushRotation?.offset?.xd || 0}, 
+                        ${-brushRotation?.offset?.yd || 0}
+                    ) rotate(
+                        ${-(patternRotation?.angle || 0) + (brushRotation?.angle || 0)} 
+                        ${x + (brushRotation?.offset?.xc || 0)} 
+                        ${y - (brushRotation?.offset?.yc || 0)}
+                    )
+                `
+            });
         }
     }
 };

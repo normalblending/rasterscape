@@ -1,5 +1,5 @@
 export enum ChangingMode {
-    OnDraw = "onDraw",
+    OnDraw = "on draw",
     On = "on",
     Off = "off"
 }

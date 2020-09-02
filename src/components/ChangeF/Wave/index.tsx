@@ -7,7 +7,7 @@ import {changeCFParams} from "../../../store/changeFunctions/actions";
 import {AppState} from "../../../store";
 import {AnyWaveParams, WaveParams, WaveType} from "../../../store/changeFunctions/functions/wave";
 import {SinCF} from "./Sin";
-import {SelectDrop} from "bbuutoonnss";
+import {SelectDrop} from "../../_shared/buttons/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {SawCF} from "./Saw";
 import {NoiseCF} from "./Noise";
@@ -92,18 +92,13 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
 
         const WaveComponent = this.waveComponentsByType[params.type];
         return (
-            // <HelpTooltip component={WaveHelp} getY={() => 27} offsetX={40}>
             <div className={"wave-change-function"}>
-                <HelpTooltip
-                    // componentProps={{name}}
-                    // getY={() => 27}
-                    // offsetX={25}
-                    message={'time depending functions'}
-                ><SelectDrop
+                <SelectDrop
+                    name={`cf.${name}.type`}
                     className={'type-select'}
                     value={params.type}
                     onChange={this.handleTypeChange}
-                    items={this.selectItems}/></HelpTooltip>
+                    items={this.selectItems}/>
                 {WaveComponent &&
                 <WaveComponent
                     name={name}
@@ -112,7 +107,6 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
                     onChange={this.handleParamChange}
                 />}
             </div>
-            // </HelpTooltip>
         );
     }
 }

@@ -34,66 +34,45 @@ const valueText2 = value => value.toFixed(2);
 export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
 
     handleParamChange = ({value, name}) => {
-        this.props.onChange({...this.props.params, [name]: value}, this.props.name)
+        this.props.onChange({...this.props.params, [name.split('.').reverse()[0]]: value}, this.props.name)
     };
-
-    buttonWrapper = (message) => {
-        const {name, tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                // componentProps={{name}}
-                // getY={() => 27}
-                // offsetX={25}
-                message={message}
-            >{button}</HelpTooltip>) : null
-    };
-
-    buttonWrapperAmplitude = this.buttonWrapper('amplitude');
-    buttonWrapperPeriod = this.buttonWrapper('period');
-    buttonWrapperPhaseShift = this.buttonWrapper('phase shift');
 
     render() {
         const {params, name, tutorial} = this.props;
         return (
-            // <HelpTooltip component={SinHelp} getY={() => 27} offsetX={40}>
             <div className={"sin-change-function"}>
-                <HelpTooltip component={SinHelp} componentProps={{name}}>
-                    <Sin
-                        width={68}
-                        height={58}
-                        params={params}
-                        Tmax={5000}
-                        Amax={1.1}/>
-                </HelpTooltip>
+                <Sin
+                    width={68}
+                    height={58}
+                    params={params}
+                    Tmax={5000}
+                    Amax={1.1}/>
                 <div className={'sin-controls'}>
                     <ButtonNumberCF
-                        buttonWrapper={this.buttonWrapperAmplitude}
                         pres={3}
                         precisionGain={10}
                         valueD={1000}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.a`}
                         value={params.a}
-                        name={"a"}
+                        name={`changeFunctions.${name}.a`}
                         range={aRange}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
-                        buttonWrapper={this.buttonWrapperPeriod}
                         pres={0}
                         precisionGain={10}
                         valueD={2 / 128}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.t`}
                         value={params.t}
-                        name={"t"}
+                        name={`changeFunctions.${name}.t`}
                         range={tRange}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
-                        buttonWrapper={this.buttonWrapperPhaseShift}
                         pres={2}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.o`}
                         value={params.o}
-                        name={"o"}
+                        name={`changeFunctions.${name}.o`}
                         getText={valueText2}
                         range={oRange}
                         valueD={100}
@@ -108,7 +87,6 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                 {/*onChange={this.handleParamChange}*/}
                 {/*/>*/}
             </div>
-            // </HelpTooltip>
         );
     }
 }

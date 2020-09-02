@@ -14,11 +14,24 @@ export interface ButtonSelectProps extends ButtonProps {
     onMouseDown?(data?: ButtonSelectEventData)
 
     onMouseUp?(data?: ButtonSelectEventData)
+
+    onMouseEnter?(data?: ButtonSelectEventData)
+
+    onMouseLeave?(data?: ButtonSelectEventData)
 }
 
 export class ButtonSelect extends React.PureComponent<ButtonSelectProps> {
     render() {
-        const {className, selected, onClick, onMouseDown, onMouseUp, ...props} = this.props;
+        const {
+            className,
+            selected,
+            onClick,
+            onMouseDown,
+            onMouseUp,
+            onMouseEnter,
+            onMouseLeave,
+            ...props
+        } = this.props;
 
         return (
             <Button
@@ -26,6 +39,8 @@ export class ButtonSelect extends React.PureComponent<ButtonSelectProps> {
                 onClick={data => onClick && onClick({...data, selected})}
                 onMouseDown={data => onMouseDown && onMouseDown({...data, selected})}
                 onMouseUp={data => onMouseUp && onMouseUp({...data, selected})}
+                onMouseEnter={data => onMouseEnter && onMouseEnter({...data, selected})}
+                onMouseLeave={data => onMouseLeave && onMouseLeave({...data, selected})}
                 className={classNames("button-select", className, {["button-select-selected"]: selected})}/>
         );
     }

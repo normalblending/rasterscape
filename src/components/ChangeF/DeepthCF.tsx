@@ -3,7 +3,7 @@ import {ParamConfig} from "../_shared/Params";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import "../../styles/depthChangeFunction.scss";
 import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {CycledToggle} from "../_shared/buttons/CycledToggle";
+import {CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggle";
 import {Button} from "bbuutoonnss";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
@@ -110,16 +110,14 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
 
         return (
             <div className={"depth-change-function"}>
-                <HelpTooltip
-                    secondaryMessage={!patternsCount ? this.helpText.addPatterns : (!items.length && this.helpText.chosePattern)}>
-                    <Button className={'depth-select-pattern-button'}>
-                        pattern
-                        <PatternsSelect
-                            value={items.map(({patternId}) => patternId)}
-                            onChange={this.handleSelectPattern}
-                        />
-                    </Button>
-                </HelpTooltip>
+                <Button className={'depth-select-pattern-button'}>
+                    pattern
+                    <PatternsSelect
+                        HK={false}
+                        value={items.map(({patternId}) => patternId)}
+                        onChange={this.handleSelectPattern}
+                    />
+                </Button>
 
                 {params.items.map((item, index) => !!patternsImageData[item.patternId] &&
                     <div className={'depth-item'}>
@@ -132,14 +130,12 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                             <Button onClick={this.handleDeleteItem(index)}>delete</Button>
                         </div>
                         <div className={'depth-item-controls'}>
-                            <HelpTooltip message={'color component'}>
-                                <CycledToggle
-                                    name={'component'}
-                                    value={item.component}
-                                    items={componentsSelectItems}
-                                    onChange={this.handleParamChange(index)}
-                                />
-                            </HelpTooltip>
+                            <CycledToggle
+                                name={'component'}
+                                value={item.component}
+                                items={componentsSelectItems}
+                                onChange={this.handleParamChange(index)}
+                            />
                             <ButtonNumberCF
                                 buttonWrapper={this.buttonWrapperFrom}
                                 pres={2}

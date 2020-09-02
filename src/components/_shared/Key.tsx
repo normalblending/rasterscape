@@ -7,6 +7,8 @@ export interface KeyProps {
     onPress?(e?: any, keys?: string | string[])
 
     onRelease?(e?: any, keys?: string | string[])
+
+    name?: string
 }
 
 export interface KeyState {
@@ -23,11 +25,13 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
         e.preventRepeat();
         const {onPress, keys} = this.props;
         onPress && onPress(e, keys)
+        console.log('onPress', keys);
     };
 
     handleRelease = e => {
         const {onRelease, keys} = this.props;
         onRelease && onRelease(e, keys)
+        console.log('onRelease',keys);
     };
 
     // static getDerivedStateFromProps(props, state) {
@@ -39,14 +43,20 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     componentDidMount() {
         const {keys} = this.props;
-        console.log(this.props);
-        keyboardjs.bind(keys, this.handlePress, this.handleRelease)
+        if (keys)
+            keyboardjs.bind(keys, this.handlePress, this.handleRelease)
     }
 
     componentDidUpdate(prevProps) {
-        if (prevProps.keys !== this.props.keys) {
+        const {keys, name} = this.props;
+
+
+        if (prevProps.keys !== keys) {
+            console.log(name, keys, prevProps.keys)
             keyboardjs.unbind(prevProps.keys, this.handlePress, this.handleRelease);
-            keyboardjs.bind(this.props.keys, this.handlePress, this.handleRelease);
+
+            if (keys)
+                keyboardjs.bind(keys, this.handlePress, this.handleRelease);
         }
     }
 

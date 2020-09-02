@@ -33,11 +33,18 @@
     "sizePattern": "size of pattern"
   },
 
+  "line": {
+    "center": "center",
+    "direction": "direction"
+  },
+
   "lineTypes": {
     "solid": "solid",
     "broken": "broken",
     "transp": "transp",
-    "pattern": "pattern"
+    "pattern": "pattern",
+    "solidpattern": "pattern 1",
+    "trailingpattern": "pattern 2"
   },
 
   "selectTypes": {
@@ -51,7 +58,7 @@
   "plugins": {
     "repeating": "repeating",
     "rotating": "rotating",
-    "video": "video",
+    "video": "camera",
     "mask": "mask",
     "room": "room",
     "blur": "blur"

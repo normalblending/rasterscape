@@ -1,16 +1,12 @@
 import * as React from "react";
-import {ValueD} from "../_shared/buttons/ButtonNumber";
 import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
 import {BlurValue} from "../../store/patterns/blur/types";
 import '../../styles/blurControls.scss';
-import {VideoParams} from "../../store/patterns/video/types";
-import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {blurOnce, setBlur} from "../../store/patterns/blur/actions";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {toFixed0} from "../../utils/utils";
-import {Button, ButtonSelect} from "bbuutoonnss";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export interface BlurControlsStateProps {
     blur: BlurValue
@@ -33,10 +29,6 @@ export interface BlurControlsState {
 }
 
 const radiusRange = [0, 100] as [number, number];
-const radiusValueD = ValueD.VerticalLinear(1.25);
-
-const offsetRange = [-800, 800] as [number, number];
-const offsetValueD = ValueD.VerticalLinear(0.1);
 
 export class BlurControlsComponent extends React.PureComponent<BlurControlsProps, BlurControlsState> {
 
@@ -64,6 +56,7 @@ export class BlurControlsComponent extends React.PureComponent<BlurControlsProps
     };
 
     render() {
+        const {patternId} = this.props;
         const {radius, onUpdate} = this.props.blur;
         return (
             <div className={'blur-controls'}>
@@ -74,34 +67,17 @@ export class BlurControlsComponent extends React.PureComponent<BlurControlsProps
                     name={"radius"}
                     value={radius}
                     range={radiusRange}
-                    // valueD={radiusValueD}
-                    // getText={toFixed0}
                     onChange={this.handleChange}/>
-                <ButtonSelect
+                <ButtonHK
+                    path={`pattern.${patternId}.blur.onUpdate`}
                     selected={onUpdate}
                     name={"onUpdate"}
                     onClick={this.handleToggleChange}
-                >on update</ButtonSelect>
-                <Button
+                >on update</ButtonHK>
+                <ButtonHK
+                    path={`pattern.${patternId}.blur.once`}
                     onClick={this.handleBlurOnce}
-                >once</Button>
-
-                {/*<ButtonNumberCF*/}
-                {/*    precision={1600}*/}
-                {/*    path={`patterns.${this.props.patternId}.blur.value.offset.x`}*/}
-                {/*    name={"x"}*/}
-                {/*    value={offset.x}*/}
-                {/*    range={offsetRange}*/}
-                {/*    valueD={offsetValueD}*/}
-                {/*    onChange={this.handleOffsetChange}/>*/}
-                {/*<ButtonNumberCF*/}
-                {/*    precision={1600}*/}
-                {/*    path={`patterns.${this.props.patternId}.blur.value.offset.y`}*/}
-                {/*    name={"y"}*/}
-                {/*    value={offset.y}*/}
-                {/*    range={offsetRange}*/}
-                {/*    valueD={offsetValueD}*/}
-                {/*    onChange={this.handleOffsetChange}/>*/}
+                >once</ButtonHK>
             </div>
         );
     }

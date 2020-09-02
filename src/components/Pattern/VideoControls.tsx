@@ -6,20 +6,23 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ECFType} from "../../store/changeFunctions/types";
 import {ChangeFunctions} from "../../store/changeFunctions/reducer";
-import {onNewFrame, pause, play, setVideoParams, start, stop} from "../../store/patterns/video/actions";
-import {getCFs} from "../../store/changeFunctions/selectors";
-import {arrayToSelectItems} from "../../utils/utils";
+import {pause, play, setVideoParams, start, stop} from "../../store/patterns/video/actions";
+import {getCFs, getChangeFunctionsSelectItemsVideo} from "../../store/changeFunctions/selectors";
 import {EdgeMode, SlitMode} from "../../store/patterns/video/services";
 import {StackType} from "../../store/patterns/video/capture/pixels";
 import '../../styles/videoControls.scss';
-import {ECompositeOperation} from "../../store/compositeOperations";
-import {CycledToggle} from "../_shared/buttons/CycledToggle";
+import {CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggle";
+import {SelectItem} from "../../utils/utils";
+import {setCFHighlights, setCFTypeHighlights} from "../../store/changeFunctionsHighlights";
+import {SelectButtonsEventData} from "../_shared/buttons/SelectButtons";
+import {CycledToggleHK} from "../_shared/buttons/CycledToggle/CycledToggleHK";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export interface VideoControlsStateProps {
 
     videoParams: VideoParams
 
-    changeFunctions: ChangeFunctions
+    changeFunctionsSelectItems: SelectItem[]
 }
 
 export interface VideoControlsActionProps {
@@ -29,9 +32,11 @@ export interface VideoControlsActionProps {
     pause
     play
 
-    setVideoParams(id: string, value: VideoParams)
+    setVideoParams(id: string, value: VideoParams, noHistory?: boolean)
 
-    onNewVideoFrame(id: string, imageData: ImageData)
+    setCFHighlights(cfName?: string)
+
+    setCFTypeHighlights(cfType?: ECFType[])
 }
 
 export interface VideoControlsOwnProps {
@@ -46,6 +51,7 @@ export interface VideoControlsState {
     pause: boolean
 }
 
+const availableCFTypes = [ECFType.FXY, ECFType.DEPTH];
 
 // todo нужно нормально сделать состояния в редаксе и экшены-свитчи
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
@@ -76,13 +82,14 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         setVideoParams(patternId, {
             ...videoParams,
             on: !selected
-        });
+        }, selected);
         this.setState({pause: selected})
     };
 
     handleChangeParam = (data) => {
         const {setVideoParams, videoParams, patternId} = this.props;
         const {value, name} = data;
+        console.log(data);
         setVideoParams(patternId, {
             ...videoParams,
             [name]: value
@@ -114,13 +121,33 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     availableChangeTypes = [ECFType.FXY, ECFType.DEPTH];
 
+    handleCFValueMouseEnter = () => {
+        const {setCFTypeHighlights, changeFunctionsSelectItems} = this.props;
+        if (!changeFunctionsSelectItems.length)
+            setCFTypeHighlights(availableCFTypes);
+    };
+    handleCFValueMouseLeave = () => {
+        const {setCFTypeHighlights} = this.props;
+        setCFTypeHighlights(null);
+    };
+
+    handleCFMouseEnter = (data: SelectButtonsEventData) => {
+        const {setCFHighlights} = this.props;
+        setCFHighlights(data?.value?.value);
+    };
+    handleCFMouseLeave = () => {
+        const {setCFHighlights} = this.props;
+        setCFHighlights(null);
+    };
+
     render() {
-        const {changeFunctions, videoParams: params} = this.props;
+        const {changeFunctionsSelectItems, videoParams: params, patternId} = this.props;
         const {on} = params;
 
         return (
             <div className={"video-controls"}>
-                <ButtonSelect
+                <ButtonHK
+                    path={`pattern.${patternId}.video.slitMode`}
                     className={'slit-mode'}
                     name={'slitMode'}
                     selected={params.slitMode === SlitMode.FRONT}
@@ -128,9 +155,10 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     {params.slitMode === SlitMode.FRONT
                         ? "front"
                         : "side"}
-                </ButtonSelect>
+                </ButtonHK>
 
-                <CycledToggle
+                <CycledToggleHK
+                    path={`pattern.${patternId}.video.edgeMode`}
                     className={'edge-mode'}
                     getValue={(id) => id}
                     getText={(id) => id}
@@ -139,7 +167,8 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     name={"edgeMode"}
                     onChange={this.handleChangeParam}/>
 
-                <CycledToggle
+                <CycledToggleHK
+                    path={`pattern.${patternId}.video.stackType`}
                     className={'stack-type'}
                     getValue={(id) => id}
                     getText={(id) => id}
@@ -148,32 +177,36 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     name={"stackType"}
                     onChange={this.handleChangeParam}/>
 
-                <ButtonSelect
+                <ButtonHK
+                    path={`pattern.${patternId}.video.on`}
                     className={'on-off'}
                     selected={on}
                     name={'on'}
                     onClick={this.handleChangeOnParam}
                 >
                     {on ? "stop" : "start"}
-                </ButtonSelect>
+                </ButtonHK>
 
-                <ButtonSelect
+                <ButtonHK
+                    path={`pattern.${patternId}.video.pause`}
                     className={'pause-play'}
                     disabled={!on}
                     selected={this.state.pause && on}
                     name={'pause'}
                     onClick={this.handlePause}
-                >{this.state.pause ? "play" : "pause"}</ButtonSelect>
+                >{this.state.pause ? "play" : "pause"}</ButtonHK>
 
                 <SelectDrop
                     className={'cut-function'}
                     nullAble
-                    getValue={({id}) => id}
-                    getText={({id}) => id}
+                    nullText={'-'}
+                    onValueMouseEnter={this.handleCFValueMouseEnter}
+                    onValueMouseLeave={this.handleCFValueMouseLeave}
+                    onItemMouseEnter={this.handleCFMouseEnter}
+                    onItemMouseLeave={this.handleCFMouseLeave}
                     name={"changeFunctionId"}
                     value={params.changeFunctionId}
-                    items={Object.values(changeFunctions)
-                        .filter((value) => this.availableChangeTypes.indexOf(value.type) !== -1)}
+                    items={changeFunctionsSelectItems}
                     onChange={this.handleChangeParam}/>
 
             </div>
@@ -182,7 +215,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 }
 
 const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwnProps, AppState> = (state, {patternId}) => ({
-    changeFunctions: getCFs(state),
+    changeFunctionsSelectItems: getChangeFunctionsSelectItemsVideo(state),
     videoParams: state.patterns[patternId]?.video?.params || null
 });
 
@@ -193,7 +226,9 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
     play,
 
     setVideoParams,
-    onNewVideoFrame: onNewFrame
+
+    setCFHighlights,
+    setCFTypeHighlights
 };
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(

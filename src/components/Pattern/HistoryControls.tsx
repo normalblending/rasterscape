@@ -45,12 +45,14 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = ({undo, 
                 onClick={onUndo}
                 disabled={!history.before.length}
                 width={70}>
-                {t('patternControls.undo')}{history.before.length ? `(${history.before.length})` : ""}</Button>
+                <span>{t('patternControls.undo')}</span> <small>{history.before.length ? `(${history.before.length})` : ""}</small>
+            </Button>
             <Button
                 onClick={onRedo}
                 disabled={!history.after.length}
                 width={70}>
-                {t('patternControls.redo')}{history.after.length ? `(${history.after.length})` : ""}</Button>
+                <span>{t('patternControls.redo')}</span> <small>{history.after.length ? `(${history.after.length})` : ""}</small>
+            </Button>
         </div>
     );
 };

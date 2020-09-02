@@ -82,7 +82,7 @@ export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): Rea
                     width, height
                 });
             };
-            return !throttled ? _throttle(post, 500) : post;
+            return !throttled ? _throttle(post, 200) : post;
         }, [throttled]);
 
 

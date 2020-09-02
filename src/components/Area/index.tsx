@@ -10,6 +10,7 @@ import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/se
 
 export interface AreaStateProps {
     currentTool: EToolType
+    selectUnable: boolean
 }
 
 export interface AreaActionProps {
@@ -43,7 +44,7 @@ export interface AreaState {
 }
 
 const getStyle = (rotation, width, height) => rotation ? {
-    transformOrigin: `${width / 2 + rotation.offset.xc}px ${height / 2 - rotation.offset.yc}px`,
+    transformOrigin: `${width / 2 + rotation.offset?.xc}px ${height / 2 - rotation.offset?.yc}px`,
     transform: `rotate(${rotation.angle}deg)`,
 } : null;
 const getAreaStyle = (rotation, width, height) => rotation ? {
@@ -86,7 +87,8 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             onImageChange,
             onSelectionChange,
             rotation,
-            disabled
+            disabled,
+            selectUnable
         } = this.props;
 
         console.log("area", this.state);
@@ -105,6 +107,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                     onChange={onImageChange}/>
                 <Selection
                     style={this.state.style}
+                    isUnable={selectUnable}
                     isActive={selectionTools.indexOf(currentTool) !== -1}
                     name={name}
                     width={width}
@@ -117,8 +120,9 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
     }
 }
 
-const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = (state) => ({
-    currentTool: state.tool.current
+const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = (state, {name}) => ({
+    currentTool: state.tool.current,
+    selectUnable: false,//state.tool.current === EToolType.Line
 });
 
 const mapDispatchToProps: MapDispatchToProps<AreaActionProps, AreaOwnProps> = {};

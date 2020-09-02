@@ -47,6 +47,7 @@ export interface CanvasSelectionActionProps {
 
 export interface CanvasSelectionOwnProps {
     isActive: boolean
+    isUnable?: boolean
     params: SelectionParams
 
     name: any
@@ -344,7 +345,12 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
 
     render() {
         console.log("selector render", this.state.path);
-        const {width, height, selectToolParams: {mode}, isActive, name, style} = this.props;
+        const {
+            width, height,
+            selectToolParams: {mode},
+            isActive, isUnable,
+            name, style
+        } = this.props;
 
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
@@ -355,7 +361,8 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             <div
                 style={style}
                 className={classNames("selection", {
-                    ["selectionActive"]: isActive
+                    ["selectionActive"]: isActive,
+                    ["selectionUnable"]: isUnable,
                 })}>
                 <SVG
                     width={width}

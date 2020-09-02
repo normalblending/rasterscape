@@ -33,7 +33,11 @@ export interface CycledToggleProps extends ButtonProps {
     getText?(item: any)
 }
 
-export const CycledToggle: React.FunctionComponent<CycledToggleProps> = (props) => {
+export interface CycledToggleImperativeHandlers {
+    click(e: any)
+}
+
+export const CycledToggle = React.forwardRef<CycledToggleImperativeHandlers, CycledToggleProps>((props, ref) => {
 
     const {
         value, items,
@@ -44,6 +48,13 @@ export const CycledToggle: React.FunctionComponent<CycledToggleProps> = (props) 
     } = props;
 
     const [valueMap, setValueMap] = React.useState({});
+
+    React.useImperativeHandle(ref, () => ({
+        click: (e) => {
+            console.log('CLICK');
+            handleClick({value, e});
+        }
+    }), [value]);
 
     React.useEffect(() => {
         const {name, items, onChange, getValue = defaultGetValue, nullAble} = props;
@@ -104,4 +115,4 @@ export const CycledToggle: React.FunctionComponent<CycledToggleProps> = (props) 
             onClick={handleClick}
         >{valueItem ? getText(valueItem) : nullText}</Button>
     );
-};
+});

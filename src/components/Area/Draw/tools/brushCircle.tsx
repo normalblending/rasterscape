@@ -5,7 +5,11 @@ import {drawMaskedWithRotation, drawWithRotation} from "../../../../utils/canvas
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
 import {circle} from "../../../../utils/canvas/helpers/geometry";
+import {CSSProperties} from "react";
+import {Cursors} from "./cursors";
+import {coordHelper5} from "../../canvasPosition.servise";
 
+const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 export const brushCircle = function () {
     const circleBrush = (ev) => {
         const {ctx, e, canvas, rotation} = ev;
@@ -59,16 +63,8 @@ export const brushCircle = function () {
     return {
         draw: circleBrush,
         click: circleBrush,
-        cursors: ({x, y, outer}) => {
-
-            return (
-                <circle
-                    cx={x}
-                    cy={y}
-                    r={this.props.brush.params.size / 2}
-                    stroke={"black"} fill="purple"
-                    fillOpacity="0" strokeOpacity={outer ? "0.3" : "0.7"}/>
-            )
+        cursors: ({x, y}) => {
+            return Cursors.circle(x, y, this.props.brush.params.size)
         }
     }
 };

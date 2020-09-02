@@ -41,7 +41,7 @@
     color: white;
 
     &:focus {
-      border: 1px solid #ffcd00;;
+      border: 1px solid #ffcd00;
     }
   }
 
@@ -79,10 +79,8 @@
 
   }
 
-  .button-number-cf-value {
-    &.button-number-cf-value-active {
-      border: 1px solid #ffcd00;
-    }
+  .button-number-cf-value-active {
+    border: 1px solid #ffcd00 !important;
   }
 
 

@@ -97,6 +97,7 @@ export interface RemovePatternAction extends PatternAction {
 }
 
 export interface UpdatePatternImageAction extends ImageAction, PatternAction {
+    noHistory: boolean
 }
 
 export interface EditPatternConfigAction extends PatternAction {
@@ -109,4 +110,11 @@ export interface SetPatternWidthAction extends WidthAction, PatternAction {
 export interface SetPatternHeightAction extends HeightAction, PatternAction {
 }
 
+export interface UpdateOptions {
+    id: string,
+    imageData?: ImageData,
+    emit?: boolean,
+    blur?: boolean,
+    noHistory?: boolean
+}
 

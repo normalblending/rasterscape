@@ -21,7 +21,7 @@ export const historyReducers = {
             ...pattern,
             history: undoResult.history,
             current,
-            resultImage: patternValues.setValue(action.id, current.imageData, mask && mask.value.imageData),
+            resultImage: patternValues.setValue(action.id, current.imageData, pattern.config.mask && mask && mask.value.imageData),
             mask
         }
 
@@ -41,7 +41,7 @@ export const historyReducers = {
             ...pattern,
             history: redoResult.history,
             current,
-            resultImage: patternValues.setValue(action.id, current.imageData, mask && mask.value.imageData),
+            resultImage: patternValues.setValue(action.id, current.imageData, pattern.config.mask && mask && mask.value.imageData),
             mask: mask
         }
     }),

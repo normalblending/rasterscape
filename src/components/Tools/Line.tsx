@@ -1,5 +1,6 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {ButtonSelect} from 'bbuutoonnss';
 import {AppState} from "../../store";
 import {ParamConfig} from "../_shared/Params";
 import {ELineType, LineParams} from "../../store/line/types";
@@ -14,6 +15,9 @@ import '../../styles/lineTool.scss';
 import {capsSelectItems, joinsSelectItems, randomSelectItems} from "../../store/line/helpers";
 import {EBrushType} from "../../store/brush/types";
 import {PatternsSelect} from "../PatternsSelect";
+import {arrayToSelectItems} from "../../utils/utils";
+import {CycledToggleHK as CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggleHK";
+import {ButtonHK} from "../_shared/buttons/ButtonHK";
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -40,6 +44,12 @@ export interface LineProps extends LineStateProps, LineActionProps, LineOwnProps
 const sizeRange = [0, 200] as [number, number];
 const opacityRange = [0, 1] as [number, number];
 
+const patternSizeValueText = value => (value * 100).toFixed(0) + '%';
+const patternSizeRange = [0, 5] as [number, number];
+
+const typeSelectItems = arrayToSelectItems(Object.values(ELineType))
+    .filter(({value}) => [ELineType.Solid, ELineType.SolidPattern, ELineType.TrailingPattern].includes(value));
+
 class LineComponent extends React.PureComponent<LineProps> {
 
     handleParamChange = (data) => {
@@ -48,6 +58,14 @@ class LineComponent extends React.PureComponent<LineProps> {
         setLineParams({
             ...paramsValue,
             [name]: value
+        })
+    };
+    handleToggledParamChange = (data) => {
+        const {value, name} = data;
+        const {setLineParams, paramsValue} = this.props;
+        setLineParams({
+            ...paramsValue,
+            [name]: !value
         })
     };
 
@@ -68,18 +86,36 @@ class LineComponent extends React.PureComponent<LineProps> {
                     value={paramsValue.type}
                     name={"type"}
                     getText={item => t(`lineTypes.${item.text.toLowerCase()}`)}
-                    items={paramsConfigMap["type"].props.items}
+                    items={typeSelectItems}
                     onChange={this.handleParamChange}/>
 
                 <div className='line-params'>
-                    <ButtonNumberCF
-                        pres={0}
-                        valueD={0.25}
-                        range={sizeRange}
-                        path={"line.params.size"}
-                        value={paramsValue.size}
-                        name={"size"}
-                        onChange={this.handleParamChange}/>
+
+
+                    {(paramsValue.type === ELineType.Solid
+                        || paramsValue.type === ELineType.SolidPattern) && (
+                        <ButtonNumberCF
+                            pres={0}
+                            valueD={1}
+                            path={"line.params.size"}
+                            value={paramsValue.size}
+                            name={"size"}
+                            onChange={this.handleParamChange}
+                            range={sizeRange}/>
+                    )}
+                    {(paramsValue.type === ELineType.TrailingPattern) && (
+
+                        <ButtonNumberCF
+                            pres={2}
+                            valueD={100}
+                            precisionGain={10}
+                            path={"line.params.patternSize"}
+                            value={paramsValue.patternSize}
+                            name={"patternSize"}
+                            onChange={this.handleParamChange}
+                            getText={patternSizeValueText}
+                            range={patternSizeRange}/>
+                    )}
 
                     <ButtonNumberCF
                         pres={2}
@@ -95,32 +131,80 @@ class LineComponent extends React.PureComponent<LineProps> {
                         value={paramsValue.compositeOperation}
                         items={paramsConfigMap["compositeOperation"].props.items}
                         onChange={this.handleParamChange}/>
-                    <SelectDrop
-                        name={"random"}
-                        value={paramsValue.random}
-                        items={randomSelectItems}
-                        onChange={this.handleParamChange}/>
-                    <SelectDrop
-                        name={"cap"}
-                        value={paramsValue.cap}
-                        items={capsSelectItems}
-                        onChange={this.handleParamChange}/>
-                    <SelectDrop
-                        name={"join"}
-                        value={paramsValue.join}
-                        items={joinsSelectItems}
-                        onChange={this.handleParamChange}/>
+
+                    {(paramsValue.type === ELineType.Pattern
+                        || paramsValue.type === ELineType.SolidPattern) && (
+
+                        <ButtonNumberCF
+                            pres={2}
+                            valueD={100}
+                            precisionGain={10}
+                            path={"line.params.patternSize"}
+                            value={paramsValue.patternSize}
+                            name={"patternSize"}
+                            onChange={this.handleParamChange}
+                            getText={patternSizeValueText}
+                            range={patternSizeRange}/>
+                    )}
+
+                    {paramsValue.type === ELineType.Solid && (
+                        <CycledToggle
+                            path={`line.randomType`}
+                            name={"random"}
+                            value={paramsValue.random}
+                            items={randomSelectItems}
+                            onChange={this.handleParamChange}/>
+
+                    )}
+
+                    {(paramsValue.type === ELineType.SolidPattern
+                        || paramsValue.type === ELineType.Solid) && (<>
+                        <SelectDrop
+                            name={"cap"}
+                            value={paramsValue.cap}
+                            items={capsSelectItems}
+                            onChange={this.handleParamChange}/>
+                        <SelectDrop
+                            name={"join"}
+                            value={paramsValue.join}
+                            items={joinsSelectItems}
+                            onChange={this.handleParamChange}/>
+                    </>)}
+
+                    {(paramsValue.type === ELineType.SolidPattern) && (<>
+                        <ButtonHK
+                            path={`line.patternMouseCentered`}
+                            name={'patternMouseCentered'}
+                            selected={paramsValue.patternMouseCentered}
+                            value={paramsValue.patternMouseCentered}
+                            onClick={this.handleToggledParamChange}
+                        >{t('line.center')}</ButtonHK>
+                    </>)}
+
+                    {(paramsValue.type === ELineType.TrailingPattern) && (<>
+                        <ButtonHK
+                            path={`line.patternDirection`}
+                            name={'patternDirection'}
+                            selected={paramsValue.patternDirection}
+                            value={paramsValue.patternDirection}
+                            onClick={this.handleToggledParamChange}
+                        >{t('line.direction')}</ButtonHK>
+                    </>)}
+
                 </div>
-                {paramsValue.type === ELineType.Pattern &&
-                <PatternsSelect
-                    value={paramsValue.pattern}
-                    onChange={this.handlePatternChange}
-                />
-                }
+                {(paramsValue.type === ELineType.Pattern
+                    || paramsValue.type === ELineType.SolidPattern
+                    || paramsValue.type === ELineType.TrailingPattern) && (
+                    <PatternsSelect
+                        name={'linePattern'}
+                        value={paramsValue.pattern}
+                        onChange={this.handlePatternChange}
+                    />
+                )}
             </div>
         );
     }
-};
+}
 
 const paramsConfigMapSelector = createSelector(
     [(state: AppState) => state.line.paramsConfig],

@@ -84,12 +84,15 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     changingStartValue?: number
     changeFunctionParams?: any
 
+    hotkeyDisabled?: boolean
 }
 
 export interface ButtonNumberState {
     value?: any
     startPoint: [number, number]
     startValue?: any
+    pressed: boolean
+    clicked: boolean
 }
 
 export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumberState> {
@@ -108,6 +111,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             value: props.value || range[0],
             startPoint: null,
             startValue: null,
+            pressed: false,
+            clicked: false,
         };
 
         this.buttonRef = React.createRef();
@@ -157,7 +162,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
         this.setState(({value}) => ({
             startValue: value,
-            startPoint: [e.clientX, e.clientY]
+            startPoint: [e.clientX, e.clientY],
+            clicked: true,
         }), () => {
             document.addEventListener("mousemove", this.handleMove);
             document.addEventListener("mouseup", this.handleUp);
@@ -190,7 +196,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         return Math.pow(10, -pres);
     };
 
-    handleUp = (e) => {
+    handleUp = (e?) => {
+
+        e = e || this.pre;
         this.pre = null;
 
         if (!this.props.disablePointerLock) {
@@ -243,7 +251,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.setState({
             value,
             startValue: null,
-            startPoint: null
+            startPoint: null,
+            clicked: false,
         }, () => {
             document.removeEventListener("mousemove", this.handleMove);
             document.removeEventListener("mouseup", this.handleUp);
@@ -252,26 +261,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     };
 
-
     handleLeave = e => {
-
-        // coordHelper3.writeln('leave')
-        //
-        // // startPoint.hide();
-        //
-        // const {onRelease, name, selected} = this.props;
-        // const {value} = this.state;
-        //
-        // // onRelease && onRelease({value, name, e, selected});
-        //
-        // this.setState({
-        //     value,
-        //     startValue: null,
-        //     startPoint: null
-        // }, () => {
-        //     document.removeEventListener("mousemove", this.handleMove);
-        //     document.removeEventListener("mouseup", this.handleUp);
-        // });
     };
 
     /**
@@ -281,6 +271,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handlePress = e => {
 
+        if (this.props.hotkeyDisabled) {
+            return;
+        }
         // coordHelper2.writeln('PRESS');
         if (this.state.startValue) {
             return;
@@ -293,10 +286,11 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
         this.setState(({value}) => ({
             startValue: value,
-            startPoint: null
-        }), () => {
-            document.addEventListener("mousemove", this.handlePressed);
-        });
+            startPoint: null,
+            pressed: true,
+        }));
+
+        document.addEventListener("mousemove", this.handlePressed);
     };
 
     handlePressed = e => {
@@ -315,7 +309,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         }
     };
 
-    handleRelease = e => {
+    handleRelease = (e?) => {
         // coordHelper2.writeln('RELEASE');
 
         // startPoint.hide();
@@ -328,10 +322,11 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.setState({
             value,
             startValue: null,
-            startPoint: null
-        }, () => {
-            document.removeEventListener("mousemove", this.handlePressed);
+            startPoint: null,
+            pressed: false,
         });
+
+        document.removeEventListener("mousemove", this.handlePressed);
     };
 
     /**
@@ -363,6 +358,20 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         }
         return nextValue;
     };
+
+    componentWillUnmount() {
+        if (this.state.pressed) {
+            this.handleRelease();
+
+            // document.removeEventListener("mousemove", this.handlePressed);
+        }
+
+        if (this.state.clicked) {
+            this.handleUp();
+            // document.removeEventListener("mousemove", this.handleMove);
+            // document.removeEventListener("mouseup", this.handleUp);
+        }
+    }
 
     getText = (value) => {
         const {getText, pres} = this.props;
@@ -431,6 +440,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
                 {shortcut &&
                 <Key
+                    name={otherProps.name}
                     keys={shortcut}
                     onPress={this.handlePress}
                     onRelease={this.handleRelease}/>}

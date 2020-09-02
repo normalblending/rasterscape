@@ -12,3 +12,9 @@ export const getChangeFunctionsSelectItemsNumber = createSelector(
     (cfs: ChangeFunctions): SelectItem[] => arrayToSelectItems(Object.values(cfs)
         .filter((value) => [ECFType.FXY, ECFType.WAVE].indexOf(value.type) !== -1).map(({id}) => id))
 );
+
+export const getChangeFunctionsSelectItemsVideo = createSelector(
+    [getCFs],
+    (cfs: ChangeFunctions): SelectItem[] => arrayToSelectItems(Object.values(cfs)
+        .filter((value) => [ECFType.FXY, ECFType.DEPTH].indexOf(value.type) !== -1).map(({id}) => id))
+);

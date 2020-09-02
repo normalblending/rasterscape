@@ -78,6 +78,8 @@ export class CaptureService {
 
         const sketch = new P5(sketch => {
 
+            let frames = 0;
+            const FRAMES_UPDATE = 50;
             sketch.setup = () => {
                 sketch.pixelDensity(1);
                 canvas = sketch.createCanvas(w, h);
@@ -95,7 +97,9 @@ export class CaptureService {
                     },
                     audio: false
                 }, (s, b) => {
-                    this.captures[patternId].stream = s;
+                    if (this.captures[patternId]) {
+                        this.captures[patternId].stream = s;
+                    }
                 });
                 // capture.parent("v2");
                 capture.size(w, h);
@@ -137,7 +141,8 @@ export class CaptureService {
                 // console.log(performance.now() - time);
 
                 sketch.updatePixels();
-                onNewFrame(sketch.pixels);
+                frames = (frames + 1) % FRAMES_UPDATE;
+                onNewFrame(sketch.pixels, frames < 1);
             }
         });
 
@@ -175,9 +180,9 @@ export class CaptureService {
         const {[patternId]: stopped, ...others} = this.captures;
 
         if (stopped) {
-            stopped.sketch.noLoop();
-            stopped.sketch.remove();
-            stopped.stream.getTracks()[0].stop();
+            stopped.sketch?.noLoop();
+            stopped.sketch?.remove();
+            stopped.stream?.getTracks()[0].stop();
 
             this.captures = others;
         }

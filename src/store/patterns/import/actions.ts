@@ -50,11 +50,11 @@ export const load = (id: string, image) => (dispatch, getState) => {
 
 
         const imageData2 = ctx.getImageData(0, 0, oldWidth, oldHeight);
-        dispatch(updateImage(id, imageData2));
+        dispatch(updateImage({id, imageData: imageData2}));
 
     } else {
 
-        dispatch(updateImage(id, imageData));
+        dispatch(updateImage({id, imageData}));
     }
 
 

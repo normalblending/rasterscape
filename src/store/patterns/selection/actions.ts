@@ -39,6 +39,6 @@ export const cutPatternBySelection = (id: string) => (dispatch, getState) => {
 
     const pattern = state.patterns[id];
 
-    dispatch(updateImage(id, getSelectedImageData(pattern)));
+    dispatch(updateImage({id, imageData: getSelectedImageData(pattern)}));
     dispatch(updateSelection(id, [], null));
 };

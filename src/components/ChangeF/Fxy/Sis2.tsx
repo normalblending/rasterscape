@@ -65,7 +65,7 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
 
         const params = {
             ...this.props.params,
-            [name]: value,
+            [name.split('.').reverse()[0]]: value,
         };
         let map = [];
 
@@ -82,24 +82,8 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
         this.props.onChange(params, this.props.name)
     };
 
-
-    buttonWrapper = (message) => {
-        const {tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                secondaryMessage={message !== 'kz' && <span>
-                    XA ⋅ √( xdd² + ydd² ) + h + cosA ⋅ cos( √( ( xdd + x * ( xN / xD - 1 ) )² + ( ydd + y * ( yN / yD - 1 ) )² ) )
-                </span>}
-                message={message}>{button}</HelpTooltip>) : null
-    };
-
     leftCol = ['xN', 'yN', 'xdd'];
     rightCol = ['XA', 'h', 'cosA', 'xD', 'yD', 'ydd'];
-
-    buttonWrappers = [...this.leftCol, ...this.rightCol, 'kz'].reduce((res, name) => {
-        res[name] = this.buttonWrapper(name);
-        return res;
-    }, {});
 
     render() {
         const {params, name} = this.props;
@@ -110,20 +94,16 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
 
                 <div className={'sis2-controls'}>
                     <div className={'canvas-container'}>
-
-                        <HelpTooltip component={SinHelp} componentProps={{name}}>
-                            <Sis2
-                                params={params}
-                                width={68}
-                                height={58}/>
-                        </HelpTooltip>
+                        <Sis2
+                            params={params}
+                            width={68}
+                            height={58}/>
                     </div>
                     {this.leftCol.map(key => {
                         return (
                             <ButtonNumberCF
-                                buttonWrapper={this.buttonWrappers[key]}
                                 value={params[key]}
-                                name={key}
+                                name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
                                 range={range[key]}
                                 pres={pres[key]}
                                 valueD={valueD[key]}
@@ -137,9 +117,8 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
                     {this.rightCol.map(key => {
                         return (
                             <ButtonNumberCF
-                                buttonWrapper={this.buttonWrappers[key]}
                                 value={params[key]}
-                                name={key}
+                                name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
                                 range={range[key]}
                                 pres={pres[key]}
                                 valueD={valueD[key]}
@@ -150,9 +129,8 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
                     })}
 
                     <ButtonNumberCF
-                        buttonWrapper={this.buttonWrappers['kz']}
                         value={params.end}
-                        name={'end'}
+                        name={`changeFunctions.${name}.end`}
                         range={range.end}
                         pres={pres.end}
                         valueD={valueD.end}
