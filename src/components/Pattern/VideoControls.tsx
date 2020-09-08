@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
+import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {VideoParams} from "../../store/patterns/video/types";
-import {SelectDrop} from "../_shared/buttons/SelectDrop";
+import {SelectDrop} from "../_shared/buttons/complex/SelectDrop";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {ECFType} from "../../store/changeFunctions/types";
@@ -11,12 +11,12 @@ import {getCFs, getChangeFunctionsSelectItemsVideo} from "../../store/changeFunc
 import {EdgeMode, SlitMode} from "../../store/patterns/video/services";
 import {StackType} from "../../store/patterns/video/capture/pixels";
 import '../../styles/videoControls.scss';
-import {CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggle";
+import {CycledToggle} from "../_shared/buttons/simple/CycledToggle";
 import {SelectItem} from "../../utils/utils";
 import {setCFHighlights, setCFTypeHighlights} from "../../store/changeFunctionsHighlights";
-import {SelectButtonsEventData} from "../_shared/buttons/SelectButtons";
-import {CycledToggleHK} from "../_shared/buttons/CycledToggle/CycledToggleHK";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {SelectButtonsEventData} from "../_shared/buttons/complex/SelectButtons";
+import {CycledToggleHK} from "../_shared/buttons/hotkeyed/CycledToggleHK";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface VideoControlsStateProps {
 

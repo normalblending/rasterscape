@@ -1,34 +1,35 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../../store";
+import {AppState} from "store";
 import * as classNames from "classnames";
-import {ButtonNumber, ButtonNumberProps} from "./ButtonNumber";
-import {SelectItem} from "../../../utils/utils";
-import {SelectDrop} from "./SelectDrop";
+import {ButtonNumber, ButtonNumberProps} from "../../complex/ButtonNumber";
+import {SelectItem} from "utils/utils";
+import {SelectDrop} from "../../complex/SelectDrop";
 import {
     activateValueChanging,
     deactivateValueChanging,
     setStartValue,
     setValueInChangingList
-} from "../../../store/changingValues/actions";
-import {toStartValue} from "../../../store/change/actions";
-import "../../../styles/buttonNumberCF.scss";
-import {HoverHideable} from "../HoverHideable";
-import {ShortcutInput} from "../ShortcutInput";
-import {getChangeFunctionsSelectItemsNumber} from "../../../store/changeFunctions/selectors";
-import {ChangeFunction, ECFType} from "../../../store/changeFunctions/types";
-import {addHotkey} from "../../../store/hotkeys";
-import {ChangingValue} from "../../../store/changingValues/types";
+} from "store/changingValues/actions";
+import {toStartValue} from "store/change/actions";
+import "./styles.scss";
+import {HoverHideable} from "../../../HoverHideable";
+import {ShortcutInput} from "../../../inputs/ShortcutInput";
+import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
+import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
+import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
+import {ChangingValue} from "../../../../../store/changingValues/types";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {SelectButtonsEventData} from "./SelectButtons";
-import {setCFHighlights, setCFTypeHighlights} from "../../../store/changeFunctionsHighlights";
+import {SelectButtonsEventData} from "../../complex/SelectButtons";
+import {setCFHighlights, setCFTypeHighlights} from "../../../../../store/changeFunctionsHighlights";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: SelectItem[]
     changeFunction: ChangeFunction
     changingValue: ChangingValue
-    hotkey: string
+    hotkey: HotkeyValue
     settingMode: boolean
+    highlightedPath: string
 }
 
 export interface ButtonNumberCFActionProps {
@@ -46,7 +47,7 @@ export interface ButtonNumberCFActionProps {
 
     setStartValue(path: string, startValue: number)
 
-    addHotkey(path: string, value: string)
+    addHotkey: typeof addHotkey
 
     setCFHighlights(cfName?: string)
 
@@ -55,6 +56,7 @@ export interface ButtonNumberCFActionProps {
 
 export interface ButtonNumberCFOwnProps extends ButtonNumberProps {
     path: string
+    hkLabel?: string
     buttonWrapper?
 }
 
@@ -76,6 +78,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         setCFHighlights, setCFTypeHighlights,
         t,
         settingMode,
+        hkLabel,
+        highlightedPath,
     } = props;
 
     const {
@@ -126,16 +130,13 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const handleStopManualChanging = React.useCallback(() => {
         activateValueChanging(path);
         setActive(false);
-        // console.log('-----------------------------------------',this);
     }, [activateValueChanging, path]);
 
-    const handleShortcutChange = React.useCallback((shortcut, e) => {
+    const handleShortcutChange = React.useCallback((shortcut) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut);
-            // if (shortcut !== null)
-            //     e.target.blur();
+            addHotkey(path, shortcut, HotkeyControlType.Number, hkLabel || path);
         }
-    }, [addHotkey, path]);
+    }, [addHotkey, path, hkLabel, path]);
 
 
     const handleCFMouseEnter = React.useCallback((data: SelectButtonsEventData) => {
@@ -172,7 +173,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             <ButtonNumber
                 {...othersButtonNumberProps}
 
-                shortcut={hotkey}
+                shortcut={hotkey?.key}
                 hotkeyDisabled={settingMode}
 
                 className={buttonClassName}
@@ -190,7 +191,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             {settingMode && (
                 <ShortcutInput
                     placeholder={t('buttonNumberCF.hotkey')}
-                    value={hotkey}
+                    value={hotkey?.key}
                     onChange={handleShortcutChange}/>
             )}
         </>
@@ -201,7 +202,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     return (
         <HoverHideable
-            className={classNames("button-number-cf", className)}
+            className={classNames("button-number-cf", {
+                ['hotkey-highlighted']: highlightedPath === hotkey?.path
+            }, className)}
             button={buttonElement}>
             {!active && (
                 <HoverHideable
@@ -235,6 +238,7 @@ const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFO
     changingValue: state.changingValues[path],
     hotkey: state.hotkeys.keys[path],
     settingMode: state.hotkeys.setting,
+    highlightedPath: state.hotkeys.highlightedPath,
 });
 
 const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNumberCFOwnProps> = {

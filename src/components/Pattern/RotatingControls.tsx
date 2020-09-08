@@ -1,6 +1,6 @@
 import * as React from "react";
-import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
+import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import '../../styles/rotatingControls.scss';
 import {withTranslation, WithTranslation} from "react-i18next";

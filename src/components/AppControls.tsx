@@ -1,12 +1,12 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {withTranslation, WithTranslation} from 'react-i18next';
-import {AppState} from "../store";
-import {Button} from "./_shared/buttons/Button";
-import {reverseFullScreen} from "../store/fullscreen";
+import {AppState} from "store";
+import {Button} from "./_shared/buttons/simple/Button";
+import {reverseFullScreen} from "store/fullscreen";
 import * as classNames from "classnames";
-import {setLanguage} from "../store/language";
-import {activateTutorial} from "../store/tutorial";
+import {setLanguage} from "store/language";
+import {activateTutorial} from "store/tutorial";
 import '../styles/tutorial.scss';
 import {Hotkeys} from './Hotkeys';
 
@@ -65,9 +65,9 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
                 <Button
                     className="app-control-button"
                     onClick={this.handleLanguage}>{language}</Button>
-                <Button
-                    className="app-control-button"
-                    onClick={activateTutorial}>{helpOn ? 'x' : '?'}</Button>
+                {/*<Button*/}
+                {/*    className="app-control-button"*/}
+                {/*    onClick={activateTutorial}>{helpOn ? 'x' : '?'}</Button>*/}
                 <Button
                     className={classNames("app-control-button", "full-button", {
                         ["full-button-off"]: isFull

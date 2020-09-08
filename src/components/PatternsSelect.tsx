@@ -1,11 +1,11 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {ButtonSelect} from "./_shared/buttons/ButtonSelect";
+import {ButtonSelect} from "./_shared/buttons/simple/ButtonSelect";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
-import {ButtonHK} from "./_shared/buttons/ButtonHK";
+import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -15,6 +15,7 @@ export interface PatternsSelectActionProps {
 }
 
 export interface PatternsSelectOwnProps {
+    nullable?: boolean
     HK?: boolean
     name?: string
     value?: string | string []
@@ -32,6 +33,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         onChange,
         name,
         HK = true,
+        nullable,
     } = props;
 
     const handleClick = React.useCallback((data) => {
@@ -53,13 +55,13 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
             }
 
         } else {
-            if (selected) {
+            if (selected && nullable) {
                 onChange(null, null, id);
             } else {
                 onChange(id, id, null);
             }
         }
-    }, [onChange, value]);
+    }, [onChange, value, nullable]);
 
     const ButtonComponent = HK ? ButtonHK : ButtonSelect;
 

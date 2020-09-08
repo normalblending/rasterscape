@@ -1,27 +1,27 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../../../store";
-import {Button, ButtonProps} from "bbuutoonnss";
-import {ShortcutInput} from "../../ShortcutInput";
-import {HoverHideable} from "../../HoverHideable";
+import {AppState} from "../../../../../store";
+import * as classNames from 'classnames';
+import {ShortcutInput} from "../../../inputs/ShortcutInput";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {addHotkey} from "../../../../store/hotkeys";
-import {ButtonSelect, ButtonSelectProps} from "../ButtonSelect";
-import {Key} from "../../Key";
+import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
+import {Key} from "../../../Key";
 import './styles.scss';
-import {CycledToggle, CycledToggleImperativeHandlers, CycledToggleProps} from "./CycledToggle";
+import {CycledToggle, CycledToggleImperativeHandlers, CycledToggleProps} from "../../simple/CycledToggle";
 
 export interface CycledToggleHKStateProps {
-    hotkey: string
+    hotkey: HotkeyValue
     settingMode: boolean
+    highlightedPath: string
 }
 
 export interface CycledToggleHKActionProps {
-    addHotkey(path: string, value: string)
+    addHotkey: typeof addHotkey
 }
 
 export interface CycledToggleHKOwnProps extends CycledToggleProps {
     path: string
+    hkLabel?: string
 }
 
 export interface CycledToggleHKProps extends CycledToggleHKStateProps, CycledToggleHKActionProps, CycledToggleHKOwnProps, WithTranslation {
@@ -35,7 +35,9 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
         hotkey,
         addHotkey,
         path,
+        hkLabel,
         settingMode,
+        highlightedPath,
         ...buttonProps
     } = props;
 
@@ -46,39 +48,60 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
         onClick,
     } = buttonProps;
 
+    const [pressed, setPressed] = React.useState(false);
+
+    const isOnRelease = hotkey?.onRelease;
+
     const buttonRef = React.useRef<CycledToggleImperativeHandlers>();
 
     const handleShortcutChange = React.useCallback((shortcut, e) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut);
-            // if (shortcut !== null)
-            //     e.target.blur();
+            addHotkey(path, shortcut, HotkeyControlType.Cycled, hkLabel || path);
         }
-    }, [addHotkey, path, settingMode]);
+    }, [addHotkey, path, settingMode, hkLabel, path]);
 
-    const handleRelease = React.useCallback((e) => {
+    const handlePress = React.useCallback((e) => {
 
-        if (settingMode)
+        setPressed(true);
+
+        if (settingMode || isOnRelease)
             return;
 
         buttonRef.current?.click(e);
-    }, [buttonRef, settingMode]);
+
+        setTimeout(setPressed, 200, false);
+    }, [buttonRef, settingMode, isOnRelease]);
+
+    const handleRelease = React.useCallback((e) => {
+
+        if (settingMode || !isOnRelease)
+            return;
+
+        buttonRef.current?.click(e);
+
+        setPressed(false);
+
+    }, [buttonRef, settingMode, isOnRelease]);
 
     return (
-        <div className={'hotkey-cycled-toggle'}>
+        <div className={classNames('hotkey-cycled-toggle', {
+            ['hotkey-highlighted']: highlightedPath === hotkey?.path
+        })}>
             <CycledToggle
+                pressed={pressed}
                 ref={buttonRef}
                 {...buttonProps} />
             {settingMode && (
                 <ShortcutInput
                     placeholder={t('buttonNumberCF.hotkey')}
-                    value={hotkey}
+                    value={hotkey?.key}
                     onChange={handleShortcutChange}
                 />
             )}
             <Key
-                keys={hotkey}
+                keys={hotkey?.key}
                 onRelease={handleRelease}
+                onPress={handlePress}
             />
         </div>
     );
@@ -87,6 +110,7 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
 const mapStateToProps: MapStateToProps<CycledToggleHKStateProps, CycledToggleHKOwnProps, AppState> = (state, {path}) => ({
     hotkey: state.hotkeys.keys[path],
     settingMode: state.hotkeys.setting,
+    highlightedPath: state.hotkeys.highlightedPath,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CycledToggleHKActionProps, CycledToggleHKOwnProps> = {

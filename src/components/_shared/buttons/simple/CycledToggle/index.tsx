@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Button, ButtonEventData, ButtonProps} from 'bbuutoonnss';
+import {Button, ButtonEventData, ButtonProps} from '../Button';
 import * as classNames from "classnames";
 
 export const defaultGetValue = ({value}) => value;
@@ -44,7 +44,8 @@ export const CycledToggle = React.forwardRef<CycledToggleImperativeHandlers, Cyc
         getValue = defaultGetValue,
         getText = defaultGetText,
         className,
-        nullText = '-'
+        nullText = '-',
+        pressed,
     } = props;
 
     const [valueMap, setValueMap] = React.useState({});
@@ -113,6 +114,7 @@ export const CycledToggle = React.forwardRef<CycledToggleImperativeHandlers, Cyc
             className={classNames(className, "cycled-toggle")}
             value={value}
             onClick={handleClick}
+            pressed={pressed}
         >{valueItem ? getText(valueItem) : nullText}</Button>
     );
 });

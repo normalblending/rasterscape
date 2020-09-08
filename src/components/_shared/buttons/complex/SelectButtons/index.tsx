@@ -1,10 +1,9 @@
 import * as React from "react";
 import * as classNames from "classnames";
-import {ButtonSelect} from "./ButtonSelect";
-import {ButtonEventData} from "./Button";
-import '../../../styles/selectButtonsStyles.scss';
-import {ButtonHK} from "./ButtonHK";
-import {Button} from "bbuutoonnss";
+import {ButtonSelect} from "../../simple/ButtonSelect";
+import {ButtonEventData} from "../../simple/Button";
+import '../../../../../styles/selectButtonsStyles.scss';
+import {ButtonHK} from "../../hotkeyed/ButtonHK";
 
 export interface SelectButtonsEventData extends ButtonEventData {
     item: any
@@ -32,7 +31,11 @@ export interface SelectButtonsProps {
 
     getText?(item?: any)
 
+    getHKLabel?(item?: any)
+
     HK?: boolean
+    path?: string
+    hkLabel?: string
 }
 
 export const defaultGetValue = (item) => item?.value;
@@ -63,11 +66,14 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
             name,
             getValue = defaultGetValue,
             getText = defaultGetText,
+            getHKLabel = defaultGetValue,
             br,
             width,
             onItemMouseEnter,
             onItemMouseLeave,
             HK = true,
+            path,
+            hkLabel,
         } = this.props;
 
         const ButtonComponent = HK ? ButtonHK : ButtonSelect;
@@ -77,7 +83,9 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
                 <div className={"select-buttons-items"}>
                     {items.map((item, index) => (
                         <ButtonComponent
-                            path={`${name}-${getValue(item)}`}
+                            path={`${path || name}.${getValue(item)}`}
+                            hkLabel={`${hkLabel} ${getValue(item)}`}
+                            name={`${path || name}.${getValue(item)}`}
                             width={width}
                             value={item}
                             key={index}

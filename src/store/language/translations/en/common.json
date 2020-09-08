@@ -97,7 +97,9 @@
 
   "chat": {
     "send": ">"
+  },
+
+  "hotkeys": {
+    "delete": "delete"
   }
-
-
 }

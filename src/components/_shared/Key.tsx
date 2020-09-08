@@ -3,6 +3,7 @@ import * as keyboardjs from "keyboardjs";
 
 export interface KeyProps {
     keys: string | string[]
+    emptyKeys?: boolean
 
     onPress?(e?: any, keys?: string | string[])
 
@@ -31,7 +32,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
     handleRelease = e => {
         const {onRelease, keys} = this.props;
         onRelease && onRelease(e, keys)
-        console.log('onRelease',keys);
+        console.log('onRelease', keys);
     };
 
     // static getDerivedStateFromProps(props, state) {
@@ -42,20 +43,19 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
     // }
 
     componentDidMount() {
-        const {keys} = this.props;
-        if (keys)
+        const {keys, emptyKeys} = this.props;
+        if (keys || emptyKeys)
             keyboardjs.bind(keys, this.handlePress, this.handleRelease)
     }
 
     componentDidUpdate(prevProps) {
-        const {keys, name} = this.props;
+        const {keys, name, emptyKeys} = this.props;
 
 
         if (prevProps.keys !== keys) {
-            console.log(name, keys, prevProps.keys)
             keyboardjs.unbind(prevProps.keys, this.handlePress, this.handleRelease);
 
-            if (keys)
+            if (keys || emptyKeys)
                 keyboardjs.bind(keys, this.handlePress, this.handleRelease);
         }
     }

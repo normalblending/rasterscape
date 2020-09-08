@@ -1,5 +1,5 @@
 import {EParamType} from "../../../components/_shared/Params";
-import {ValueD} from "../../../components/_shared/buttons/ButtonNumber";
+import {ValueD} from "../../../components/_shared/buttons/complex/ButtonNumber";
 import {xyParaboloid} from "./_helpers";
 
 export const depthInitialParams = {

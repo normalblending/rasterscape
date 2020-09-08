@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as classNames from "classnames";
-import '../../styles/inputText.scss';
-
+import '../../../styles/inputText.scss';
 
 export interface InputTextProps {
     onChange?(value: string): void
 
-    onFocus?()
-    onBlur?()
+    onFocus?(e?)
+
+    onBlur?(e?)
 
     className?: string
     placeholder?: string
@@ -21,14 +21,40 @@ export interface InputTextProps {
     [other: string]: any
 }
 
-export const InputText: React.FC<InputTextProps> = ({maxLength, disabled, onChange, onFocus, onBlur, value, placeholder, className, ...otherProps}) => {
+export interface CInputTextImperativeHandlers {
+    blur()
+}
+
+export const InputText = React.forwardRef<CInputTextImperativeHandlers, InputTextProps>((props, ref) => {
+
+    const {
+        maxLength,
+        disabled,
+        onChange,
+        onFocus,
+        onBlur,
+        value,
+        placeholder,
+        className,
+        ...otherProps
+    } = props;
 
     const changeHandler = e => {
         onChange && onChange(e.target.value)
     };
 
+    const inputRef = React.useRef<any>(null);
+
+    React.useImperativeHandle(ref, () => ({
+        blur: () => {
+            console.log('blur');
+            inputRef?.current?.blur();
+        }
+    }), [inputRef]);
+
     return (
         <input
+            ref={inputRef}
             className={classNames(className, "input-text")}
             type="text"
             maxLength={maxLength}
@@ -40,4 +66,4 @@ export const InputText: React.FC<InputTextProps> = ({maxLength, disabled, onChan
             onChange={changeHandler}
             {...otherProps}/>
     );
-};
+});

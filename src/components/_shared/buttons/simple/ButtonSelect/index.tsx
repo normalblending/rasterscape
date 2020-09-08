@@ -1,6 +1,7 @@
 import * as React from "react";
-import {Button, ButtonEventData, ButtonProps} from "./Button";
+import {Button, ButtonEventData, ButtonProps} from "../Button";
 import * as classNames from "classnames";
+import './styles.scss';
 
 export interface ButtonSelectEventData extends ButtonEventData {
     selected?: boolean
@@ -41,7 +42,9 @@ export class ButtonSelect extends React.PureComponent<ButtonSelectProps> {
                 onMouseUp={data => onMouseUp && onMouseUp({...data, selected})}
                 onMouseEnter={data => onMouseEnter && onMouseEnter({...data, selected})}
                 onMouseLeave={data => onMouseLeave && onMouseLeave({...data, selected})}
-                className={classNames("button-select", className, {["button-select-selected"]: selected})}/>
+                className={classNames("button-select", className, {
+                    ["button-select-selected"]: selected,
+                })}/>
         );
     }
 }

@@ -6,13 +6,13 @@ import {EToolType} from "../../store/tool/types";
 import {setCurrentTool} from "../../store/tool/actions";
 import {Brush} from "./Brush";
 import {Line} from "./Line";
-import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
+import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {SelectTool} from "./SelectTool";
 import {reverseFullScreen} from "../../store/fullscreen";
 import * as classNames from "classnames";
 import "../../styles/tools.scss";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export const ToolsParams = {
     [EToolType.Brush]: {component: Brush, type: EToolType.Brush},
@@ -46,7 +46,9 @@ const ToolsComponent: React.FC<ToolsProps> = ({t, i18n, currentTool, setCurrentT
             <div className={'tools-select'}>
                 {Object.keys(ToolsParams).map(toolType => (
                     <ButtonHK
-                        path={'tool' + toolType}
+                        path={'tool.' + toolType.toLowerCase()}
+                        name={'tool.' + toolType.toLowerCase()}
+                        hkLabel={'tool ' + toolType.toLowerCase()}
                         key={toolType}
                         selected={toolType === currentTool}
                         onClick={() => setCurrentTool(ToolsParams[toolType].type)}>

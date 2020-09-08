@@ -1,13 +1,13 @@
 import * as React from "react";
 import "../../../styles/waveChangeFunction.scss";
-import {ValueD} from "../../_shared/buttons/ButtonNumber";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {changeCFParams} from "../../../store/changeFunctions/actions";
 import {AppState} from "../../../store";
 import {AnyWaveParams, WaveParams, WaveType} from "../../../store/changeFunctions/functions/wave";
 import {SinCF} from "./Sin";
-import {SelectDrop} from "../../_shared/buttons/SelectDrop";
+import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {SawCF} from "./Saw";
 import {NoiseCF} from "./Noise";

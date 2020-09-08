@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../../_shared/buttons/ButtonNumberCF";
+import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../../styles/sis2ChangeFunction.scss";
-import {ValueD} from "../../_shared/buttons/ButtonNumber";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Sis2} from "../../_shared/canvases/WebWorkerCanvas";

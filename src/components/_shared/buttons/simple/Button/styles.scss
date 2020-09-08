@@ -1,0 +1,31 @@
+.button {
+    background: lightgoldenrodyellow;
+
+    white-space: nowrap;
+
+    height: 20px;
+    width: 70px;
+
+    font-size: 11px;
+
+    border-width: 1px;
+    border-style: solid;
+    border-color: lightgrey;
+    border-bottom-color: #ababab;
+    border-right-color: #ababab;
+
+
+}
+
+.button:focus {
+     outline: none;
+     /*box-shadow: 0 0 0 2pt red;*/
+}
+
+.button:active {
+    border-color: #ababab #d3d3d3 #d3d3d3 #ababab;
+}
+
+.button.button-pressed {
+    border-color: #ababab #d3d3d3 #d3d3d3 #ababab !important;
+}

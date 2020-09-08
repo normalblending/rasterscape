@@ -5,17 +5,15 @@ import {AppState} from "../../store";
 import {ChangeFunctions} from "../../store/changeFunctions/reducer";
 import {addCF, changeCFParams, removeCF} from "../../store/changeFunctions/actions";
 import {ECFType} from "../../store/changeFunctions/types";
-import {Button} from "../_shared/buttons/Button";
+import {Button} from "../_shared/buttons/simple/Button";
 import {setChangingMode, startChanging, stopChanging} from "../../store/changing/actions";
 import {ChangingMode} from "../../store/changing/types";
 import {FxyCF} from "./Fxy";
 import {getCFs} from "../../store/changeFunctions/selectors";
 import {DepthCF} from "./DeepthCF";
-import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {WaveCF} from "./Wave";
-import {SelectButtons, SelectDrop} from "bbuutoonnss";
 import {enumToSelectItems} from "../../utils/utils";
-import {CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggle";
+import {CycledToggle} from "../_shared/buttons/simple/CycledToggle";
 
 export interface ChangeFStateProps {
     cfs: ChangeFunctions

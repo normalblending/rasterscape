@@ -1,8 +1,8 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
-import {InputText} from "../../_shared/InputText";
-import {Button} from "../../_shared/buttons/Button";
+import {InputText} from "../../_shared/inputs/InputText";
+import {Button} from "../../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {resetUnreaded, sendMessage, setDrawer} from "../../../store/patterns/room/actions";
 import {ButtonSelect} from "bbuutoonnss";

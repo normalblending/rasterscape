@@ -1,6 +1,6 @@
 import * as React from "react";
 import "../../../styles/fxyChangeFunction.scss";
-import {ValueD} from "../../_shared/buttons/ButtonNumber";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {changeCFParams} from "../../../store/changeFunctions/actions";

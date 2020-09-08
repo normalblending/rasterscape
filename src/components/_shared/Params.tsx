@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonSelect} from "./buttons/ButtonSelect";
-import {ButtonNumber} from "./buttons/ButtonNumber";
-import {SelectButtons} from "./buttons/SelectButtons";
+import {ButtonSelect} from "./buttons/simple/ButtonSelect";
+import {ButtonNumber} from "./buttons/complex/ButtonNumber";
+import {SelectButtons} from "./buttons/complex/SelectButtons";
 import {EventData} from "../../utils/types";
 import {File} from "./File";
 

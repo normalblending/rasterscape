@@ -54,8 +54,8 @@ export const lineTrailingPattern = function () {
         ctx.globalCompositeOperation = compositeOperation;
         ctx.imageSmoothingEnabled = true;
 
-        const brushRotation = linePattern.config.rotation ? linePattern?.rotation?.value : null;
-        const destinationRotation = destinationPattern.config.rotation ? destinationPattern?.rotation?.value : null;
+        const brushRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
+        const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
 
         const linePatternImage = patternValues.values[linePattern?.id];
 
@@ -187,9 +187,9 @@ export const lineTrailingPattern = function () {
             const {linePattern, pattern}: CanvasDrawProps = this.props;
             const {patternSize} = this.props.line.params;
 
-            const patternRotation = pattern.config.rotation ? pattern?.rotation?.value : null;
+            const patternRotation = pattern?.config?.rotation ? pattern?.rotation?.value : null;
 
-            const lineRotation = linePattern.config.rotation ? linePattern?.rotation?.value : null;
+            const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
             const linePatternImage = patternValues.values[linePattern?.id];
 
             const width = patternSize * (linePatternImage?.width);

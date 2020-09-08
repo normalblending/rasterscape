@@ -22,11 +22,17 @@
 }
 
 .repeating-button {
-  background: black;
-  color: white;
+  .button {
+    background: black;
+    color: white;
 
-  &.button-select.button-select-selected {
-    background: darkblue;
+    &.button-select.button-select-selected {
+      background: darkblue;
+    }
+  }
+
+  .shortcut-input.empty {
+    background: radial-gradient(white -50%, transparent);
   }
 }
 
@@ -36,13 +42,9 @@
     color: white;
   }
 
-  .shortcut-input {
-    background: black;
-    color: white;
-
-    &:focus {
-      border: 1px solid #ffcd00;
-    }
+  .shortcut-input.empty {
+    background: radial-gradient(white -50%, transparent);
+    color: #ffcd00;
   }
 
   .select-drop>.select-drop-items>.select-buttons-items {

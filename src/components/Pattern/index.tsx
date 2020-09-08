@@ -1,10 +1,10 @@
 import * as React from "react";
-import {Button} from "../_shared/buttons/Button";
+import {Button} from "../_shared/buttons/simple/Button";
 import "../../styles/pattern.scss";
 import {HistoryControls} from "./HistoryControls";
 import {Area} from "../Area";
-import {InputNumber} from "../_shared/InputNumber";
-import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
+import {InputNumber} from "../_shared/inputs/InputNumber";
+import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {RotationControls} from "./RotatingControls";
 import {RepeatingControls} from "./RepeatingControls";
 import {SelectionControls} from "./SelectionControls";
@@ -27,7 +27,7 @@ import {BlurControls} from "./BlurControls";
 import '../../styles/inputNumber.scss';
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface PatternComponentStateProps {
 
@@ -67,6 +67,7 @@ export interface PatternComponentActionProps {
 
 export interface PatternComponentOwnProps {
     id: string
+    onMouseEnter?(patternId: string, e?)
 }
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
@@ -148,17 +149,23 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         this.props.cutPatternBySelection(this.props.id)
     };
 
+    handleMouseEnter = (e) => {
+        const {onMouseEnter, id} = this.props;
+
+        onMouseEnter?.(id, e);
+    };
+
     render() {
         const {
             imageValue, maskValue,
             height, width, id, config, selection, rotation, importParams,
             meDrawer,
-            t
+            t,
         } = this.props;
 
         console.log("pattern render ", id, rotation);
         return (
-            <div className="pattern">
+            <div className="pattern" onMouseEnter={this.handleMouseEnter}>
                 <div className="left">
                     <div className="flex-col">
 

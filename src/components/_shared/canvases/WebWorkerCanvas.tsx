@@ -1,17 +1,8 @@
 import * as React from "react";
-import {useRef, useEffect, useMemo, useCallback} from "react";
-import {imageDataToCanvas} from "../../../../utils/canvas/helpers/imageData";
-import {throttle} from "../../../../utils/utils";
+import {useRef, useEffect, useMemo} from "react";
+import {imageDataToCanvas} from "utils/canvas/helpers/imageData";
 import _throttle from 'lodash/throttle';
-import {coordHelper, coordHelper2, coordHelper3, TextHelper} from "../../../Area/canvasPosition.servise";
-
-/* eslint import/no-webpack-loader-syntax: off */
-// const ParaboloidWorker = require("worker-loader?name=dist/[name].js!./workers/paraboloid");
-// const ChannelsWorker = require("worker-loader?name=dist/[name].js!./workers/channels");
-// const SawWorker = require("worker-loader?name=dist/[name].js!./workers/saw");
-// const SinWorker = require("worker-loader?name=dist/[name].js!./workers/sin");
-// const Sis2Worker = require("worker-loader?name=dist/[name].js!./workers/sis2");
-// const NoiseWorker = require("worker-loader?name=dist/[name].js!./workers/noise");
+import {coordHelper, coordHelper2, coordHelper3} from "../../Area/canvasPosition.servise";
 
 export interface WebWorkerCanvasProps {
     throttled?: boolean
@@ -21,24 +12,6 @@ export interface WebWorkerCanvasProps {
     imageData?: ImageData
     [x: string]: any
 }
-
-
-// const post = (canvasRef, width, height, params, otherProps, imageData, worker) => {
-//     coordHelper2.setText(+new Date() + ' po');
-//     const canvas = canvasRef.current;
-//     const context = canvas.getContext("2d");
-//
-//     worker.postMessage({
-//         imageData: imageData || context.getImageData(0, 0, width, height),
-//         params: {
-//             ...otherProps,
-//             ...params
-//         },
-//         width, height
-//     });
-// };
-//
-// const postThrottled = _throttle(post, 500);
 
 export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): React.FC<WebWorkerCanvasProps> => {
     const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({throttled, width, height, params, imageData, ...otherProps}) => {

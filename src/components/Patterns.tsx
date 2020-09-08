@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {Button} from "./_shared/buttons/Button";
+import {Button} from "./_shared/buttons/simple/Button";
 import {
     addPattern,
     removePattern
@@ -19,6 +19,9 @@ import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
 import {whyDidYouRender} from "../utils/props";
 import {Resizable, ResizableBox} from 'react-resizable';
 import 'react-resizable/css/styles.css';
+import {Key} from "./_shared/Key";
+import {setActivePattern} from "../store/activePattern";
+import {PatternsHotkeys} from "./PatternsHotkeys";
 
 export interface PatternsStateProps {
     patterns: any
@@ -43,6 +46,8 @@ export interface PatternsActionProps {
     save(id: string)
 
     load(id: string, image)
+
+    setActivePattern: typeof setActivePattern
 
 }
 
@@ -73,6 +78,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
             setHeight,
             save, load,
             t,
+            setActivePattern,
         } = this.props;
         return (
             <>
@@ -81,6 +87,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                         <Pattern
                             key={id}
                             id={id}
+
+                            onMouseEnter={setActivePattern}
 
                             connected={connected}
 
@@ -98,9 +106,9 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                         />
                     );
                 })}
+                <PatternsHotkeys/>
                 <div className={'zero-pattern'}>
                     <Button onClick={this.handleAddClick}>{t("add")}</Button>
-                    {/*<AddPatternHelp/>*/}
                 </div>
             </>
         );
@@ -122,6 +130,7 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     updateMask,
     save,
     load,
+    setActivePattern,
 };
 
 export const Patterns = connect<PatternsStateProps, PatternsActionProps, PatternsOwnProps, AppState>(

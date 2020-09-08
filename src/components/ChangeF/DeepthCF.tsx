@@ -1,9 +1,9 @@
 import * as React from "react";
 import {ParamConfig} from "../_shared/Params";
-import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
+import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../styles/depthChangeFunction.scss";
-import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggle";
+import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
+import {CycledToggle} from "../_shared/buttons/simple/CycledToggle";
 import {Button} from "bbuutoonnss";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
@@ -11,6 +11,7 @@ import {changeCFParams} from "../../store/changeFunctions/actions";
 import {PatternsSelect} from "../PatternsSelect";
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {ChannelImageData} from "../_shared/canvases/WebWorkerCanvas";
+import {CycledToggleHK} from "../_shared/buttons/hotkeyed/CycledToggleHK";
 
 export interface DepthCFStateProps {
     tutorial: boolean
@@ -130,7 +131,9 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                             <Button onClick={this.handleDeleteItem(index)}>delete</Button>
                         </div>
                         <div className={'depth-item-controls'}>
-                            <CycledToggle
+                            <CycledToggleHK
+                                path={`changeFunctions.functions.${name}.params.items.${index}.component`}
+                                hkLabel={`${name} p${index} component`}
                                 name={'component'}
                                 value={item.component}
                                 items={componentsSelectItems}
@@ -140,6 +143,7 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                                 buttonWrapper={this.buttonWrapperFrom}
                                 pres={2}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zd`}
+                                hkLabel={`${name} p${index} bottom`}
                                 value={item.zd}
                                 name={"zd"}
                                 range={seRange}
@@ -149,6 +153,7 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                             <ButtonNumberCF
                                 buttonWrapper={this.buttonWrapperTo}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zed`}
+                                hkLabel={`${name} p${index} top`}
                                 value={item.zed}
                                 name={"zed"}
                                 range={seRange}

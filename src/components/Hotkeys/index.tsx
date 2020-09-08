@@ -2,33 +2,45 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import './styles.scss';
-import {addHotkey, ButtonsHotkeys, clearHotkeys, settingMode} from "../../store/hotkeys";
+import {
+    clearHotkeys,
+    highlightHotkey,
+    HotkeyControlType,
+    HotkeyValue,
+    removeHotkey,
+    settingMode,
+    updateHotkey
+} from "../../store/hotkeys";
 import {createSelector} from "reselect";
 import {Button} from "bbuutoonnss";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {WithTranslation, withTranslation} from "react-i18next";
+import {ShortcutInput} from "../_shared/inputs/ShortcutInput";
+import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 
-export type HotkeyItem = {
-    path: string
-    key: string
-};
 
 export interface HotkeysStateProps {
-    hotkeys: HotkeyItem[]
+    hotkeys: HotkeyValue[]
+    isSettingMode: boolean
 }
 
 export interface HotkeysActionProps {
-    addHotkey(path: string, value: string)
+
+    updateHotkey: typeof updateHotkey
+
+    removeHotkey(path: string)
 
     settingMode(state: boolean)
 
     clearHotkeys()
+
+    highlightHotkey(path: string)
 }
 
 export interface HotkeysOwnProps {
 
 }
 
-export interface HotkeysProps extends HotkeysStateProps, HotkeysActionProps, HotkeysOwnProps {
+export interface HotkeysProps extends HotkeysStateProps, HotkeysActionProps, HotkeysOwnProps, WithTranslation {
 
 }
 
@@ -36,44 +48,79 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
 
     const {
         hotkeys,
-        addHotkey,
         settingMode,
         clearHotkeys,
+        isSettingMode,
+        t,
+        highlightHotkey,
+        removeHotkey,
+        updateHotkey,
     } = props;
 
-    const [openHotkeys, setOpenHotkeys] = React.useState(false);
-
     const toggleHotkeys = React.useCallback(() => {
-        setOpenHotkeys(!openHotkeys);
-        settingMode(!openHotkeys);
-    }, [openHotkeys, setOpenHotkeys, settingMode]);
+        settingMode(!isSettingMode);
+    }, [isSettingMode, settingMode]);
 
-    const deleteHandler = React.useCallback((data) => {
-        addHotkey(data.value.path, null);
-    }, [hotkeys, addHotkey]);
+
+    const handleShortcutChange = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+        if (shortcut?.length === 1 || shortcut === null) {
+            updateHotkey(hotkey.path, {key: shortcut});
+        }
+    }, [updateHotkey]);
+
+    const handleShortcutParamChange = React.useCallback(({value: hotkey, selected}) => {
+        updateHotkey(hotkey.path, {
+            onRelease: !selected
+        });
+    }, [updateHotkey]);
+
+
+    const handleShortcutFocus = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+        highlightHotkey(hotkey.path);
+    }, [highlightHotkey]);
+
+    const handleShortcutBlur = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+        if (shortcut === null) {
+            removeHotkey(hotkey.path);
+        }
+
+        highlightHotkey(null);
+    }, [removeHotkey, highlightHotkey]);
 
     return (
         <div className={'hotkeys'}>
             <Button
                 className="app-control-button"
                 onClick={toggleHotkeys}>hk</Button>
-            {openHotkeys && (
+            {isSettingMode && (
                 <div className={'hotkeys-list'}>
-                    <Button
-                        onClick={clearHotkeys}
-                    >очистить</Button>
-                    {hotkeys.map((hotkey) => {
-                        const {path, key} = hotkey;
+                    <Button onClick={clearHotkeys}>clear</Button>
+                    {hotkeys.map((hotkey, index) => {
+                        const {key, name, path, onRelease, controlType} = hotkey;
                         return (
-                            <div className={'hotkeys-list-item'}>
-                                <div>
-                                    <Button
-                                        onClick={deleteHandler}
-                                        value={hotkey}
-                                    >удалить</Button>
+                            <div className={'hotkeys-list-item'} key={path}>
+                                <div className={'hotkey-on-release'}>
+                                    {[
+                                        HotkeyControlType.Button,
+                                        HotkeyControlType.Cycled,
+                                    ].includes(controlType) && (
+                                        <ButtonSelect
+                                            selected={onRelease}
+                                            value={hotkey}
+                                            onClick={handleShortcutParamChange}
+                                        >{onRelease ? '˄' : '˅'}</ButtonSelect>
+                                    )}
                                 </div>
-                                <div>{path}</div>
-                                <div>{key}</div>
+                                <ShortcutInput
+                                    hotkey={hotkey}
+                                    onBlur={handleShortcutBlur}
+                                    onChange={handleShortcutChange}
+                                    onFocus={handleShortcutFocus}
+                                    value={key}
+                                />
+                                <div className={'hotkey-name'}>
+                                    {name}
+                                </div>
                             </div>
                         )
                     })}
@@ -86,25 +133,22 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
 
 const hotkeysSelector = createSelector(
     [(state: AppState) => state.hotkeys.keys],
-    (hotkeys) => Object.keys(hotkeys).reduce((res, path) => {
-        res.push({
-            path,
-            key: hotkeys[path]
-        })
-        return res;
-    }, []));
+    (hotkeys) => Object.values(hotkeys));
 
 const mapStateToProps: MapStateToProps<HotkeysStateProps, HotkeysOwnProps, AppState> = state => ({
-    hotkeys: hotkeysSelector(state)
+    hotkeys: hotkeysSelector(state),
+    isSettingMode: state.hotkeys.setting,
 });
 
 const mapDispatchToProps: MapDispatchToProps<HotkeysActionProps, HotkeysOwnProps> = {
-    addHotkey,
+    updateHotkey,
+    removeHotkey,
     settingMode,
     clearHotkeys,
+    highlightHotkey,
 };
 
 export const Hotkeys = connect<HotkeysStateProps, HotkeysActionProps, HotkeysOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(HotkeysComponent);
+)(withTranslation('common')(HotkeysComponent));

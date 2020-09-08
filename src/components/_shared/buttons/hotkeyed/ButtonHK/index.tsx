@@ -1,26 +1,31 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../../../store";
+import {AppState} from "../../../../../store";
 import {Button, ButtonProps} from "bbuutoonnss";
-import {ShortcutInput} from "../../ShortcutInput";
-import {HoverHideable} from "../../HoverHideable";
+import {ShortcutInput} from "../../../inputs/ShortcutInput";
+import {HoverHideable} from "../../../HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {addHotkey} from "../../../../store/hotkeys";
-import {ButtonSelect, ButtonSelectProps} from "../ButtonSelect";
-import {Key} from "../../Key";
+import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
+import {ButtonSelect, ButtonSelectProps} from "../../simple/ButtonSelect";
+import * as classNames from 'classnames';
+import {Key} from "../../../Key";
 import './styles.scss';
+import {homedir} from "os";
 
 export interface ButtonHKStateProps {
-    hotkey: string
+    hotkey: HotkeyValue
     settingMode: boolean
+    highlightedPath: string
 }
 
 export interface ButtonHKActionProps {
-    addHotkey(path: string, value: string)
+    addHotkey: typeof addHotkey
 }
 
 export interface ButtonHKOwnProps extends ButtonSelectProps {
     path: string
+    hkLabel?: string
+    containerClassName?: string
 }
 
 export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, WithTranslation {
@@ -35,8 +40,15 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         addHotkey,
         path,
         settingMode,
+        containerClassName,
+        highlightedPath,
+        hkLabel,
         ...buttonProps
     } = props;
+
+    const [pressed, setPressed] = React.useState(false);
+
+    const isOnRelease = hotkey?.onRelease;
 
     const {
         disabled,
@@ -48,15 +60,15 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     const handleShortcutChange = React.useCallback((shortcut, e) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut);
-            // if (shortcut !== null)
-            //     e.target.blur();
+            addHotkey(path, shortcut, HotkeyControlType.Button, hkLabel || path);
         }
-    }, [addHotkey, path, settingMode]);
+    }, [addHotkey, path, settingMode, hkLabel, path]);
 
-    const handleRelease = React.useCallback((e) => {
+    const handlePress = React.useCallback((e) => {
 
-        if (settingMode || disabled)
+        setPressed(true);
+
+        if (settingMode || disabled || isOnRelease)
             return;
 
         onClick && onClick({
@@ -66,21 +78,42 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
             selected
         });
 
-    }, [onClick, value, name, selected, settingMode, disabled]);
+        setTimeout(setPressed, 200, false);
+
+    }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
+
+    const handleRelease = React.useCallback((e) => {
+
+        if (settingMode || disabled || !isOnRelease)
+            return;
+
+        onClick && onClick({
+            e,
+            value,
+            name,
+            selected
+        });
+
+        setPressed(false);
+
+    }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
 
     return (
-        <div className={'hotkey-button'}>
-            <ButtonSelect {...buttonProps} />
+        <div className={classNames('hotkey-button', {
+            ['hotkey-highlighted']: highlightedPath === hotkey?.path
+        }, containerClassName)}>
+            <ButtonSelect {...buttonProps} pressed={pressed} />
             {settingMode && (
                 <ShortcutInput
                     placeholder={t('buttonNumberCF.hotkey')}
-                    value={hotkey}
+                    value={hotkey?.key}
                     onChange={handleShortcutChange}
                 />
             )}
             <Key
-                keys={hotkey}
+                keys={hotkey?.key}
                 onRelease={handleRelease}
+                onPress={handlePress}
             />
         </div>
     );
@@ -89,6 +122,7 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 const mapStateToProps: MapStateToProps<ButtonHKStateProps, ButtonHKOwnProps, AppState> = (state, {path}) => ({
     hotkey: state.hotkeys.keys[path],
     settingMode: state.hotkeys.setting,
+    highlightedPath: state.hotkeys.highlightedPath,
 });
 
 const mapDispatchToProps: MapDispatchToProps<ButtonHKActionProps, ButtonHKOwnProps> = {

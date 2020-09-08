@@ -1,6 +1,6 @@
 import * as React from "react";
-import {InputText} from "../../_shared/InputText";
-import {Button} from "../../_shared/buttons/Button";
+import {InputText} from "../../_shared/inputs/InputText";
+import {Button} from "../../_shared/buttons/simple/Button";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {createRoom, leaveRoom, setDrawer} from "../../../store/patterns/room/actions";

@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
-import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {ButtonSelect} from "../_shared/buttons/ButtonSelect";
+import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
+import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {BezierCurveRepeating} from "../_shared/canvases/BezierCurveRepeating";
 import {ERepeatingType, RepeatingParams} from "../../store/patterns/repeating/types";
 import '../../styles/repeatingControls.scss';
@@ -9,7 +9,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {AppState} from "../../store";
 import {setRepeating} from "../../store/patterns/repeating/actions";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface RepeatingControlsStateProps {
 
@@ -84,8 +84,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                         <div className={'repeating-controls-grid-buttons'}>
                             <div className={'repeating-controls-grid-buttons-row'}>
                                 <ButtonHK
-                                    path={`pattern.${patternId}.repeating.float`}
-                                    className={'repeating-button'}
+                                    path={`pattern.${patternId}.repeating.params.gridParams.float`}
+                                    containerClassName={'repeating-button'}
                                     name={"float"}
                                     onClick={this.handleBoolParamChange}
                                     selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonHK>
@@ -112,11 +112,14 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
 
                             <div className={'repeating-controls-grid-buttons-row'}>
                                 <ButtonHK
-                                    path={`pattern.${patternId}.repeating.flat`}
-                                    className={'repeating-button'}
+                                    path={`pattern.${patternId}.repeating.params.gridParams.flat`}
+                                    containerClassName={'repeating-button'}
                                     name={"flat"}
                                     onClick={this.handleBoolParamChange}
-                                    selected={gridParams.flat}>{gridParams.flat ? "flat" : "flat"}</ButtonHK>
+                                    selected={gridParams.flat}
+                                >
+                                    flat
+                                </ButtonHK>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}

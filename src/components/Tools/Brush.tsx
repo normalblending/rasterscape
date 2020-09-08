@@ -3,10 +3,10 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {BrushParams, EBrushType} from "../../store/brush/types";
 import {setBrushParams} from "../../store/brush/actions";
-import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
-import {ValueD} from "../_shared/buttons/ButtonNumber";
-import {SelectButtons} from "../_shared/buttons/SelectButtons";
-import {SelectDrop} from "../_shared/buttons/SelectDrop";
+import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
+import {SelectButtons} from "../_shared/buttons/complex/SelectButtons";
+import {SelectDrop} from "../_shared/buttons/complex/SelectDrop";
 import "../../styles/patternSelectButton.scss"
 import '../../styles/brush.scss'
 import {withTranslation, WithTranslation} from "react-i18next";
@@ -99,6 +99,8 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
     return (
         <div className='brush-tool'>
             <SelectButtons
+                name={'brushType'}
+                hkLabel={'brush type'}
                 value={paramsValue.type}
                 getText={selectTypeText}
                 items={brushTypeSelectItems}

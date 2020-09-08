@@ -1,8 +1,8 @@
 import * as React from "react";
-import {defaultGetText, defaultGetValue, SelectButtons, SelectButtonsProps} from "./SelectButtons";
+import {defaultGetText, defaultGetValue, SelectButtons, SelectButtonsProps} from "../SelectButtons";
 import * as classNames from "classnames";
-import "../../../styles/selectDrop.scss"
-import {Button} from "./Button";
+import "./styles.scss";
+import {Button} from "components/_shared/buttons/simple/Button";
 
 export interface SelectDropProps extends SelectButtonsProps {
     open?: boolean

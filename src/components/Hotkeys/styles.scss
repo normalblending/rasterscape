@@ -1,25 +1,53 @@
 .hotkeys {
 
   .hotkeys-list {
+
+    z-index: 2;
     position: absolute;
     top: 20px;
     right: 0;
-
-    border: 1px solid red;
-
-
     width: 300px;
-    padding: 10px 25px;
-    //height: 500px;
-
+    padding: 0 0 10px 35px;
     display: flex;
     flex-direction: column;
-    .hotkeys-list-item {
-      width: 100%;
-      justify-content: space-between;
-      display: flex;
-      flex-direction: row;
+    background: rgba(0, 0, 0, 0.05);
 
+    .hotkeys-list-item {
+      display: flex;
+      align-items: flex-end;
+      height: 24px;
+
+      .hotkey-on-release {
+        min-width: 15px;
+        display: flex;
+
+        .button-select {
+          border: none;
+          background: transparent;
+          width: 15px;
+          font-size: 14px;
+          padding: 0;
+        }
+      }
+      .shortcut-input {
+        position: relative;
+        margin-right: 14px;
+        flex: 0 0 auto;
+
+        &:focus {
+          color: red;
+        }
+      }
+
+      .hotkey-name {
+
+        width: 100%;
+        border-bottom: 1px dotted black;
+        font-size: 14px;
+        font-weight: normal;
+        text-align: left;
+      }
     }
+
   }
 }

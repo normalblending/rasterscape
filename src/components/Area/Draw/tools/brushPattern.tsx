@@ -34,8 +34,8 @@ export const brushPattern = function () {
         ctx.globalCompositeOperation = compositeOperation;
         ctx.imageSmoothingEnabled = true;
 
-        const brushRotation = brushPattern.config.rotation ? brushPattern?.rotation?.value : null;
-        const destinationRotation = destinationPattern.config.rotation ? destinationPattern?.rotation?.value : null;
+        const brushRotation = brushPattern?.config?.rotation ? brushPattern?.rotation?.value : null;
+        const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
 
         const brushPatternImage = patternValues.values[brushPattern?.id];
 

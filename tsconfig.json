@@ -20,7 +20,8 @@
     "noImplicitAny": false,
     "noImplicitThis": false,
     "isolatedModules": true,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "baseUrl": "src"
   },
   "include": [
     "src"

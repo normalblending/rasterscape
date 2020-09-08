@@ -22,6 +22,7 @@ import {PatternsState} from "./patterns/types";
 import {ChangeFunction, ECFType} from "./changeFunctions/types";
 import {tutorialReducer, TutorialState} from "./tutorial";
 import {changeFunctionHighlightsReducer, ChangeFunctionHighlightsState} from "./changeFunctionsHighlights";
+import {activePatternReducer, ActivePatternState} from "./activePattern";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -31,6 +32,7 @@ export interface AppState {
     changeFunctionHighlights: ChangeFunctionHighlightsState
 
     patterns: PatternsState
+    activePattern: ActivePatternState
 
     color: ColorState
 
@@ -56,6 +58,7 @@ const rootReducer = reduceReducers(
         changeFunctionHighlights: changeFunctionHighlightsReducer,
 
         patterns: patternsReducer,
+        activePattern: activePatternReducer,
 
         color: colorReducer,
 

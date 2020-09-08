@@ -3,22 +3,39 @@ import {Action} from "redux";
 
 export enum EHotkeysAction {
     ADD = "hotkeys/add",
+    UPDATE = "hotkeys/update",
     REMOVE = "hotkeys/remove",
     SET_SETTING = "hotkeys/setting-set",
     CLEAR = "hotkeys/clear",
+    HIGHLIGHT = "hotkeys/highlight",
+}
+
+export enum HotkeyControlType {
+    Button = 'button',
+    Number = 'number',
+    Cycled = 'cycled',
+}
+
+export interface HotkeyValue {
+    path: string
+    name: string
+    key: string
+    controlType: HotkeyControlType
+    onRelease: boolean
 }
 
 export interface ButtonsHotkeys {
-    [path: string]: string
+    [path: string]: HotkeyValue
 }
 
 export interface HotkeysState {
     keys: ButtonsHotkeys,
     setting: boolean
+    highlightedPath: string
 }
 
 export const hotkeysReducer = handleActions<HotkeysState>({
-    [EHotkeysAction.ADD]: (state, action: AddHotkeyAction) => {
+    [EHotkeysAction.ADD]: (state, action: HotkeyAction) => {
         const {[action.path]: removed, ...keys} = state.keys;
         return !action.key ? {
             ...state,
@@ -27,7 +44,25 @@ export const hotkeysReducer = handleActions<HotkeysState>({
             ...state,
             keys: {
                 ...state.keys,
-                [action.path]: action.key
+                [action.path]: {
+                    key: action.key,
+                    path: action.path,
+                    controlType: action.controlType,
+                    // onRelease: true,
+                    name: action.name || state.keys[action.path].name,
+                }
+            }
+        }
+    },
+    [EHotkeysAction.UPDATE]: (state, action: HotkeyUpdateAction) => {
+        return {
+            ...state,
+            keys: {
+                ...state.keys,
+                [action.path]: {
+                    ...state.keys[action.path],
+                    ...action.updateData,
+                }
             }
         }
     },
@@ -50,19 +85,42 @@ export const hotkeysReducer = handleActions<HotkeysState>({
             keys: {},
         }
     },
+    [EHotkeysAction.HIGHLIGHT]: (state, action: HighlightHotkeyAction) => {
+        return {
+            ...state,
+            highlightedPath: action.path,
+        }
+    },
 }, {
     keys: {},
     setting: false,
+    highlightedPath: null,
 });
 
 
-export interface AddHotkeyAction extends Action {
+export interface HotkeyAction extends Action {
     path: string
-    key: string
+    key?: string
+    name?: string
+    controlType?: HotkeyControlType
+    onRelease?: boolean
 }
 
-export const addHotkey = (path: string, key: string): AddHotkeyAction => ({
-    type: EHotkeysAction.ADD, path, key
+export interface HotkeyUpdateData {
+    key?: string
+    name?: string
+    onRelease?: boolean
+}
+export interface HotkeyUpdateAction extends Action {
+    path: string
+    updateData: HotkeyUpdateData
+}
+
+export const addHotkey = (path: string, key: string, controlType?: HotkeyControlType, name?: string): HotkeyAction => ({
+    type: EHotkeysAction.ADD, path, key, name, controlType
+});
+export const updateHotkey = (path: string, updateData: HotkeyUpdateData): HotkeyUpdateAction => ({
+    type: EHotkeysAction.UPDATE, path, updateData
 });
 
 export interface RemoveHotkeyAction extends Action {
@@ -83,4 +141,12 @@ export const settingMode = (state: boolean): SettingModeAction => ({
 
 export const clearHotkeys = (): Action => ({
     type: EHotkeysAction.CLEAR
+});
+
+export interface HighlightHotkeyAction extends Action {
+    path: string
+}
+
+export const highlightHotkey = (path: string): HighlightHotkeyAction => ({
+    type: EHotkeysAction.HIGHLIGHT, path
 });

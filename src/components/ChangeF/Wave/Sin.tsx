@@ -1,7 +1,7 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../../_shared/buttons/ButtonNumberCF";
+import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../../styles/sinChangeFunction.scss";
-import {ValueD} from "../../_shared/buttons/ButtonNumber";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";

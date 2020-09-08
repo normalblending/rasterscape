@@ -24,7 +24,7 @@
 
       box-sizing: border-box;
 
-      width: calc(100% - 200px);
+      max-width: calc(100% - 200px);
 
       display: flex;
       align-items: baseline;

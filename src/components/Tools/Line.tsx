@@ -6,18 +6,17 @@ import {ParamConfig} from "../_shared/Params";
 import {ELineType, LineParams} from "../../store/line/types";
 import {setLineParams} from "../../store/line/actions";
 import {createSelector} from "reselect";
-import {SelectButtons} from "../_shared/buttons/SelectButtons";
-import {ButtonNumberCF} from "../_shared/buttons/ButtonNumberCF";
-import {SelectDrop} from "../_shared/buttons/SelectDrop";
+import {SelectButtons} from "../_shared/buttons/complex/SelectButtons";
+import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {SelectDrop} from "../_shared/buttons/complex/SelectDrop";
 import {getPatternsSelectItems} from "../../store/patterns/selectors";
 import {withTranslation, WithTranslation} from "react-i18next";
 import '../../styles/lineTool.scss';
 import {capsSelectItems, joinsSelectItems, randomSelectItems} from "../../store/line/helpers";
-import {EBrushType} from "../../store/brush/types";
 import {PatternsSelect} from "../PatternsSelect";
 import {arrayToSelectItems} from "../../utils/utils";
-import {CycledToggleHK as CycledToggle} from "../_shared/buttons/CycledToggle/CycledToggleHK";
-import {ButtonHK} from "../_shared/buttons/ButtonHK";
+import {CycledToggleHK} from "../_shared/buttons/hotkeyed/CycledToggleHK";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -82,6 +81,7 @@ class LineComponent extends React.PureComponent<LineProps> {
         return (
             <div className='line-tool'>
                 <SelectButtons
+                    hkLabel={'line type'}
                     br={3}
                     value={paramsValue.type}
                     name={"type"}
@@ -148,7 +148,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                     )}
 
                     {paramsValue.type === ELineType.Solid && (
-                        <CycledToggle
+                        <CycledToggleHK
                             path={`line.randomType`}
                             name={"random"}
                             value={paramsValue.random}

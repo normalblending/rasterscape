@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Button} from "../_shared/buttons/Button";
+import {Button} from "../_shared/buttons/simple/Button";
 import {HistoryValue} from "../../store/patterns/history/types";
 import {useTranslation} from 'react-i18next';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";

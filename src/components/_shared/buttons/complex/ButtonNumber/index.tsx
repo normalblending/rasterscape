@@ -1,17 +1,15 @@
 import * as React from "react";
 import * as classNames from "classnames";
-import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../ButtonSelect";
-import {Key} from "../../Key";
-import {ECFType} from "../../../../store/changeFunctions/types";
-import {getOffset} from "../../../../utils/offset";
+import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
+import {Key} from "../../../Key";
+import {ECFType} from "../../../../../store/changeFunctions/types";
+import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude, Sis2Amplitude} from "./ParaboloidAmplitude";
 import {SinAmplitude} from "./SinAmplitude";
-import '../../../../styles/buttonNumber.scss';
-import {startPoint} from "./startPoint";
-import {coordHelper, coordHelper2, coordHelper3} from "../../../Area/canvasPosition.servise";
-import {WaveType} from "../../../../store/changeFunctions/functions/wave";
-import {FxyType} from "../../../../store/changeFunctions/functions/fxy";
+import './styles.scss';
+import {WaveType} from "../../../../../store/changeFunctions/functions/wave";
+import {FxyType} from "../../../../../store/changeFunctions/functions/fxy";
 import {NoiseAmplitude} from "./NoiseAmplitude";
 
 const DEFAULT_WIDTH = 70;
