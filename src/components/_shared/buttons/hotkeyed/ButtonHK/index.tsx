@@ -26,6 +26,10 @@ export interface ButtonHKOwnProps extends ButtonSelectProps {
     path: string
     hkLabel?: string
     containerClassName?: string
+
+    hkData1?: any
+    hkData2?: any
+    hkData3?: any
 }
 
 export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, WithTranslation {
@@ -43,6 +47,9 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         containerClassName,
         highlightedPath,
         hkLabel,
+        hkData1,
+        hkData2,
+        hkData3,
         ...buttonProps
     } = props;
 
@@ -60,9 +67,9 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     const handleShortcutChange = React.useCallback((shortcut, e) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut, HotkeyControlType.Button, hkLabel || path);
+            addHotkey(path, shortcut, HotkeyControlType.Button, hkLabel || path, [hkData1, hkData2, hkData3]);
         }
-    }, [addHotkey, path, settingMode, hkLabel, path]);
+    }, [addHotkey, path, settingMode, hkLabel, hkData1, hkData2, hkData3]);
 
     const handlePress = React.useCallback((e) => {
 

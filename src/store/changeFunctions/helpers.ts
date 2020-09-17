@@ -11,14 +11,19 @@ import {fxyChangeFunction, fxyInitialParams, fxyParamsConfig, fxyVideoChangeFunc
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
-export const cfId = (type: ECFType, state: ChangeFunctions) => {
-    return type.toString() + (Object.keys(state).length
+export const cfId = (type: ECFType, state: ChangeFunctions): {id: string, number: number} => {
+    const number = (Object.keys(state).length
         ? (Math.max(0,
         ...Object
             .keys(state)
             .filter(key => state[key].type === type)
             .map(key => getId(key, state[key].type)))) + 1
         : 1);
+
+    return {
+        id: type.toString() + number,
+        number,
+    };
 };
 
 const chInitialParams = {
@@ -33,11 +38,12 @@ const chParamsConfig = {
     [ECFType.DEPTH]: depthParamsConfig,
 };
 
-export const createCFInitialState = (id, type: ECFType) => {
+export const createCFInitialState = (id: string, type: ECFType, number: number) => {
 
     return {
         id,
         type,
+        number,
         params: chInitialParams[type],
         paramsConfig: chParamsConfig[type]
     }

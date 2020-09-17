@@ -13,6 +13,7 @@ import {getVideoState} from "./video/helpers";
 import {getRoomState} from "./room/helpers";
 import {getBlurState} from "./blur/helpers";
 import {patternValues} from "./values";
+import {getDemonstrationState} from "./demonstration/helpers";
 
 export const patternId = (state: PatternsState) =>
     (Object.keys(state).length
@@ -42,6 +43,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         video: getVideoState(true, undefined, params?.video),
         room: getRoomState(true, undefined, params?.room),
         blur: getBlurState(true, undefined, params?.blur),
+        demonstration: getDemonstrationState(true, undefined, params?.demonstration),
     }
 
     return patternState;
@@ -67,6 +69,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         video: getVideoState(true, state.video, params.video),
         room: getRoomState(true, state.room, params.room),
         blur: getBlurState(true, state.blur, params.blur),
+        demonstration: getDemonstrationState(false, state.demonstration, params.demonstration),
     }
 };
 

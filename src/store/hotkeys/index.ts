@@ -18,7 +18,8 @@ export enum HotkeyControlType {
 
 export interface HotkeyValue {
     path: string
-    name: string
+    label: string
+    labelData: string
     key: string
     controlType: HotkeyControlType
     onRelease: boolean
@@ -49,7 +50,8 @@ export const hotkeysReducer = handleActions<HotkeysState>({
                     path: action.path,
                     controlType: action.controlType,
                     // onRelease: true,
-                    name: action.name || state.keys[action.path].name,
+                    label: action.label || state.keys[action.path].label,
+                    labelData: action.labelData || state.keys[action.path].labelData,
                 }
             }
         }
@@ -101,7 +103,8 @@ export const hotkeysReducer = handleActions<HotkeysState>({
 export interface HotkeyAction extends Action {
     path: string
     key?: string
-    name?: string
+    label?: string
+    labelData?: any[]
     controlType?: HotkeyControlType
     onRelease?: boolean
 }
@@ -116,8 +119,13 @@ export interface HotkeyUpdateAction extends Action {
     updateData: HotkeyUpdateData
 }
 
-export const addHotkey = (path: string, key: string, controlType?: HotkeyControlType, name?: string): HotkeyAction => ({
-    type: EHotkeysAction.ADD, path, key, name, controlType
+export const addHotkey = (path: string, key: string, controlType?: HotkeyControlType, label?: string, labelData?: any[]): HotkeyAction => ({
+    type: EHotkeysAction.ADD,
+    path,
+    key,
+    label,
+    labelData,
+    controlType
 });
 export const updateHotkey = (path: string, updateData: HotkeyUpdateData): HotkeyUpdateAction => ({
     type: EHotkeysAction.UPDATE, path, updateData

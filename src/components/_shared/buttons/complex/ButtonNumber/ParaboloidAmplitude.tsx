@@ -1,6 +1,6 @@
 import * as React from "react";
 import {createCanvas} from "../../../../../utils/canvas/helpers/base";
-import {Canvas} from "../../../Canvas";
+import {Canvas} from "../../../Canvas/index";
 import {AmplitudeComponentProps} from "./types";
 import * as classNames from "classnames";
 import * as Color from "color";

@@ -11,7 +11,12 @@
     "tools": "tool",
     "brush": "brush",
     "line": "line",
-    "select": "select"
+    "select": "select",
+    "hotkeysDescription": {
+      "brush": "brush tool",
+      "line": "line tool",
+      "select": "select tool"
+    }
   },
 
   "brushTypes": {
@@ -23,19 +28,24 @@
 
   "brush": {
     "size": "brush size",
-    "howToChange": "hold and move to change value",
-    "howToSeeMenu": {
-      "hover": "hover ",
-      "toSeeMenu": " to see slider menu"
-    },
     "blendMode": "blend mode",
     "opacity": "opacity",
-    "sizePattern": "size of pattern"
+    "sizePattern": "size of pattern",
+    "type": {
+      "Square": "brush square",
+      "Circle": "brush circle",
+      "Pattern": "brush pattern"
+    }
   },
 
   "line": {
     "center": "center",
-    "direction": "direction"
+    "direction": "direction",
+    "type": {
+      "solid": "line solid",
+      "SolidPattern": "line pattern 1",
+      "trailingPattern": "line pattern 2"
+    }
   },
 
   "lineTypes": {
@@ -101,5 +111,10 @@
 
   "hotkeys": {
     "delete": "delete"
+  },
+
+  "patternSelect": {
+    "brushPattern": "brush pattern {{data1}}",
+    "linePattern": "line pattern {{data1}}"
   }
 }

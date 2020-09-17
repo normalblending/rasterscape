@@ -4,6 +4,8 @@
 
   border: 1px solid transparent;
 
+  cursor: crosshair;
+
   pointer-events: none;
 
   &.selectionActive {
@@ -17,5 +19,8 @@
 
     pointer-events: none;
     opacity: 0;
+  }
+  &.cursorEnd {
+    cursor: s-resize;
   }
 }

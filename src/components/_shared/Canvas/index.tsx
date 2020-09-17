@@ -1,14 +1,17 @@
 import React from 'react';
-import {canvasToImageData, imageDataToCanvas, resizeImageData} from "../../utils/canvas/helpers/imageData";
-import "../../styles/canvas.scss";
+import ReactDOM from 'react-dom';
+import {canvasToImageData, imageDataToCanvas, resizeImageData} from "../../../utils/canvas/helpers/imageData";
+import "../../../styles/canvas.scss";
 import * as classNames from "classnames";
-import {getOffset} from "../../utils/offset";
-import {rotate} from "../../utils/draw";
-import {RotationValue} from "../../store/patterns/rotating/types";
-import {clearCanvas} from "../../utils/canvas/helpers/base";
-import {ECompositeOperation} from "../../store/compositeOperations";
+import {getOffset} from "../../../utils/offset";
+import {rotate} from "../../../utils/draw";
+import {RotationValue} from "../../../store/patterns/rotating/types";
+import {clearCanvas} from "../../../utils/canvas/helpers/base";
+import {ECompositeOperation} from "../../../store/compositeOperations";
 import * as StackBlur from 'stackblur-canvas';
-import {coordHelper, coordHelper2} from "../Area/canvasPosition.servise";
+import {coordHelper, coordHelper2} from "../../Area/canvasPosition.servise";
+import {Button} from "./../buttons/simple/Button";
+import {DemonstrationSubApp} from "./Demonstration";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -20,6 +23,7 @@ export interface CanvasEvent {
 }
 
 export interface CanvasProps {
+    name?: string
     value?: ImageData
     width?: number
     height?: number
@@ -52,35 +56,84 @@ export interface CanvasProps {
 
     onLeave?(e?)
 
-
+    demonstration?: boolean
+    onDemonstrationUnload?()
 }
 
 export interface CanvasState {
     drawing: boolean
     startEvent: any
+    modalWindowOpen: boolean
 }
 
 export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     canvasRef;
+    videoRef;
     ctx;
     e;
     canvasE;
     pre;
     requestID;
 
+    modalWindow;
+
     constructor(props) {
         super(props);
 
         this.state = {
             drawing: false,
-            startEvent: null
+            startEvent: null,
+            modalWindowOpen: false
         };
 
         this.canvasRef = React.createRef();
+        this.videoRef = React.createRef();
         this.ctx = null;
         this.pre = null;
     }
+
+    openModal = () => {
+        const {width, height, name, onDemonstrationUnload} = this.props;
+
+        this.modalWindow = window.open(``, name, `width=${width},height=${height}`);
+        this.modalWindow.onbeforeunload = onDemonstrationUnload;
+
+        this.modalWindow.document.body.style = 'margin: 0';
+        
+        const div = this.modalWindow.document.createElement('div');
+        this.modalWindow.document.body.appendChild(div);
+
+        const stream = this.canvasRef.current.captureStream(25);
+
+        ReactDOM.render(<DemonstrationSubApp name={name} stream={stream}/>, div);
+
+        // this.modalWindow.video = this.modalWindow.document.createElement('video');
+        // this.modalWindow.video.style = 'width: 100%; height: 100%; object-fit: fill;';
+        //
+        //
+        //
+        //
+        // this.modalWindow.video.srcObject = stream;
+        // console.log(this.modalWindow.video, this.modalWindow.video.srcObject);
+        //
+        // this.modalWindow.video.addEventListener('mousedown', () => {
+        //     this.modalWindow.video.play();
+        // });
+        // this.videoRef.current.srcObject = stream;
+
+        this.setState({
+            modalWindowOpen: true,
+        })
+    };
+
+    closeModal = () => {
+        this.modalWindow?.close();
+        this.modalWindow = null;
+        this.setState({
+            modalWindowOpen: false,
+        })
+    };
 
     receiveImageData = () => {
         if (this.props.value instanceof ImageData) {
@@ -91,6 +144,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
                 : this.props.value;
 
             this.ctx.putImageData(imgD, 0, 0);
+            this.modalWindow?.canvas?.getContext("2d").putImageData(imgD, 0, 0);
         }
     };
 
@@ -116,9 +170,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.canvasRef.current.removeEventListener("touchstart", this.mouseDownHandler);
         this.canvasRef.current.removeEventListener("touchmove", this.mouseMoveHandler);
+
+        this.modalWindow?.close();
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: CanvasProps) {
         // console.log(Object.keys(this.props).reduce((res, key) => ({
         //     ...res,
         //     [key]: prevProps[key] !== this.props[key]
@@ -133,6 +189,13 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             prevProps.height !== this.props.height
         )) {
             this.receiveImageData();
+        }
+
+        if (!prevProps.demonstration && this.props.demonstration) {
+            this.openModal();
+        }
+        if (prevProps.demonstration && !this.props.demonstration) {
+            this.closeModal();
         }
     }
 

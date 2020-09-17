@@ -16,10 +16,13 @@ export interface PatternsSelectActionProps {
 
 export interface PatternsSelectOwnProps {
     nullable?: boolean
-    HK?: boolean
     name?: string
     value?: string | string []
     onChange(value: string | string [], added: string, removed: string)
+
+    HK?: boolean
+    path?: string
+    hkLabel?: string
 }
 
 export interface PatternsSelectProps extends PatternsSelectStateProps, PatternsSelectActionProps, PatternsSelectOwnProps {
@@ -33,6 +36,8 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         onChange,
         name,
         HK = true,
+        hkLabel,
+        path,
         nullable,
     } = props;
 
@@ -75,6 +80,8 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                         <>
                             <ButtonComponent
                                 path={`patternSelect.${name}.${id}`}
+                                hkLabel={hkLabel}
+                                hkData1={id}
                                 className={'pattern-select-button'}
                                 width={42} height={42}
                                 value={id}

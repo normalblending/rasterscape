@@ -96,7 +96,7 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                 <div className={'hotkeys-list'}>
                     <Button onClick={clearHotkeys}>clear</Button>
                     {hotkeys.map((hotkey, index) => {
-                        const {key, name, path, onRelease, controlType} = hotkey;
+                        const {key, label, labelData, path, onRelease, controlType} = hotkey;
                         return (
                             <div className={'hotkeys-list-item'} key={path}>
                                 <div className={'hotkey-on-release'}>
@@ -119,7 +119,11 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                                     value={key}
                                 />
                                 <div className={'hotkey-name'}>
-                                    {name}
+                                    {t(label, {
+                                        data1: labelData?.[0],
+                                        data2: labelData?.[1],
+                                        data3: labelData?.[2],
+                                    })}
                                 </div>
                             </div>
                         )

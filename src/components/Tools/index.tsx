@@ -38,9 +38,13 @@ export interface ToolsProps extends ToolsStateProps, ToolsActionProps, ToolsOwnP
 
 }
 
-const ToolsComponent: React.FC<ToolsProps> = ({t, i18n, currentTool, setCurrentTool, reverseFullScreen, className}) => {
+const ToolsComponent: React.FC<ToolsProps> = (props) => {
+    const {t, i18n, currentTool, setCurrentTool, reverseFullScreen, className} = props;
 
     const ToolControls = ToolsParams[currentTool].component;
+    const handleToolClick = React.useCallback((data) => {
+        setCurrentTool(ToolsParams[data.value].type)
+    }, [setCurrentTool])
     return (
         <div className={classNames("tools", className)}>
             <div className={'tools-select'}>
@@ -48,10 +52,11 @@ const ToolsComponent: React.FC<ToolsProps> = ({t, i18n, currentTool, setCurrentT
                     <ButtonHK
                         path={'tool.' + toolType.toLowerCase()}
                         name={'tool.' + toolType.toLowerCase()}
-                        hkLabel={'tool ' + toolType.toLowerCase()}
+                        hkLabel={`tools.hotkeysDescription.${toolType.toLowerCase()}`}
                         key={toolType}
+                        value={toolType}
                         selected={toolType === currentTool}
-                        onClick={() => setCurrentTool(ToolsParams[toolType].type)}>
+                        onClick={handleToolClick}>
                         {t(`tools.${toolType.toLowerCase()}`)}
                     </ButtonHK>
                 ))}

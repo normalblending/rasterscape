@@ -36,6 +36,7 @@ export interface SelectButtonsProps {
     HK?: boolean
     path?: string
     hkLabel?: string
+    hkByValue?: boolean
 }
 
 export const defaultGetValue = (item) => item?.value;
@@ -74,6 +75,7 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
             HK = true,
             path,
             hkLabel,
+            hkByValue = true,
         } = this.props;
 
         const ButtonComponent = HK ? ButtonHK : ButtonSelect;
@@ -84,7 +86,10 @@ export class SelectButtons extends React.PureComponent<SelectButtonsProps> {
                     {items.map((item, index) => (
                         <ButtonComponent
                             path={`${path || name}.${getValue(item)}`}
-                            hkLabel={`${hkLabel} ${getValue(item)}`}
+                            hkLabel={hkByValue
+                                ? `${hkLabel}.${getValue(item)}`
+                                : hkLabel}
+                            hkData1={item}
                             name={`${path || name}.${getValue(item)}`}
                             width={width}
                             value={item}

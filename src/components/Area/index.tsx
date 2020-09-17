@@ -31,6 +31,9 @@ export interface AreaOwnProps {
     onImageChange(imageData: ImageData)
 
     onSelectionChange(selectionValue: SelectionValue, bBox: SVGRect)
+
+    demonstration?: boolean
+    onDemonstrationUnload?()
 }
 
 export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps {
@@ -88,10 +91,11 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             onSelectionChange,
             rotation,
             disabled,
-            selectUnable
+            selectUnable,
+            demonstration,
+            onDemonstrationUnload,
         } = this.props;
 
-        console.log("area", this.state);
         return (
             <div className="area"
                  style={this.state.areaStyle}>
@@ -104,7 +108,10 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                     value={imageValue}
                     width={width}
                     height={height}
-                    onChange={onImageChange}/>
+                    onChange={onImageChange}
+                    demonstration={demonstration}
+                    onDemonstrationUnload={onDemonstrationUnload}
+                />
                 <Selection
                     style={this.state.style}
                     isUnable={selectUnable}

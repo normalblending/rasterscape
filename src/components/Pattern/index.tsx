@@ -28,6 +28,7 @@ import '../../styles/inputNumber.scss';
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {setDemonstrationEnabled} from "../../store/patterns/demonstration/actions";
 
 export interface PatternComponentStateProps {
 
@@ -45,6 +46,8 @@ export interface PatternComponentStateProps {
     width: number
 
     meDrawer: boolean
+
+    demonstration: boolean
 }
 
 export interface PatternComponentActionProps {
@@ -62,6 +65,8 @@ export interface PatternComponentActionProps {
     createPatternFromSelection(id: string)
 
     cutPatternBySelection(id: string)
+
+    setDemonstrationEnabled(id: string, enabled: boolean)
 
 }
 
@@ -155,11 +160,18 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         onMouseEnter?.(id, e);
     };
 
+    handleDemonstrationUnload = () => {
+
+        const {setDemonstrationEnabled, id} = this.props;
+
+        setDemonstrationEnabled?.(id, false);
+    };
+
     render() {
         const {
             imageValue, maskValue,
             height, width, id, config, selection, rotation, importParams,
-            meDrawer,
+            meDrawer, demonstration,
             t,
         } = this.props;
 
@@ -258,7 +270,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                 </div>
 
                 <div className="right">
-
                     <SelectionControls
                         selectionValue={selection.value}
                         onCreatePattern={this.handleCreatePatternFromSelection}
@@ -282,7 +293,11 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                             selectionParams={selection.params}
 
                             onImageChange={this.handleImageChange}
-                            onSelectionChange={this.handleSelectionChange}/>
+                            onSelectionChange={this.handleSelectionChange}
+
+                            demonstration={demonstration}
+                            onDemonstrationUnload={this.handleDemonstrationUnload}
+                        />
                         {config.mask &&
                         <Area
 
@@ -319,6 +334,7 @@ const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternCompon
         rotation: pattern.config.rotation ? pattern?.rotation?.value : null,
         imageValue: pattern?.current?.imageData || null,
         maskValue: pattern?.mask?.value?.imageData || null,
+        demonstration: pattern?.demonstration?.value?.enabled
     }
 };
 
@@ -330,6 +346,7 @@ const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, Patter
     doublePattern,
     createPatternFromSelection,
     cutPatternBySelection,
+    setDemonstrationEnabled,
 };
 
 export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(

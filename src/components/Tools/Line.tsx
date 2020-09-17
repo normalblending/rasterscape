@@ -81,7 +81,7 @@ class LineComponent extends React.PureComponent<LineProps> {
         return (
             <div className='line-tool'>
                 <SelectButtons
-                    hkLabel={'line type'}
+                    hkLabel={'line.type'}
                     br={3}
                     value={paramsValue.type}
                     name={"type"}
@@ -197,6 +197,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                     || paramsValue.type === ELineType.TrailingPattern) && (
                     <PatternsSelect
                         name={'linePattern'}
+                        hkLabel={'line.pattern'}
                         value={paramsValue.pattern}
                         onChange={this.handlePatternChange}
                     />

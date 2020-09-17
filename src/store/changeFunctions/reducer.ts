@@ -14,12 +14,12 @@ export interface ChangeFunctions {
 
 export const changeFunctionsReducer = handleActions<ChangeFunctionsState>({
     [EChangeFunctionsAction.ADD_CF]: (state: ChangeFunctionsState, action: AddCFAction) => {
-        const id = cfId(action.cfType, state.functions);
+        const {id, number} = cfId(action.cfType, state.functions);
 
         return {
             functions: {
                 ...state.functions,
-                [id]: createCFInitialState(id, action.cfType),
+                [id]: createCFInitialState(id, action.cfType, number),
             },
             namesList: [...Object.keys(state.functions), id]
         }

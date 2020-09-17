@@ -11,6 +11,7 @@ export enum ECFType {
 export interface ChangeFunction {
     id: string
     type: ECFType
+    number: number
     params: any
     paramsConfig: ParamConfig[]
 }

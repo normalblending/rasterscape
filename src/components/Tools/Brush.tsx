@@ -100,7 +100,7 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
         <div className='brush-tool'>
             <SelectButtons
                 name={'brushType'}
-                hkLabel={'brush type'}
+                hkLabel={'brush.type'}
                 value={paramsValue.type}
                 getText={selectTypeText}
                 items={brushTypeSelectItems}
@@ -153,6 +153,7 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
             {paramsValue.type === EBrushType.Pattern && (
                 <PatternsSelect
                     name={'brushPattern'}
+                    hkLabel={'brush.pattern'}
                     value={paramsValue.pattern}
                     onChange={handlePatternChange}
                 />

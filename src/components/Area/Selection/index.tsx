@@ -1,6 +1,6 @@
 import * as React from "react";
-import {pointsDistance} from "../../utils/geometry";
-import {SVG} from "../_shared/SVG";
+import {pointsDistance} from "../../../utils/geometry";
+import {SVG} from "../../_shared/SVG";
 import * as d3 from "d3";
 import {
     EPathModeType,
@@ -11,15 +11,15 @@ import {
     Path,
     Segment,
     stringToPathData
-} from "../../utils/path";
-import {arrayToSelectItems} from "../../utils/utils";
+} from "../../../utils/path";
+import {arrayToSelectItems} from "../../../utils/utils";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../store";
+import {AppState} from "../../../store";
 import classNames from "classnames";
-import {EToolType} from "../../store/tool/types";
-import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../store/selectTool/types";
-import "../../styles/selection.scss"
-import {Segments, SelectionParams} from "../../store/patterns/selection/types";
+import {EToolType} from "../../../store/tool/types";
+import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../../store/selectTool/types";
+import "./selection.scss"
+import {Segments, SelectionParams} from "../../../store/patterns/selection/types";
 
 
 const lineFunction = d3
@@ -56,7 +56,7 @@ export interface CanvasSelectionOwnProps {
 
     value?: Segments
     className?: string
-    style?:any
+    style?: any
 
     onChange?(value: any, bBox: SVGRect)
 }
@@ -77,6 +77,12 @@ export interface CanvasSelectionState {
     prevPath: any[] // нужно чтобы знать когда обновлять стейт из пропсов
     curvePath: any[]
     currentSliceN: number
+    cursor?: SelectionCursorType
+}
+
+export enum SelectionCursorType {
+    def = 'def', //default
+    end = 'end',
 }
 
 class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps, CanvasSelectionState> {
@@ -106,7 +112,8 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             path: [],
             prevPath: null,
             curvePath: [],
-            currentSliceN: 0
+            currentSliceN: 0,
+            cursor: SelectionCursorType.def
         };
     }
 
@@ -139,7 +146,25 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         onChange && onChange(this.state.path, this.maskPathRef.current && this.maskPathRef.current.getBBox());
     };
 
-    selectToolHandlers = {
+    isClosedOrEmptyPath = () => {
+        const {path} = this.state;
+        return !path.length || path[path.length - 1].type === ESegType.Z;
+    };
+
+    isSecondPoint = () => {
+        const {path} = this.state;
+        return path.length && path[path.length - 1].type === ESegType.M;
+    };
+
+    selectToolHandlers: {
+        [mode: string]: {
+            down(e?)
+            up(e?)
+            drag(e?)
+            exit(e?)
+            move?(e?)
+        }
+    } = {
         [ESelectionMode.Rect]: ({
             down: e => {
                 const {path} = this.state;
@@ -200,9 +225,9 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                 }), this.commitChanges);
             },
             exit: (nextMode) => {
-            }
+            },
         }),
-        [ESelectionMode.SimplePoints]: {
+        [ESelectionMode.SimplePoints]: { // OLD OLD OLD OLD
             down: e => {
                 const {path, curvePath} = this.state;
 
@@ -244,7 +269,7 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                         currentSliceN: path.filter(({type}) => type === ESegType.M).length
                     }), this.commitChanges);
                 }
-            }
+            },
         },
         [ESelectionMode.Points]: ({
             down: e => {
@@ -275,7 +300,8 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                             return {
                                 curvePath: [],
                                 path: Path[EPathModeType.Z](this.line(path, newCurvePath)),
-                                currentSliceN: path.filter(({type}) => type === ESegType.M).length
+                                currentSliceN: path.filter(({type}) => type === ESegType.M).length,
+                                cursor: SelectionCursorType.def
                             }
                         }, this.commitChanges);
                     } else {
@@ -302,6 +328,25 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                         path: Path[EPathModeType.Z](path),
                         currentSliceN: path.filter(({type}) => type === ESegType.M).length
                     }), this.commitChanges);
+                }
+            },
+            move: (e) => {
+
+                const {path, cursor} = this.state;
+
+                if (!path.length || path[path.length - 1].type === ESegType.Z) {
+                    if (cursor !== SelectionCursorType.def)
+                        this.setState({cursor: SelectionCursorType.def});
+                    return;
+                }
+
+                const subFirst = path.filter(({type}) => type === ESegType.M).reverse()[0];
+                if (pointsDistance(e.offsetX, e.offsetY, subFirst.values[0], subFirst.values[1]) < HANDLER_SIZE * 2) {
+                    if (cursor !== SelectionCursorType.end)
+                        this.setState({cursor: SelectionCursorType.end});
+                } else {
+                    if (cursor !== SelectionCursorType.def)
+                        this.setState({cursor: SelectionCursorType.def});
                 }
             }
         }),
@@ -344,7 +389,6 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
     };
 
     render() {
-        console.log("selector render", this.state.path);
         const {
             width, height,
             selectToolParams: {mode},
@@ -352,10 +396,12 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             name, style
         } = this.props;
 
+        const {path} = this.state;
+
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
 
-        console.log(this.maskPathRef.current && this.maskPathRef.current.getBBox());
+        const subFirst = this.isSecondPoint() && path.filter(({type}) => type === ESegType.M).reverse()[0];
 
         return (
             <div
@@ -363,10 +409,12 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                 className={classNames("selection", {
                     ["selectionActive"]: isActive,
                     ["selectionUnable"]: isUnable,
+                    ["cursorEnd"]: this.state.cursor === SelectionCursorType.end,
                 })}>
                 <SVG
                     width={width}
                     height={height}
+                    onMove={this.selectToolHandlers[mode].move}
                     onDown={this.selectToolHandlers[mode].down}
                     onDrag={this.selectToolHandlers[mode].drag}
                     onUp={this.selectToolHandlers[mode].up}>
@@ -374,19 +422,44 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                         <mask
                             id={`selectionMask${name}`}
                             ref={this.maskRef}>
-                            <rect x="0" y="0" width={width} height={height} fill="white"/>
+                            <rect
+                                x="0" y="0"
+                                width={width}
+                                height={height}
+                                fill="white"
+                            />
                             <path
                                 ref={this.maskPathRef}
                                 fillOpacity={1}
-                                fill="black"/>
+                                fill="black"
+                            />
                         </mask>
-                        <rect x="0" y="0" width={width} height={height} fill="black" fillOpacity={0.3}
-                              mask={`url(#selectionMask${name})`}/>
+                        <rect
+                            x="0" y="0"
+                            width={width}
+                            height={height}
+                            fill="black"
+                            fillOpacity={0.3}
+                            mask={`url(#selectionMask${name})`}
+                        />
+                                 {/*ПЕРВАЯ ТОЧКА*/}
+                        {subFirst && (
+                            <rect
+                                x={subFirst.values[0]}
+                                y={subFirst.values[1]}
+                                width={1}
+                                height={1}
+                                fillOpacity={0}
+                                fill="black"
+                                stroke={isActive ? "greenyellow" : "red"}
+                            />
+                        )}
                         <path
                             ref={this.pathRef}
                             fillOpacity={0}
                             fill="black"
-                            stroke={isActive ? "greenyellow" : "red"}/>
+                            stroke={isActive ? "greenyellow" : "red"}
+                        />
                     </>}
                 </SVG>
             </div>

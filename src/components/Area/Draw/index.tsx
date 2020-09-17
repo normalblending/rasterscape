@@ -1,5 +1,5 @@
 import * as React from "react";
-import {Canvas, CanvasEvent, CanvasProps} from "../../_shared/Canvas";
+import {Canvas, CanvasEvent, CanvasProps} from "../../_shared/Canvas/index";
 import {AppState} from "../../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../../store/brush/reducer";
@@ -24,6 +24,7 @@ import {lineBrokenTransparent} from "./tools/old/lineBrokenTransparent";
 import {linePattern} from "./tools/old/linePattern";
 import {lineSolidPattern} from "./tools/lineSolidPattern";
 import {lineTrailingPattern} from "./tools/lineTrailingPattern";
+import {patternId} from "../../../store/patterns/helpers";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -148,12 +149,13 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     render() {
-        const {children, width, height, className, mask, disabled} = this.props;
+        const {children, width, height, className, mask, disabled, patternId} = this.props;
 
         const handlers = this.getHandlers();
 
         return (
             <Canvas
+                name={patternId}
                 // pointerLock={true}
                 // drawOnMove={true}
                 className={classNames("draw", {

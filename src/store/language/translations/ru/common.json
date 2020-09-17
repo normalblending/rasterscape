@@ -10,7 +10,12 @@
     "tools": "инстр-т",
     "brush": "кисть",
     "line": "линия",
-    "select": "выдел-е"
+    "select": "выдел-е",
+    "hotkeysDescription": {
+      "brush": "инструмент кисть",
+      "line": "инструмент линия",
+      "select": "инструмент выделение"
+    }
   },
 
   "brushTypes": {
@@ -21,20 +26,27 @@
   },
 
   "brush": {
+    "pattern": "кисть паттерн {{data1}}",
     "size": "размер кисти",
-    "howToChange": "потяните чтобы изменить значение",
-    "howToSeeMenu": {
-      "hover": "наведите курсор на ",
-      "toSeeMenu": " чтобы открыть меню слайдера"
-    },
     "blendMode": "режим наложения",
     "opacity": "непрозрачность",
-    "sizePattern": "размер"
+    "sizePattern": "размер",
+    "type": {
+      "Square": "кисть квадрат",
+      "Circle": "кисть круг",
+      "Pattern": "кисть паттерн"
+    }
   },
 
   "line": {
+    "pattern": "линия паттерн {{data1}}",
     "center": "центр",
-    "direction": "направ-е"
+    "direction": "направ-е",
+    "type": {
+      "solid": "линия цельная",
+      "SolidPattern": "линия паттерн 1",
+      "trailingPattern": "линия паттерн 2"
+    }
   },
 
   "lineTypes": {
