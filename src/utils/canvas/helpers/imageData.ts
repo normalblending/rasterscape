@@ -1,7 +1,12 @@
 import {createCanvas} from "./base";
 
-export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData =>
-    canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData => {
+    try {
+        return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
+    } catch (e) {
+        return new ImageData(0, 0);
+    }
+};
 
 export function imageDataToCanvas(imageData: ImageData): HTMLCanvasElement {
 

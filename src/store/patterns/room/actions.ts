@@ -4,6 +4,7 @@ import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helper
 import {ThunkResult} from "../../../utils/actions/types";
 import {AppState} from "../../index";
 import {updateImage} from "../pattern/actions";
+import {stop} from "../video/actions";
 
 export enum ERoomAction {
     CREATE_ROOM = "pattern/create-room",
@@ -75,12 +76,12 @@ export const leaveRoom = (id: string): ThunkResult<PatternAction, AppState> =>
     };
 
 
-export const sendImage = (id: string, resultImageData: ImageData): ThunkResult<PatternAction, AppState> =>
+export const sendImage = (id: string): ThunkResult<PatternAction, AppState> =>
     (dispatch, getState) => {
-        const socket = getState().patterns[id]?.room?.value?.socket;
-
+        const state = getState();
+        const socket = state.patterns[id]?.room?.value?.socket;
+        const resultImageData = state.patterns[id]?.current?.imageData;
         if (socket) {
-
             socket.emit("image", imageDataToBase64(resultImageData));
 
             return dispatch({type: ERoomAction.IMAGE_SENT, id})
@@ -117,6 +118,10 @@ export const receiveDrawer = (id: string, drawer: string) =>
     (dispatch, getState) => {
         const socketId = getState().patterns[id].room?.value?.socket?.id;
         const meDrawer = socketId ? socketId === drawer : false;
+
+        if (!meDrawer) {
+            dispatch(stop(id));
+        }
 
         return dispatch({
             type: ERoomAction.RECEIVE_DRAWER,

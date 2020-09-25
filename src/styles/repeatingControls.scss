@@ -36,6 +36,12 @@
   }
 }
 
+.repeating-button .hotkey-key, .repeating-button-number .hotkey-key {
+  background: white;
+  color: black;
+  min-width: 7px;
+}
+
 .repeating-button-number {
   .button {
     background: black;
@@ -59,7 +65,7 @@
   .button-number-value {
 
     display: flex;
-    align-items: center;
+    //align-items: center;
     //height: 10px;
     background: transparent;
     border-right: 1px solid white; //#595959;

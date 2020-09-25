@@ -9,6 +9,17 @@
     }
   }
 
+  .hotkey-key {
+    max-height: 7px;
+    line-height: 7px;
+    //margin-top: 13px;
+    position: absolute;
+    bottom: 1px;
+    left: 1px;
+    font-size: 10px;
+    background: white;
+  }
+
 
   .button-number-cf-settings {
     position: absolute;

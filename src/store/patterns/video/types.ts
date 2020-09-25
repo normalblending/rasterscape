@@ -8,7 +8,10 @@ import {ECompositeOperation} from "../../compositeOperations";
 
 export interface VideoParams {
     on: boolean
-    changeFunctionId: ECFType
+    pause: boolean
+    changeFunctionId: string
+    stackSize: number
+    cutOffset: number
     slitMode: SlitMode
     edgeMode: EdgeMode
     stackType: StackType

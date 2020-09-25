@@ -50,8 +50,8 @@ export const hotkeysReducer = handleActions<HotkeysState>({
                     path: action.path,
                     controlType: action.controlType,
                     // onRelease: true,
-                    label: action.label || state.keys[action.path].label,
-                    labelData: action.labelData || state.keys[action.path].labelData,
+                    label: action.label || state.keys[action.path]?.label,
+                    labelData: action.labelData || state.keys[action.path]?.labelData,
                 }
             }
         }

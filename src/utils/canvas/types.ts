@@ -1,5 +1,5 @@
 export interface CanvasState {
     imageData: ImageData
-    width: number
-    height: number
+    // width: number
+    // height: number
 }

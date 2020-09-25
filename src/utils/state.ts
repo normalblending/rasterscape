@@ -14,15 +14,11 @@ export function createCleanCanvasState(width: number, height: number): CanvasSta
 
     return {
         imageData,
-        width,
-        height
     };
 }
 
-export function createCanvasStateFromImageData(imageData: ImageData, width?: number, height?: number): CanvasState {
+export function createCanvasStateFromImageData(imageData: ImageData): CanvasState {
     return {
         imageData,
-        width: width || imageData.width,
-        height: height || imageData.height
     };
 }

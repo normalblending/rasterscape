@@ -3,6 +3,16 @@
   display: flex;
   flex-wrap: wrap;
 
+  .cut {
+    //border: 1px solid red;
+    position: relative;
+    .cut-function {
+      position: absolute;
+      top: 20px;
+      z-index: 1;
+    }
+  }
+
   .slit-mode, .edge-mode, .stack-type {
     background-color: #ebebeb;
 

@@ -109,13 +109,16 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         <div className={classNames('hotkey-button', {
             ['hotkey-highlighted']: highlightedPath === hotkey?.path
         }, containerClassName)}>
-            <ButtonSelect {...buttonProps} pressed={pressed} />
+            <ButtonSelect {...buttonProps} pressed={pressed}/>
             {settingMode && (
                 <ShortcutInput
                     placeholder={t('buttonNumberCF.hotkey')}
                     value={hotkey?.key}
                     onChange={handleShortcutChange}
                 />
+            )}
+            {!settingMode && hotkey?.key && (
+                <div className={'hotkey-key'}>{hotkey?.key}</div>
             )}
             <Key
                 keys={hotkey?.key}

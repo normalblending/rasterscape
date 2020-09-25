@@ -5,7 +5,7 @@ import {InputText} from "../../_shared/inputs/InputText";
 import {Button} from "../../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {resetUnreaded, sendMessage, setDrawer} from "../../../store/patterns/room/actions";
-import {ButtonSelect} from "bbuutoonnss";
+import {ButtonSelect} from "../../_shared/buttons/simple/ButtonSelect";
 import * as classNames from 'classnames';
 
 export interface ChatStateProps {
@@ -60,18 +60,26 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
     return (
         <div className={classNames('room', {unread: unreaded})} onMouseEnter={handleMouseEnter}>
             <div className='room-chat'>
+                <div className={'chat-controls'}>
+                    {!meDrawer && (<div className={'room-chat-new-message'}>
+                        <div className={'room-chat-sign'}>{'>'}</div>
+                        <InputText
+                            disabled={meDrawer}
+                            maxLength={99}
+                            className='room-chat-message-input'
+                            value={message}
+                            onChange={setMessage}
+                            onKeyPress={handleKeyPress}
+                        />
+                    </div>)}
+                    <ButtonSelect
+                        className={'draw-button'}
+                        disabled={!!drawer && !meDrawer}
+                        selected={meDrawer}
+                        onClick={handleSetDrawer}
+                    >{t('room.draw')}</ButtonSelect>
+                </div>
 
-                {!meDrawer && (<>
-                    <div className={'room-chat-sign'}>{'>'}</div>
-                    <InputText
-                        disabled={meDrawer}
-                        maxLength={99}
-                        className='room-chat-message-input'
-                        value={message}
-                        onChange={setMessage}
-                        onKeyPress={handleKeyPress}
-                    />
-                </>)}
                 <div className='room-chat-messages'>
 
                     <div className='room-chat-messages-container'>

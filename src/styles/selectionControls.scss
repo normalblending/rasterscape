@@ -1,6 +1,13 @@
 .selection-controls {
   display: flex;
+  position: relative;
 
-  border: 1px solid greenyellow;
-  border-bottom: none;
+  border: 1px dotted red;
+  //border-bottom: none;
+  margin-bottom: -1px;
+
+  &:hover {
+    z-index: 1;
+
+  }
 }

@@ -26,7 +26,7 @@ export const createPatternFromSelection = (id: string) => (dispatch, getState) =
 
     const pattern = state.patterns[id];
 
-    const config = {...getPatternConfig(pattern), mask: true};
+    const config = {...getPatternConfig(pattern)};
     const params = getPatternParams(pattern);
 
     config.startImage = getSelectedImageData(pattern);

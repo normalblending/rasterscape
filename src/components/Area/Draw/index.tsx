@@ -102,10 +102,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
 
         if (!drawing) {
             this.setState({
-                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true)
+                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true, this.props.tool)
             });
-        } else {
-
         }
 
         setPosition(e.offsetX, e.offsetY, this.props.patternId);
@@ -118,11 +116,11 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     upHandler = ({e}) => {
-        const {stopChanging} = this.props;
+        const {stopChanging, tool} = this.props;
 
         stopChanging();
 
-        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true)})
+        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true, tool)})
     };
 
     getHandlers = () => {
@@ -132,7 +130,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
         const type = getType && getType(this.props);
         return this.handlers && this.handlers[tool] && this.handlers[tool][type];
         //todo рефакторинг
-        // хендлеры событий вынести в методы класса
+        // хендлеры событий вынести в методы класса ? что
         //
     };
 
@@ -149,12 +147,13 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     render() {
-        const {children, width, height, className, mask, disabled, patternId} = this.props;
+        const {children, width, height, className, mask, disabled, patternId, ...props} = this.props;
 
         const handlers = this.getHandlers();
 
         return (
             <Canvas
+                {...props}
                 name={patternId}
                 // pointerLock={true}
                 // drawOnMove={true}
@@ -172,8 +171,8 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 releaseProcess={handlers && handlers.release}
                 width={width}
                 height={height}
-                {...this.props}
-                onChange={this.handleChange}>
+                onChange={this.handleChange}
+            >
                 {handlers && handlers.cursors &&
                 <SVG
                     className={"draw-cursors"}

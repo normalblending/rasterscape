@@ -20,15 +20,15 @@ export const depthNumberChangeFunction =
                     const {patternId, zed, zd, component} = item;
                     const imageData = pattern.current.imageData;
 
-                    const xnorm = Math.round(x / pattern.current.width * (imageData.width || 0));
-                    const ynorm = Math.round(y / pattern.current.height * (imageData.height || 0));
+                    const xnorm = Math.round(x / pattern.current.imageData.width * (imageData.width || 0));
+                    const ynorm = Math.round(y / pattern.current.imageData.height * (imageData.height || 0));
 
                     return res + imageData.data[(xnorm + ynorm * imageData.width) * 4 + component] / 255 * zed + zd;
                 }, 0) || 0;
 
             };
 
-            const width = pattern.current.width;
+            const width = pattern.current.imageData.width;
             const height = pattern.current.height;
 
             const xnorm = position.x / width;
@@ -67,7 +67,7 @@ export const depthVideoChangeFunction =
 
         const znorm = f(x, y);
 
-        return znorm * patternWidth;
+        return znorm;// * patternWidth;
     };
 
 

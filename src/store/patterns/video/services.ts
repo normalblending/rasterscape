@@ -2,9 +2,10 @@ import {get, PixelsStack, set, StackType} from "./capture/pixels";
 import * as P5 from 'p5';
 import {patternReducers} from "../pattern/reducers";
 import {VideoParams} from "./types";
+import {coordHelper2, coordHelper3, coordHelper4} from "../../../components/Area/canvasPosition.servise";
 
 export interface ICaptures {
-    [patternId: string]: any
+    [patternId: string]: Capture
 }
 
 export enum EdgeMode {
@@ -15,20 +16,18 @@ export enum EdgeMode {
 }
 
 export enum SlitMode {
-    SIDE = 'side',
     FRONT = 'front',
+    BACK = 'back',
+    TOP = 'top',
+    BOTTOM = 'bottom',
+    LEFT = 'left',
+    RIGHT = 'right',
 }
 
-const GetPixel = {
-    [SlitMode.SIDE]: (pixelsStack, w, x, y, frameN) =>
-        get(pixelsStack[x], w, 4, frameN, y),
-    [SlitMode.FRONT]: (pixelsStack, w, x, y, frameN) =>
-        get(pixelsStack[frameN], w, 4, x, y)
-};
-
-
 const GetFrameN = {
-    [EdgeMode.NO]: (z, length) => Math.round(z),
+    [EdgeMode.NO]: (z, length) => {
+        return Math.round(z);
+    },
     [EdgeMode.TOP]: (z, length) => {
         let frameN = Math.round(z);
         if (frameN >= length) frameN = length - 1;
@@ -47,67 +46,96 @@ const GetFrameN = {
     },
 };
 
-export class CaptureService {
+export interface CaptureOptions {
+    width?: number,
+    height?: number,
+    depth?: number,
+    patternId
+    onNewFrame: (pixels, width, height) => any
+    cutFunction: (x, y) => any
+    edgeMode: EdgeMode,
+    slitMode: SlitMode,
+    stackType: StackType,
+    onStream?: (stream, patternId?) => void
+}
 
-    captures: ICaptures = {};
+export class Capture {
 
-    createCapture(
-        patternId,
-        onNewFrame,
-        cutFunction,
-        edgeMode: () => EdgeMode,
-        slitMode: () => SlitMode,
-        stackType: () => StackType,
-    ) {
-        const w = 320,
-            h = 320;
+    on: boolean;
+    isPause: boolean;
 
-        const stack = new PixelsStack(w);
+    width = 320
+    height = 320
+    depth = 320
 
-        let getFrameN, getPixel;
-        const update = () => {
-             getFrameN = GetFrameN[edgeMode()];
-             getPixel = GetPixel[slitMode()];
-             stack.setType(stackType())
-        };
-        update();
+    stack: PixelsStack
+    edgeMode: EdgeMode = EdgeMode.ALL
+    slitMode: SlitMode = SlitMode.FRONT
 
+    sketch: P5
+    canvas
+    capture
+    stream
 
-        let canvas;
-        let capture;
+    onNewFrame
+    cutFunction
 
-        const sketch = new P5(sketch => {
+    constructor(options: CaptureOptions) {
+        const {
+            width,
+            height,
+            depth,
+            patternId,
+            onNewFrame,
+            cutFunction,
+            edgeMode,
+            slitMode,
+            stackType,
+            onStream
+        } = options;
 
+        this.width = width;
+        this.height = height;
+        this.depth = depth;
+        this.stack = new PixelsStack(this.depth, stackType);
+        this.edgeMode = edgeMode;
+        this.slitMode = slitMode;
+
+        this.onNewFrame = onNewFrame;
+        this.cutFunction = cutFunction;
+
+        new P5(sketch => {
+            this.sketch = sketch;
             let frames = 0;
             const FRAMES_UPDATE = 50;
             sketch.setup = () => {
                 sketch.pixelDensity(1);
-                canvas = sketch.createCanvas(w, h);
-                // canvas.parent("v1");
-                canvas.hide();
-                capture = sketch.createCapture({
+                this.canvas = sketch.createCanvas(this.width, this.height);
+
+                this.capture = sketch.createCapture({
                     video: {
                         mandatory: {
-                            minWidth: w,
-                            minHeight: h
+                            minWidth: this.width,
+                            minHeight: this.height
                         },
                         optional: [{
                             maxFrameRate: 25
                         }]
                     },
                     audio: false
-                }, (s, b) => {
-                    if (this.captures[patternId]) {
-                        this.captures[patternId].stream = s;
-                    }
+                }, (stream) => {
+                    onStream(stream, patternId)
                 });
-                // capture.parent("v2");
-                capture.size(w, h);
-                capture.hide();
+
+                this.capture.size(this.width, this.height);
+
+                this.capture.parent("v2"); //
+                this.canvas.parent("v1"); //
+                // this.canvas.hide();
+                // this.capture.hide();
 
                 sketch.frameRate(20);
             };
-
 
             sketch.draw = () => {
 
@@ -115,22 +143,64 @@ export class CaptureService {
 
                 sketch.loadPixels();
 
-                capture.loadPixels();
+                this.capture.loadPixels();
+                // this.canvas.scale(-1.0, 1.0);
 
-                stack.push(capture.pixels);
+                this.stack.push(this.capture.pixels, this.width, this.height);
 
+                coordHelper2.setText(this.width, this.height);
+                coordHelper3.setText(sketch.pixels.length);
 
-                let pixelsStack = stack.array;
+                // let pixelsStack = this.stack.getArray();
 
-                for (let x = 0; x < w; x++) {
-                    for (let y = 0; y < h; y++) {
-                        const z = Math.round(cutFunction(x, y, pixelsStack.length));
-                        const frameN = getFrameN(z, pixelsStack.length);
+                let coords: [number, number, number];
+                for (let x = 0; x < this.width; x++) {
+                    for (let y = 0; y < this.height; y++) {
+                        const z = cutFunction(x, y);
+                        switch (this.slitMode) {
+                            case SlitMode.FRONT:
+                                coords = [x, y, z]
+                                break;
+                            case SlitMode.BACK:
+                                coords = [x, y, 1 - z]
+                                break;
+                            case SlitMode.LEFT:
+                                coords = [
+                                    Math.round(z * this.width),
+                                    y,
+                                    x / this.width
+                                ]
+                                break;
+                            case SlitMode.RIGHT:
+                                coords = [
+                                    Math.round(z * this.width),
+                                    y,
+                                    (this.width - x) / this.width
+                                ]
+                                break;
+                            case SlitMode.TOP:
+                                coords = [
+                                    x,
+                                    Math.round(z * (this.height - 1)),
+                                    y / (this.height - 1)
+                                ]
+                                break;
+                            case SlitMode.BOTTOM:
+                                coords = [
+                                    x,
+                                    Math.round(z * (this.height - 1)),
+                                    ((this.height - 1) - y) / (this.height - 1)
+                                ]
+                                break;
+                            default:
+                                coords = [x, y, z]
+                                break;
+                        }
                         set(
                             sketch.pixels,
-                            w,
+                            this.width,
                             4, x, y,
-                            getPixel(pixelsStack, w, x, y, frameN)
+                            this.stack.getPixel(...coords)
                         )
                     }
                 }
@@ -140,37 +210,189 @@ export class CaptureService {
 
                 // console.log(performance.now() - time);
 
-                sketch.updatePixels();
+                sketch.updatePixels(0, 0, this.width, this.height);
                 frames = (frames + 1) % FRAMES_UPDATE;
-                onNewFrame(sketch.pixels, frames < 1);
+                onNewFrame(sketch.pixels, this.width, this.height);
             }
         });
 
-        this.captures[patternId] = {
-            sketch,
-            canvas,
-            capture,
-            update
-        };
-
-        return this.captures[patternId];
+        this.on = true;
+        this.isPause = false;
     }
 
+    stop = () => {
+        this.sketch?.noLoop();
+        this.sketch?.remove();
+        this.stream?.getTracks()[0].stop();
+
+        this.on = false;
+        this.isPause = false;
+    };
+
+    pause = () => {
+        this.sketch.noLoop();
+
+        this.on = true;
+        this.isPause = true;
+    };
+
+    play = () => {
+        this.sketch.loop();
+
+        this.on = true;
+        this.isPause = false;
+    };
+
+    updateImage = () => {
+        // this.sketch.loadPixels();
+
+        // this.capture.loadPixels();
+        // this.canvas.scale(-1.0, 1.0);
+
+        // this.stack.push(this.capture.pixels, this.width, this.height);
+
+        // coordHelper2.setText(this.width, this.height);
+        // coordHelper3.setText(this.sketch.pixels.length);
+
+        // let pixelsStack = this.stack.getArray();
+
+        let coords: [number, number, number];
+        for (let x = 0; x < this.width; x++) {
+            for (let y = 0; y < this.height; y++) {
+                const z = this.cutFunction(x, y);
+                switch (this.slitMode) {
+                    case SlitMode.FRONT:
+                        coords = [x, y, z]
+                        break;
+                    case SlitMode.BACK:
+                        coords = [x, y, 1 - z]
+                        break;
+                    case SlitMode.LEFT:
+                        coords = [
+                            Math.round(z * this.width),
+                            y,
+                            x / this.width
+                        ]
+                        break;
+                    case SlitMode.RIGHT:
+                        coords = [
+                            Math.round(z * this.width),
+                            y,
+                            (this.width - x) / this.width
+                        ]
+                        break;
+                    case SlitMode.TOP:
+                        coords = [
+                            x,
+                            Math.round(z * (this.height - 1)),
+                            y / (this.height - 1)
+                        ]
+                        break;
+                    case SlitMode.BOTTOM:
+                        coords = [
+                            x,
+                            Math.round(z * (this.height - 1)),
+                            ((this.height - 1) - y) / (this.height - 1)
+                        ]
+                        break;
+                    default:
+                        coords = [x, y, z]
+                        break;
+                }
+                set(
+                    this.sketch.pixels,
+                    this.width,
+                    4, x, y,
+                    this.stack.getPixel(...coords)
+                )
+            }
+        }
+
+
+        // pixelsStack = null;
+
+        // console.log(performance.now() - time);
+
+        this.sketch.updatePixels(0, 0, this.width, this.height);
+        // frames = (frames + 1) % FRAMES_UPDATE;
+        this.onNewFrame(this.sketch.pixels, this.width, this.height);
+    };
+
+
+    setSlitMode = (value: SlitMode) => {
+        this.slitMode = value;
+
+        if (this.on && this.isPause) {
+            this.updateImage();
+        }
+    };
+
+    setSize = (width?, height?) => {
+        this.width = width || this.width;
+        this.height = height || this.height;
+
+        this.sketch.pixels = new Uint8ClampedArray(this.width * this.height * 4);
+
+        this.capture.size(this.width, this.height);
+        this.sketch.resizeCanvas(this.width, this.height);
+        this.sketch.pixelDensity(1);
+    }
+
+    setWidth = (width) => {
+        this.width = width || this.width;
+
+        this.sketch.pixels = new Uint8ClampedArray(this.width * this.height * 4);
+
+        this.capture.size(this.width, this.height);
+        this.sketch.resizeCanvas(this.width, this.height);
+        this.sketch.pixelDensity(1);
+    };
+    setHeight = (height) => {
+        this.height = height || this.height;
+
+        this.sketch.pixels = new Uint8ClampedArray(this.width * this.height * 4);
+
+        this.capture.size(this.width, this.height);
+        this.sketch.resizeCanvas(this.width, this.height);
+        this.sketch.pixelDensity(1);
+
+        this.setSize(this.width + 1, this.height);
+        this.setSize(this.width - 1, this.height);
+    };
+
+    setDepth = (depth) => {
+        this.stack.setSize(depth);
+    }
+
+}
+
+export class CaptureService {
+
+    public captures: ICaptures = {};
+
     pause = (patternId) => {
-        this.captures[patternId].sketch.noLoop();
+        this.captures[patternId].pause();
     };
 
     play = (patternId) => {
-        this.captures[patternId].sketch.loop();
+        this.captures[patternId].play();
     };
 
-    start = (patternId, onNewFrame, cf, em, sm, st) => {
+    start = (options: CaptureOptions) => {
+        const {patternId} = options;
 
         if (this.captures[patternId]) {
             this.stop(patternId);
         }
 
-        this.captures[patternId] = this.createCapture(patternId, onNewFrame, cf, em, sm, st);
+        this.captures[patternId] = new Capture({
+            ...options,
+            onStream: (stream) => {
+                if (this.captures[patternId]) {
+                    this.captures[patternId].stream = stream;
+                }
+            }
+        });
 
         return this.captures[patternId];
     };
@@ -179,17 +401,13 @@ export class CaptureService {
 
         const {[patternId]: stopped, ...others} = this.captures;
 
-        if (stopped) {
-            stopped.sketch?.noLoop();
-            stopped.sketch?.remove();
-            stopped.stream?.getTracks()[0].stop();
-
-            this.captures = others;
-        }
+        stopped?.stop();
+        this.captures = others;
     };
 
     updateParams = (patternId: string) => {
-        this.captures[patternId]?.update();
+        console.log('UPDATE PARAMS VIDOE')
+        // this.captures[patternId]?.update();
     };
 
 }

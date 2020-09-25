@@ -40,8 +40,8 @@ export const load = (id: string, image) => (dispatch, getState) => {
         }
 
 
-        const oldWidth = state.patterns[id].current.width;
-        const oldHeight = state.patterns[id].current.height;
+        const oldWidth = state.patterns[id].current.imageData.width;
+        const oldHeight = state.patterns[id].current.imageData.height;
 
         canvas.width = oldWidth;
         canvas.height = oldHeight;
@@ -72,8 +72,8 @@ export const save = (id: string) => (dispatch, getState) => {
     }
 
 
-    canvas.width = state.patterns[id].current.width;
-    canvas.height = state.patterns[id].current.height;
+    canvas.width = state.patterns[id].current.imageData.width;
+    canvas.height = state.patterns[id].current.imageData.height;
 
     ctx.putImageData(state.patterns[id].current.imageData, 0, 0);
 

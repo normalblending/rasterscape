@@ -1,13 +1,14 @@
 import * as React from "react";
+import {CSSProperties} from "react";
 import {getRandomColor} from "../../../../utils/utils";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {ELineRandomType} from "../../../../store/line/types";
 import {createCanvas} from "../../../../utils/canvas/helpers/base";
 import {drawMasked} from "../../../../utils/canvas/helpers/draw";
 import {getRepeatingCoords} from "../../../../utils/draw";
-import {coordHelper, coordHelper4} from "../../canvasPosition.servise";
-import {CSSProperties} from "react";
+import {coordHelper4} from "../../canvasPosition.servise";
 import {Cursors} from "./cursors";
+import {EToolType} from "../../../../store/tool/types";
 
 const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 
@@ -30,7 +31,7 @@ export const lineSolid = function () {
             const selectionMask = pattern.selection && pattern.selection.value.mask;
             if (selectionMask) {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y, id}) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id}) => {
                         const index = id;
                         canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
                         prevPoints[index] = {x, y};
@@ -53,7 +54,7 @@ export const lineSolid = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
 
                         canvases[index].getContext('2d').clearRect(0,0, width, height);
 
@@ -82,7 +83,7 @@ export const lineSolid = function () {
                 }
             } else {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
                         canvases[index] = createCanvas(width, height).canvas;
 
                         const context = canvases[index]?.getContext('2d');
@@ -104,7 +105,7 @@ export const lineSolid = function () {
 
                 } else {
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
 
                         const context = canvases[index]?.getContext('2d');
 

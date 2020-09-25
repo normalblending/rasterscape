@@ -8,6 +8,7 @@ import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
 import {PatternState} from "../../../../store/patterns/pattern/types";
 import {CanvasDrawProps} from "../index";
+import {EToolType} from "../../../../store/tool/types";
 
 const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 
@@ -20,22 +21,22 @@ const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState
     patternStrokeStyle.setTransform(
         matrix
             .translateSelf(
-                patternMouseCentered ? (x - linePattern.current.width / 2) : 0,
-                patternMouseCentered ? (y - linePattern.current.height / 2) : 0,
+                patternMouseCentered ? (x - linePattern.current.imageData.width / 2) : 0,
+                patternMouseCentered ? (y - linePattern.current.imageData.height / 2) : 0,
             )
             .translateSelf(
                 rotation?.value?.offset?.xd || 0,
                 -rotation?.value?.offset?.yd || 0,
             )
             .translateSelf(
-                linePattern.current.width / 2 + (rotation?.value?.offset?.xc || 0),
-                linePattern.current.height / 2 - (rotation?.value?.offset?.yc || 0),
+                linePattern.current.imageData.width / 2 + (rotation?.value?.offset?.xc || 0),
+                linePattern.current.imageData.height / 2 - (rotation?.value?.offset?.yc || 0),
             )
             .rotateSelf(rotation?.value?.angle || 0)
             .scaleSelf(patternSize)
             .translateSelf(
-                -linePattern.current.width / 2 - (rotation?.value?.offset?.xc || 0),
-                -linePattern.current.height / 2 + (rotation?.value?.offset?.yc || 0),
+                -linePattern.current.imageData.width / 2 - (rotation?.value?.offset?.xc || 0),
+                -linePattern.current.imageData.height / 2 + (rotation?.value?.offset?.yc || 0),
             )
     );
     return patternStrokeStyle;
@@ -62,7 +63,7 @@ export const lineSolidPattern = function () {
             const selectionMask = pattern.selection && pattern.selection.value.mask;
             if (selectionMask) {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
                         canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
 
                         drawMasked(
@@ -83,7 +84,7 @@ export const lineSolidPattern = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
 
                         canvases[index].getContext('2d').clearRect(0, 0, width, height);
 
@@ -108,7 +109,7 @@ export const lineSolidPattern = function () {
                 }
             } else {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
                         canvases[index] = createCanvas(width, height).canvas;
 
                         const context = canvases[index]?.getContext('2d');
@@ -127,7 +128,7 @@ export const lineSolidPattern = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
 
                         const context = canvases[index]?.getContext('2d');
 
@@ -183,13 +184,13 @@ const matrixV1 = matrix
         -linePattern.rotation?.value?.offset?.yd || 0,
     )
     .translateSelf(
-        linePattern.current.width/ 2 + (linePattern.rotation?.value?.offset?.xc || 0),
-        linePattern.current.height/2 - (linePattern.rotation?.value?.offset?.yc || 0),
+        linePattern.current.imageData.width/ 2 + (linePattern.rotation?.value?.offset?.xc || 0),
+        linePattern.current.imageData.height/2 - (linePattern.rotation?.value?.offset?.yc || 0),
     )
     .rotateSelf(linePattern.rotation?.value?.angle || 0)
     .translateSelf(
-        -linePattern.current.width/ 2 -(linePattern.rotation?.value?.offset?.xc || 0),
-        -linePattern.current.height/2 + (linePattern.rotation?.value?.offset?.yc || 0),
+        -linePattern.current.imageData.width/ 2 -(linePattern.rotation?.value?.offset?.xc || 0),
+        -linePattern.current.imageData.height/2 + (linePattern.rotation?.value?.offset?.yc || 0),
     )
     .scale(patternSize)
 

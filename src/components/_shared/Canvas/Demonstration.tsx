@@ -68,7 +68,7 @@ const DemonstrationComponent: React.FC<DemonstrationProps> = (props) => {
                 [DemonstrationMode.contain]: DemonstrationMode.fill,
                 [DemonstrationMode.fill]: DemonstrationMode.cover,
                 [DemonstrationMode.cover]: DemonstrationMode.contain,
-            })[params.mode]
+            })[params.mode || DemonstrationMode.contain]
         })
     }, [videoRef, setDemonstrationParams, name, params.mode, played]);
 
@@ -115,7 +115,7 @@ const DemonstrationComponent: React.FC<DemonstrationProps> = (props) => {
 };
 
 const mapStateToProps: MapStateToProps<DemonstrationStateProps, DemonstrationOwnProps, AppState> = (state, {name}) => ({
-    demonstrationParams: state.patterns[name]?.demonstration.params
+    demonstrationParams: state.patterns[name]?.demonstration?.params || {}
 });
 
 const mapDispatchToProps: MapDispatchToProps<DemonstrationActionProps, DemonstrationOwnProps> = {

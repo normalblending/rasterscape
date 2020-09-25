@@ -11,6 +11,7 @@ import './styles.scss';
 import {WaveType} from "../../../../../store/changeFunctions/functions/wave";
 import {FxyType} from "../../../../../store/changeFunctions/functions/fxy";
 import {NoiseAmplitude} from "./NoiseAmplitude";
+import {redPoint1} from "../../../RedPointHelper";
 
 const DEFAULT_WIDTH = 70;
 
@@ -151,7 +152,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.e = e;
 
 
-        // startPoint.set(e.clientX, e.clientY);
+        // redPoint1.set(e.clientX, e.clientY);
 
         const {onMouseDown, name, selected} = this.props;
         const {value} = this.state;
@@ -206,7 +207,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
         // //  modulation
 
-        // startPoint.hide();
+        // redPoint1.hide();
 
 
         const {
@@ -293,7 +294,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     handlePressed = e => {
         if (!this.state.startPoint) {
-            // startPoint.set(e.clientX, e.clientY);
+            // redPoint1.set(e.clientX, e.clientY);
             this.setState({
                 startPoint: [e.clientX, e.clientY]
             });
@@ -310,7 +311,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     handleRelease = (e?) => {
         // coordHelper2.writeln('RELEASE');
 
-        // startPoint.hide();
+        // redPoint1.hide();
 
         const {onRelease, name, selected} = this.props;
         const {value} = this.state;
@@ -345,7 +346,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         valueD = ValueD.VerticalLinear(Math.pow(10, pres))
 
 
-        // let nextValue = valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1]);
+        // let nextValue = valueD(this.state.startValue, e.clientX - this.state.redPoint1[0], e.clientY - this.state.redPoint1[1]);
         let nextValue = !locked
             ? valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
             : valueD(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1]);

@@ -9,7 +9,8 @@
   pointer-events: none;
 
   &.selectionActive {
-    border: 1px solid greenyellow;
+    border: 1px solid red;
+    //border: 1px solid greenyellow;
 
     pointer-events: auto;
   }
@@ -22,5 +23,37 @@
   }
   &.cursorEnd {
     cursor: s-resize;
+  }
+
+  .selection-path {
+    stroke: red;
+    box-shadow: black;
+    //mix-blend-mode: difference;
+    //animation-iteration-count: infinite;
+    animation: crowl 3s linear infinite;
+    stroke-dasharray: 2, 1;
+    stroke-width: 1;
+  }
+
+  @keyframes crowl {
+    0% {
+      stroke-dashoffset: 0;
+    }
+    //25% {
+    //  stroke-dasharray: 2, 1;
+    //  stroke-dashoffset: 1;
+    //}
+    //50% {
+    //  stroke-dasharray: 3, 2;
+    //  stroke-dashoffset: 2;
+    //}
+    //75% {
+    //  stroke-dasharray: 4, 3;
+    //  stroke-dashoffset: 3;
+    //}
+
+    100% {
+      stroke-dashoffset: 40;
+    }
   }
 }

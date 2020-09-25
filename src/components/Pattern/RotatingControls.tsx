@@ -58,57 +58,83 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
         })
     };
 
+    handleMouseDown = () => {
+        console.log('down');
+        const {setRotation, rotation, patternId} = this.props;
+        setRotation(patternId, {
+            ...rotation,
+            changing: true
+        })
+    };
+    handleMouseUp = () => {
+        const {setRotation, rotation, patternId} = this.props;
+        setRotation(patternId, {
+            ...rotation,
+            changing: false
+        })
+    };
+
     render() {
         const {angle, offset} = this.props.rotation;
         return (
             <div className={'rotating-controls'}>
 
                 <ButtonNumberCF
-                    buttonWrapper={angleHelp}
                     pres={0}
                     path={`patterns.${this.props.patternId}.rotation.value.angle`}
                     name={"angle"}
                     value={angle}
                     range={angleRange}
                     getText={angleText}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
                     valueD={1}
-                    onChange={this.handleAngleChange}/>
+                    onChange={this.handleAngleChange}
+                />
                 <ButtonNumberCF
-                    buttonWrapper={centerOffsetXHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.xc`}
                     name={"xc"}
                     value={offset.xc}
-                    onChange={this.handleOffsetChange}/>
+                    onChange={this.handleOffsetChange}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                />
                 <ButtonNumberCF
-                    buttonWrapper={centerOffsetYHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.yc`}
                     name={"yc"}
                     value={offset.yc}
-                    onChange={this.handleOffsetChange}/>
+                    onChange={this.handleOffsetChange}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                />
                 <ButtonNumberCF
-                    buttonWrapper={offsetXHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.xd`}
                     name={"xd"}
                     value={offset.xd}
-                    onChange={this.handleOffsetChange}/>
+                    onChange={this.handleOffsetChange}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                />
                 <ButtonNumberCF
-                    buttonWrapper={offsetYHelp}
                     pres={0}
                     valueD={1}
                     range={offsetRange}
                     path={`patterns.${this.props.patternId}.rotation.value.offset.yd`}
                     name={"yd"}
                     value={offset.yd}
-                    onChange={this.handleOffsetChange}/>
+                    onChange={this.handleOffsetChange}
+                    onMouseDown={this.handleMouseDown}
+                    onMouseUp={this.handleMouseUp}
+                />
             </div>
         );
     }

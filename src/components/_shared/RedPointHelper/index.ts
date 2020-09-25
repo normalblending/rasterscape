@@ -23,4 +23,4 @@ export class PointerStartValue {
     }
 }
 
-export const startPoint = new PointerStartValue();
+export const redPoint1 = new PointerStartValue();

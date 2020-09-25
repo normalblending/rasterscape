@@ -20,6 +20,7 @@ import {EToolType} from "../../../store/tool/types";
 import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../../store/selectTool/types";
 import "./selection.scss"
 import {Segments, SelectionParams} from "../../../store/patterns/selection/types";
+import {CSSProperties} from "react";
 
 
 const lineFunction = d3
@@ -31,6 +32,7 @@ const lineFunction = d3
 
 const HANDLER_SIZE = 5;
 
+const differenceStyle: CSSProperties = {mixBlendMode: 'difference'};
 
 export const selectionModesSelectItems = arrayToSelectItems(
     [ESelectionMode.Rect, ESelectionMode.Line, ESelectionMode.Points]);
@@ -123,6 +125,16 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             path: value,
             currentSliceN: value.filter(({type}) => type === ESegType.M).length
         })
+
+
+        let ii = 0
+        setInterval(() => {
+            ii = ii % 20;
+            if (this.pathRef.current)
+                this.pathRef.current.strokeDasharray = `${ii}, ${20 - ii}`
+        }, 200);
+
+
     }
 
     componentDidUpdate(prevProps: CanvasSelectionProps) {
@@ -439,10 +451,10 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                             width={width}
                             height={height}
                             fill="black"
-                            fillOpacity={0.3}
+                            fillOpacity={0.2}
                             mask={`url(#selectionMask${name})`}
                         />
-                                 {/*ПЕРВАЯ ТОЧКА*/}
+                        {/*ПЕРВАЯ ТОЧКА*/}
                         {subFirst && (
                             <rect
                                 x={subFirst.values[0]}
@@ -451,14 +463,19 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                                 height={1}
                                 fillOpacity={0}
                                 fill="black"
-                                stroke={isActive ? "greenyellow" : "red"}
+                                stroke={isActive ? "red" : "red"}
                             />
                         )}
                         <path
                             ref={this.pathRef}
                             fillOpacity={0}
                             fill="black"
-                            stroke={isActive ? "greenyellow" : "red"}
+                            className={'selection-path'}
+                            // strokeDasharray={"1, 1, 1"}
+
+                            // style={{}}
+                            strokeWidth={1}
+                            // stroke={isActive ? "greenyellow" : "red"}
                         />
                     </>}
                 </SVG>

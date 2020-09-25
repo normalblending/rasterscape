@@ -5,42 +5,30 @@ export interface KeyProps {
     keys: string | string[]
     emptyKeys?: boolean
 
-    onPress?(e?: any, keys?: string | string[])
+    onPress?(e?: any, keys?: string | string[], data?: any)
 
-    onRelease?(e?: any, keys?: string | string[])
+    onRelease?(e?: any, keys?: string | string[], data?: any)
+
+    data?: any
 
     name?: string
 }
 
 export interface KeyState {
-    keys: string
 }
 
 export class Key extends React.PureComponent<KeyProps, KeyState> {
 
-    // state = {
-    //     keys: null
-    // };
-
     handlePress = e => {
         e.preventRepeat();
-        const {onPress, keys} = this.props;
-        onPress && onPress(e, keys)
-        console.log('onPress', keys);
+        const {onPress, keys, data} = this.props;
+        onPress && onPress(e, keys, data);
     };
 
     handleRelease = e => {
-        const {onRelease, keys} = this.props;
-        onRelease && onRelease(e, keys)
-        console.log('onRelease', keys);
+        const {onRelease, keys, data} = this.props;
+        onRelease && onRelease(e, keys, data);
     };
-
-    // static getDerivedStateFromProps(props, state) {
-    //     if (props.keys !== state.keys) {
-    //         return {keys: props.keys};
-    //     }
-    //     return;
-    // }
 
     componentDidMount() {
         const {keys, emptyKeys} = this.props;
@@ -65,7 +53,6 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
     }
 
     render() {
-        console.log("keys render", this.props.keys);
         return <></>;
     }
 }

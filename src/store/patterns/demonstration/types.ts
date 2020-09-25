@@ -9,7 +9,7 @@ export enum DemonstrationMode {
 }
 
 export interface DemonstrationParams {
-    mode: DemonstrationMode
+    mode?: DemonstrationMode
 }
 
 export interface DemonstrationValue {

@@ -13,7 +13,7 @@ export const selectionReducers = {
                     value: {
                         segments: action.value,
                         mask: action.value.length
-                            ? getMaskFromSegments(pattern.current.width, pattern.current.height, action.value)
+                            ? getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, action.value)
                             : null,
                         bBox: action.bBox
                     }

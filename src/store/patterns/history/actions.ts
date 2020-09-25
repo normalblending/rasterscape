@@ -1,4 +1,5 @@
 import {PatternAction} from "../pattern/types";
+import {sendImage} from "../room/actions";
 
 
 export enum EHistoryAction {
@@ -12,7 +13,14 @@ export interface PatternUndoAction extends PatternAction {
 export interface PatternRedoAction extends PatternAction {
 }
 
-export const undo = (id: string): PatternUndoAction =>
-    ({type: EHistoryAction.UNDO, id});
-export const redo = (id: string): PatternRedoAction =>
-    ({type: EHistoryAction.REDO, id});
+export const undo = (id: string) => (dispatch, getState) => {
+
+    dispatch({type: EHistoryAction.UNDO, id});
+
+    return dispatch(sendImage(id));
+}
+export const redo = (id: string) => (dispatch, getState) => {
+    dispatch({type: EHistoryAction.REDO, id});
+
+    return dispatch(sendImage(id));
+};

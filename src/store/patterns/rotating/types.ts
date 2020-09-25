@@ -13,6 +13,7 @@ export interface RotationValue {
         xd: number
         yd: number
     }
+    changing: boolean
 }
 
 export type RotationState = FunctionState<RotationValue, RotationParams>;

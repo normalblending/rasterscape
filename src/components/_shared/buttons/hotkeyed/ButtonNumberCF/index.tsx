@@ -58,6 +58,7 @@ export interface ButtonNumberCFOwnProps extends ButtonNumberProps {
     path: string
     hkLabel?: string
     buttonWrapper?
+    withoutCF?: boolean
 }
 
 export interface ButtonNumberCFProps extends ButtonNumberCFStateProps, ButtonNumberCFActionProps, ButtonNumberCFOwnProps, WithTranslation {
@@ -90,6 +91,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         className,
         hotkey,
         buttonWrapper: ButtonWrapper,
+        withoutCF,
         ...buttonNumberProps
     } = props;
 
@@ -122,15 +124,29 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         setStartValue(path, value);
     }, [onChange, setStartValue, path, value]);
 
-    const handleStartManualChanging = React.useCallback(() => {
+    const handleMouseDown = React.useCallback((e) => { //handleStartManualChanging
         deactivateValueChanging(path);
         setActive(true);
-    }, [deactivateValueChanging, path]);
+        onMouseDown?.(e);
+    }, [deactivateValueChanging, path, onMouseDown]);
 
-    const handleStopManualChanging = React.useCallback(() => {
+    const handleMouseUp = React.useCallback((e) => { //handleStopManualChanging
         activateValueChanging(path);
         setActive(false);
-    }, [activateValueChanging, path]);
+        onMouseUp?.(e);
+    }, [activateValueChanging, path, onMouseUp]);
+
+    const handlePress = React.useCallback((e) => { //handleStartManualChanging
+        deactivateValueChanging(path);
+        setActive(true);
+        onPress?.(e);
+    }, [deactivateValueChanging, path, onPress]);
+
+    const handleRelease = React.useCallback((e) => { //handleStopManualChanging
+        activateValueChanging(path);
+        setActive(false);
+        onRelease?.(e);
+    }, [activateValueChanging, path, onRelease]);
 
     const handleShortcutChange = React.useCallback((shortcut) => {
         if (shortcut === null || shortcut.length === 1) {
@@ -184,23 +200,32 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                 changeFunctionParams={changingParams}
 
                 onChange={handleChange}
-                onMouseDown={handleStartManualChanging}
-                onPress={handleStartManualChanging}
-                onMouseUp={handleStopManualChanging}
-                onRelease={handleStopManualChanging}/>
+
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onPress={handlePress}
+                onRelease={handleRelease}
+            />
             {settingMode && (
                 <ShortcutInput
                     placeholder={t('buttonNumberCF.hotkey')}
                     value={hotkey?.key}
                     onChange={handleShortcutChange}/>
             )}
+            {!settingMode && hotkey?.key && (
+                <div className={'hotkey-key'}>{hotkey?.key}</div>
+            )}
         </>
     );
 
-    const buttonElement = React.useMemo(() => ButtonWrapper ?
-        <ButtonWrapper button={button}/> : button, [ButtonWrapper, button]);
+    const buttonElement = React.useMemo(() =>
+        ButtonWrapper
+            ? <ButtonWrapper button={button}/>
+            : button,
+        [ButtonWrapper, button]
+    );
 
-    return (
+    return withoutCF ? <div className={"button-number-cf"}>{buttonElement}</div> : (
         <HoverHideable
             className={classNames("button-number-cf", {
                 ['hotkey-highlighted']: highlightedPath === hotkey?.path

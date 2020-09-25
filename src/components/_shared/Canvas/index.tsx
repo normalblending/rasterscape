@@ -100,7 +100,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.modalWindow.onbeforeunload = onDemonstrationUnload;
 
         this.modalWindow.document.body.style = 'margin: 0';
-        
+
         const div = this.modalWindow.document.createElement('div');
         this.modalWindow.document.body.appendChild(div);
 

@@ -69,8 +69,8 @@ const fxyFunctionByType = {
 
         const f = xyParaboloid(1/2, 1/2, x, y);
 
-        const width = pattern.current.width;
-        const height = pattern.current.height;
+        const width = pattern.current.imageData.width;
+        const height = pattern.current.imageData.height;
 
         const xnorm = position.x / width;
         const ynorm = position.y / height;
@@ -92,7 +92,7 @@ const fxyFunctionByType = {
         const {end} = params;
         const f = xySis2(params);
 
-        const width = pattern.current.width;
+        const width = pattern.current.imageData.width;
         const height = pattern.current.height;
 
         const xnorm = position.x / width;
@@ -140,7 +140,7 @@ export const xyVideoFunctionByType = {
 
         // (range[1] - startValue) * end;
 
-        return znorm * width;
+        return znorm;// * width;
     },
     [FxyType.Sis2]: ({x, y, width, height, params}) => {
 
@@ -154,7 +154,7 @@ export const xyVideoFunctionByType = {
 
         // (range[1] - startValue) * end;
 
-        return znorm * width;
+        return znorm;// * width;
     }
 };
 

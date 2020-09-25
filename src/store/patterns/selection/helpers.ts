@@ -26,15 +26,15 @@ export const getMaskFromSegments = (width, height, selectionValue: Segments) => 
 
 export const getSelectedImageData = (pattern: PatternState): ImageData => {
     const bbox = pattern.selection.value.bBox;
-    const maskImageData = getMaskFromSegments(pattern.current.width, pattern.current.height, pattern.selection.value.segments);
+    const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
 
-    const {context} = createCanvas(pattern.current.width, pattern.current.height);
+    const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
 
     if (maskImageData) {
         context.putImageData(maskImageData, 0, 0);
         context.globalCompositeOperation = "source-in";
     }
-    context.drawImage(imageDataToCanvas(pattern.current.imageData), 0, 0, pattern.current.width, pattern.current.height);
+    context.drawImage(imageDataToCanvas(pattern.current.imageData), 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
 
     context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 
@@ -44,9 +44,9 @@ export const getSelectedImageData = (pattern: PatternState): ImageData => {
 };
 export const getSelectedMask = (pattern: PatternState): ImageData => {
     const bbox = pattern.selection.value.bBox;
-    const maskImageData = getMaskFromSegments(pattern.current.width, pattern.current.height, pattern.selection.value.segments);
+    const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
 
-    const {context} = createCanvas(pattern.current.width, pattern.current.height);
+    const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
 
     if (maskImageData) {
         context.putImageData(maskImageData, 0, 0);
@@ -54,10 +54,10 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
     }
 
     if ( pattern.mask ) {
-        context.drawImage(imageDataToCanvas(pattern.mask.value.imageData), 0, 0, pattern.current.width, pattern.current.height)
+        context.drawImage(imageDataToCanvas(pattern.mask.value.imageData), 0, 0, pattern.current.imageData.width, pattern.current.imageData.height)
     } else {
         context.fillStyle = 'black';
-        context.fillRect(0,0, pattern.current.width, pattern.current.height);
+        context.fillRect(0,0, pattern.current.imageData.width, pattern.current.imageData.height);
     }
 
     context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);

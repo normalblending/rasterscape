@@ -1,14 +1,19 @@
 import * as React from "react";
+import * as cn from 'classnames';
 import {InputText} from "../../_shared/inputs/InputText";
 import {Button} from "../../_shared/buttons/simple/Button";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {createRoom, leaveRoom, setDrawer} from "../../../store/patterns/room/actions";
-import '../../../styles/roomControls.scss';
+import './roomControls.scss';
 import {WithTranslation, withTranslation} from "react-i18next";
 import {ButtonSelect} from "bbuutoonnss";
 import {Chat} from "./Chat";
 
+
+/*
+* запретить обновление канваса когда не ты drawer
+* */
 export interface RoomControlsStateProps {
     connected: string
     drawer: string
@@ -86,7 +91,9 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
     render() {
         const {connected, t, patternId, drawer, meDrawer, members} = this.props;
         return (
-            <div className={'room-controls'}>
+            <div className={cn('room-controls', {
+                ['me-drawer']: meDrawer
+            })}>
 
                 {connected && (<>
                     <Chat patternId={patternId}/>
@@ -105,22 +112,21 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
                             onClick={this.handleCreateRoom}
                         >{t('room.enter')}</Button>
                     </>) : (<>
-                        <div className={'room-title'}>
-                            <Button
-                                className={'room-name'}>
-                                <span>{this.state.roomName}</span> {members ? <small>({members})</small> : ''}
-                            </Button>
-                            <Button
-                                className={'room-delete'}
-                                disabled={!this.state.roomName}
-                                onDoubleClick={this.handleLeaveRoom}
-                            >{t('room.leave')}</Button>
+
+                        <div
+                            className={'room-name'}>
+                            <span>{this.state.roomName}</span> {members ? <small>({members})</small> : ''}
                         </div>
-                        <ButtonSelect
-                            disabled={!!drawer && !meDrawer}
-                            selected={meDrawer}
-                            onClick={this.handleSetDrawer}
-                        >{t('room.draw')}</ButtonSelect>
+                        <Button
+                            className={'room-delete'}
+                            disabled={!this.state.roomName}
+                            onDoubleClick={this.handleLeaveRoom}
+                        >{t('room.leave')}</Button>
+                        {/*<ButtonSelect*/}
+                        {/*    disabled={!!drawer && !meDrawer}*/}
+                        {/*    selected={meDrawer}*/}
+                        {/*    onClick={this.handleSetDrawer}*/}
+                        {/*>{t('room.draw')}</ButtonSelect>*/}
                     </>)}
 
 

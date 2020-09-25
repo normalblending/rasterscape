@@ -2,11 +2,11 @@ import {PatternState} from "../store/patterns/pattern/types";
 import * as Bezier from "bezier-js";
 import {ERepeatingType} from "../store/patterns/repeating/types";
 import {getColorByCoordinate} from "./canvas/helpers/imageData";
-import {coordHelper, coordHelper2, coordHelper4, coordHelper5} from "../components/Area/canvasPosition.servise";
+import {EToolType} from "../store/tool/types";
 
 const canvasItemId = (i, j) => `${i}-${j}`;
 
-export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, withColor?: boolean) => {
+export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, withColor?: boolean, tool?: EToolType) => {
 
     if (!pattern.config.repeating || !pattern.repeating) {
         return [{
@@ -21,7 +21,9 @@ export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, 
 
     if (params.type === ERepeatingType.Grid) {
         const {gridParams: {x: xn, y: yn, bezierPoints, xOut, yOut, flat}} = params;
-        const {current: {width, height, imageData}, rotation} = pattern;
+        const {current: {imageData}, rotation} = pattern;
+
+        const {width, height} = imageData;
 
         const xd = width / xn;
         const yd = height / yn;
@@ -30,11 +32,20 @@ export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, 
         const array = [];
 
         if (flat) {
-            // x = x % xd;
-            // y = y % yd;
-            for (let i = -xOut; i < xn + xOut; i++) {
 
-                for (let j = -yOut; j < yn + yOut; j++) {
+            let mxOut = xOut;
+            let myOut = yOut;
+
+            if (tool !== EToolType.Line) {
+
+                x = (x + xd) % xd;
+                y = (y + yd) % yd;
+                mxOut = Math.max(xOut, 2);
+                myOut = Math.max(yOut, 2);
+            }
+            for (let i = -mxOut; i < xn + mxOut; i++) {
+
+                for (let j = -myOut; j < yn + myOut; j++) {
 
 
                     const xi = x + xd * i;

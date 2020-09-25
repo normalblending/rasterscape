@@ -4,7 +4,7 @@ import {AppState} from "../../store";
 import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
-import "../../styles/area.scss";
+import "./area.scss";
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/selection/types";
 
@@ -33,6 +33,7 @@ export interface AreaOwnProps {
     onSelectionChange(selectionValue: SelectionValue, bBox: SVGRect)
 
     demonstration?: boolean
+
     onDemonstrationUnload?()
 }
 
@@ -44,14 +45,27 @@ export interface AreaState {
     rotation?: RotationValue
     style?: any
     areaStyle?: any
+    centerStyle?: any
+    rotationCenterStyle?: any
+    offsetCenterStyle?: any
 }
+
+const getAreaStyle = (rotation, width, height) => rotation ? {
+    transform: `translateX(${rotation.offset.xd}px) translateY(${-rotation.offset.yd}px)`,
+} : null;
 
 const getStyle = (rotation, width, height) => rotation ? {
     transformOrigin: `${width / 2 + rotation.offset?.xc}px ${height / 2 - rotation.offset?.yc}px`,
     transform: `rotate(${rotation.angle}deg)`,
 } : null;
-const getAreaStyle = (rotation, width, height) => rotation ? {
-    transform: `translateX(${rotation.offset.xd}px) translateY(${-rotation.offset.yd}px)`,
+const getRotationCenterStyle = (rotation, width, height) => rotation ? {
+    transform: `translateX(${width / 2 + rotation.offset?.xc}px) translateY(${height / 2 - rotation.offset?.yc}px)`,
+} : null;
+const getOffsetCenterStyle = (rotation, width, height) => rotation ? {
+    transform: `translateX(${width / 2 - rotation.offset?.xd}px) translateY(${height / 2 + rotation.offset?.yd}px)`,
+} : null;
+const getCenterStyle = (rotation, width, height) => rotation ? {
+    transform: `translateX(${width / 2}px) translateY(${height / 2}px)`,
 } : null;
 
 class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
@@ -62,6 +76,9 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
         this.state = {
             style: getStyle(props.rotation, props.width, props.height),
             areaStyle: getAreaStyle(props.rotation, props.width, props.height),
+            rotationCenterStyle: getRotationCenterStyle(props.rotation, props.width, props.height),
+            offsetCenterStyle: getOffsetCenterStyle(props.rotation, props.width, props.height),
+            centerStyle: getCenterStyle(props.rotation, props.width, props.height),
             rotation: props.rotation
         };
     }
@@ -72,7 +89,10 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
         return {
             rotation: props.rotation,
             style: getStyle(props.rotation, props.width, props.height),
-            areaStyle: getAreaStyle(props.rotation, props.width, props.height)
+            areaStyle: getAreaStyle(props.rotation, props.width, props.height),
+            rotationCenterStyle: getRotationCenterStyle(props.rotation, props.width, props.height),
+            offsetCenterStyle: getOffsetCenterStyle(props.rotation, props.width, props.height),
+            centerStyle: getCenterStyle(props.rotation, props.width, props.height),
         }
         // }
     }
@@ -97,8 +117,10 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
         } = this.props;
 
         return (
-            <div className="area"
-                 style={this.state.areaStyle}>
+            <div
+                className="area"
+                style={this.state.areaStyle}
+            >
                 <Draw
                     disabled={disabled}
                     mask={mask}
@@ -122,6 +144,22 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                     value={selectionValue}
                     params={selectionParams}
                     onChange={onSelectionChange}/>
+                {rotation?.changing && (
+                    <>
+                        <div
+                            className={'area-center'}
+                            style={this.state.rotationCenterStyle}
+                        />
+                        <div
+                            className={'area-center'}
+                            style={this.state.offsetCenterStyle}
+                        />
+                        <div
+                            className={'area-center'}
+                            style={this.state.centerStyle}
+                        />
+                    </>
+                )}
             </div>
         );
     }

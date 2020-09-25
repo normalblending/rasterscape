@@ -53,8 +53,8 @@ export const patternReducers = {
 
     [EPatternAction.SET_WIDTH]: reducePattern<SetPatternWidthAction>(
         (pattern: PatternState, action) => {
-            const newCurrentImageData = resizeImageData(pattern.current.imageData, action.width, pattern.current.height, !pattern.import.params.fit);
-            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, action.width, pattern.mask.value.height, !pattern.import.params.fit);
+            const newCurrentImageData = resizeImageData(pattern.current.imageData, action.width, pattern.current.imageData.height, !pattern.import.params.fit);
+            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, action.width, pattern.mask.value.imageData.height, !pattern.import.params.fit);
             return {
                 ...pattern,
                 current: {
@@ -80,8 +80,8 @@ export const patternReducers = {
 
     [EPatternAction.SET_HEIGHT]: reducePattern<SetPatternHeightAction>(
         (pattern: PatternState, action) => {
-            const newCurrentImageData = resizeImageData(pattern.current.imageData, pattern.current.width, action.height, !pattern.import.params.fit);
-            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, pattern.mask.value.width, action.height, !pattern.import.params.fit);
+            const newCurrentImageData = resizeImageData(pattern.current.imageData, pattern.current.imageData.width, action.height, !pattern.import.params.fit);
+            const newMaskImageData = pattern.mask && resizeImageData(pattern.mask.value.imageData, pattern.mask.value.imageData.width, action.height, !pattern.import.params.fit);
             return {
                 ...pattern,
                 current: {

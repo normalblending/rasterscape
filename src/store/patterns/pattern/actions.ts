@@ -12,6 +12,8 @@ import {addPattern} from "../actions";
 import {getPatternConfig, getPatternParams} from "./helpers";
 import * as StackBlur from 'stackblur-canvas';
 import {sendImage} from "../room/actions";
+import {ThunkAction} from 'redux-thunk'
+import {setSize, setVideoHeight, setVideoWidth} from "../video/actions";
 
 export enum EPatternAction {
     UPDATE_IMAGE = "pattern/update-image",
@@ -55,16 +57,22 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
             }
         }
 
-        emit && dispatch(sendImage(id, resultImageData));
 
-        return dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id, noHistory});
+        dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id, noHistory});
+
+        return emit && dispatch(sendImage(id));
     };
 export const editConfig = (id: string, config: PatternConfig): EditPatternConfigAction =>
     ({type: EPatternAction.EDIT_CONFIG, id, config});
-export const setWidth = (id: string, width: number): SetPatternWidthAction =>
-    ({type: EPatternAction.SET_WIDTH, id, width});
-export const setHeight = (id: string, height: number): SetPatternHeightAction =>
-    ({type: EPatternAction.SET_HEIGHT, id, height});
+
+export const setWidth = (id: string, width: number): ThunkAction<any, any, any, SetPatternWidthAction> => dispatch => {
+    dispatch(setVideoWidth(id, width));
+    dispatch({type: EPatternAction.SET_WIDTH, id, width});
+}
+export const setHeight = (id: string, height: number): ThunkAction<any, any, any, SetPatternHeightAction> => dispatch => {
+    dispatch(setVideoHeight(id, height));
+    dispatch({type: EPatternAction.SET_HEIGHT, id, height});
+}
 export const doublePattern = (id: string) => (dispatch, getState) => {
     const state: AppState = getState();
 

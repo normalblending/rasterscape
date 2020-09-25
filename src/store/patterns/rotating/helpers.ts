@@ -9,5 +9,6 @@ export const getRotationState = getFunctionState<RotationValue, RotationParams>(
             yc: 0,
             xd: 0,
             yd: 0,
-        }
+        },
+        changing: false
     }, {});

@@ -50,7 +50,7 @@ export const linePattern = function () {
         if (!draw) {
             getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(({x, y, id}) => {
                 const index = id;
-                canvases[index] = createCanvas(destinationPattern.current.width, destinationPattern.current.height).canvas;
+                canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height).canvas;
                 prevPoints[index] = {x, y};
             });
             draw = true;

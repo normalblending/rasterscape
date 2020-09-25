@@ -53,10 +53,12 @@ export const brushPattern = function () {
 
                 const brushAngle = brushRotation ? brushRotation.angle : 0;
                 const brushCenter = brushRotation ? {
-                    x: brushRotation.offset.xc, y: brushRotation.offset.yc
+                    x: patternSize * brushRotation.offset.xc,
+                    y: patternSize * brushRotation.offset.yc
                 } : {x: 0, y: 0};
                 const brushOffset = brushRotation ? {
-                    x: brushRotation.offset.xd, y: brushRotation.offset.yd
+                    x: patternSize * brushRotation.offset.xd,
+                    y: patternSize * brushRotation.offset.yd
                 } : {x: 0, y: 0};
 
 
@@ -114,19 +116,36 @@ export const brushPattern = function () {
 
             const width = patternSize * (brushPatternImage?.width);
             const height = patternSize * (brushPatternImage?.height);
+            const xd = patternSize * (brushRotation?.offset?.xd || 0);
+            const yd = patternSize * (brushRotation?.offset?.yd || 0);
+            const xc = patternSize * (brushRotation?.offset?.xc || 0);
+            const yc = patternSize * (brushRotation?.offset?.yc || 0);
+            const patternAngle = patternRotation?.angle || 0;
+            const brushAngle = brushRotation?.angle || 0;
 
-            return Cursors.rect(x, y, width, height, {
-                transform: `
-                    translate(
-                        ${brushRotation?.offset?.xd || 0}, 
-                        ${-brushRotation?.offset?.yd || 0}
-                    ) rotate(
-                        ${-(patternRotation?.angle || 0) + (brushRotation?.angle || 0)} 
-                        ${x + (brushRotation?.offset?.xc || 0)} 
-                        ${y - (brushRotation?.offset?.yc || 0)}
-                    )
-                `
-            });
+            return (
+                <>
+                    {Cursors.rect(x, y, width, height, {
+                        transform: `
+                            rotate(
+                                ${-patternAngle} 
+                                ${x} 
+                                ${y}
+                            )
+                            translate(
+                                ${xd}, 
+                                ${-yd}
+                            ) 
+                            rotate(
+                                ${brushAngle} 
+                                ${x + xc} 
+                                ${y - yc}
+                            )
+                        `
+                    })}
+                    {Cursors.cross(x, y, 20)}
+                </>
+            );
         }
     }
 };

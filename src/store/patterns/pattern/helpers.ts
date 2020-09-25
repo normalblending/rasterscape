@@ -5,10 +5,10 @@ export type PatternReducer<T extends PatternAction> =
     (pattern: PatternState, action: T, state: PatternsState) => PatternState
 
 export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T>) =>
-    (state: PatternsState, action: T) => ({
+    (state: PatternsState, action: T) => state[action.id] ? ({
         ...state,
         [action.id]: reducer(state[action.id], action, state)
-    });
+    }) : state;
 
 export const getPatternConfig = (pattern: PatternState): PatternConfig => {
     return {
@@ -20,8 +20,8 @@ export const getPatternConfig = (pattern: PatternState): PatternConfig => {
         startImage: pattern.current.imageData,
         startMask: pattern.mask ? pattern.mask.value.imageData : null,
 
-        width: pattern.current.width,
-        height: pattern.current.height,
+        width: pattern.current.imageData.width,
+        height: pattern.current.imageData.height,
 
         history: !!pattern.history,
 

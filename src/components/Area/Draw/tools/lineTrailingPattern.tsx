@@ -13,6 +13,7 @@ import {createCanvas} from "../../../../utils/canvas/helpers/base";
 import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
 import {CanvasDrawProps} from "../index";
+import {EToolType} from "../../../../store/tool/types";
 
 function distanceBetween(point1, point2) {
     if (!point1 || !point2) return 0;
@@ -62,16 +63,16 @@ export const lineTrailingPattern = function () {
         if (!linePatternImage) return
 
         if (!draw) {
-            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(({x, y, id}) => {
+            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line).forEach(({x, y, id}) => {
                 const index = id;
-                canvases[index] = createCanvas(destinationPattern.current.width, destinationPattern.current.height).canvas;
+                canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height).canvas;
                 prevPoints[index] = {x, y};
             });
             draw = true;
         } else {
             if (patternSize < 0.01) return;
 
-            const repeatingCoords = getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern);
+            const repeatingCoords = getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line);
 
             Object.keys(prevPoints)
                 .filter(pointId => repeatingCoords.findIndex(({id}) => pointId === id) === -1)
@@ -99,10 +100,12 @@ export const lineTrailingPattern = function () {
 
                 const brushAngle = brushRotation?.angle || 0;
                 const brushCenter = brushRotation ? {
-                    x: brushRotation.offset.xc, y: brushRotation.offset.yc
+                    x: patternSize * brushRotation.offset.xc,
+                    y: patternSize * brushRotation.offset.yc
                 } : {x: 0, y: 0};
                 const brushOffset = brushRotation ? {
-                    x: brushRotation.offset.xd, y: brushRotation.offset.yd
+                    x: patternSize * brushRotation.offset.xd,
+                    y: patternSize * brushRotation.offset.yd
                 } : {x: 0, y: 0};
 
 
@@ -194,20 +197,31 @@ export const lineTrailingPattern = function () {
 
             const width = patternSize * (linePatternImage?.width);
             const height = patternSize * (linePatternImage?.height);
+            const xd = patternSize * (lineRotation?.offset?.xd || 0);
+            const yd = patternSize * (lineRotation?.offset?.yd || 0);
+            const xc = patternSize * (lineRotation?.offset?.xc || 0);
+            const yc = patternSize * (lineRotation?.offset?.yc || 0);
+            const patternAngle = patternRotation?.angle || 0;
+            const lineAngle = lineRotation?.angle || 0;
 
             return (
                 <>
                     {Cursors.cross(x, y, 10, patternRotation)}
                     {Cursors.rect(x, y, width, height, {
                         transform: `
+                            rotate(
+                                ${-patternAngle} 
+                                ${x} 
+                                ${y}
+                            )
                             translate(
-                                ${(lineRotation?.offset?.xd || 0)},
-                                ${-(lineRotation?.offset?.yd || 0)}
+                                ${xd}, 
+                                ${-yd}
                             ) 
                             rotate(
-                                ${-(patternRotation?.angle || 0) + (lineRotation?.angle || 0)} 
-                                ${x + (lineRotation?.offset?.xc || 0)} 
-                                ${y - (lineRotation?.offset?.yc || 0)}
+                                ${lineAngle} 
+                                ${x + xc} 
+                                ${y - yc}
                             )
                         `
                     })}

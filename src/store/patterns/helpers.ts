@@ -52,7 +52,7 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
     const {history, store, selection, mask, rotation, repeating, room} = config || {};
     params = params || {};
-    const maskState = getMaskState(state.current.width, state.current.height)(true, state.mask, params.mask);
+    const maskState = getMaskState(state.current.imageData.width, state.current.imageData.height)(true, state.mask, params.mask);
     return {
         config,
         id: state.id,
@@ -69,7 +69,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         video: getVideoState(true, state.video, params.video),
         room: getRoomState(true, state.room, params.room),
         blur: getBlurState(true, state.blur, params.blur),
-        demonstration: getDemonstrationState(false, state.demonstration, params.demonstration),
+        demonstration: getDemonstrationState(true, state.demonstration, params.demonstration),
     }
 };
 
