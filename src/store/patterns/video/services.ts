@@ -11,9 +11,17 @@ export interface ICaptures {
 export enum EdgeMode {
     NO = 'no',
     TOP = 'top',
-    BOT = 'bot',
+    BOT = 'bottom',
     ALL = 'all',
 }
+
+export enum MirrorMode {
+    NO = '◢|◺',
+    VERTICAL = 'vertical',
+    HORIZONTAL = '◿|◣',
+    BOTH = 'both',
+}
+export const mirrorModesSelectItems = [MirrorMode.NO, MirrorMode.HORIZONTAL];
 
 export enum SlitMode {
     FRONT = 'front',
@@ -24,27 +32,6 @@ export enum SlitMode {
     RIGHT = 'right',
 }
 
-const GetFrameN = {
-    [EdgeMode.NO]: (z, length) => {
-        return Math.round(z);
-    },
-    [EdgeMode.TOP]: (z, length) => {
-        let frameN = Math.round(z);
-        if (frameN >= length) frameN = length - 1;
-        return frameN;
-    },
-    [EdgeMode.BOT]: (z, length) => {
-        let frameN = Math.round(z);
-        if (frameN < 0) frameN = 0;
-        return frameN;
-    },
-    [EdgeMode.ALL]: (z, length) => {
-        let frameN = Math.round(z);
-        if (frameN >= length) frameN = length - 1;
-        if (frameN < 0) frameN = 0;
-        return frameN;
-    },
-};
 
 export interface CaptureOptions {
     width?: number,
@@ -56,6 +43,7 @@ export interface CaptureOptions {
     edgeMode: EdgeMode,
     slitMode: SlitMode,
     stackType: StackType,
+    mirrorMode: MirrorMode,
     onStream?: (stream, patternId?) => void
 }
 
@@ -69,8 +57,10 @@ export class Capture {
     depth = 320
 
     stack: PixelsStack
-    edgeMode: EdgeMode = EdgeMode.ALL
     slitMode: SlitMode = SlitMode.FRONT
+    mirrorMode: MirrorMode = MirrorMode.NO
+    mirrorH: boolean = false
+    mirrorV: boolean = false
 
     sketch: P5
     canvas
@@ -90,6 +80,7 @@ export class Capture {
             cutFunction,
             edgeMode,
             slitMode,
+            mirrorMode,
             stackType,
             onStream
         } = options;
@@ -97,9 +88,11 @@ export class Capture {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        this.stack = new PixelsStack(this.depth, stackType);
-        this.edgeMode = edgeMode;
+        this.stack = new PixelsStack(this.depth, stackType, edgeMode);
         this.slitMode = slitMode;
+        this.mirrorMode = mirrorMode;
+        this.mirrorH = mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.HORIZONTAL;
+        this.mirrorV = mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.VERTICAL;
 
         this.onNewFrame = onNewFrame;
         this.cutFunction = cutFunction;
@@ -140,79 +133,24 @@ export class Capture {
             sketch.draw = () => {
 
                 // let time = performance.now();
+                try {
 
-                sketch.loadPixels();
+                    sketch.loadPixels();
 
-                this.capture.loadPixels();
-                // this.canvas.scale(-1.0, 1.0);
+                    this.capture.loadPixels();
+                    // this.canvas.scale(-1.0, 1.0);
 
-                this.stack.push(this.capture.pixels, this.width, this.height);
+                    this.stack.push(this.capture.pixels, this.width, this.height);
 
-                coordHelper2.setText(this.width, this.height);
-                coordHelper3.setText(sketch.pixels.length);
+                    // coordHelper2.setText(this.width, this.height);
+                    // coordHelper3.setText(sketch.pixels.length);
 
-                // let pixelsStack = this.stack.getArray();
+                    // let pixelsStack = this.stack.getArray();
 
-                let coords: [number, number, number];
-                for (let x = 0; x < this.width; x++) {
-                    for (let y = 0; y < this.height; y++) {
-                        const z = cutFunction(x, y);
-                        switch (this.slitMode) {
-                            case SlitMode.FRONT:
-                                coords = [x, y, z]
-                                break;
-                            case SlitMode.BACK:
-                                coords = [x, y, 1 - z]
-                                break;
-                            case SlitMode.LEFT:
-                                coords = [
-                                    Math.round(z * this.width),
-                                    y,
-                                    x / this.width
-                                ]
-                                break;
-                            case SlitMode.RIGHT:
-                                coords = [
-                                    Math.round(z * this.width),
-                                    y,
-                                    (this.width - x) / this.width
-                                ]
-                                break;
-                            case SlitMode.TOP:
-                                coords = [
-                                    x,
-                                    Math.round(z * (this.height - 1)),
-                                    y / (this.height - 1)
-                                ]
-                                break;
-                            case SlitMode.BOTTOM:
-                                coords = [
-                                    x,
-                                    Math.round(z * (this.height - 1)),
-                                    ((this.height - 1) - y) / (this.height - 1)
-                                ]
-                                break;
-                            default:
-                                coords = [x, y, z]
-                                break;
-                        }
-                        set(
-                            sketch.pixels,
-                            this.width,
-                            4, x, y,
-                            this.stack.getPixel(...coords)
-                        )
-                    }
+                    return this.updateImage();
+                } catch (e) {
+                    
                 }
-
-
-                // pixelsStack = null;
-
-                // console.log(performance.now() - time);
-
-                sketch.updatePixels(0, 0, this.width, this.height);
-                frames = (frames + 1) % FRAMES_UPDATE;
-                onNewFrame(sketch.pixels, this.width, this.height);
             }
         });
 
@@ -244,41 +182,36 @@ export class Capture {
     };
 
     updateImage = () => {
-        // this.sketch.loadPixels();
-
-        // this.capture.loadPixels();
-        // this.canvas.scale(-1.0, 1.0);
-
-        // this.stack.push(this.capture.pixels, this.width, this.height);
-
-        // coordHelper2.setText(this.width, this.height);
-        // coordHelper3.setText(this.sketch.pixels.length);
-
-        // let pixelsStack = this.stack.getArray();
 
         let coords: [number, number, number];
+
+
         for (let x = 0; x < this.width; x++) {
             for (let y = 0; y < this.height; y++) {
+
+                // const xx = this.mirrorH ? (this.width - 1 - x) : x;
+                // const yy = this.mirrorV ? (this.height - 1 - y) : y;
+
                 const z = this.cutFunction(x, y);
                 switch (this.slitMode) {
-                    case SlitMode.FRONT:
+                    case SlitMode.BACK:
                         coords = [x, y, z]
                         break;
-                    case SlitMode.BACK:
+                    case SlitMode.FRONT:
                         coords = [x, y, 1 - z]
                         break;
                     case SlitMode.LEFT:
                         coords = [
-                            Math.round(z * this.width),
+                            Math.round(z * (this.width - 1)),
                             y,
-                            x / this.width
+                            x / (this.width - 1)
                         ]
                         break;
                     case SlitMode.RIGHT:
                         coords = [
-                            Math.round(z * this.width),
+                            Math.round((1 - z) * (this.width - 1)),
                             y,
-                            (this.width - x) / this.width
+                            ((this.width - 1) - x) / (this.width - 1)
                         ]
                         break;
                     case SlitMode.TOP:
@@ -291,7 +224,7 @@ export class Capture {
                     case SlitMode.BOTTOM:
                         coords = [
                             x,
-                            Math.round(z * (this.height - 1)),
+                            Math.round((1 - z) * (this.height - 1)),
                             ((this.height - 1) - y) / (this.height - 1)
                         ]
                         break;
@@ -302,8 +235,14 @@ export class Capture {
                 set(
                     this.sketch.pixels,
                     this.width,
-                    4, x, y,
-                    this.stack.getPixel(...coords)
+                    4,
+                    x,
+                    y,
+                    this.stack.getPixel(
+                        this.mirrorH ? (this.width - 1 - coords[0]) : coords[0],
+                        this.mirrorV ? (this.height - 1 - coords[1]) : coords[1],
+                        coords[2]
+                    )
                 )
             }
         }
@@ -321,6 +260,24 @@ export class Capture {
 
     setSlitMode = (value: SlitMode) => {
         this.slitMode = value;
+
+        if (this.on && this.isPause) {
+            this.updateImage();
+        }
+    };
+
+    setEdgeMode = (value: EdgeMode) => {
+        this.stack.setEdgeMode(value);
+
+        if (this.on && this.isPause) {
+            this.updateImage();
+        }
+    };
+
+    setMirrorMode = (value: MirrorMode) => {
+        this.mirrorMode = value;
+        this.mirrorH = value === MirrorMode.BOTH || value === MirrorMode.HORIZONTAL;
+        this.mirrorV = value === MirrorMode.BOTH || value === MirrorMode.VERTICAL;
 
         if (this.on && this.isPause) {
             this.updateImage();
@@ -345,7 +302,6 @@ export class Capture {
 
         this.capture.size(this.width, this.height);
         this.sketch.resizeCanvas(this.width, this.height);
-        this.sketch.pixelDensity(1);
     };
     setHeight = (height) => {
         this.height = height || this.height;
@@ -354,7 +310,6 @@ export class Capture {
 
         this.capture.size(this.width, this.height);
         this.sketch.resizeCanvas(this.width, this.height);
-        this.sketch.pixelDensity(1);
 
         this.setSize(this.width + 1, this.height);
         this.setSize(this.width - 1, this.height);

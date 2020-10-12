@@ -76,6 +76,16 @@ export const base64ToImageData = (src: string): Promise<ImageData> => {
     });
 };
 
+export const base64ToImage = (src: string): Promise<HTMLImageElement> => {
+    return new Promise(resolve => {
+        const image = new Image();
+        image.src = src;
+        image.onload = () => {
+            resolve(image);
+        }
+    });
+};
+
 export const maskInverse = (maskImageData: ImageData): ImageData => {
     const maskInverse = copyImageData(maskImageData)
     for (let i = 0; i< maskInverse.data.length; i +=4) {

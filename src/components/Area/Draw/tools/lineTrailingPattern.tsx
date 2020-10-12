@@ -2,8 +2,7 @@ import * as React from "react";
 
 import {getRepeatingCoords} from "../../../../utils/draw";
 import {
-    drawMaskedWithRotation, drawMaskedWithRotationAndOffset,
-    drawWithRotation,
+    drawMaskedWithRotationAndOffset,
     drawWithRotationAndOffset
 } from "../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
@@ -26,10 +25,6 @@ function angleBetween(point1, point2) {
 
     return Math.atan2(point2?.x - point1?.x, point2?.y - point1?.y);
 }
-
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
-
-const canvasItemId = (i, j) => `${i}-${j}`;
 
 export const lineTrailingPattern = function () {
     let draw: boolean = false;

@@ -66,7 +66,7 @@ export interface PatternsState {
 class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState> {
 
     componentDidUpdate(prevProps: Readonly<PatternsProps>, prevState: Readonly<PatternsState>, snapshot?: any): void {
-        whyDidYouRender(this.props, prevProps, 'PatternsComponent')
+        // whyDidYouRender(this.props, prevProps, 'PatternsComponent')
     }
 
     handleAddClick = () => this.props.addPattern({history: true, selection: true, repeating: false});

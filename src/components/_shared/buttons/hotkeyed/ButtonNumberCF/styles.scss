@@ -10,6 +10,7 @@
   }
 
   .hotkey-key {
+    z-index: 1;
     max-height: 7px;
     line-height: 7px;
     //margin-top: 13px;
@@ -34,6 +35,10 @@
   }
 
   .button-number-cf-settings-handler {
+    background: none;
+    border: none;
+    outline: none;
+
     position: absolute;
     left: calc(100% - 1px);
     z-index: 10;
@@ -68,7 +73,7 @@
     left: 0;
   }
 
-  .hover-hideable:hover {
+  .hover-hideable:hover, .hover-hideable.hover-hideable-open {
     .button-number-cf-settings-handler {
 
       margin-left: 70px;
@@ -84,7 +89,8 @@
 
   .button-number-cf-value-active{
 
-    border: 1px solid red !important;
+    border: 1px solid red;
+    outline: none;
   }
 
 }

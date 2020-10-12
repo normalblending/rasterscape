@@ -12,6 +12,7 @@ import * as StackBlur from 'stackblur-canvas';
 import {coordHelper, coordHelper2} from "../../Area/canvasPosition.servise";
 import {Button} from "./../buttons/simple/Button";
 import {DemonstrationSubApp} from "./Demonstration";
+import _throttle from 'lodash/throttle';
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -37,6 +38,8 @@ export interface CanvasProps {
     pointerLock?: boolean
 
     drawOnMove?: boolean
+
+    throttle?: boolean
 
     onDown?(e: CanvasEvent)
 
@@ -148,6 +151,18 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         }
     };
 
+    receiveImageDataT = _throttle(this.receiveImageData, 300);
+
+    receiveImageDataThrottled = () => {
+        const { throttle } = this.props;
+
+        if (throttle) {
+            this.receiveImageDataT();
+        } else {
+            this.receiveImageData();
+        }
+    };
+
     componentDidMount() {
         this.ctx = this.canvasRef.current.getContext("2d");
 
@@ -188,7 +203,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             prevProps.width !== this.props.width ||
             prevProps.height !== this.props.height
         )) {
-            this.receiveImageData();
+            this.receiveImageDataThrottled();
         }
 
         if (!prevProps.demonstration && this.props.demonstration) {

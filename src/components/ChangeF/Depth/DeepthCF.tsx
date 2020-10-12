@@ -1,17 +1,17 @@
 import * as React from "react";
-import {ParamConfig} from "../_shared/Params";
-import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
-import "../../styles/depthChangeFunction.scss";
-import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
-import {CycledToggle} from "../_shared/buttons/simple/CycledToggle";
-import {Button} from "bbuutoonnss";
+import {ParamConfig} from "../../_shared/Params";
+import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
+import "./depthChangeFunction.scss";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
+import {CycledToggle} from "../../_shared/buttons/simple/CycledToggle";
+import {Button} from "../../_shared/buttons/simple/Button";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../store";
-import {changeCFParams} from "../../store/changeFunctions/actions";
-import {PatternsSelect} from "../PatternsSelect";
-import {HelpTooltip} from "../tutorial/HelpTooltip";
-import {ChannelImageData} from "../_shared/canvases/WebWorkerCanvas";
-import {CycledToggleHK} from "../_shared/buttons/hotkeyed/CycledToggleHK";
+import {AppState} from "../../../store";
+import {changeCFParams} from "../../../store/changeFunctions/actions";
+import {PatternsSelect} from "../../PatternsSelect";
+import {HelpTooltip} from "../../tutorial/HelpTooltip";
+import {ChannelImageData} from "../../_shared/canvases/WebWorkerCanvas";
+import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
 
 export interface DepthCFStateProps {
     tutorial: boolean
@@ -111,14 +111,18 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
 
         return (
             <div className={"depth-change-function"}>
-                <Button className={'depth-select-pattern-button'}>
-                    pattern
+                <div className={'depth-select-pattern'}>
+                    <Button
+                        className={'depth-select-pattern-button'}
+                    >
+                        pattern
+                    </Button>
                     <PatternsSelect
                         HK={false}
                         value={items.map(({patternId}) => patternId)}
                         onChange={this.handleSelectPattern}
                     />
-                </Button>
+                </div>
 
                 {params.items.map((item, index) => !!patternsImageData[item.patternId] &&
                     <div className={'depth-item'}>

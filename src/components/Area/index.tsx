@@ -17,6 +17,7 @@ export interface AreaActionProps {
 }
 
 export interface AreaOwnProps {
+    children?: React.ReactNode
     disabled?: boolean
     mask?: boolean
     name: any // нужен для маски выделения
@@ -114,6 +115,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             selectUnable,
             demonstration,
             onDemonstrationUnload,
+            children,
         } = this.props;
 
         return (
@@ -160,6 +162,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                         />
                     </>
                 )}
+                {children}
             </div>
         );
     }

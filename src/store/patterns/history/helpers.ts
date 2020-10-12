@@ -17,8 +17,8 @@ export const historyPush = (history: HistoryState, current: PatternHistoryItem):
         beforeNext.shift();
 
 
-    console.log("current.current.imageData === before.reverse()[0].current.imageData".toUpperCase());
-    console.log(current?.current?.imageData.data === before?.reverse()[0]?.current?.imageData.data);
+    // console.log("current.current.imageData === before.reverse()[0].current.imageData".toUpperCase());
+    // console.log(current?.current?.imageData.data === before?.reverse()[0]?.current?.imageData.data);
 
     return {
         ...history,

@@ -4,6 +4,7 @@ import {CanvasState} from "../../../utils/canvas/types";
 import {FunctionState} from "../../../utils/patterns/function";
 
 export interface MaskParams {
+    inverse?: boolean
     black?: boolean
     opacity?: number
 }

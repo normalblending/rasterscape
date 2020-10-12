@@ -126,7 +126,8 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             || nextProps.changeFunctionParams !== this.props.changeFunctionParams
             || nextProps.changeFunctionId !== this.props.changeFunctionId
             || nextProps.shortcut !== this.props.shortcut
-            || nextProps.className !== this.props.className;
+            || nextProps.className !== this.props.className
+            || nextProps.style !== this.props.style;
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -190,7 +191,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.setState({value});
     };
 
-    calculateOneStep = (value) => {
+    calculateOneStep = (value?) => {
         const {pres = 0} = this.props;
         return Math.pow(10, -pres);
     };
@@ -224,24 +225,24 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         let value = this.calcValue(e, true);
 
 
-        const one = this.calculateOneStep(value);
-        const d = Math.abs(value - this.state.startValue);
-        if (d < one) {
-
-            const {left} = getOffset(e.target);
-
-            const increment = (left + width / 2) < e.pageX
-                ? ((left + width * 3 / 4) < e.pageX ? (precisionGain * one) : one)
-                : ((left + width / 4) < e.pageX ? -one : (-precisionGain * one));
-
-            value = Math.min(Math.max(
-                this.state.startValue + increment
-                , range[0]), range[1]);
-
-            onChange && onChange({e, value, name, selected});
-        } else {
-            onClick && onClick({value, name, e, selected});
-        }
+        // const one = this.calculateOneStep(value);
+        // const d = Math.abs(value - this.state.startValue);
+        // if (d < one) {
+        //
+        //     const {left} = getOffset(e.target);
+        //
+        //     const increment = (left + width / 2) < e.pageX
+        //         ? ((left + width * 3 / 4) < e.pageX ? (precisionGain * one) : one)
+        //         : ((left + width / 4) < e.pageX ? -one : (-precisionGain * one));
+        //
+        //     value = Math.min(Math.max(
+        //         this.state.startValue + increment
+        //         , range[0]), range[1]);
+        //
+        //     onChange && onChange({e, value, name, selected});
+        // } else {
+        //     onClick && onClick({value, name, e, selected});
+        // }
 
 
         onMouseUp && onMouseUp({e, value, name, selected});
@@ -346,6 +347,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         valueD = ValueD.VerticalLinear(Math.pow(10, pres))
 
 
+        console.log(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1])
         // let nextValue = valueD(this.state.startValue, e.clientX - this.state.redPoint1[0], e.clientY - this.state.redPoint1[1]);
         let nextValue = !locked
             ? valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
@@ -375,6 +377,34 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     getText = (value) => {
         const {getText, pres} = this.props;
         return (getText || (value => value.toFixed(pres)))(value);
+    };
+
+    focus = () => {
+        this.buttonRef.current.focus();
+    };
+
+    // keys up down
+    handleKeyDown = (e) => {
+        // e.preventDefault();
+        let i = 0;
+        if (e.keyCode === 38) {
+            e.preventDefault();
+            i = 1;
+        } else if (e.keyCode === 40) {
+            e.preventDefault();
+            i = -1
+        }
+
+        if (!i) return;
+
+
+
+        i *= e.shiftKey ? 10 : 1;
+
+        const { onChange, name, value: oldValue, selected} = this.props;
+
+        const value = oldValue + i * this.calculateOneStep();
+        onChange?.({e, value, name, selected});
     };
 
     render() {
@@ -421,11 +451,13 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                 width={width}
                 ref={this.buttonRef}
                 onMouseLeave={this.handleLeave}
-                onMouseDown={this.handleDown}>
+                onMouseDown={this.handleDown}
+                onKeyDown={this.handleKeyDown}
+            >
                 <div
                     className={"button-number-value"}
                     style={{width: (value - range[0]) / (range[1] - range[0]) * 100 + "%"}}>
-                    {this.getText(value)}
+                    <span>{this.getText(value)}</span>
                 </div>
 
                 {changeFunctionId && Amplitude &&

@@ -4,6 +4,7 @@
   width: 210px;
   display: flex;
   flex-direction: column;
+
   .tools-select {
     display: flex;
   }
@@ -12,13 +13,14 @@
 .change-functions {
 
 
+  //margin-left: 10px;
   display: flex;
 
   .control-buttons {
 
     flex: 1 0 auto;
     display: flex;
-    flex-direction: column;
+    //flex-direction: row;
 
     .change-functions-select {
       position: relative;
@@ -55,6 +57,15 @@
       display: flex;
       flex-direction: column;
     }
+
+    .modes {
+
+      .select-buttons-items .button {
+        width: 35px;
+      }
+    }
+
+
   }
 
   .functions-list {

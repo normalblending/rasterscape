@@ -22,7 +22,7 @@ export interface BrushStateProps {
 }
 
 export interface BrushActionProps {
-    setBrushParams(params: BrushParams)
+    setBrushParams(params: Partial<BrushParams>)
 }
 
 export interface BrushOwnProps {
@@ -48,50 +48,43 @@ const patternSizeValueText = value => (value * 100).toFixed(0) + '%';
 
 const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) => {
 
-
     const {paramsValue, t, setBrushParams} = props;
 
     const handleSizeChange = React.useCallback(({value}) => {
         setBrushParams({
-            ...paramsValue,
             size: value
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const handlePatternChange = React.useCallback((pattern) => {
         setBrushParams({
-            ...paramsValue,
             pattern
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const handleCompositeChange = React.useCallback(({value}) => {
         setBrushParams({
-            ...paramsValue,
             compositeOperation: value
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const handleOpacityChange = React.useCallback(({value}) => {
         setBrushParams({
-            ...paramsValue,
             opacity: value
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const handleTypeChange = React.useCallback(({value}) => {
         setBrushParams({
-            ...paramsValue,
             type: value
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const handleParamChange = React.useCallback(({value, name}) => {
         setBrushParams({
-            ...paramsValue,
             [name]: value
         })
-    }, [setBrushParams, paramsValue]);
+    }, [setBrushParams]);
 
     const selectTypeText = React.useMemo(() =>
         item => t(`brushTypes.${item.text.toLowerCase()}`), [t]);

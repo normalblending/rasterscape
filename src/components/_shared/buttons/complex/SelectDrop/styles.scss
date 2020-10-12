@@ -3,7 +3,7 @@
 
   display: inline-flex;
 
-  &:hover {
+  &:hover, &.select-drop-open {
     .select-drop-items {
 
 

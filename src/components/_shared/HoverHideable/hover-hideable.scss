@@ -1,6 +1,7 @@
 .hover-hideable {
 
-  &:hover {
+
+  &:hover, &.hover-hideable-open {
     & > .hover-hideable-hidden-part {
       display: flex;
       visibility: visible;

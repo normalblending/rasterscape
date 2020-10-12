@@ -23,13 +23,19 @@ export interface SaveAction extends PatternAction {
 
 export const setImportParams = (id: string, value: ImportParams): SetImportParamsAction =>
     ({type: EImportAction.SET_IMPORT_PARAMS, id, value});
-export const load = (id: string, image) => (dispatch, getState) => {
+export const load = (id: string, image: HTMLImageElement) => (dispatch, getState) => {
 
     const imageData = imageToImageData(image);
 
     const state: AppState = getState();
+    const pattern = state.patterns[id];
 
-    const isFit = state.patterns[id].import.params.fit;
+    const isFit = pattern.import.params.fit;
+    const meDrawer = !pattern.room?.value?.connected || pattern.room?.value?.meDrawer;
+
+    if (!meDrawer) {
+        return
+    }
 
     if (isFit) {
         const canvas = document.createElement('canvas');

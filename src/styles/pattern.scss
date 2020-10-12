@@ -28,6 +28,16 @@
   .areas {
     display: flex;
     align-items: flex-end;
+
+    .area {
+      margin-right: 23px;
+      .mask-controls {
+        position: absolute;
+        top: -21px;
+        left: 0;
+        border: 1px solid black;
+      }
+    }
   }
 
   .plugins {
@@ -109,7 +119,7 @@
 
 
 
-  .left {
+  & > .left {
     width: 210px;
     position: sticky;
     bottom: 40px;
@@ -119,7 +129,7 @@
     }
   }
 
-  .right {
+  & > .right {
 
     z-index: 1;
 

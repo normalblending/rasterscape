@@ -5,10 +5,12 @@ import {useTranslation} from 'react-i18next';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {redo, undo} from "../../store/patterns/history/actions";
+import {isMeDrawer} from "../../store/patterns/room/helpers";
 
 export interface HistoryControlsStateProps {
     history: HistoryValue
     isVideoPlaying: boolean
+    meDrawer: boolean
 }
 
 export interface HistoryControlsActionProps {
@@ -28,7 +30,16 @@ export interface HistoryControlsProps extends HistoryControlsStateProps, History
 
 }
 
-export const HistoryControlsComponent: React.FC<HistoryControlsProps> = ({undo, redo, history, isVideoPlaying, patternId}) => {
+export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) => {
+
+    const {
+        meDrawer,
+        undo,
+        redo,
+        history,
+        isVideoPlaying,
+        patternId,
+    } = props;
 
     const onUndo = React.useCallback(() => {
         undo(patternId);
@@ -43,13 +54,13 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = ({undo, 
         <div className={'flex-col history-controls'}>
             <Button
                 onClick={onUndo}
-                disabled={!history.before.length || isVideoPlaying}
+                disabled={!history.before.length || isVideoPlaying || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.undo')}</span> <small>{history.before.length ? `(${history.before.length})` : ""}</small>
             </Button>
             <Button
                 onClick={onRedo}
-                disabled={!history.after.length || isVideoPlaying}
+                disabled={!history.after.length || isVideoPlaying || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.redo')}</span> <small>{history.after.length ? `(${history.after.length})` : ""}</small>
             </Button>
@@ -59,7 +70,8 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = ({undo, 
 
 const mapStateToProps: MapStateToProps<HistoryControlsStateProps, HistoryControlsOwnProps, AppState> = (state, {patternId}) => ({
     history: state.patterns[patternId]?.history.value,
-    isVideoPlaying: state.patterns[patternId]?.video?.params.on && !state.patterns[patternId]?.video?.params.pause
+    isVideoPlaying: state.patterns[patternId]?.video?.params.on && !state.patterns[patternId]?.video?.params.pause,
+    meDrawer: isMeDrawer(state.patterns[patternId].room?.value)
 });
 
 const mapDispatchToProps: MapDispatchToProps<HistoryControlsActionProps, HistoryControlsOwnProps> = {

@@ -1,0 +1,20 @@
+.rotating-controls {
+  display: flex;
+  width: 210px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+
+  .left {
+    width: 140px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .right {
+    width: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

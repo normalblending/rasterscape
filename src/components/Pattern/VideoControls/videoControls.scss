@@ -1,0 +1,370 @@
+
+.video-controls {
+  display: flex;
+  flex-wrap: wrap;
+
+  .button {
+    //border: none;
+    //background-color: #ebebeb;
+    //border-right-width: 2px !important;
+    //border-bottom-width: 2px !important;
+  }
+
+  .slit-mode, .edge-mode, .stack-type {
+    background-color: #ebebeb;
+
+  }
+
+  .on-off, .pause-play, .cut-function .select-drop-value {
+    background-color: #ebebeb;
+  }
+
+  .on-off {
+    border-right: none;
+    //border-bottom: none;
+
+    &.button-select-selected {
+      color: red;
+    }
+  }
+
+  .pause-play {
+    //border-top: none;
+    border-left: none;
+    background-color: #ebebeb;
+  }
+
+  .edge-mode {
+    //border-right: none;
+    //border-left: none;
+    //border-bottom: none;
+    background-color: lightgrey; //#ebebeb;
+  }
+
+  .stack-type {
+    //border-left: none;
+    //border-top: none;
+    background-color: lightgrey; //#ebebeb;
+  }
+
+  .mirror-mode {
+    background-color: #ebebeb;//lightgrey; //#ebebeb;
+    //border-right: none;
+
+    &.button-select-selected span {
+      transform: scaleX(-1);
+      display: block;
+    }
+
+  }
+
+
+  .stack-size .button {
+    //border: none;
+    background: #ebebeb;
+  }
+
+  .select-buttons-items .button-select {
+    background: #ebebeb;
+
+    &.button-select-selected {
+      background: #ebebeb;
+      //color: red;
+      //border-width: 2px !important;
+    }
+  }
+
+  .cut-offset {
+
+    .select-drop-value {
+      background: lightgrey;
+    }
+    .select-drop .select-drop-items .select-buttons-items {
+      border: 1px solid #ebebeb;
+
+      .button-select {
+        background: lightgrey;
+      }
+      .button-select-selected {
+        background: #ebebeb;
+        border-color: #ababab #dedede #dedede #ababab !important;
+      }
+    }
+
+    & > .button {
+      display: flex;
+      align-items: flex-end;
+
+      //background: linear-gradient(90deg, lightgrey, white);
+      position: relative;
+
+      .button-number-value {
+        //height: 6px;
+        background: transparent;
+        border-right: 1px solid red;
+        box-sizing: border-box;
+        margin-top: 9px;
+
+        span {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          left: 0;
+        }
+
+        &:after {
+          content: '';
+          width: 100%;
+          //border-top: 1px solid black;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+      }
+    }
+
+    &.front {
+      &.rightStack > .button {
+        background: linear-gradient(90deg, lightgrey, white);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(90deg, white, lightgrey);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(90deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(90deg, white, lightgrey, white);
+      }
+    }
+
+    &.back {
+      &.rightStack > .button {
+        background: linear-gradient(90deg, white, lightgrey);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(90deg, lightgrey, white);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(90deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(90deg, white, lightgrey, white);
+      }
+    }
+
+    &.top {
+      &.rightStack > .button {
+        background: linear-gradient(lightgrey, white);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(white, lightgrey);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(0deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(0deg, white, lightgrey, white);
+      }
+    }
+
+    &.bottom {
+      &.rightStack > .button {
+        background: linear-gradient(0deg, lightgrey, white);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(0deg, white, lightgrey);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(0deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(0deg, white, lightgrey, white);
+      }
+    }
+
+    &.left {
+
+      &.rightStack > .button {
+        background: linear-gradient(90deg, lightgrey, white);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(90deg, white, lightgrey);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(90deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(90deg, white, lightgrey, white);
+      }
+    }
+
+    &.right {
+
+      &.rightStack > .button {
+        background: linear-gradient(90deg, white, lightgrey);
+      }
+
+      &.leftStack > .button {
+        background: linear-gradient(90deg, lightgrey, white);
+      }
+
+      &.toCenterStack > .button {
+        background: linear-gradient(90deg, lightgrey, white, lightgrey);
+      }
+
+      &.fromCenterStack > .button {
+        background: linear-gradient(90deg, white, lightgrey, white);
+      }
+    }
+  }
+
+  .stack-size {
+    .button {
+      display: flex;
+      align-items: flex-end;
+      //border-bottom: 1px solid black;
+      //border: 1px solid #ebebeb;
+      //border: none;
+      background: lightgrey;
+
+      position: relative;
+
+      .button-number-value {
+        //height: 6px;
+        //height: 100%;
+        background: linear-gradient(90deg, lightgrey, white);
+        //border-right: 1px solid black;
+        box-sizing: border-box;
+        margin-top: 9px;
+
+        span {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          left: 0;
+        }
+
+        &:after {
+          content: '';
+          width: 100%;
+          //border-top: 1px solid black;
+          position: absolute;
+          left: 0;
+          bottom: 0;
+        }
+      }
+    }
+
+    &.no .button-number-value {
+      border-right: 1px solid black;
+      border-left: 1px solid black;
+    }
+
+    &.top .button-number-value {
+      border-left: 1px solid black;
+    }
+
+    &.bottom .button-number-value {
+      border-right: 1px solid black;
+    }
+
+    &.all .button-number-value {
+    }
+
+    &.rightStack .button {
+      .button-number-value {
+        background: linear-gradient(90deg, lightgrey, white);
+      }
+    }
+
+    &.leftStack .button {
+      background: white;
+
+      .button-number-value {
+        background: linear-gradient(90deg, white, lightgrey);
+      }
+    }
+
+    &.toCenterStack .button {
+      background: white;
+
+      .button-number-value {
+        background: linear-gradient(90deg, lightgrey, white, lightgrey);
+      }
+    }
+
+    &.fromCenterStack .button {
+      .button-number-value {
+        background: linear-gradient(90deg, white, lightgrey, white);
+      }
+    }
+  }
+
+  .cut-function .select-drop-value {
+    //border-left: none;
+    background-color: lightgrey;//#ebebeb;
+  }
+
+  .slit-mode .select-drop-value {
+    //border-bottom: none;
+    //border-left: none;
+    //border-right: none;
+    background: lightgrey;//#ebebeb;
+
+
+  }
+
+  .cut-function, .slit-mode {
+    &.select-drop > .select-drop-items > .select-buttons-items {
+      border: 1px solid #ebebeb;
+      background: transparent;
+      pointer-events: none;
+
+      .button-select {
+
+
+        //border-top-color: #ebebeb;
+        //border-right-color: #cccccc;
+
+        background: lightgrey;//#ebebeb;
+        pointer-events: visible;
+
+      }
+
+
+      .button-select-selected {
+
+        //color: yellow;
+        background: #ebebeb;//floralwhite;
+        border-color: #ababab #dedede #dedede #ababab !important;
+      }
+
+      input {
+        pointer-events: visible;
+      }
+    }
+  }
+
+  .slit-mode {
+    &.select-drop > .select-drop-items > .select-buttons-items {
+      grid-template-rows: min-content;
+      grid-auto-flow: row;
+    }
+  }
+}

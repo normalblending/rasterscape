@@ -6,11 +6,16 @@ import {redo, undo} from "../store/patterns/history/actions";
 import {settingMode} from "../store/hotkeys";
 import {setFullScreen} from "../store/fullscreen";
 import {toggleDemonstration} from "../store/patterns/demonstration/actions";
+import {offOptimization, onOptimization} from "../store/optimization";
+import {getImageDataFromClipboard} from "../utils/clipboard";
+import {load} from "../store/patterns/import/actions";
+import {copyPatternToClipboard} from "../store/patterns/pattern/actions";
 
 export interface PatternsHotkeysStateProps {
     activePatternId: string
     isSettingMode: boolean
     full: boolean
+    optimization: boolean
 }
 
 export interface PatternsHotkeysActionProps {
@@ -19,6 +24,10 @@ export interface PatternsHotkeysActionProps {
     settingMode: typeof settingMode
     setFullScreen: typeof setFullScreen
     toggleDemonstration: typeof toggleDemonstration
+    onOptimization: typeof onOptimization
+    offOptimization: typeof offOptimization
+    load: typeof load
+    copyToClipboard
 }
 
 export interface PatternsHotkeysOwnProps {
@@ -40,13 +49,47 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         full,
         setFullScreen,
         toggleDemonstration,
+
+        optimization,
+        onOptimization,
+        offOptimization,
+        load,
+        copyToClipboard,
     } = props;
 
+    const receiveImageFromClipboard = React.useCallback((event) => {
+        getImageDataFromClipboard(event, (imageData) => {
+            activePatternId && load(activePatternId, imageData);
+        })
+    }, [activePatternId, load])
+
+    React.useEffect(() => {
+        document.addEventListener('paste', receiveImageFromClipboard);
+        return () => {
+            document.removeEventListener('paste', receiveImageFromClipboard);
+        };
+    }, [activePatternId]);
+
+    const copyImageToClipboard = React.useCallback((e) => {
+        if (!window.getSelection().toString()) {
+            activePatternId && copyToClipboard(activePatternId);
+        }
+    }, [activePatternId, copyToClipboard])
+
+    React.useEffect(() => {
+        document.addEventListener('copy', copyImageToClipboard);
+        return () => {
+            document.removeEventListener('copy', copyImageToClipboard);
+        };
+    }, [activePatternId]);
+
     const handleUndo = React.useCallback((e, keys) => {
+        e.preventDefault();
         activePatternId && undo(activePatternId);
     }, [activePatternId, undo]);
 
     const handleRedo = React.useCallback((e, keys) => {
+        e.preventDefault();
         activePatternId && redo(activePatternId);
     }, [activePatternId, redo]);
 
@@ -61,10 +104,14 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
     }, [full, setFullScreen]);
 
     const handleToggleDemonstration = React.useCallback((e) => {
-        console.log(111);
         e.preventDefault();
         toggleDemonstration(activePatternId);
     }, [activePatternId, toggleDemonstration]);
+
+    const handleToggleOptimization = React.useCallback((e) => {
+        e.preventDefault();
+        optimization ? offOptimization() : onOptimization();
+    }, [onOptimization, offOptimization, optimization]);
 
     return (
         <>
@@ -73,7 +120,7 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
                 onPress={handleUndo}
             />
             <Key
-                keys={['command + x', 'ctrl + x']}
+                keys={['command + shift + z', 'ctrl + shift + z']}
                 onPress={handleRedo}
             />
             <Key
@@ -89,6 +136,11 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
                 keys={['command + 5', 'ctrl + 5']}
                 onPress={handleToggleDemonstration}
             />
+            <Key
+                // keys={['alt + 5']}
+                keys={['command + o', 'ctrl + o']}
+                onPress={handleToggleOptimization}
+            />
         </>
     );
 };
@@ -97,6 +149,7 @@ const mapStateToProps: MapStateToProps<PatternsHotkeysStateProps, PatternsHotkey
     activePatternId: state.activePattern.patternId,
     isSettingMode: state.hotkeys.setting,
     full: state.fullScreen,
+    optimization: state.optimization.on,
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsHotkeysActionProps, PatternsHotkeysOwnProps> = {
@@ -105,6 +158,10 @@ const mapDispatchToProps: MapDispatchToProps<PatternsHotkeysActionProps, Pattern
     settingMode,
     setFullScreen,
     toggleDemonstration,
+    onOptimization,
+    offOptimization,
+    load,
+    copyToClipboard: copyPatternToClipboard,
 };
 
 export const PatternsHotkeys = connect<PatternsHotkeysStateProps, PatternsHotkeysActionProps, PatternsHotkeysOwnProps, AppState>(

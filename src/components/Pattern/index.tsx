@@ -5,8 +5,8 @@ import {HistoryControls} from "./HistoryControls";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/inputs/InputNumber";
 import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
-import {RotationControls} from "./RotatingControls";
-import {RepeatingControls} from "./RepeatingControls";
+import {RotationControls} from "./Rotating/RotatingControls";
+import {RepeatingControls} from "./Repeating/RepeatingControls";
 import {SelectionControls} from "./SelectionControls";
 import {MaskParams} from "../../store/patterns/mask/types";
 import {RotationValue} from "../../store/patterns/rotating/types";
@@ -16,19 +16,21 @@ import {StoreState} from "../../store/patterns/store/types";
 import {Segments, SelectionState} from "../../store/patterns/selection/types";
 import {VideoControls} from "./VideoControls";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {File} from "../_shared/File";
+import {File} from "../_shared/File/File";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {updateMask} from "../../store/patterns/mask/actions";
 import {doublePattern, editConfig, updateImage} from "../../store/patterns/pattern/actions";
 import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./Room/RoomControls";
-import {BlurControls} from "./BlurControls";
+import {BlurControls} from "./Blur/BlurControls";
 import '../../styles/inputNumber.scss';
 import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 import {setDemonstrationEnabled} from "../../store/patterns/demonstration/actions";
+import {MaskControls} from "./Mask/MaskControls";
+import {DragAndDrop} from "../_shared/File/DragAndDrop/DragAndDrop";
 
 export interface PatternComponentStateProps {
 
@@ -72,6 +74,7 @@ export interface PatternComponentActionProps {
 
 export interface PatternComponentOwnProps {
     id: string
+
     onMouseEnter?(patternId: string, e?)
 }
 
@@ -120,9 +123,19 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
     handleDouble = () => this.props.doublePattern(this.props.id);
 
-    handleSetWidth = width => this.props.onSetWidth(this.props.id, width);
+    handleSetWidth = newWidth => {
+        const {onSetWidth, width, id} = this.props;
+        if (width !== newWidth) {
+            onSetWidth(id, newWidth)
+        }
+    };
 
-    handleSetHeight = height => this.props.onSetHeight(this.props.id, height);
+    handleSetHeight = newHeight => {
+        const {onSetHeight, height, id} = this.props;
+        if (height !== newHeight) {
+            onSetHeight(id, newHeight)
+        }
+    };
 
 
     handleConfigToggle = (data) => {
@@ -167,6 +180,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         setDemonstrationEnabled?.(id, false);
     };
 
+    handleDropFiles = (files) => {
+        console.log(files);
+    };
+
     render() {
         const {
             imageValue, maskValue,
@@ -175,148 +192,158 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
             t,
         } = this.props;
 
-        console.log("pattern render ", id, rotation);
         return (
-            <div className="pattern" onMouseEnter={this.handleMouseEnter}>
-                <div className="left">
-                    <div className="flex-col">
+            <DragAndDrop onDrop={this.handleDropFiles}>
+                <div
+                    className="pattern"
+                    onMouseEnter={this.handleMouseEnter}>
+                    <div className="left">
+                        <div className="flex-col">
 
-                        {config.repeating &&
-                        <RepeatingControls patternId={id}/>}
+                            {config.repeating &&
+                            <RepeatingControls patternId={id}/>}
 
-                        {config.video &&
-                        <VideoControls patternId={id}/>}
+                            {config.video &&
+                            <VideoControls patternId={id}/>}
 
-                        {config.rotation &&
-                        <RotationControls patternId={id}/>}
+                            {config.blur &&
+                            <BlurControls patternId={id}/>}
 
-                        {config.blur &&
-                        <BlurControls patternId={id}/>}
+                            {config.rotation &&
+                            <RotationControls patternId={id}/>}
 
-                        {config.room &&
-                        <RoomControls patternId={id}/>}
+                            {config.room &&
+                            <RoomControls patternId={id}/>}
 
+                            <div className={'flex-row'}>
+                                <ButtonHK
+                                    path={`pattern.${id}.mask`}
+                                    name={"mask"}
+                                    selected={config.mask}
+                                    onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.repeating`}
+                                    name={"repeating"}
+                                    selected={config.repeating}
+                                    onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.rotation`}
+                                    name={"rotation"}
+                                    selected={config.rotation}
+                                    onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.blur`}
+                                    name={"blur"}
+                                    selected={config.blur}
+                                    onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.room`}
+                                    name={"room"}
+                                    selected={config.room}
+                                    onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.video`}
+                                    name={"video"}
+                                    selected={config.video}
+                                    onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonHK>
+                            </div>
+
+                        </div>
                         <div className={'flex-row'}>
-                            <ButtonHK
-                                path={`pattern.${id}.mask`}
-                                name={"mask"}
-                                selected={config.mask}
-                                onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonHK>
-                            <ButtonHK
-                                path={`pattern.${id}.repeating`}
-                                name={"repeating"}
-                                selected={config.repeating}
-                                onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonHK>
-                            <ButtonHK
-                                path={`pattern.${id}.rotation`}
-                                name={"rotation"}
-                                selected={config.rotation}
-                                onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonHK>
-                            <ButtonHK
-                                path={`pattern.${id}.blur`}
-                                name={"blur"}
-                                selected={config.blur}
-                                onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonHK>
-                            <ButtonHK
-                                path={`pattern.${id}.room`}
-                                name={"room"}
-                                selected={config.room}
-                                onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonHK>
-                            <ButtonHK
-                                path={`pattern.${id}.video`}
-                                name={"video"}
-                                selected={config.video}
-                                onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonHK>
-                        </div>
-
-                    </div>
-                    <div className={'flex-row'}>
-                        {config.history &&
-                        <HistoryControls patternId={id}/>}
-                        <div className={'flex-col'}>
-                            <div className={'flex-row'}>
-                                <InputNumber
-                                    className={"size-input-number"}
-                                    onChange={this.handleSetWidth}
-                                    value={width}
-                                    {...inputNumberProps}/>
-                                <InputNumber
-                                    className={"size-input-number"}
-                                    onChange={this.handleSetHeight}
-                                    value={height}
-                                    {...inputNumberProps}/>
+                            {config.history &&
+                            <HistoryControls patternId={id}/>}
+                            <div className={'flex-col'}>
+                                <div className={'flex-row'}>
+                                    <InputNumber
+                                        className={"size-input-number"}
+                                        onChange={this.handleSetWidth}
+                                        value={width}
+                                        {...inputNumberProps}/>
+                                    <InputNumber
+                                        className={"size-input-number"}
+                                        onChange={this.handleSetHeight}
+                                        value={height}
+                                        {...inputNumberProps}/>
+                                </div>
+                                <div className={'flex-row'}>
+                                    <ButtonSelect
+                                        selected={this.props.importParams.fit}
+                                        onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
+                                    <File
+                                        name={id + '-fileInput'}
+                                        onChange={this.handleLoad}>{t('patternControls.load')}</File>
+                                </div>
                             </div>
-                            <div className={'flex-row'}>
-                                <ButtonSelect
-                                    selected={this.props.importParams.fit}
-                                    onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
-                                <File
-                                    name={id + '-fileInput'}
-                                    onChange={this.handleLoad}>{t('patternControls.load')}</File>
-                            </div>
+
                         </div>
+                        <div className="flex-row">
 
+                            <Button
+                                onDoubleClick={this.handleRemove}
+                                className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
+                            <Button
+                                onClick={this.handleDouble}>{t('patternControls.double')}</Button>
+                            <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
+
+                        </div>
                     </div>
-                    <div className="flex-row">
 
-                        <Button
-                            onDoubleClick={this.handleRemove}
-                            className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
-                        <Button
-                            onClick={this.handleDouble}>{t('patternControls.double')}</Button>
-                        <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
+                    <div className="right">
+                        <SelectionControls
+                            selectionValue={selection.value}
+                            onCreatePattern={this.handleCreatePatternFromSelection}
+                            onClear={this.handleClearSelection}
+                            onCut={this.handleCutBySelection}/>
 
+                        <div className={"areas"}>
+                            <Area
+
+                                disabled={!meDrawer}
+
+                                name={id}
+                                width={width}
+                                height={height}
+
+                                rotation={rotation}
+
+                                imageValue={imageValue}
+
+                                selectionValue={selection.value.segments}
+                                selectionParams={selection.params}
+
+                                onImageChange={this.handleImageChange}
+                                onSelectionChange={this.handleSelectionChange}
+
+                                demonstration={demonstration}
+                                onDemonstrationUnload={this.handleDemonstrationUnload}
+                            />
+                            {config.mask && (
+                                <Area
+
+                                    mask
+                                    name={id}
+                                    rotation={rotation}
+                                    imageValue={maskValue}
+
+                                    selectionValue={selection.value.segments}
+                                    selectionParams={selection.params}
+
+                                    width={width}
+                                    height={height}
+                                    onSelectionChange={this.handleSelectionChange}
+                                    onImageChange={this.handleMaskChange}
+                                >
+
+                                    <MaskControls
+                                        patternId={id}
+                                    />
+                                </Area>
+                            )}
+                        </div>
                     </div>
+
                 </div>
-
-                <div className="right">
-                    <SelectionControls
-                        selectionValue={selection.value}
-                        onCreatePattern={this.handleCreatePatternFromSelection}
-                        onClear={this.handleClearSelection}
-                        onCut={this.handleCutBySelection}/>
-
-                    <div className={"areas"}>
-                        <Area
-
-                            disabled={!meDrawer}
-
-                            name={id}
-                            width={width}
-                            height={height}
-
-                            rotation={rotation}
-
-                            imageValue={imageValue}
-
-                            selectionValue={selection.value.segments}
-                            selectionParams={selection.params}
-
-                            onImageChange={this.handleImageChange}
-                            onSelectionChange={this.handleSelectionChange}
-
-                            demonstration={demonstration}
-                            onDemonstrationUnload={this.handleDemonstrationUnload}
-                        />
-                        {config.mask &&
-                        <Area
-
-                            mask
-                            name={id}
-                            rotation={rotation}
-                            imageValue={maskValue}
-
-                            selectionValue={selection.value.segments}
-                            selectionParams={selection.params}
-
-                            width={width}
-                            height={height}
-                            onSelectionChange={this.handleSelectionChange}
-                            onImageChange={this.handleMaskChange}/>}
-                    </div>
-                </div>
-
-            </div>
+            </DragAndDrop>
         );
     }
 }

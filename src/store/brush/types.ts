@@ -17,7 +17,7 @@ export interface BrushParams {
 }
 
 export interface SetBrushParamsAction extends Action {
-    params: BrushParams
+    params: Partial<BrushParams>
 }
 
 

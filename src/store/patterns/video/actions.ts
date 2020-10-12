@@ -5,7 +5,7 @@ import {Formulas} from "./capture/formulas";
 import {get, PixelsStack, set, StackType} from "./capture/pixels";
 import 'p5/lib/addons/p5.dom';
 import {updateImage} from "../pattern/actions";
-import {Captures, SlitMode} from "./services";
+import {Captures, MirrorMode, SlitMode} from "./services";
 import {videoChangeFunctionByType} from "../../changeFunctions/helpers";
 import {coordHelper, redHelper} from "../../../components/Area/canvasPosition.servise";
 import {EdgeMode} from './services';
@@ -14,6 +14,7 @@ import {ThunkAction} from "redux-thunk";
 export enum EVideoAction {
     SET_VIDEO_PARAMS = 'pattern/video/set-video-param',
     SET_EDGE_MODE = 'pattern/video/set-edge-mode',
+    SET_MIRROR_MODE = 'pattern/video/set-mirror-mode',
     SET_SLIT_MODE = 'pattern/video/set-slit-mode',
     SET_STACK_TYPE = 'pattern/video/set-stack-type',
     SET_CHANGE_FUNCTION = 'pattern/video/set-change-function',
@@ -30,6 +31,7 @@ export interface SetVideoParamsAction extends PatternAction {
     value: VideoParams
 }
 export type SetEdgeModeAction = PatternAction & { value: EdgeMode };
+export type SetMirrorModeAction = PatternAction & { value: MirrorMode };
 export type SetSlitModeAction = PatternAction & { value: SlitMode };
 export type SetStackTypeAction = PatternAction & { value: StackType };
 export type SetCFAction = PatternAction & { value: string };
@@ -43,9 +45,12 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
     if (pattern.room?.value?.connected && !pattern.room?.value?.meDrawer)
         return;
 
-    const edgeMode = pattern?.video.params.edgeMode;
-    const slitMode = pattern?.video.params.slitMode;
-    const stackType = pattern?.video.params.stackType;
+    const {
+        edgeMode,
+        slitMode,
+        stackType,
+        mirrorMode
+    } = pattern?.video?.params || {};
 
     dispatch(updateImage({
         id: patternId,
@@ -78,17 +83,17 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
 
 
             const cfId = state.patterns[patternId]?.video.params.changeFunctionId;
-            const cutOffset = state.patterns[patternId]?.video.params.cutOffset;
+            const cutOffset = -state.patterns[patternId]?.video.params.cutOffset;
 
             const cf = state.changeFunctions.functions[cfId];
 
             if (cf) {
 
-                return videoChangeFunctionByType[cf.type](
+                return cutOffset + videoChangeFunctionByType[cf.type](
                     x, y,
                     state.patterns[patternId]?.current.imageData.width,
                     state.patterns[patternId]?.current.imageData.height,
-                    cf.params, state.patterns);
+                    cf.params, state.patterns) * (1 - cutOffset);
             } else {
                 return cutOffset;//state.patterns[patternId]?.current.imageData.width;
             }
@@ -96,6 +101,7 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
         edgeMode,
         slitMode,
         stackType,
+        mirrorMode,
     });
 
     const interval = setInterval(() => {
@@ -142,7 +148,16 @@ export const setEdgeMode = (id: string, value: EdgeMode) => (dispatch, getState:
         id,
         value
     });
-    Captures.captures[id] && (Captures.captures[id].edgeMode = value);
+    Captures.captures[id]?.setEdgeMode(value);
+};
+
+export const setMirrorMode = (id: string, value: MirrorMode) => (dispatch, getState: () => AppState) => {
+    dispatch({
+        type: EVideoAction.SET_MIRROR_MODE,
+        id,
+        value
+    });
+    Captures.captures[id]?.setMirrorMode(value);
 };
 
 export const setSlitMode = (id: string, value: SlitMode) => (dispatch, getState: () => AppState) => {

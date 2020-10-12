@@ -8,13 +8,14 @@ export enum EMaskAction {
 }
 
 export interface UpdatePatternMaskAction extends ImageAction, PatternAction {
+    noHistory?: boolean
 }
 
 export interface SetMaskParamsAction extends PatternAction {
     params: MaskParams
 }
 
-export const updateMask = (id: string, imageData: ImageData): UpdatePatternMaskAction =>
-    ({type: EMaskAction.UPDATE_MASK, imageData, id});
+export const updateMask = (id: string, imageData: ImageData, noHistory?: boolean): UpdatePatternMaskAction =>
+    ({type: EMaskAction.UPDATE_MASK, imageData, id, noHistory});
 export const setMaskParams = (id: string, params: MaskParams): SetMaskParamsAction =>
     ({type: EMaskAction.SET_MASK_PARAMS, id, params});

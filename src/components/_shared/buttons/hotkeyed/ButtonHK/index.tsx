@@ -3,7 +3,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
 import {Button, ButtonProps} from "bbuutoonnss";
 import {ShortcutInput} from "../../../inputs/ShortcutInput";
-import {HoverHideable} from "../../../HoverHideable";
+import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {ButtonSelect, ButtonSelectProps} from "../../simple/ButtonSelect";

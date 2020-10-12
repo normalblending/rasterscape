@@ -10,8 +10,6 @@ import {PatternState} from "../../../../store/patterns/pattern/types";
 import {CanvasDrawProps} from "../index";
 import {EToolType} from "../../../../store/tool/types";
 
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
-
 const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState, linePatternImage, patternMouseCentered: boolean) => {
     const patternStrokeStyle = ctx.createPattern(linePatternImage, "repeat");
     const matrix = new DOMMatrix();
@@ -41,9 +39,10 @@ const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState
     );
     return patternStrokeStyle;
 };
+
 export const lineSolidPattern = function () {
     let draw: boolean = false;
-    let canvases = [];
+    let canvases = {};
     let patternStrokeStyle = null;
     return {
         draw: (ev) => {
@@ -51,7 +50,7 @@ export const lineSolidPattern = function () {
             const {pattern, linePattern} = this.props;
             const {size, patternSize, opacity, compositeOperation, cap, join, patternMouseCentered} = this.props.line.params;
 
-            const {width, height} = pattern.current;
+            const {width, height} = pattern.current.imageData;
 
             if (!e) return;
 
@@ -63,7 +62,7 @@ export const lineSolidPattern = function () {
             const selectionMask = pattern.selection && pattern.selection.value.mask;
             if (selectionMask) {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
 
                         drawMasked(
@@ -84,7 +83,7 @@ export const lineSolidPattern = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
 
                         canvases[index].getContext('2d').clearRect(0, 0, width, height);
 
@@ -109,7 +108,7 @@ export const lineSolidPattern = function () {
                 }
             } else {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(width, height).canvas;
 
                         const context = canvases[index]?.getContext('2d');
@@ -128,7 +127,7 @@ export const lineSolidPattern = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
 
                         const context = canvases[index]?.getContext('2d');
 
@@ -151,7 +150,6 @@ export const lineSolidPattern = function () {
                         ctx.globalCompositeOperation = compositeOperation;
                         ctx.globalAlpha = opacity;
                         ctx.drawImage(image, 0, 0);
-                        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!", linePattern);
                     });
                 }
             }

@@ -44,7 +44,7 @@ export const startDrawChanging = () => (dispatch, getState) => {
     const state: AppState = getState();
     const mode = state.changing.mode;
 
-    if (mode === ChangingMode.OnDraw)
+    if (mode === ChangingMode.Auto)
         return dispatch(startChanging())
 
 };
@@ -52,7 +52,7 @@ export const stopDrawChanging = () => (dispatch, getState) => {
     const state: AppState = getState();
     const mode = state.changing.mode;
 
-    if (mode === ChangingMode.OnDraw) {
+    if (mode === ChangingMode.Auto) {
         dispatch(allToStartValue());
         return dispatch(stopChanging())
     }
@@ -65,7 +65,7 @@ export const setChangingMode = (mode: ChangingMode) => (dispatch, getState) => {
 
     if (prevMode === mode) return;
 
-    if (mode === ChangingMode.OnDraw) {
+    if (mode === ChangingMode.Auto) {
         if (prevMode === ChangingMode.On) {
             dispatch(allToStartValue());
             dispatch(stopChanging());

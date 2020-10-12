@@ -23,7 +23,7 @@ export const lineSolid = function () {
             const {pattern} = this.props;
             const {size, opacity, compositeOperation, cap, join, random} = this.props.line.params;
 
-            const {width, height} = pattern.current;
+            const {width, height} = pattern.current.imageData;
 
             if (!e) return;
 
@@ -31,8 +31,7 @@ export const lineSolid = function () {
             const selectionMask = pattern.selection && pattern.selection.value.mask;
             if (selectionMask) {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id}) => {
-                        const index = id;
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
                         prevPoints[index] = {x, y};
 
@@ -54,7 +53,7 @@ export const lineSolid = function () {
                     draw = true;
 
                 } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index} ) => {
 
                         canvases[index].getContext('2d').clearRect(0,0, width, height);
 
@@ -63,7 +62,7 @@ export const lineSolid = function () {
                             ({context, canvas}) => {
                                 // context.clearRect(0,0, width, height);
                                 context.lineWidth = size;
-                                coordHelper4.setText(getRandomColor())
+
                                 if (random === ELineRandomType.OnFrame) {
                                     context.strokeStyle = getRandomColor();
 
@@ -76,14 +75,12 @@ export const lineSolid = function () {
 
                         ctx.globalCompositeOperation = compositeOperation;
                         ctx.globalAlpha = opacity;
-                        // document.getElementById('v1').innerHTML = '';
-                        // document.getElementById('v1').appendChild(image);
                         ctx.drawImage(image, 0, 0);
                     });
                 }
             } else {
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(width, height).canvas;
 
                         const context = canvases[index]?.getContext('2d');
@@ -105,7 +102,7 @@ export const lineSolid = function () {
 
                 } else {
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y}, index) => {
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
 
                         const context = canvases[index]?.getContext('2d');
 
@@ -137,12 +134,12 @@ export const lineSolid = function () {
             // e.ctx.closePath();
             // coordHelper2.writeln('release');
         },
-        cursors: ({x, y, outer}) => {
+        cursors: ({x, y, outer}, index) => {
 
             let size = Math.max(this.props.line.params.size, 10);
 
             const {rotation} = this.props;
-            return Cursors.cross(x, y, size, rotation);
+            return Cursors.cross(x, y, size, rotation, index);
         }
     }
 };

@@ -1,3 +1,4 @@
+@import "_mixins.scss";
 .layout-container {
 
   background: lightgrey;
@@ -67,6 +68,9 @@
 
       &:hover {
         opacity: 0.5;
+      }
+      &:focus {
+        @include ffoocus();
       }
     }
 

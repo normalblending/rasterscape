@@ -43,7 +43,7 @@ export const patternReducers = {
                         imageData: resizedMask
                     }
                 } : pattern.mask,
-                resultImage: patternValues.setValue(action.id, action.imageData, pattern.config.mask && pattern.mask?.value.imageData),
+                resultImage: patternValues.setValue(action.id, action.imageData, pattern.config.mask && pattern.mask?.value.imageData, pattern.mask?.params.inverse),
                 history: action.noHistory ? pattern.history : (
                     pattern.history && historyPush(pattern.history, {
                         current: pattern.current
@@ -74,7 +74,7 @@ export const patternReducers = {
                     current: pattern.current,
                     maskValue: pattern.mask && pattern.mask.value
                 }),
-                resultImage: patternValues.setValue(action.id, newCurrentImageData, pattern.config.mask && newMaskImageData),
+                resultImage: patternValues.setValue(action.id, newCurrentImageData, pattern.config.mask && newMaskImageData, pattern.mask?.params.inverse),
             }
         }),
 
@@ -101,7 +101,7 @@ export const patternReducers = {
                     current: pattern.current,
                     maskValue: pattern.mask && pattern.mask.value
                 }),
-                resultImage: patternValues.setValue(action.id, newCurrentImageData, pattern.config.mask && newMaskImageData),
+                resultImage: patternValues.setValue(action.id, newCurrentImageData, pattern.config.mask && newMaskImageData, pattern.mask?.params.inverse),
             }
         }),
 

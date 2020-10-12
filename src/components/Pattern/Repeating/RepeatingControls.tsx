@@ -1,15 +1,14 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
-import {ValueD} from "../_shared/buttons/complex/ButtonNumber";
-import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
-import {BezierCurveRepeating} from "../_shared/canvases/BezierCurveRepeating";
-import {ERepeatingType, RepeatingParams} from "../../store/patterns/repeating/types";
-import '../../styles/repeatingControls.scss';
+import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
+import {BezierCurveRepeating} from "../../_shared/canvases/BezierCurveRepeating";
+import {ERepeatingType, RepeatingParams} from "../../../store/patterns/repeating/types";
+import './repeatingControls.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {AppState} from "../../store";
-import {setRepeating} from "../../store/patterns/repeating/actions";
-import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {AppState} from "../../../store";
+import {setRepeating} from "../../../store/patterns/repeating/actions";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface RepeatingControlsStateProps {
 

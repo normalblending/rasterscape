@@ -22,5 +22,5 @@ export const changingReducer = handleActions<ChangingState>({
     }),
 }, {
     isChanging: false,
-    mode: ChangingMode.OnDraw
+    mode: ChangingMode.Auto
 });

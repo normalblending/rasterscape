@@ -5,6 +5,7 @@ import {addPattern} from "../actions";
 import {updateImage} from "../pattern/actions";
 import {getPatternConfig, getPatternParams} from "../pattern/helpers";
 import {getSelectedImageData, getSelectedMask} from "./helpers";
+import {updateMask} from "../mask/actions";
 
 export enum ESelectionAction {
     UPDATE_SELECTION = "pattern/update-selection",
@@ -39,6 +40,7 @@ export const cutPatternBySelection = (id: string) => (dispatch, getState) => {
 
     const pattern = state.patterns[id];
 
-    dispatch(updateImage({id, imageData: getSelectedImageData(pattern)}));
+    dispatch(updateMask(id, getSelectedMask(pattern)));
+    dispatch(updateImage({id, imageData: getSelectedImageData(pattern), noHistory: true}));
     dispatch(updateSelection(id, [], null));
 };

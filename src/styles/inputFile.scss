@@ -1,3 +1,4 @@
+@import "./_mixins.scss";
 .input-file {
   display: inline-flex;
   input {
@@ -8,6 +9,9 @@
     position: absolute;
 
     z-index: -1;
+  }
+  input:focus + label {
+    @include ffoocus();
   }
 
   label {
@@ -30,12 +34,28 @@
       outline: none;
       z-index: 100;
       border-style: solid;
-      border-color: #ababab #dedede #dedede #ababab;
+      border-color: #ababab #d3d3d3 #d3d3d3 #ababab;
     }
 
-    &:focus {
-    }
+
 
 
   }
 }
+
+//
+//.button:focus {
+//  //outline: black;
+//  outline: none;
+//  box-shadow: 0 0 4px 2px #66666654;
+//  z-index: 1;
+//
+//}
+//
+//.button:active {
+//  border-color: #ababab #d3d3d3 #d3d3d3 #ababab;
+//}
+//
+//.button.button-pressed {
+//  border-color: #ababab #d3d3d3 #d3d3d3 #ababab;// !important;
+//}

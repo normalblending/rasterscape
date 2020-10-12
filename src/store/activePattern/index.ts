@@ -4,6 +4,7 @@ import {act} from "react-dom/test-utils";
 
 export enum EActivePatternAction {
     SET = "active-pattern/set",
+    RESET = "active-pattern/reset",
 }
 
 export interface ActivePatternState {
@@ -11,6 +12,12 @@ export interface ActivePatternState {
 }
 
 export const activePatternReducer = handleActions<ActivePatternState>({
+    [EActivePatternAction.SET]: (state, action: SetActivePatternAction) => {
+        return {
+            ...state,
+            patternId: action.patternId,
+        }
+    },
     [EActivePatternAction.SET]: (state, action: SetActivePatternAction) => {
         return {
             ...state,

@@ -5,3 +5,7 @@ export const getRoomState = getFunctionState<RoomValue, RoomParams>(
     {}, {
         value: null
     });
+
+export const isMeDrawer = (roomValue: RoomValue) => {
+    return !roomValue?.connected || roomValue?.meDrawer;
+};

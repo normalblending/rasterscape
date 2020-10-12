@@ -1,12 +1,12 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
-import {BlurValue} from "../../store/patterns/blur/types";
-import '../../styles/blurControls.scss';
+import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {BlurValue} from "../../../store/patterns/blur/types";
+import './blurControls.scss';
 import {withTranslation, WithTranslation} from "react-i18next";
-import {blurOnce, setBlur} from "../../store/patterns/blur/actions";
+import {blurOnce, setBlur} from "../../../store/patterns/blur/actions";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../store";
-import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {AppState} from "../../../store";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface BlurControlsStateProps {
     blur: BlurValue

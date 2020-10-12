@@ -7,13 +7,8 @@ import {AppState} from "../../../store";
 import {createRoom, leaveRoom, setDrawer} from "../../../store/patterns/room/actions";
 import './roomControls.scss';
 import {WithTranslation, withTranslation} from "react-i18next";
-import {ButtonSelect} from "bbuutoonnss";
 import {Chat} from "./Chat";
 
-
-/*
-* запретить обновление канваса когда не ты drawer
-* */
 export interface RoomControlsStateProps {
     connected: string
     drawer: string
@@ -52,7 +47,6 @@ export interface RoomControlsState {
 export class RoomControlsComponent extends React.PureComponent<RoomControlsProps, RoomControlsState> {
     state = {
         roomName: "",
-        // roomName: "",
     };
 
     handleCreateRoom = () => {
@@ -70,12 +64,16 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
         setDrawer(patternId);
     };
 
-    ref;
+    passInputRef;
 
     constructor(props) {
         super(props);
 
-        this.ref = React.createRef();
+        this.passInputRef = React.createRef();
+    }
+
+    componentDidMount() {
+        setTimeout(this.passInputRef.current.focus, 0);
     }
 
     componentWillUnmount() {
@@ -94,15 +92,15 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
             <div className={cn('room-controls', {
                 ['me-drawer']: meDrawer
             })}>
-
                 {connected && (<>
-                    <Chat patternId={patternId}/>
-
-                    {/*{drawer}*/}
+                    <Chat
+                        patternId={patternId}
+                    />
                 </>)}
                 <div className={'room-enter'}>
                     {!connected ? (<>
                         <InputText
+                            ref={this.passInputRef}
                             disabled={!!connected}
                             value={this.state.roomName}
                             onKeyPress={this.handleKeyPress}
@@ -122,16 +120,8 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
                             disabled={!this.state.roomName}
                             onDoubleClick={this.handleLeaveRoom}
                         >{t('room.leave')}</Button>
-                        {/*<ButtonSelect*/}
-                        {/*    disabled={!!drawer && !meDrawer}*/}
-                        {/*    selected={meDrawer}*/}
-                        {/*    onClick={this.handleSetDrawer}*/}
-                        {/*>{t('room.draw')}</ButtonSelect>*/}
                     </>)}
-
-
                 </div>
-
             </div>
         );
     }

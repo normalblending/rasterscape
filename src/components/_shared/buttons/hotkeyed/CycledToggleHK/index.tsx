@@ -98,6 +98,9 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
                     onChange={handleShortcutChange}
                 />
             )}
+            {!settingMode && hotkey?.key && (
+                <div className={'hotkey-key'}>{hotkey?.key}</div>
+            )}
             <Key
                 keys={hotkey?.key}
                 onRelease={handleRelease}

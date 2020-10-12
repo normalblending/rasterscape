@@ -1,3 +1,4 @@
+@import "./_mixins.scss";
 .input-number {
 
   height: 20px;
@@ -15,9 +16,5 @@
 
 .input-number:focus {
 
-  //background: lightgrey !important;
-
-  border: 1px solid lightgrey;
-  border-color: #ababab  #dedede  #dedede #ababab;
-  outline: none;
+  @include ffoocus();
 }

@@ -7,7 +7,7 @@ import {changeCFParams} from "../../../store/changeFunctions/actions";
 import {AppState} from "../../../store";
 import {AnyFxyParams, FxyParams, FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {ParabCF} from "./Parab";
-import {SelectDrop} from "bbuutoonnss";
+import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {Sis2CF} from "./Sis2";
 

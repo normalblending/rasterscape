@@ -1,5 +1,6 @@
 import * as React from "react";
-import '../../styles/inputFile.scss';
+import '../../../styles/inputFile.scss';
+import {readImageFile} from "./helpers";
 
 export interface FileProps {
     onChange(image)
@@ -21,20 +22,15 @@ export class File extends React.PureComponent<FileProps, FileState> {
         this.inputRef = React.createRef();
     }
 
-    handleFile = e => {
-        var reader = new FileReader();
-        reader.onload = (event) => {
-            var img = new Image();
-            img.onload = () => {
-                this.props.onChange(img);
-                // this.refs.canvas.ctx.drawImage(img, 0, 0, this.props.value.w, this.props.value.h);
-                // this.updateMaskedImage();
-            };
-            img.src = event.target.result as string;
+    handleFile = async e => {
+        try {
+            const image = await readImageFile(e.target.files?.[0]);
+
+            this.props.onChange?.(image);
             this.inputRef.current.value = null;
-        };
-        if (e.target.files[0])
-            reader.readAsDataURL(e.target.files[0]);
+        } catch (e) {
+
+        }
     };
 
     render() {

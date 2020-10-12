@@ -4,7 +4,7 @@ import {AppState} from "store";
 import * as classNames from "classnames";
 import {ButtonNumber, ButtonNumberProps} from "../../complex/ButtonNumber";
 import {SelectItem} from "utils/utils";
-import {SelectDrop} from "../../complex/SelectDrop";
+import {SelectDrop, SelectDropImperativeHandlers} from "../../complex/SelectDrop";
 import {
     activateValueChanging,
     deactivateValueChanging,
@@ -13,7 +13,7 @@ import {
 } from "store/changingValues/actions";
 import {toStartValue} from "store/change/actions";
 import "./styles.scss";
-import {HoverHideable} from "../../../HoverHideable";
+import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {ShortcutInput} from "../../../inputs/ShortcutInput";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
 import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
@@ -109,6 +109,11 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     // React.useEffect(() => coordHelper2.writeln('changingValue'), [changingValue]);
     // React.useEffect(() => coordHelper2.writeln('hotkey'), [hotkey]);
 
+    const selectDropRef = React.useRef<SelectDropImperativeHandlers>(null);
+
+    const [_redOpen, setRedOpen] = React.useState(false);
+    const [_menuOpen, setMenuOpen] = React.useState(false);
+
     const [active, setActive] = React.useState();
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
@@ -184,9 +189,12 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         ["button-number-cf-value-active"]: active
     }), [active]);
 
+    const buttonNumberRef = React.useRef(null);
+
     const button = (
         <>
             <ButtonNumber
+                ref={buttonNumberRef}
                 {...othersButtonNumberProps}
 
                 shortcut={hotkey?.key}
@@ -225,19 +233,67 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         [ButtonWrapper, button]
     );
 
-    return withoutCF ? <div className={"button-number-cf"}>{buttonElement}</div> : (
+    const handleKeyPress = React.useCallback((e) => {
+        if (e.key === 'Enter') {
+            e.stopPropagation();
+            setRedOpen(true);
+            setMenuOpen(true);
+
+            //это можно коментить чтобы не открывалось автоматм
+            setTimeout(selectDropRef.current.focus, 0);
+        }
+    }, []);
+
+    // const handleCFSelectDropFocus = React.useCallback(() => {
+    //
+    // }, []);
+    const timer = React.useRef(null);
+    const handleCFSelectDropBlur = React.useCallback(() => {
+        console.log('SELECT DROP BLUR')
+        setTimeout(() => {
+             setRedOpen(false);
+             setMenuOpen(false);
+        }, 150)
+        buttonNumberRef.current.focus();
+    }, [setRedOpen, setMenuOpen]);
+    //
+    //
+    //
+    // const handleContainerFocus = React.useCallback(() => {
+    //     setRedOpen(false);
+    //     setMenuOpen(false);
+    //
+    // }, [setRedOpen, setMenuOpen]);
+    //
+    // const handleContainerBlur = React.useCallback(() => {
+    //     setRedOpen(false);
+    //     setMenuOpen(false);
+    //
+    // }, [setRedOpen, setMenuOpen]);
+
+
+
+
+
+    return withoutCF ? <div className={classNames("button-number-cf", className)}>{buttonElement}</div> : (
         <HoverHideable
+            open={_redOpen}
+            onKeyPress={handleKeyPress}
             className={classNames("button-number-cf", {
                 ['hotkey-highlighted']: highlightedPath === hotkey?.path
             }, className)}
             button={buttonElement}>
             {!active && (
                 <HoverHideable
+                    open={_menuOpen}
                     className={"button-number-cf-settings"}
                     button={<div className="button-number-cf-settings-handler">
                         <div></div>
                     </div>}>
                     <SelectDrop
+                        ref={selectDropRef}
+                        onBlur={handleCFSelectDropBlur}
+                        // onFocus={}
                         name={buttonNumberProps.name + '-select-cf'}
                         nullAble
                         nullText={'-'}

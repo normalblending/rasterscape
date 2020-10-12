@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as keyboardjs from "keyboardjs";
+import {NodeType} from "../../utils/consts";
 
 export interface KeyProps {
     keys: string | string[]
@@ -20,12 +21,20 @@ export interface KeyState {
 export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     handlePress = e => {
+        if (document.activeElement.nodeName === NodeType.Input) {
+            return;
+        }
+
         e.preventRepeat();
         const {onPress, keys, data} = this.props;
         onPress && onPress(e, keys, data);
     };
 
     handleRelease = e => {
+        if (document.activeElement.nodeName === NodeType.Input) {
+            return;
+        }
+
         const {onRelease, keys, data} = this.props;
         onRelease && onRelease(e, keys, data);
     };

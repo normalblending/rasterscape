@@ -1,3 +1,6 @@
+$yellow: #ffcd00;
+$blue: darkblue;
+
 .repeating-controls {
 
   background: black;
@@ -19,6 +22,11 @@
       }
     }
   }
+
+  .button:focus {
+    outline: 2px dotted #ffcd00;
+    //box-shadow: 0 0 6px black;
+  }
 }
 
 .repeating-button {
@@ -27,7 +35,7 @@
     color: white;
 
     &.button-select.button-select-selected {
-      background: darkblue;
+      background: $blue;
     }
   }
 
@@ -50,16 +58,16 @@
 
   .shortcut-input.empty {
     background: radial-gradient(white -50%, transparent);
-    color: #ffcd00;
+    color: $yellow;
   }
 
   .select-drop>.select-drop-items>.select-buttons-items {
-    border: 1px solid #ffcd00;
+    border: 1px solid $yellow;
   }
 
 
   .button.button-select.button-select-selected {
-    background: darkblue;
+    background: $blue;
   }
 
   .button-number-value {
@@ -79,7 +87,7 @@
 
     & > div {
       &:after {
-        color: #ffcd00;
+        color: $yellow;
       }
 
       //border-radius: 50%;
@@ -87,8 +95,17 @@
 
   }
 
+  .button:focus {
+    outline: 2px dotted #ffcd00;
+    //box-shadow: 0 0 6px black;
+  }
   .button-number-cf-value-active {
-    border: 1px solid #ffcd00 !important;
+    border: 1px solid $yellow;
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
   }
 
 

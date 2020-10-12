@@ -1,3 +1,4 @@
+@import "./styles/_mixins.scss";
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -14,6 +15,9 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
+*:focus {
+  @include ffoocus();
+}
 
 .button {
 
@@ -21,13 +25,15 @@ code {
 
   cursor: pointer;
   border-width: 1px !important;
-  border-right-width: 1px !important;
-  border-left-width: 1px !important;
-  border-color:  #dedede #ababab #ababab #dedede !important;
+  //border-right-width: 1px !important;
+  //border-left-width: 1px !important;
+  border-color:  #dedede #ababab #ababab #dedede;// !important;
 }
 
+
+
 .button:active {
-  border-color: #ababab #dedede #dedede #ababab !important;
+  border-color: #ababab #dedede #dedede #ababab;// !important;
   //border-color: #ababab #dedede #dedede #ababab !important;
   //border-color: #ababab #bbbbbb #d3d3d3 #ababab
 }

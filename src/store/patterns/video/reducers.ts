@@ -3,7 +3,7 @@ import {PatternAction, PatternState} from "../pattern/types";
 import {
     EVideoAction,
     SetCFAction, SetCutOffsetAction,
-    SetEdgeModeAction,
+    SetEdgeModeAction, SetMirrorModeAction,
     SetSlitModeAction, SetStackSizeAction,
     SetStackTypeAction,
     SetVideoParamsAction
@@ -76,6 +76,17 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     edgeMode: action.value
+                }
+            }
+        })),
+    [EVideoAction.SET_MIRROR_MODE]: reducePattern<SetMirrorModeAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    mirrorMode: action.value
                 }
             }
         })),

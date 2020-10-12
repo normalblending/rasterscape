@@ -28,15 +28,16 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
     const height = startImage ? startImage.height : (config.height || 300);
 
     const current = startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height);
+    const maskState = getMaskState(width, height, startMask)(mask, undefined, params?.mask);
     const patternState = {
         id,
         config,
-        resultImage: patternValues.setValue(id, current.imageData, mask && startMask),
+        resultImage: patternValues.setValue(id, current.imageData, mask && startMask, maskState?.params.inverse),
         current,
         history: getHistoryState(history, undefined, params?.history),
         store: getStoreState(store, undefined, params?.store),
         selection: getSelectionState(selection, undefined, params?.selection),
-        mask: getMaskState(width, height, startMask)(mask, undefined, params?.mask),
+        mask: maskState,
         rotation: getRotationState(rotation, undefined, params?.rotation),
         repeating: getRepeatingState(repeating, undefined, params?.repeating),
         import: getImportState(true, undefined, params?.import),
@@ -57,7 +58,7 @@ export const updatePatternState = (state: PatternState, config: PatternConfig, p
         config,
         id: state.id,
         current: state.current,
-        resultImage: patternValues.setValue(state.id, state.current.imageData, mask && maskState?.value.imageData),
+        resultImage: patternValues.setValue(state.id, state.current.imageData, mask && maskState?.value.imageData, maskState?.params.inverse),
         // resultImage: state.resultImage,
         history: getHistoryState(history, state.history, params.history),
         store: getStoreState(store, state.store, params.store),

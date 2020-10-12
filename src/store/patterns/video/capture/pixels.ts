@@ -1,6 +1,8 @@
+import {EdgeMode} from "../services";
+
 export enum StackType {
-    Right = "<",
-    Left = ">",
+    Right = ">",
+    Left = "<",
     FromCenter = "<>",
     ToCenter = "><",
 }
@@ -14,22 +16,51 @@ export interface PixelsItem {
 export class PixelsStack {
 
     array: PixelsItem[];
-    type;
+    type: StackType;
+    edgeMode: EdgeMode;
     size;
 
-    constructor(size, type?) {
+    constructor(size, type?, edgeMode?) {
         this.size = size = Math.ceil(size);
         this.array = new Array(size);
         this.type = type || StackType.Right;
+        this.edgeMode = edgeMode || EdgeMode.ALL;
     }
 
     setType = (type: StackType) => this.type = type;
 
+    setEdgeMode = (mode: EdgeMode) => this.edgeMode = mode;
+
+    GetFrameN = {
+        [EdgeMode.NO]: (z, length) => {
+            return Math.round(z);
+        },
+        [EdgeMode.TOP]: (z, length) => {
+            let frameN = Math.round(z);
+            if (frameN >= length) frameN = length - 1;
+            return frameN;
+        },
+        [EdgeMode.BOT]: (z, length) => {
+            let frameN = Math.round(z);
+            if (frameN < 0) frameN = 0;
+            return frameN;
+        },
+        [EdgeMode.ALL]: (z, length) => {
+            let frameN = Math.round(z);
+            if (frameN >= length) frameN = length - 1;
+            if (frameN < 0) frameN = 0;
+            return frameN;
+        },
+    };
+
     getPixel = (x: number, y: number, z: number) => {
-        const zz = this.array[Math.round(z * (this.array.length - 1))];
+        const getC = this.GetFrameN[this.edgeMode];
+        const zz = this.array[getC(z * (this.array.length - 1), this.array.length)];
+
         if (!zz)
-            return [0, 0, 0, 255];
-        return get(zz.pixels, zz.width, 4, x, y);
+            return [0, 0, 0, 0];
+
+        return get(zz.pixels, zz.width, 4, getC(x, zz.width), getC(y, zz.height));
     };
 
     getArray = () => {
@@ -98,7 +129,7 @@ export const get = (pixels, width, d, x, y) => {
         pixels[n + 1],
         pixels[n + 2],
         pixels[n + 3]
-    ] : [0, 0, 0, 255];
+    ] : [0, 0, 0, 0];
 };
 
 

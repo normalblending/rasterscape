@@ -33,6 +33,8 @@ export interface CanvasDrawStateProps {
     pattern: PatternState
     brushPattern: PatternState
     linePattern: PatternState
+    activePattern: boolean
+    optimization: boolean
 }
 
 export interface CanvasDrawActionProps {
@@ -147,7 +149,18 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
     };
 
     render() {
-        const {children, width, height, className, mask, disabled, patternId, ...props} = this.props;
+        const {
+            children,
+            width,
+            height,
+            className,
+            mask,
+            disabled,
+            patternId,
+            activePattern,
+            optimization,
+            ...props
+        } = this.props;
 
         const handlers = this.getHandlers();
 
@@ -155,6 +168,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
             <Canvas
                 {...props}
                 name={patternId}
+                throttle={!activePattern && optimization}
                 // pointerLock={true}
                 // drawOnMove={true}
                 className={classNames("draw", {
@@ -198,6 +212,8 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
     pattern: state.patterns[patternId],
     brushPattern: state.patterns[state.brush.params.pattern],
     linePattern: state.patterns[state.line.params.pattern],
+    activePattern: state.activePattern.patternId === patternId,
+    optimization: state.optimization.on,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {

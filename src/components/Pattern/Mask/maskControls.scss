@@ -1,0 +1,19 @@
+.mask-controls {
+  display: flex;
+
+  .button {
+    border: none;
+    background: lightgrey;
+    &.button-select-selected {
+      background: black;
+      color: lightgray;
+
+    }
+    &:focus {
+      border: 1px dotted black;
+    }
+    &.button-select-selected:focus {
+      border: 1px dotted lightgrey;
+    }
+  }
+}

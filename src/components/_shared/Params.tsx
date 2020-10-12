@@ -3,7 +3,7 @@ import {ButtonSelect} from "./buttons/simple/ButtonSelect";
 import {ButtonNumber} from "./buttons/complex/ButtonNumber";
 import {SelectButtons} from "./buttons/complex/SelectButtons";
 import {EventData} from "../../utils/types";
-import {File} from "./File";
+import {File} from "./File/File";
 
 export interface ParamConfig {
     type: EParamType

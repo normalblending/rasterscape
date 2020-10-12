@@ -23,6 +23,7 @@ export interface InputTextProps {
 
 export interface CInputTextImperativeHandlers {
     blur()
+    focus()
 }
 
 export const InputText = React.forwardRef<CInputTextImperativeHandlers, InputTextProps>((props, ref) => {
@@ -47,9 +48,11 @@ export const InputText = React.forwardRef<CInputTextImperativeHandlers, InputTex
 
     React.useImperativeHandle(ref, () => ({
         blur: () => {
-            console.log('blur');
             inputRef?.current?.blur();
-        }
+        },
+        focus: () => {
+            inputRef?.current?.focus();
+        },
     }), [inputRef]);
 
     return (

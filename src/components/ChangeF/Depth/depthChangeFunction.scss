@@ -7,10 +7,27 @@
 
   position: relative;
 
-  .depth-select-pattern-button {
+  .depth-select-pattern {
     position: absolute;
     top: -20px;
     right: 0;
+    display: flex;
+
+    .depth-select-pattern-button {
+
+      &:hover, &:focus {
+        & + .pattern-select {
+          visibility: visible;
+        }
+      }
+
+
+    }
+    &:hover, &:focus-within {
+      & .pattern-select {
+        visibility: visible;
+      }
+    }
 
     .pattern-select {
       position: absolute;
@@ -27,11 +44,6 @@
       }
     }
 
-    &:hover {
-      .pattern-select {
-        visibility: visible;
-      }
-    }
   }
 
 

@@ -17,6 +17,8 @@ export interface ButtonProps {
     onMouseDown?(data?: ButtonEventData)
 
     onMouseUp?(data?: ButtonEventData)
+    onBlur?(data?: ButtonEventData)
+    onFocus?(data?: ButtonEventData)
 
     value?: any
     name?: string
@@ -34,10 +36,15 @@ export interface ButtonProps {
     [prop: string]: any
 }
 
-export const Button: React.FC<ButtonProps> = (props) => {
+export interface ButtonImperativeHandlers {
+    focus()
+    blur()
+    getElement(): HTMLButtonElement
+}
+
+export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
 
     const {
-        ref,
         children,
         height,
         onClick,
@@ -46,6 +53,8 @@ export const Button: React.FC<ButtonProps> = (props) => {
         onMouseLeave,
         onMouseDown,
         onMouseUp,
+        onBlur,
+        onFocus,
         disabled,
         width,
         className,
@@ -55,8 +64,24 @@ export const Button: React.FC<ButtonProps> = (props) => {
         ...otherProps
     } = props;
 
+    const buttonRef = React.useRef<HTMLButtonElement>(null);
+
+    React.useImperativeHandle(ref, () => ({
+        focus: () => {
+            buttonRef.current.focus();
+        },
+        blur: () => {
+            buttonRef.current.blur();
+        },
+        getElement: () => {
+            return buttonRef.current
+        }
+    }), [buttonRef])
     const handleClick = React.useCallback(
-        e => !disabled && onClick && onClick({e, value, name}),
+        e => {
+            console.log(e, value, name);
+            return !disabled && onClick && onClick({e, value, name})
+        },
         [disabled, onClick, value, name]);
 
     const handleDoubleClick = React.useCallback(
@@ -79,11 +104,19 @@ export const Button: React.FC<ButtonProps> = (props) => {
         e => !disabled && onMouseDown && onMouseDown({e, value, name}),
         [disabled, onMouseDown, value, name]);
 
+    const handleBlur = React.useCallback(
+        e => !disabled && onBlur && onBlur({e, value, name}),
+        [disabled, onBlur, value, name]);
+
+    const handleFocus = React.useCallback(
+        e => !disabled && onFocus && onFocus({e, value, name}),
+        [disabled, onFocus, value, name]);
+
     const style = React.useMemo(() => ({width, height}), [width, height]);
 
     return (
         <button
-            ref={ref}
+            ref={buttonRef}
             className={classNames("button", className, {
                 ["button-pressed"]: pressed,
             })}
@@ -93,6 +126,8 @@ export const Button: React.FC<ButtonProps> = (props) => {
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleUp}
             onMouseDown={handleDown}
+            onBlur={handleBlur}
+            onFocus={handleFocus}
             style={style}
             disabled={disabled}
             {...otherProps}
@@ -100,4 +135,4 @@ export const Button: React.FC<ButtonProps> = (props) => {
             {children}
         </button>
     );
-};
+});

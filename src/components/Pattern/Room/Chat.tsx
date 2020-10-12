@@ -7,6 +7,7 @@ import {WithTranslation, withTranslation} from "react-i18next";
 import {resetUnreaded, sendMessage, setDrawer} from "../../../store/patterns/room/actions";
 import {ButtonSelect} from "../../_shared/buttons/simple/ButtonSelect";
 import * as classNames from 'classnames';
+import {Resizable} from "../../_shared/Resizable";
 
 export interface ChatStateProps {
     messages: string[]
@@ -36,6 +37,12 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
 
     const {t, patternId, sendMessage, messages, meDrawer, drawer, setDrawer, unreaded, resetUnreaded} = props;
 
+    const inputRef = React.useRef<any>(null);
+
+    React.useEffect(() => {
+        setTimeout(inputRef.current?.focus, 0);
+    }, [inputRef]);
+
     const [message, setMessage] = React.useState('');
 
     const handleSend = React.useCallback(() => {
@@ -58,12 +65,18 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
     }, [resetUnreaded, patternId, unreaded]);
 
     return (
-        <div className={classNames('room', {unread: unreaded})} onMouseEnter={handleMouseEnter}>
-            <div className='room-chat'>
+        <Resizable
+            height={60}
+            minHeight={60}
+            className={classNames('room', {unread: unreaded})}>
+            <div
+                className='room-chat'
+                onMouseEnter={handleMouseEnter}>
                 <div className={'chat-controls'}>
                     {!meDrawer && (<div className={'room-chat-new-message'}>
                         <div className={'room-chat-sign'}>{'>'}</div>
                         <InputText
+                            ref={inputRef}
                             disabled={meDrawer}
                             maxLength={99}
                             className='room-chat-message-input'
@@ -84,11 +97,12 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
 
                     <div className='room-chat-messages-container'>
                         {messages.map((message, index) => (<>
-                            {['-', '—'].includes(message.trim()[0]) && <br/>}
-                            <span
+                            {/*<br/>*/}
+                            {/*{['-', '—'].includes(message.trim()[0]) && <br/>}*/}
+                            <div
                                 className={classNames('room-chat-message', {
                                     unreaded: unreaded >= messages.length - index
-                                })}>{message}</span>
+                                })}><span>{message}</span></div>
                         </>))}
                     </div>
                 </div>
@@ -97,7 +111,7 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
                 {/*    <div className={'message-counter'}>{unreaded}</div>*/}
                 {/*) : null}*/}
             </div>
-        </div>
+        </Resizable>
     );
 };
 
