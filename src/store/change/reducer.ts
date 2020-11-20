@@ -4,7 +4,8 @@ import {AppState} from "../index";
 import {ChangeAction, ChangeToStartValueAction, EChangeAction} from "./actions";
 import {changeFunctionByType} from "../changeFunctions/helpers";
 import {act} from "react-dom/test-utils";
-import {position} from "../../components/Area/canvasPosition.servise";
+import {coordHelper4, position} from "../../components/Area/canvasPosition.servise";
+import {changeFunctionFactory} from "../changeFunctions/factory";
 
 
 export const changeReducer = handleActions<AppState>({
@@ -14,27 +15,40 @@ export const changeReducer = handleActions<AppState>({
         const {changeFunctions: {functions: changeFunctions}, changingValues, patterns} = state;
 
 
-        return Object.values(changingValues).reduce((res, {active, path, range, changeFunctionId, startValue}) => {
+        return Object.values(changingValues).reduce((res, changingValue) => {
+
+            const {
+                active,
+                path,
+                range,
+                changeFunctionId,
+                startValue
+            } = changingValue;
 
             const pattern = patterns[action.position.patternId];
+
             // console.log(path, active);
             if (!active) return res;
 
             const changeFunctionData = changeFunctions[changeFunctionId];
 
-            const changeFunction = changeFunctionByType[changeFunctionData.type];
+            const changeFunction = changeFunctionFactory.getFunction(changeFunctionId + '-' + path, changeFunctionData.type);
 
             // console.log(changeFunction(changeFunctionData.params, range, pattern)(startValue, action.time, action.position), changeFunctionData.params, range, pattern, startValue, action.time, action.position);
 
             let nextValue = changeFunction({
-                params: changeFunctionData.params, range, pattern
-            })({
+                params: changeFunctionData.params,
+                range,
+                pattern,
                 startValue,
                 time: action.time,
                 position: action.position
             });
-            nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
 
+            if (nextValue === undefined)
+                return res;
+
+            nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
 
             return res.set(path, nextValue)
         }, immutable.wrap(state)).value();

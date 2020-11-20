@@ -6,12 +6,13 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 export interface ParabCFProps {
-    tutorial: boolean
     params: any
 
     name: string
+    functionParams: ChangeFunction
 
     onChange(value?: any, name?: string)
 
@@ -31,7 +32,7 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
     };
 
     render() {
-        const {params, name} = this.props;
+        const {params, name, functionParams} = this.props;
         return (
             <div className={"parab-change-function"}>
 
@@ -47,7 +48,8 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                         pres={2}
                         valueD={50}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.zd`}
-                        hkLabel={`${name} ${FxyType.Parab} zd`}
+                        hkLabel={'cf.hotkeysDescription.xy.parab.zd'}
+                        hkData1={functionParams.number}
                         value={params.zd}
                         name={`changeFunctions.${name}.zd`}
                         range={[-2, 2]}
@@ -57,7 +59,8 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                         pres={2}
                         valueD={25}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.x`}
-                        hkLabel={`${name} ${FxyType.Parab} kx`}
+                        hkLabel={'cf.hotkeysDescription.xy.parab.x'}
+                        hkData1={functionParams.number}
                         value={params.x}
                         name={`changeFunctions.${name}.x`}
                         range={[-20, 20]}
@@ -67,7 +70,8 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                         pres={2}
                         valueD={25}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.y`}
-                        hkLabel={`${name} ${FxyType.Parab} ky`}
+                        hkLabel={'cf.hotkeysDescription.xy.parab.y'}
+                        hkData1={functionParams.number}
                         value={params.y}
                         name={`changeFunctions.${name}.y`}
                         range={[-20, 20]}
@@ -77,7 +81,8 @@ export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
                         pres={2}
                         valueD={50}
                         path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Parab}.end`}
-                        hkLabel={`${name} ${FxyType.Parab} top`}
+                        hkLabel={'cf.hotkeysDescription.xy.parab.end'}
+                        hkData1={functionParams.number}
                         value={params.end}
                         name={`changeFunctions.${name}.end`}
                         range={seRange}

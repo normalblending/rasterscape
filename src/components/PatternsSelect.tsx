@@ -25,6 +25,8 @@ export interface PatternsSelectOwnProps {
     HK?: boolean
     path?: string
     hkLabel?: string
+
+    blurOnClick?: boolean
 }
 
 export interface PatternsSelectProps extends PatternsSelectStateProps, PatternsSelectActionProps, PatternsSelectOwnProps {
@@ -41,7 +43,10 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         hkLabel,
         path,
         nullable,
+        blurOnClick,
     } = props;
+
+    const buttonRef = React.useRef(null);
 
     const action = React.useCallback((id, selected) => {
         if (Array.isArray(value)) {
@@ -70,7 +75,10 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
     const handleClick = React.useCallback((data) => {
         const {selected, value: id} = data;
         action(id, selected);
-    }, [action]);
+
+        if (blurOnClick)
+            buttonRef.current?.blur();
+    }, [action, blurOnClick]);
 
     const handlePress = React.useCallback((e, keys, data) => {
         const id = data;
@@ -78,7 +86,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         action(id, selected);
     }, [action]);
 
-    const ButtonComponent = HK ? ButtonHK : ButtonSelect;
+    // const ButtonComponent = HK ? ButtonHK : ButtonSelect;
 
     return (
         <div className={'pattern-select'}>
@@ -88,8 +96,9 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                 // const coef  = w/h > 1 ?
                 return (
                     <>
-                        <ButtonComponent
-                            path={`patternSelect.${name}.${id}`}
+                        <ButtonHK
+                            ref={buttonRef}
+                            path={HK ? `patternSelect.${name}.${id}` : null}
                             hkLabel={hkLabel}
                             hkData1={id}
                             className={'pattern-select-button'}
@@ -109,7 +118,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                                     onPress={handlePress}
                                 />
                             )}
-                        </ButtonComponent>
+                        </ButtonHK>
                         {!((i + 1) % 5) ? <br/> : null}
                     </>
                 )

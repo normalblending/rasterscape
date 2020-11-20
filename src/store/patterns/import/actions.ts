@@ -30,7 +30,11 @@ export const load = (id: string, image: HTMLImageElement) => (dispatch, getState
     const state: AppState = getState();
     const pattern = state.patterns[id];
 
-    const isFit = pattern.import.params.fit;
+    if (!pattern) {
+        return
+    }
+
+    const isFit = pattern.import?.params?.fit;
     const meDrawer = !pattern.room?.value?.connected || pattern.room?.value?.meDrawer;
 
     if (!meDrawer) {

@@ -26,6 +26,7 @@ export interface CanvasEvent {
 export interface CanvasProps {
     name?: string
     value?: ImageData
+    disabled?: boolean
     width?: number
     height?: number
     className?: string
@@ -59,7 +60,12 @@ export interface CanvasProps {
 
     onLeave?(e?)
 
+    onEnterDraw?(e?)
+
+    onLeaveDraw?(e?)
+
     demonstration?: boolean
+
     onDemonstrationUnload?()
 }
 
@@ -67,6 +73,7 @@ export interface CanvasState {
     drawing: boolean
     startEvent: any
     modalWindowOpen: boolean
+    mouseInsideCanvas: boolean
 }
 
 export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
@@ -87,7 +94,8 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.state = {
             drawing: false,
             startEvent: null,
-            modalWindowOpen: false
+            modalWindowOpen: false,
+            mouseInsideCanvas: false,
         };
 
         this.canvasRef = React.createRef();
@@ -110,20 +118,6 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         const stream = this.canvasRef.current.captureStream(25);
 
         ReactDOM.render(<DemonstrationSubApp name={name} stream={stream}/>, div);
-
-        // this.modalWindow.video = this.modalWindow.document.createElement('video');
-        // this.modalWindow.video.style = 'width: 100%; height: 100%; object-fit: fill;';
-        //
-        //
-        //
-        //
-        // this.modalWindow.video.srcObject = stream;
-        // console.log(this.modalWindow.video, this.modalWindow.video.srcObject);
-        //
-        // this.modalWindow.video.addEventListener('mousedown', () => {
-        //     this.modalWindow.video.play();
-        // });
-        // this.videoRef.current.srcObject = stream;
 
         this.setState({
             modalWindowOpen: true,
@@ -154,7 +148,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     receiveImageDataT = _throttle(this.receiveImageData, 300);
 
     receiveImageDataThrottled = () => {
-        const { throttle } = this.props;
+        const {throttle} = this.props;
 
         if (throttle) {
             this.receiveImageDataT();
@@ -258,13 +252,13 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.start();
 
-        const {onClick} = this.props;
-        setTimeout(() => {
-
-
-            // coordHelper2.writeln('click', event.e.offsetX, event.e.offsetY);
-            !this.state.drawing && onClick && onClick(event);
-        }, 10)
+        // const {onClick} = this.props;
+        // setTimeout(() => {
+        //
+        //
+        //     // coordHelper2.writeln('click', event.e.offsetX, event.e.offsetY);
+        //     !this.state.drawing && onClick && onClick(event);
+        // }, 10)
 
     };
 
@@ -353,7 +347,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         const changing = (time) => {
 
             // DRAW SPEED
-            coordHelper.setText(time - prevT);
+            // coordHelper.setText(time - prevT);
             prevT = time;
 
             this.onFrame();
@@ -433,7 +427,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             this.setState({drawing: false, startEvent: e});
 
             this.pre = null;
-            this.e= null;
+            this.e = null;
             const {onChange} = this.props;
 
             const imageData = canvasToImageData(this.canvasRef.current);
@@ -456,6 +450,12 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             const {releaseProcess} = this.props;
 
             releaseProcess && releaseProcess(event);
+
+
+            if (!this.state.mouseInsideCanvas) {
+                const {onLeaveDraw} = this.props;
+                onLeaveDraw?.(e);
+            }
         }
     };
 
@@ -467,36 +467,51 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     mouseEnterHandler = (e) => {
 
-        // console.log(e);
-        if (!this.state.drawing) {
-            // console.log(e);
-            // this.setState({startEvent: e});
-        } else {
-
-
-        }
     };
 
     mouseLeaveHandler = (e) => {
 
-        if (!this.state.drawing) {
-            // this.setState({startEvent: null});
-
-        } else {
-
-
-        }
 
         const {onLeave} = this.props;
 
-        onLeave && onLeave(e);
+        onLeave?.(e);
+    };
+
+    wrapperEnterHandler = (e) => {
+        console.log('enter');
+
+        this.setState({mouseInsideCanvas: true});
+
+        if (!this.state.drawing) {
+            const {onEnterDraw} = this.props;
+
+            onEnterDraw?.(e);
+
+        }
+    };
+
+    wrapperLeaveHandler = (e) => {
+        this.setState({mouseInsideCanvas: false});
+
+        if (!this.state.drawing) {
+            const {onLeaveDraw} = this.props;
+
+            onLeaveDraw?.(e);
+        }
     };
 
     render() {
-        const {value, width, height, className, style, children} = this.props;
+        const {value, width, height, className, style, children, disabled} = this.props;
         // console.log("canvas render", this.state);
         return (
-            <div style={style} className={classNames(className, "canvas")}>
+            <div
+                onMouseEnter={this.wrapperEnterHandler}
+                onMouseLeave={this.wrapperLeaveHandler}
+                style={style}
+                className={classNames(className, "canvas", {
+                    'disabled': disabled
+                })}
+            >
                 <canvas
                     ref={this.canvasRef}
                     width={width || (value ? value.width : 300)}

@@ -69,6 +69,7 @@ export interface PatternConfig {
 
 
 export interface PatternState {
+    error?: any
     id: string
     resultImage: HTMLCanvasElement | boolean
     config: PatternConfig

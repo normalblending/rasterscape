@@ -7,12 +7,13 @@ import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Sis2} from "../../_shared/canvases/WebWorkerCanvas";
 import {xySis2} from "../../../store/changeFunctions/functions/_helpers";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 export interface Sis2CFProps {
-    tutorial: boolean
     params: any
 
     name: string
+    functionParams: ChangeFunction
 
     onChange(value?: any, name?: string)
 
@@ -82,11 +83,11 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
         this.props.onChange(params, this.props.name)
     };
 
-    leftCol = ['xN', 'yN', 'xdd'];
-    rightCol = ['XA', 'h', 'cosA', 'xD', 'yD', 'ydd'];
+    leftCol = ['XA', 'h', 'cosA'];
+    rightCol = ['xN', 'yN', 'xD', 'yD', 'xdd', 'ydd'];
 
     render() {
-        const {params, name} = this.props;
+        const {params, name, functionParams} = this.props;
 
 
         return (
@@ -99,44 +100,52 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
                             width={68}
                             height={58}/>
                     </div>
-                    {this.leftCol.map(key => {
-                        return (
-                            <ButtonNumberCF
-                                value={params[key]}
-                                name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
-                                range={range[key]}
-                                pres={pres[key]}
-                                valueD={valueD[key]}
-                                path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.${key}`}
-                                onChange={this.handleParamChange}
-                            />
-                        );
-                    })}
+                    <div className={'buttons-container'}>
+                        {this.leftCol.map(key => {
+                            return (
+                                <ButtonNumberCF
+                                    value={params[key]}
+                                    name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
+                                    range={range[key]}
+                                    pres={pres[key]}
+                                    hkLabel={'cf.hotkeysDescription.xy.sis2.' + key}
+                                    hkData1={functionParams.number}
+                                    path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.${key}`}
+                                    onChange={this.handleParamChange}
+                                />
+                            );
+                        })}
+                    </div>
                 </div>
-                <div className={'sis2-controls'}>
-                    {this.rightCol.map(key => {
-                        return (
-                            <ButtonNumberCF
-                                value={params[key]}
-                                name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
-                                range={range[key]}
-                                pres={pres[key]}
-                                valueD={valueD[key]}
-                                path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.${key}`}
-                                onChange={this.handleParamChange}
-                            />
-                        );
-                    })}
+                <div className={'sis2-controls right'}>
 
-                    <ButtonNumberCF
-                        value={params.end}
-                        name={`changeFunctions.${name}.end`}
-                        range={range.end}
-                        pres={pres.end}
-                        valueD={valueD.end}
-                        path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.end`}
-                        onChange={this.handleParamChange}
-                    />
+                    <div className={'buttons-container'}>
+                        {this.rightCol.map(key => {
+                            return (
+                                <ButtonNumberCF
+                                    value={params[key]}
+                                    name={`changeFunctions.${name}.typeParams.${FxyType.Sis2}.${key}`}
+                                    range={range[key]}
+                                    pres={pres[key]}
+                                    hkLabel={'cf.hotkeysDescription.xy.sis2.' + key}
+                                    hkData1={functionParams.number}
+                                    path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.${key}`}
+                                    onChange={this.handleParamChange}
+                                />
+                            );
+                        })}
+
+                        <ButtonNumberCF
+                            value={params.end}
+                            name={`changeFunctions.${name}.end`}
+                            range={range.end}
+                            pres={pres.end}
+                            hkLabel={'cf.hotkeysDescription.xy.sis2.end'}
+                            hkData1={functionParams.number}
+                            path={`changeFunctions.functions.${name}.params.typeParams.${FxyType.Sis2}.end`}
+                            onChange={this.handleParamChange}
+                        />
+                    </div>
                 </div>
             </div>
         );

@@ -58,13 +58,21 @@ class AppControlsComponent extends React.PureComponent<AppControlsProps, AppCont
     };
 
     render() {
-        const {reverseFullScreen, isFull, activateTutorial, language, helpOn} = this.props;
+        const {
+
+            t,
+            reverseFullScreen,
+            isFull,
+            activateTutorial,
+            language,
+            helpOn
+        } = this.props;
         return (
             <div className='app-controls'>
                 <Hotkeys/>
                 <Button
                     className="app-control-button"
-                    onClick={this.handleLanguage}>{language}</Button>
+                    onClick={this.handleLanguage}>{t('lang.'+language)}</Button>
                 {/*<Button*/}
                 {/*    className="app-control-button"*/}
                 {/*    onClick={activateTutorial}>{helpOn ? 'x' : '?'}</Button>*/}
@@ -96,4 +104,4 @@ const mapDispatchToProps: MapDispatchToProps<AppControlsActionProps, AppControls
 export const AppControls = connect<AppControlsStateProps, AppControlsActionProps, AppControlsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(withTranslation()(AppControlsComponent));
+)(withTranslation('common')(AppControlsComponent));

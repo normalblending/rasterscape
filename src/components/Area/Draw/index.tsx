@@ -25,6 +25,9 @@ import {linePattern} from "./tools/old/linePattern";
 import {lineSolidPattern} from "./tools/lineSolidPattern";
 import {lineTrailingPattern} from "./tools/lineTrailingPattern";
 import {patternId} from "../../../store/patterns/helpers";
+import {DragAndDrop} from "../../_shared/File/DragAndDrop/DragAndDrop";
+import {readImageFile} from "../../_shared/File/helpers";
+import {canvasToImageData} from "../../../utils/canvas/helpers/imageData";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -171,6 +174,7 @@ class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDra
                 throttle={!activePattern && optimization}
                 // pointerLock={true}
                 // drawOnMove={true}
+                disabled={disabled}
                 className={classNames("draw", {
                     'mask': mask,
                     'disabled': disabled

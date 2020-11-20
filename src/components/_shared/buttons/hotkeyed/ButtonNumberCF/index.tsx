@@ -22,10 +22,12 @@ import {ChangingValue} from "../../../../../store/changingValues/types";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {SelectButtonsEventData} from "../../complex/SelectButtons";
 import {setCFHighlights, setCFTypeHighlights} from "../../../../../store/changeFunctionsHighlights";
+import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
+import {Translations} from "../../../../../store/language/helpers";
 
 export interface ButtonNumberCFStateProps {
-    changeFunctionsSelectItems: SelectItem[]
-    changeFunction: ChangeFunction
+    changeFunctionsSelectItems: ChangeFunction[]
+    changeFunction?: ChangeFunction
     changingValue: ChangingValue
     hotkey: HotkeyValue
     settingMode: boolean
@@ -80,6 +82,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         t,
         settingMode,
         hkLabel,
+        hkLabelFormatter,
+        hkData0, hkData1, hkData2, hkData3,
         highlightedPath,
     } = props;
 
@@ -155,13 +159,20 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     const handleShortcutChange = React.useCallback((shortcut) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut, HotkeyControlType.Number, hkLabel || path);
+            addHotkey({
+                path,
+                key: shortcut,
+                controlType: HotkeyControlType.Number,
+                label: hkLabel || path,
+                labelFormatter: hkLabelFormatter,
+                labelData: [hkData0, hkData1, hkData2, hkData3]
+            });
         }
-    }, [addHotkey, path, hkLabel, path]);
+    }, [addHotkey, path, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3, path]);
 
 
     const handleCFMouseEnter = React.useCallback((data: SelectButtonsEventData) => {
-        setCFHighlights(data?.value?.value);
+        setCFHighlights(data?.value?.id);
     }, [setCFHighlights]);
     const handleCFMouseLeave = React.useCallback((data: SelectButtonsEventData) => {
         setCFHighlights(null);
@@ -183,6 +194,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const changeFunctionId = changingValueData && changingValue.changeFunctionId;
     const changingParams = changingValueData && changeFunction.params;
     const changingType = changingValueData && changeFunction.type;
+    const cfNumber = changeFunction?.number;
 
 
     const buttonClassName = React.useMemo(() => classNames('button-number-cf-value', {
@@ -202,6 +214,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
                 className={buttonClassName}
 
+                changeFunction={changeFunction}
                 changeFunctionId={changeFunctionId}
                 changeFunctionType={changingType}
                 changingStartValue={changingStartValue}
@@ -216,6 +229,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             />
             {settingMode && (
                 <ShortcutInput
+                    autoblur={othersButtonNumberProps.autoblur}
+                    autofocus={othersButtonNumberProps.autofocus}
                     placeholder={t('buttonNumberCF.hotkey')}
                     value={hotkey?.key}
                     onChange={handleShortcutChange}/>
@@ -247,9 +262,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     // const handleCFSelectDropFocus = React.useCallback(() => {
     //
     // }, []);
-    const timer = React.useRef(null);
+    // const timer = React.useRef(null);
     const handleCFSelectDropBlur = React.useCallback(() => {
-        console.log('SELECT DROP BLUR')
+        // console.log('SELECT DROP BLUR')
         setTimeout(() => {
              setRedOpen(false);
              setMenuOpen(false);
@@ -273,7 +288,13 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
 
 
+    const cfGetText = React.useMemo(() => (item: ChangeFunction) => {
+        return Translations.cfName(t)(item);
+    }, [t]);
 
+    const cfGetValue = React.useMemo(() => (item: ChangeFunction) => {
+        return item.id
+    }, []);
 
     return withoutCF ? <div className={classNames("button-number-cf", className)}>{buttonElement}</div> : (
         <HoverHideable
@@ -297,6 +318,16 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                         name={buttonNumberProps.name + '-select-cf'}
                         nullAble
                         nullText={'-'}
+
+                        hkByValue={false}
+                        hkLabel={hkLabel}
+                        hkLabelFormatter={LabelFormatter.ChangeFunction}
+                        hkData1={hkData1}
+                        hkData2={hkData2}
+                        hkData3={hkData3}
+
+                    //     hkLabel,
+                    // hkData1, hkData2, hkData3,
                         onValueMouseEnter={handleCFValueMouseEnter}
                         onValueMouseLeave={handleCFValueMouseLeave}
                         className={"button-number-cf-select"}
@@ -304,6 +335,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                         onItemMouseEnter={handleCFMouseEnter}
                         onItemMouseLeave={handleCFMouseLeave}
                         onChange={handleCFChange}
+                        getText={cfGetText}
+                        getValue={cfGetValue}
                         items={changeFunctionsSelectItems}
                     />
                 </HoverHideable>
@@ -320,6 +353,8 @@ const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFO
     hotkey: state.hotkeys.keys[path],
     settingMode: state.hotkeys.setting,
     highlightedPath: state.hotkeys.highlightedPath,
+    autofocus: state.hotkeys.autofocus,
+    autoblur: state.hotkeys.autoblur,
 });
 
 const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNumberCFOwnProps> = {

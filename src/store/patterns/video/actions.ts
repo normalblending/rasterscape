@@ -69,7 +69,7 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
         height: height,
         depth: depth,
         onNewFrame: (pixels, width, height) => {
-            coordHelper.setText(pixels.length);
+            // coordHelper.setText(pixels.length);
             dispatch(updateImage({
                 id: patternId,
                 imageData: new ImageData(new Uint8ClampedArray(pixels), width, pixels.length / 4 / width),

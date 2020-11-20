@@ -1,21 +1,57 @@
 .hotkeys {
 
+
   .hotkeys-list {
 
-    z-index: 2;
+    background: radial-gradient(#ffffff -16%, lightgrey);
+
+    z-index: 1;
     position: absolute;
     top: 20px;
-    right: 0;
-    width: 300px;
-    padding: 0 0 10px 35px;
+    right: 0px;
+    width: 485px;
+
+    padding: 33px 0 42px 48px;
     display: flex;
     flex-direction: column;
-    background: rgba(0, 0, 0, 0.05);
 
-    .hotkeys-list-item {
+    max-height: calc(100vh - 27px);
+
+    overflow: scroll;
+    box-sizing: border-box;
+
+    .settings {
+      display: flex;
+
+    }
+
+    .hotkeys-list-controls {
+      z-index: 2;
+
+      position: fixed;
+      display: flex;
+      background: transparent;
+      height: 24px;
+      width: 485px;
+      margin-top: -33px;
+      margin-left: -35px;
+      align-items: flex-start;
+
+      padding-left: 35px;
+      box-sizing: border-box;
+    }
+
+    .hotkeys-list-items {
+      padding-bottom: calc(20px + 12px);
+    }
+    .global-hotkeys {
+      margin-top: -12px;
+    }
+    .hotkeys-list-items .hotkeys-list-item {
       display: flex;
       align-items: flex-end;
       height: 24px;
+      flex: 0 0 auto;
 
       .hotkey-on-release {
         min-width: 15px;
@@ -42,10 +78,13 @@
       .hotkey-name {
 
         width: 100%;
-        border-bottom: 1px dotted black;
+        border-bottom: 1px dotted #797979;
         font-size: 14px;
         font-weight: normal;
         text-align: left;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
 

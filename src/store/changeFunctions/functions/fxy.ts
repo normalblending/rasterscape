@@ -67,7 +67,7 @@ const fxyFunctionByType = {
 
         const {x, y, end, zd} = params;
 
-        const f = xyParaboloid(1/2, 1/2, x, y);
+        const f = xyParaboloid(1 / 2, 1 / 2, x, y);
 
         const width = pattern.current.imageData.width;
         const height = pattern.current.imageData.height;
@@ -80,7 +80,7 @@ const fxyFunctionByType = {
 
         return Math.max(
             Math.min(
-                (znorm * end ) * (range[1] - range[0]) + startValue,
+                (znorm * end) * (range[1] - range[0]) + startValue,
                 startValue + (range[1] - startValue) * end
             ),
             startValue
@@ -102,7 +102,7 @@ const fxyFunctionByType = {
 
         return Math.max(
             Math.min(
-                (znorm * end ) * (range[1] - range[0]) + startValue,
+                (znorm * end) * (range[1] - range[0]) + startValue,
                 startValue + (range[1] - startValue) * end
             ),
             startValue
@@ -111,19 +111,18 @@ const fxyFunctionByType = {
     },
 };
 
-export const fxyChangeFunction =
-    ({params, range, pattern}) =>
-        ({startValue, time, position}) => {
+export const fxyChangeFunction = () => {
+    return ({params, range, pattern, startValue, time, position}) => {
 
-            return fxyFunctionByType[params.type]({
-                startValue,
-                range,
-                params: params.typeParams[params.type],
-                pattern,
-                position
-            })
-        };
-
+        return fxyFunctionByType[params.type]({
+            startValue,
+            range,
+            params: params.typeParams[params.type],
+            pattern,
+            position
+        })
+    };
+};
 // VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO
 
 export const xyVideoFunctionByType = {
@@ -131,7 +130,7 @@ export const xyVideoFunctionByType = {
 
         const {x: xk, y: yk, end, zd} = params;
 
-        const f = xyParaboloid(1/2, 1/2, xk, yk);
+        const f = xyParaboloid(1 / 2, 1 / 2, xk, yk);
 
 
         const xnorm = x / width;

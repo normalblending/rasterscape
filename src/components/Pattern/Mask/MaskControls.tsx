@@ -34,23 +34,24 @@ export class MaskControlsComponent extends React.PureComponent<MaskControlsProps
 
     handleInverseChange = (data) => {
         const {setMaskParams, patternId} = this.props;
-        coordHelper2.setText('inv ' + !data.selected);
+        // coordHelper2.setText('inv ' + !data.selected);
         setMaskParams(patternId, {
             inverse: !data.selected
         });
     };
 
     render() {
-        const {patternId} = this.props;
+        const {patternId, t} = this.props;
         const {inverse} = this.props.params;
         return (
             <div className={'mask-controls'}>
                 <ButtonHK
                     selected={inverse}
                     path={`pattern.${patternId}.mask.inverse`}
-                    hkLabel={`p${patternId} mask inverse`}
+                    hkLabel={`pattern.hotkeysDescription.mask.inverse`}
+                    hkData1={patternId}
                     onClick={this.handleInverseChange}
-                >{inverse ? 'white' : 'black'}</ButtonHK>
+                >{t('pattern.mask.' + (inverse ? 'white' : 'black'))}</ButtonHK>
             </div>
         );
     }

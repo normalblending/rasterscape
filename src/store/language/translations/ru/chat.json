@@ -1,0 +1,93 @@
+{
+  "auth": {
+    "success": "авторизация выполнена",
+    "wrongPass": "неверный парооль",
+    "error":  "ошибка",
+    "accessDenied": "не пройдена аутентификация",
+    "accessError":  "ошибка"
+  },
+  "setPass": {
+    "success": "пароль изменен",
+    "wrongPass": "неверный парооль",
+    "error":  "ошибка"
+  },
+
+  "scores": {
+    "error": "ошибка"
+  },
+
+  "imagePost": {
+    "error": "ошибка"
+  },
+
+  "textMessage": {
+    "error": "ошибка"
+  },
+
+  "message": {
+    "unknownCommand": "неизвеестная команда {{command}}"
+  },
+
+  "channel": {
+    "add": {
+      "channelSignRequired": "не задано имя",
+      "channelSignTooLong": "слишком длинное имя",
+      "chatIdRequired": "не задан идентификатор",
+      "success": "канал {{channelSign}} создан",
+      "updateSuccess":  "{{channelSign}}.chatId = {{value}}",
+      "error": "ошибка"
+    },
+    "setParam": {
+      "channelNotExists": "канал не найден",
+      "invalidLink": "невалидная ссылка",
+      "success": "{{channelSign}}.{{param}} = {{value}}",
+      "error":  "ошибка"
+    },
+    "del": {
+      "channelNotExists": "канал не найден",
+      "success": "канал {{channelSign}} удален",
+      "error":  "ошибка"
+    },
+    "postImage": {
+      "success": "изображение отправлено",
+      "error":  "ошибка"
+    },
+    "post": {
+      "accessDenied": "нет доступа",
+      "accessError": "ошибка"
+    },
+    "addMember": {
+      "invalidSign": "невалидное имя участника",
+      "channelNotExists": "канал не найден",
+      "success": "{{memberSign}} добавлен в {{channelSign}}",
+      "error":  "ошибка"
+    },
+    "removeMember": {
+      "invalidSign": "невалидное имя участника",
+      "channelNotExists": "канал не найден",
+      "success": "{{memberSign}} удален из {{channelSign}}",
+      "error":  "ошибка"
+    },
+    "data": {
+      "admin":  "админ.",
+      "private": "частный",
+      "public": "публичный",
+      "anon":  "анонимный",
+      "caption": "подпись",
+      "description":  "описание",
+      "chatId": "chatId",
+      "message":  "сообщение",
+      "link": "ссылка",
+      "members":  "участники",
+      "score": "место/счет"
+    },
+    "scores": {
+      "accounts": "рекорды/пользователи",
+      "channels": "рекорды/каналы"
+    },
+    "reservedString": "недопустимое имя канала",
+    "accessDenied": "доступ запрещен",
+    "accessError": "ошибка"
+  }
+
+}

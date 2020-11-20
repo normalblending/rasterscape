@@ -7,9 +7,17 @@ import {settingMode} from "../store/hotkeys";
 import {setFullScreen} from "../store/fullscreen";
 import {toggleDemonstration} from "../store/patterns/demonstration/actions";
 import {offOptimization, onOptimization} from "../store/optimization";
-import {getImageDataFromClipboard} from "../utils/clipboard";
+import {getImageFromClipboard} from "../utils/clipboard";
 import {load} from "../store/patterns/import/actions";
 import {copyPatternToClipboard} from "../store/patterns/pattern/actions";
+import {
+    clearSelectionIn,
+    cutSelectionInToClipboard, selectAll,
+    updateSelection
+} from "../store/patterns/selection/actions";
+import {PatternConfig} from "../store/patterns/pattern/types";
+import {addPattern} from "../store/patterns/actions";
+import {imageToImageData} from "../utils/canvas/helpers/imageData";
 
 export interface PatternsHotkeysStateProps {
     activePatternId: string
@@ -26,6 +34,11 @@ export interface PatternsHotkeysActionProps {
     toggleDemonstration: typeof toggleDemonstration
     onOptimization: typeof onOptimization
     offOptimization: typeof offOptimization
+    cutPatternSelection(id)
+    addPattern(config?: PatternConfig)
+    cutPatternSelectionToClipboard(id)
+    selectAll(id)
+    updateSelection: typeof updateSelection
     load: typeof load
     copyToClipboard
 }
@@ -53,15 +66,29 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         optimization,
         onOptimization,
         offOptimization,
+        cutPatternSelection,
+        cutPatternSelectionToClipboard,
+        updateSelection,
         load,
+        addPattern,
         copyToClipboard,
+        selectAll,
     } = props;
 
     const receiveImageFromClipboard = React.useCallback((event) => {
-        getImageDataFromClipboard(event, (imageData) => {
-            activePatternId && load(activePatternId, imageData);
+        getImageFromClipboard(event, (image) => {
+            if (activePatternId) {
+                load(activePatternId, image);
+            } else {
+                addPattern?.({
+                    startImage: imageToImageData(image),
+                    history: true,
+                    selection: true,
+                    repeating: false
+                });
+            }
         })
-    }, [activePatternId, load])
+    }, [activePatternId, load, addPattern])
 
     React.useEffect(() => {
         document.addEventListener('paste', receiveImageFromClipboard);
@@ -71,6 +98,7 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
     }, [activePatternId]);
 
     const copyImageToClipboard = React.useCallback((e) => {
+        console.log(!window.getSelection().toString());
         if (!window.getSelection().toString()) {
             activePatternId && copyToClipboard(activePatternId);
         }
@@ -80,6 +108,19 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         document.addEventListener('copy', copyImageToClipboard);
         return () => {
             document.removeEventListener('copy', copyImageToClipboard);
+        };
+    }, [activePatternId]);
+
+    const cutImageToClipboard = React.useCallback((e) => {
+        if (!window.getSelection().toString()) {
+            activePatternId && cutPatternSelectionToClipboard(activePatternId);
+        }
+    }, [activePatternId, cutPatternSelectionToClipboard])
+
+    React.useEffect(() => {
+        document.addEventListener('cut', cutImageToClipboard);
+        return () => {
+            document.removeEventListener('cut', cutImageToClipboard);
         };
     }, [activePatternId]);
 
@@ -113,6 +154,31 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         optimization ? offOptimization() : onOptimization();
     }, [onOptimization, offOptimization, optimization]);
 
+    const handleDeleteSelected = React.useCallback((e) => {
+        e.preventDefault();
+        cutPatternSelection(activePatternId);
+    }, [cutPatternSelection, activePatternId]);
+
+    const handleClearSelection = React.useCallback((e) => {
+        e.preventDefault();
+        updateSelection(activePatternId, [], null);
+    }, [updateSelection, activePatternId]);
+
+    const handleSelectAll = React.useCallback((e) => {
+        e.preventDefault();
+        activePatternId && selectAll(activePatternId);
+    }, [selectAll, activePatternId]);
+
+    const handleScrollToPattern = React.useCallback((e) => {
+        e.preventDefault();
+
+        window.location.hash = '#pattern' + e.key;
+        // window.scrollTo(0, -100);//document.getElementsByClassName('pattern')[+e.key - 1]?.getBoundingClientRect().left + window.scrollX);
+        // console.log(e, document.getElementsByClassName('pattern')[+e.key - 1]?.getBoundingClientRect().left + window.scrollX);
+
+
+    }, []);
+
     return (
         <>
             <Key
@@ -133,13 +199,32 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
             />
             <Key
                 // keys={['alt + 5']}
-                keys={['command + 5', 'ctrl + 5']}
+                keys={['command + j', 'ctrl + j']}
                 onPress={handleToggleDemonstration}
             />
             <Key
                 // keys={['alt + 5']}
                 keys={['command + o', 'ctrl + o']}
                 onPress={handleToggleOptimization}
+            />
+            <Key
+                keys={['backspace', 'del']}
+                onPress={handleDeleteSelected}
+            />
+            <Key
+                keys={['command + d', 'ctrl + d']}
+                onPress={handleClearSelection}
+            />
+            <Key
+                keys={['command + a', 'ctrl + a']}
+                onPress={handleSelectAll}
+            />
+            <Key
+                keys={[
+                    ...'123456789'.split('').map(n => 'command + ' + n),
+                    ...'123456789'.split('').map(n => 'ctrl + ' + n),
+                ]}
+                onPress={handleScrollToPattern}
             />
         </>
     );
@@ -162,6 +247,11 @@ const mapDispatchToProps: MapDispatchToProps<PatternsHotkeysActionProps, Pattern
     offOptimization,
     load,
     copyToClipboard: copyPatternToClipboard,
+    cutPatternSelection: clearSelectionIn,
+    addPattern: addPattern,
+    updateSelection: updateSelection,
+    cutPatternSelectionToClipboard: cutSelectionInToClipboard,
+    selectAll
 };
 
 export const PatternsHotkeys = connect<PatternsHotkeysStateProps, PatternsHotkeysActionProps, PatternsHotkeysOwnProps, AppState>(

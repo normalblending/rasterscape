@@ -56,7 +56,7 @@ export class BlurControlsComponent extends React.PureComponent<BlurControlsProps
     };
 
     render() {
-        const {patternId} = this.props;
+        const {patternId, t} = this.props;
         const {radius, onUpdate} = this.props.blur;
         return (
             <div className={'blur-controls'}>
@@ -64,23 +64,26 @@ export class BlurControlsComponent extends React.PureComponent<BlurControlsProps
                     integer
                     pres={0}
                     path={`patterns.${patternId}.blur.value.radius`}
-                    hkLabel={`p${patternId} blur radius`}
+                    hkLabel={`pattern.hotkeysDescription.blur.radius`}
+                    hkData1={patternId}
                     name={"radius"}
                     value={radius}
                     range={radiusRange}
                     onChange={this.handleChange}/>
                 <ButtonHK
                     path={`pattern.${patternId}.blur.onUpdate`}
-                    hkLabel={`p${patternId} blur on update`}
+                    hkLabel={`pattern.hotkeysDescription.blur.onUpdate`}
+                    hkData1={patternId}
                     selected={onUpdate}
                     name={"onUpdate"}
                     onClick={this.handleToggleChange}
-                >on update</ButtonHK>
+                >{t('pattern.blur.onUpdate')}</ButtonHK>
                 <ButtonHK
                     path={`pattern.${patternId}.blur.once`}
-                    hkLabel={`p${patternId} blur once`}
+                    hkLabel={`pattern.hotkeysDescription.blur.once`}
+                    hkData1={patternId}
                     onClick={this.handleBlurOnce}
-                >once</ButtonHK>
+                >{t('pattern.blur.once')}</ButtonHK>
             </div>
         );
     }

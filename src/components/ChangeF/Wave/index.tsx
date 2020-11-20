@@ -11,6 +11,8 @@ import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {SawCF} from "./Saw";
 import {NoiseCF} from "./Noise";
+import {withTranslation, WithTranslation} from "react-i18next";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 // import {WaveHelp} from "../tutorial/tooltips/WaveHelp";
 
@@ -18,6 +20,7 @@ export interface WaveCFStateProps {
 
     tutorial: boolean
     params: WaveParams
+    functionParams: ChangeFunction
 }
 
 export interface WaveCFActionProps {
@@ -29,7 +32,7 @@ export interface WaveCFOwnProps {
     name: string
 }
 
-export interface WaveCFProps extends WaveCFStateProps, WaveCFActionProps, WaveCFOwnProps {
+export interface WaveCFProps extends WaveCFStateProps, WaveCFActionProps, WaveCFOwnProps, WithTranslation {
 
 }
 
@@ -86,22 +89,31 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
     };
     selectItems = arrayToSelectItems([WaveType.Sin, WaveType.Saw, WaveType.Noise]);
 
+    typeText = ({value}) => this.props.t('cf.wave.type.' + value);
 
     render() {
-        const {params, name, tutorial} = this.props;
+        const {params, name, tutorial, functionParams} = this.props;
 
         const WaveComponent = this.waveComponentsByType[params.type];
+
+
+        // console.log('WAVE RENDERR WAVE RENDERR WAVE RENDERR WAVE RENDERR WAVE RENDERR WAVE RENDERR ');
+
         return (
             <div className={"wave-change-function"}>
                 <SelectDrop
                     name={`cf.${name}.type`}
                     className={'type-select'}
+                    getText={this.typeText}
+                    hkLabel={'cf.hotkeysDescription.wave.type'}
+                    hkData1={functionParams.number}
                     value={params.type}
                     onChange={this.handleTypeChange}
                     items={this.selectItems}/>
                 {WaveComponent &&
                 <WaveComponent
                     name={name}
+                    functionParams={functionParams}
                     tutorial={tutorial}
                     params={params.typeParams[params.type]}
                     onChange={this.handleParamChange}
@@ -113,14 +125,16 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
 
 const mapStateToProps: MapStateToProps<WaveCFStateProps, WaveCFOwnProps, AppState> = (state, {name}) => ({
     params: state.changeFunctions.functions[name].params,
-    tutorial: state.tutorial.on
+    tutorial: state.tutorial.on,
+    functionParams: state.changeFunctions.functions[name]
 });
 
 const mapDispatchToProps: MapDispatchToProps<WaveCFActionProps, WaveCFOwnProps> = {
     onChange: changeCFParams
 };
 
-export const WaveCF = connect<WaveCFStateProps, WaveCFActionProps, WaveCFOwnProps, AppState>(
-    mapStateToProps,
-    mapDispatchToProps
-)(WaveCFComponent);
+export const WaveCF =
+    connect<WaveCFStateProps, WaveCFActionProps, WaveCFOwnProps, AppState>(
+        mapStateToProps,
+        mapDispatchToProps
+    )(withTranslation('common')(WaveCFComponent));

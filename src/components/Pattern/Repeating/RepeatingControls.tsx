@@ -74,7 +74,7 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
 
     render() {
 
-        const {patternId} = this.props;
+        const {patternId, t} = this.props;
         const {type, gridParams} = this.props.repeating;
         return (
             <div className={'repeating-controls'}>
@@ -86,8 +86,13 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     path={`pattern.${patternId}.repeating.params.gridParams.float`}
                                     containerClassName={'repeating-button'}
                                     name={"float"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.int'}
+                                    hkData1={patternId}
                                     onClick={this.handleBoolParamChange}
-                                    selected={gridParams.float}>{!gridParams.float ? "int" : "float"}</ButtonHK>
+                                    selected={gridParams.float}
+                                >
+                                    {t('pattern.repeating.float')}
+                                </ButtonHK>
                                 <ButtonNumberCF
                                     pres={gridParams.float ? 2 : 1}
                                     range={repeatingRange}
@@ -95,6 +100,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.x`}
                                     name={"x"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.x'}
+                                    hkData1={patternId}
                                     value={gridParams.x}
                                     onChange={this.handleGridParamsChange}/>
                                 <ButtonNumberCF
@@ -102,6 +109,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.y`}
                                     name={"y"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.y'}
+                                    hkData1={patternId}
                                     value={gridParams.y}
                                     pres={gridParams.float ? 2 : 1}
                                     range={repeatingRange}
@@ -114,16 +123,20 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     path={`pattern.${patternId}.repeating.params.gridParams.flat`}
                                     containerClassName={'repeating-button'}
                                     name={"flat"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.flat'}
+                                    hkData1={patternId}
                                     onClick={this.handleBoolParamChange}
                                     selected={gridParams.flat}
                                 >
-                                    flat
+                                    {t('pattern.repeating.flat')}
                                 </ButtonHK>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.xOut`}
                                     name={"xOut"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.xOut'}
+                                    hkData1={patternId}
                                     value={gridParams.xOut}
                                     range={repeatingOutRange}
                                     pres={gridParams.float ? 2 : 1}
@@ -133,6 +146,8 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     integer={!gridParams.float}
                                     path={`patterns.${this.props.patternId}.repeating.params.gridParams.yOut`}
                                     name={"yOut"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.yOut'}
+                                    hkData1={patternId}
                                     value={gridParams.yOut}
                                     range={repeatingOutRange}
                                     pres={gridParams.float ? 2 : 1}

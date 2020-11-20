@@ -4,7 +4,8 @@ export const canvasToImageData = (canvas: HTMLCanvasElement): ImageData => {
     try {
         return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height);
     } catch (e) {
-        return new ImageData(0, 0);
+        console.log(e)
+        return null;
     }
 };
 
@@ -57,7 +58,7 @@ export const imageDataToBase64 = (imageData: ImageData): string => {
 
     context.putImageData(imageData, 0, 0);
 
-    return canvas.toDataURL();
+    return canvas.toDataURL('image/jpg');
 };
 
 export const base64ToImageData = (src: string): Promise<ImageData> => {

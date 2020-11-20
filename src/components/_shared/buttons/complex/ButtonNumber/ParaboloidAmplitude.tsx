@@ -5,13 +5,15 @@ import {AmplitudeComponentProps} from "./types";
 import * as classNames from "classnames";
 import * as Color from "color";
 import xyamplitude from './xyamplitude.png';
+import {WithTranslation, withTranslation} from "react-i18next";
+import {Translations} from "../../../../../store/language/helpers";
 
-export interface ParaboloidAmplitudeProps extends AmplitudeComponentProps {
+export interface ParaboloidAmplitudeProps extends AmplitudeComponentProps, WithTranslation {
 
 }
 
 export const xyAmplitude = (type): React.FC<ParaboloidAmplitudeProps> => (props) => {
-    const {range, params, changingStartValue, changeFunctionId, changing, buttonWidth} = props;
+    const {range, params, changingStartValue, changeFunction, changing, buttonWidth, t} = props;
 
 
     const ampWidth = params.end * (1 - (changingStartValue - range[0]) / (range[1] - range[0]));
@@ -27,10 +29,12 @@ export const xyAmplitude = (type): React.FC<ParaboloidAmplitudeProps> => (props)
             className={classNames("button-number-xy-amplitude", {["button-number-xy-amplitude-changing"]: changing})}
             >
             <img src={xyamplitude} />
-            <span>{changeFunctionId}{type}</span>
+            <span>
+                {Translations.cf(t)(changeFunction)}
+            </span>
         </div>
     );
 };
 
-export const ParaboloidAmplitude = xyAmplitude('parab');
-export const Sis2Amplitude = xyAmplitude('sis2');
+export const ParaboloidAmplitude = withTranslation('common')(xyAmplitude('parab'));
+export const Sis2Amplitude = withTranslation('common')(xyAmplitude('sis2'));

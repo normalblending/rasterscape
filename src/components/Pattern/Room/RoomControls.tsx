@@ -8,6 +8,7 @@ import {createRoom, leaveRoom, setDrawer} from "../../../store/patterns/room/act
 import './roomControls.scss';
 import {WithTranslation, withTranslation} from "react-i18next";
 import {Chat} from "./Chat";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface RoomControlsStateProps {
     connected: string
@@ -105,21 +106,21 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
                             value={this.state.roomName}
                             onKeyPress={this.handleKeyPress}
                             onChange={roomName => this.setState({roomName})}/>
-                        <Button
+                        <ButtonHK
                             disabled={!this.state.roomName}
                             onClick={this.handleCreateRoom}
-                        >{t('room.enter')}</Button>
+                        >{t('room.enter')}</ButtonHK>
                     </>) : (<>
 
                         <div
                             className={'room-name'}>
                             <span>{this.state.roomName}</span> {members ? <small>({members})</small> : ''}
                         </div>
-                        <Button
+                        <ButtonHK
                             className={'room-delete'}
                             disabled={!this.state.roomName}
                             onDoubleClick={this.handleLeaveRoom}
-                        >{t('room.leave')}</Button>
+                        >{t('room.leave')}</ButtonHK>
                     </>)}
                 </div>
             </div>

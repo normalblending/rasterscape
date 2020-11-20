@@ -45,7 +45,7 @@ export const createCFInitialState = (id: string, type: ECFType, number: number) 
         type,
         number,
         params: chInitialParams[type],
-        paramsConfig: chParamsConfig[type]
+        paramsConfig: chParamsConfig[type] // ???
     }
 };
 

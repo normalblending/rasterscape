@@ -65,13 +65,16 @@ export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, 
             const curve = new Bezier(bezierPoints);
 
             // for (let i = xn + xOut - 1; i >= -xOut; i--) {
-            for (let i = -xOut; i < xn + xOut; i++) {
+            let i, j;
+            for (let inorm = 0; inorm < xn + 2 * xOut; inorm++) {
+                i = inorm - xOut;
                 const tx = (x + xd * i) / width;
                 const ai = curve.get(tx);
 
 
                 // for (let j = yn + yOut - 1; j >= -yOut; j--) {
-                for (let j = -yOut; j < yn + yOut; j++) {
+                for (let jnorm = 0; jnorm < yn + 2 * yOut; jnorm++) {
+                    j = jnorm - yOut;
 
                     const ty = (y + yd * j) / height;
                     const aj = curve.get(ty);
@@ -83,7 +86,7 @@ export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, 
                     array.push({
                         x: xij,
                         y: yij,
-                        id: canvasItemId(i, j),
+                        id: canvasItemId(inorm, jnorm),
                         outer: i < 0 || i >= xn || j < 0 || j >= yn,
                         color: withColor ? getColorByCoordinate(imageData, xij, yij) : null
                     });

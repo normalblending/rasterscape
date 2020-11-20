@@ -4,9 +4,11 @@
   width: 210px;
   display: flex;
   flex-direction: column;
+  height: 0;
 
   .tools-select {
     display: flex;
+    flex: 0 0 auto;
   }
 }
 
@@ -15,6 +17,7 @@
 
   //margin-left: 10px;
   display: flex;
+  height: 0;
 
   .control-buttons {
 
@@ -61,7 +64,11 @@
     .modes {
 
       .select-buttons-items .button {
-        width: 35px;
+        width: 40px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
     }
 
@@ -72,7 +79,8 @@
 
     flex-wrap: wrap;
     display: flex;
-    align-items: baseline;
+    height: 0;
+    align-items: flex-start;
   }
 
   .function-title {

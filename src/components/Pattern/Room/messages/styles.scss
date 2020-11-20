@@ -1,0 +1,261 @@
+
+.room-chat-messages {
+  //border: 1px solid black;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  font-size: 13px;
+  pointer-events: none;
+
+  span {
+    background: #efefef;
+  }
+
+  .room-chat-messages-container {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    width: 100%;
+    white-space: normal;
+    padding: 2px 2px;
+    word-break: break-all;
+    word-break: break-word;
+    text-align: left;
+
+    user-select: text;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+.room-chat-message {
+  margin-bottom: 2px;
+  pointer-events: all;
+
+  word-break: break-word;
+
+  span {
+    background: #e3e3e3;
+    padding-right: 3px;
+  }
+
+  &.unreaded span {
+    color: black;
+    background: linear-gradient(90deg, #c8ff00, transparent);
+  }
+
+  &.notification {
+
+    width: 100%;
+    text-align: right;
+    font-style: italic;
+    margin-bottom: 6px;
+    line-height: 14px;
+
+    span {
+
+      padding-right: 1px;
+    }
+  }
+
+  &.error {
+    span {
+      //color: red;
+      //background: bisque;
+
+      color: chocolate;
+      background: transparent;
+      //background: linear-gradient(270deg, #ff00002b, transparent);
+    }
+
+    //&.unreaded span {
+    //  color: #c8ff00;
+    //  background: linear-gradient(270deg, #ff0000, transparent);
+    //}
+  }
+
+  &.success {
+
+    width: 100%;
+    text-align: right;
+
+    span {
+      //color: green;
+      color: cornflowerblue;
+      background: transparent;
+      //background: linear-gradient(270deg, rgba(157, 255, 0, 0.17), transparent);
+    }
+
+    //&.unreaded span {
+    //  color: #c8ff00;
+    //  background: linear-gradient(270deg, #ff0000, transparent);
+    //}
+  }
+}
+.channelData-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-end;
+  pointer-events: all;
+
+  .channelData {
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 96%;
+    background: radial-gradient(#ffffff, #cccccc57);
+    margin-bottom: 6px;
+
+    .channelData-sign {
+      font-size: 13px;
+      width: 100%;
+      text-align: right;
+      font-style: italic;
+      font-weight: bold;
+
+      margin-bottom: 6px;
+
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      .sign {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+      }
+
+      .private {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        //flex: 1 0 auto;
+        font-size: 11px;
+        font-weight: normal;
+        padding-right: 4px;
+        flex: 1 0 auto;
+        text-align: left;
+
+
+        color: chocolate;
+
+        &.public {
+          color: cornflowerblue;
+        }
+      }
+    }
+
+
+    .two-cols {width: 100%;
+      display: flex;
+
+      & > div {
+        width: 50%;
+        display: flex;
+        flex-direction: row-reverse;
+      }
+    }
+
+    .channelData-values-table {
+
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      width: 100%;
+      box-sizing: border-box;
+
+      .description {
+        span {
+          width: 100%;
+        }
+      }
+
+      & > div {
+        display: flex;
+        flex-direction: row-reverse;
+        width: 100%;
+        //height: 14px;
+        margin-bottom: 2px;
+        line-height: 14px;
+
+        & > div:nth-child(1) {
+          flex: 1 0 81px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+
+          padding-left: 13px;
+          box-sizing: border-box;
+
+        }
+
+        & > div:nth-child(2) {
+
+          flex: 1 0 117px;
+          position: relative;
+          //text-align: right;
+          display: flex;
+          justify-content: flex-end;
+
+          &.long {
+            overflow: hidden;
+            span {
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              max-width: 100%;
+              position: absolute;
+              right: 0;
+              background: #efefef;
+            }
+            &:hover {
+              overflow: visible;
+              span {
+                max-width: none;
+                //position: absolute;
+                //left: 0;
+              }
+            }
+          }
+          &.tall {
+            overflow: hidden;
+            span {
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              max-width: 100%;
+              //display: flex;
+              position: absolute;
+              right: 0;
+              background: #efefef;
+            }
+            &:hover {
+              overflow: visible;
+              span {
+                max-width: 100%;
+                white-space: normal;
+                z-index: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.row {
+  display: flex;
+}
+.col {
+  display: flex;
+}

@@ -76,6 +76,13 @@ class LineComponent extends React.PureComponent<LineProps> {
         })
     };
 
+    compositeOperationText = ({value}) => this.props.t('line.compositeOperations.' + value);
+    lineTypeText = ({text}) => this.props.t(`lineTypes.${text.toLowerCase()}`);
+    capText = ({value}) => this.props.t('line.cap.' + value);
+    joinText = ({value}) => this.props.t('line.join.' + value);
+    randomTypeText = ({value}) => this.props.t('line.randomType.' + value);
+
+
     render() {
         const {paramsConfigMap, paramsValue, t} = this.props;
         return (
@@ -85,7 +92,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                     br={3}
                     value={paramsValue.type}
                     name={"type"}
-                    getText={item => t(`lineTypes.${item.text.toLowerCase()}`)}
+                    getText={this.lineTypeText}
                     items={typeSelectItems}
                     onChange={this.handleParamChange}/>
 
@@ -98,6 +105,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                             pres={0}
                             valueD={1}
                             path={"line.params.size"}
+                            hkLabel={'line.hotkeysDescription.size'}
                             value={paramsValue.size}
                             name={"size"}
                             onChange={this.handleParamChange}
@@ -110,6 +118,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                             valueD={100}
                             precisionGain={10}
                             path={"line.params.patternSize"}
+                            hkLabel={'line.hotkeysDescription.patternSize'}
                             value={paramsValue.patternSize}
                             name={"patternSize"}
                             onChange={this.handleParamChange}
@@ -123,11 +132,14 @@ class LineComponent extends React.PureComponent<LineProps> {
                         precisionGain={5}
                         range={opacityRange}
                         path={"line.params.opacity"}
+                        hkLabel={'line.hotkeysDescription.opacity'}
                         value={paramsValue.opacity}
                         name={"opacity"}
                         onChange={this.handleParamChange}/>
                     <SelectDrop
                         name={"compositeOperation"}
+                        getText={this.compositeOperationText}
+                        hkLabel={'line.hotkeysDescription.compositeOperations'}
                         value={paramsValue.compositeOperation}
                         items={paramsConfigMap["compositeOperation"].props.items}
                         onChange={this.handleParamChange}/>
@@ -140,6 +152,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                             valueD={100}
                             precisionGain={10}
                             path={"line.params.patternSize"}
+                            hkLabel={'line.hotkeysDescription.patternSize'}
                             value={paramsValue.patternSize}
                             name={"patternSize"}
                             onChange={this.handleParamChange}
@@ -151,7 +164,9 @@ class LineComponent extends React.PureComponent<LineProps> {
                         <CycledToggleHK
                             path={`line.randomType`}
                             name={"random"}
+                            getText={this.randomTypeText}
                             value={paramsValue.random}
+                            hkLabel={'line.hotkeysDescription.randomType'}
                             items={randomSelectItems}
                             onChange={this.handleParamChange}/>
 
@@ -161,12 +176,16 @@ class LineComponent extends React.PureComponent<LineProps> {
                         || paramsValue.type === ELineType.Solid) && (<>
                         <SelectDrop
                             name={"cap"}
+                            getText={this.capText}
                             value={paramsValue.cap}
+                            hkLabel={'line.hotkeysDescription.cap'}
                             items={capsSelectItems}
                             onChange={this.handleParamChange}/>
                         <SelectDrop
                             name={"join"}
+                            getText={this.joinText}
                             value={paramsValue.join}
+                            hkLabel={'line.hotkeysDescription.join'}
                             items={joinsSelectItems}
                             onChange={this.handleParamChange}/>
                     </>)}
@@ -175,6 +194,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                         <ButtonHK
                             path={`line.patternMouseCentered`}
                             name={'patternMouseCentered'}
+                            hkLabel={'line.hotkeysDescription.center'}
                             selected={paramsValue.patternMouseCentered}
                             value={paramsValue.patternMouseCentered}
                             onClick={this.handleToggledParamChange}
@@ -185,6 +205,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                         <ButtonHK
                             path={`line.patternDirection`}
                             name={'patternDirection'}
+                            hkLabel={'line.hotkeysDescription.direction'}
                             selected={paramsValue.patternDirection}
                             value={paramsValue.patternDirection}
                             onClick={this.handleToggledParamChange}

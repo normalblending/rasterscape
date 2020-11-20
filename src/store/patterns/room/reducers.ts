@@ -3,10 +3,11 @@ import {
     ERoomAction,
     ReceiveDrawerAction,
     ReceiveMembersAction,
-    ReceiveMessageAction
+    ReceiveMessageAction, SendMessageAction, SetDrawerAction
 } from "./actions";
 import {PatternAction, PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
+import {parseMessage} from "./helpers";
 
 export const roomReducers = {
     [ERoomAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
@@ -16,10 +17,36 @@ export const roomReducers = {
                 ...pattern.room,
                 value: {
                     connected: action.roomName,
-                    socket: action.socket,
+                    // socket: action.socket,
+                    persistentMessagePart: '>',
                 }
             }
         })),
+    [ERoomAction.SET_DRAWER]: reducePattern<SetDrawerAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            room: {
+                ...pattern.room,
+                value: {
+                    ...pattern.room.value,
+                    persistMeDrawer: action.persist,
+                }
+            }
+        })),
+    [ERoomAction.MESSAGE_SENT]: reducePattern<SendMessageAction>(
+        (pattern: PatternState, action) => {
+            return {
+                ...pattern,
+                room: {
+                    ...pattern.room,
+                    value: {
+                        ...pattern.room.value,
+                        persistentMessagePart: action.leftPersistent,
+                    }
+                }
+            }
+        }
+    ),
     [ERoomAction.LEAVE_ROOM]: reducePattern<PatternAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
@@ -29,19 +56,25 @@ export const roomReducers = {
             }
         })),
     [ERoomAction.RECEIVE_MESSAGE]: reducePattern<ReceiveMessageAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            room: {
-                ...pattern.room,
-                value: {
-                    ...pattern.room.value,
-                    messages: pattern.room?.value?.messages
-                        ? [...pattern.room.value.messages, action.message].slice(-69)
-                        : [action.message],
-                    unreaded: (pattern.room?.value?.unreaded || 0) + (action.isMine ? 0 : 1),
-                },
+        (pattern: PatternState, action) => {
+            const newMessage = {
+                data: action.message,
+                unreaded: !action.isMine,
+            };
+            return {
+                ...pattern,
+                room: {
+                    ...pattern.room,
+                    value: {
+                        ...pattern.room.value,
+                        messages: pattern.room?.value?.messages
+                            ? [...pattern.room.value.messages, newMessage].slice(-69)
+                            : [newMessage],
+                        unreaded: true,
+                    },
+                }
             }
-        })),
+        }),
     [ERoomAction.RESET_UNREADED]: reducePattern<PatternAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
@@ -49,7 +82,11 @@ export const roomReducers = {
                 ...pattern.room,
                 value: {
                     ...pattern.room.value,
-                    unreaded: 0,
+                    messages: pattern.room?.value?.messages.map(message => ({
+                        ...message,
+                        unreaded: false
+                    })),
+                    unreaded: false,
                 },
             }
         })),

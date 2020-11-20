@@ -1,6 +1,6 @@
 import {base64ToImage} from "./canvas/helpers/imageData";
 
-export const getImageDataFromClipboard = (event, callback) => {
+export const getImageFromClipboard = (event, callback) => {
     const items = event.clipboardData.items;
     for (let index in items) {
         const item = items[index];

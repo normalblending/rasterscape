@@ -6,6 +6,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {redo, undo} from "../../store/patterns/history/actions";
 import {isMeDrawer} from "../../store/patterns/room/helpers";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface HistoryControlsStateProps {
     history: HistoryValue
@@ -52,18 +53,18 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) 
     const {t} = useTranslation("common");
     return (
         <div className={'flex-col history-controls'}>
-            <Button
+            <ButtonHK
                 onClick={onUndo}
                 disabled={!history.before.length || isVideoPlaying || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.undo')}</span> <small>{history.before.length ? `(${history.before.length})` : ""}</small>
-            </Button>
-            <Button
+            </ButtonHK>
+            <ButtonHK
                 onClick={onRedo}
                 disabled={!history.after.length || isVideoPlaying || !meDrawer}
                 width={70}>
                 <span>{t('patternControls.redo')}</span> <small>{history.after.length ? `(${history.after.length})` : ""}</small>
-            </Button>
+            </ButtonHK>
         </div>
     );
 };

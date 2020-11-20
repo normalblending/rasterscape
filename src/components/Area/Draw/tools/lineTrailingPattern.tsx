@@ -78,6 +78,8 @@ export const lineTrailingPattern = function () {
             repeatingCoords.forEach(({x, y, id}) => {
                 const index = id;
 
+                console.log(index);
+
                 const prevPoint = prevPoints[index];
                 prevPoints[index] = {x, y};
 

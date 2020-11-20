@@ -2,7 +2,7 @@ import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
 import {Key} from "../../../Key";
-import {ECFType} from "../../../../../store/changeFunctions/types";
+import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
 import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude, Sis2Amplitude} from "./ParaboloidAmplitude";
@@ -12,6 +12,7 @@ import {WaveType} from "../../../../../store/changeFunctions/functions/wave";
 import {FxyType} from "../../../../../store/changeFunctions/functions/fxy";
 import {NoiseAmplitude} from "./NoiseAmplitude";
 import {redPoint1} from "../../../RedPointHelper";
+import {ChangeFunctions} from "../../../../../store/changeFunctions/reducer";
 
 const DEFAULT_WIDTH = 70;
 
@@ -78,6 +79,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     onRelease?(data?: ButtonNumberEventData)
 
 
+    changeFunction?: ChangeFunction
     changeFunctionId?: string
     changeFunctionType?: ECFType
     changingStartValue?: number
@@ -127,7 +129,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             || nextProps.changeFunctionId !== this.props.changeFunctionId
             || nextProps.shortcut !== this.props.shortcut
             || nextProps.className !== this.props.className
-            || nextProps.style !== this.props.style;
+            || nextProps.style !== this.props.style
+            || nextProps.autoblur !== this.props.autoblur
+            || nextProps.autofocus !== this.props.autofocus;
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -269,9 +273,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
      BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY
      * */
 
-    handlePress = e => {
+    handlePress = (e, priority) => {
 
-        if (this.props.hotkeyDisabled) {
+        if (this.props.hotkeyDisabled && !priority) {
             return;
         }
         // coordHelper2.writeln('PRESS');
@@ -383,9 +387,22 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         this.buttonRef.current.focus();
     };
 
-    // keys up down
+    controlKey = null;
     handleKeyDown = (e) => {
-        // e.preventDefault();
+
+        // control
+        if (e.keyCode === 91 || e.keyCode === 93 || e.keyCode === 17) {
+            e.preventDefault();
+
+            this.controlKey = e.keyCode;
+
+            this.handlePress(e, true);
+
+            document.addEventListener('keyup', this.handleKeyUp);
+        }
+
+
+        // keys up down
         let i = 0;
         if (e.keyCode === 38) {
             e.preventDefault();
@@ -406,10 +423,26 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         const value = oldValue + i * this.calculateOneStep();
         onChange?.({e, value, name, selected});
     };
+    // constrol keys up
+    handleKeyUp = (e) => {
+        console.log(e.keyCode);
+        if (e.keyCode === this.controlKey) {
+            e.preventDefault();
+
+            this.controlKey = null;
+
+            if (this.state.pressed) {
+                this.handleRelease();
+
+                document.removeEventListener("keyup", this.handleKeyUp);
+            }
+        }
+    };
 
     render() {
         const {
             changingStartValue,
+            changeFunction,
             changeFunctionId,
             changeFunctionType,
             changeFunctionParams,
@@ -453,6 +486,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                 onMouseLeave={this.handleLeave}
                 onMouseDown={this.handleDown}
                 onKeyDown={this.handleKeyDown}
+                onKeyUp={this.handleKeyUp}
             >
                 <div
                     className={"button-number-value"}
@@ -466,8 +500,12 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                     range={range}
                     buttonWidth={width}
                     params={amplitudeParams}
+                    type={changeFunctionParams?.type}
+
                     changingStartValue={changingStartValue}
-                    changeFunctionId={changeFunctionId}/>}
+                    changeFunctionId={changeFunctionId}
+                    changeFunction={changeFunction}
+                />}
 
                 {shortcut &&
                 <Key

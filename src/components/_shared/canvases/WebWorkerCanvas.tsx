@@ -1,10 +1,11 @@
 import * as React from "react";
 import {useRef, useEffect, useMemo} from "react";
 import {imageDataToCanvas} from "utils/canvas/helpers/imageData";
+import '../../../styles/canvasImageData.scss';
 import _throttle from 'lodash/throttle';
-import {coordHelper, coordHelper2, coordHelper3} from "../../Area/canvasPosition.servise";
+import {Omit, WithTranslation, withTranslation, WithTranslationProps} from "react-i18next";
 
-export interface WebWorkerCanvasProps {
+export interface WebWorkerCanvasProps  {
     throttled?: boolean
     width: number
     height: number
@@ -13,66 +14,84 @@ export interface WebWorkerCanvasProps {
     [x: string]: any
 }
 
-export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): React.FC<WebWorkerCanvasProps> => {
-    const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({throttled, width, height, params, imageData, ...otherProps}) => {
+export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): React.ComponentType<WebWorkerCanvasProps> => {
+
+    const WebWorkerCanvas: React.FC<WebWorkerCanvasProps> = ({ throttled, width, height, params, imageData, ...otherProps}) => {
+
 
         const canvasRef = useRef(null);
 
+        const [_error, setError] = React.useState(null);
+
+        const messageHandler = React.useCallback((ev: MessageEvent) => {
+            const {imageData, error, log} = ev.data;
+
+            log && console.log(log);
+
+            if (error !== _error) {
+                setError(error);
+            }
+
+            if (error) return;
+
+            if (!imageData) return
+
+            const canvas = canvasRef?.current;
+            const context = canvas?.getContext("2d");
+
+            context?.clearRect(0, 0, width, height);
+
+            context?.drawImage(imageDataToCanvas(imageData), 0, 0, width, height);
+        }, [_error]);
+
         const worker = useMemo(() => {
             const worker = new Worker(workerPath);
-
-            console.log(worker)
-            let i;
-            worker.onmessage = (ev: MessageEvent) => {
-                coordHelper.setText('new image', i++);
-                const {imageData} = ev.data;
-
-                const canvas = canvasRef?.current;
-                const context = canvas?.getContext("2d");
-
-                context?.clearRect(0, 0, width, height);
-
-                context?.drawImage(imageDataToCanvas(imageData), 0, 0, width, height);
-            };
+            worker.onmessage = messageHandler;
 
             return worker;
-        }, [Worker]);
+        }, []);
 
         const post = React.useMemo(() => {
             const post = (canvasRef, width, height, params, otherProps, imageData, worker) => {
 
-                coordHelper2.setText(+new Date() + ' po');
-                const canvas = canvasRef.current;
+                try {
+                    // coordHelper2.setText(+new Date() + ' po');
+                    const canvas = canvasRef.current;
 
-                const context = canvas?.getContext("2d");
+                    const context = canvas?.getContext("2d");
 
-                worker.postMessage({
-                    imageData: imageData || context?.getImageData(0, 0, width, height) || null,
-                    params: {
-                        ...otherProps,
-                        ...params
-                    },
-                    width, height
-                });
+                    worker.postMessage({
+                        imageData: imageData || context?.getImageData(0, 0, width, height) || null,
+                        params: {
+                            ...otherProps,
+                            ...params
+                        },
+                        width, height
+                    });
+                } catch (e) {
+                    console.log(22222);
+                }
             };
             return !throttled ? _throttle(post, 200) : post;
         }, [throttled]);
 
 
         useEffect(() => {
-            coordHelper3.setText(+new Date() + ' ef');
+            // coordHelper3.setText(+new Date() + ' ef');
             post(canvasRef, width, height, params, otherProps, imageData, worker);
         }, [params, width, height, throttled, imageData]);
 
-        return (
+        return !_error ? (
             <canvas
                 className={"canvas-image-data"}
                 width={width}
                 height={height}
                 ref={canvasRef}/>
+        ) : (
+            <div className={'canvas-image-data canvas-image-data-error'}>{(_error)}</div>
         );
     };
-    return React.memo(WebWorkerCanvas);
+    return WebWorkerCanvas;
 };
 
 export const Paraboloid = webWorkerCanvas('./workers/paraboloid.js');

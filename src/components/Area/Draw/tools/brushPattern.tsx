@@ -13,7 +13,6 @@ import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
 import {CanvasDrawProps} from "../index";
 
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 export const brushPattern = function () {
     const patternBrush = (ev) => {
         const {ctx, e, canvas} = ev;

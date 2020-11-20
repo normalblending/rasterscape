@@ -3,7 +3,7 @@
   position: relative;
   border: 1px solid red;
   cursor: none;
-  & > canvas {
-
+  &.disabled > canvas {
+    pointer-events: none;
   }
 }

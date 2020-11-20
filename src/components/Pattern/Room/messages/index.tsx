@@ -1,0 +1,69 @@
+import * as React from 'react';
+import {MessageData, MessageType} from "../../../../store/patterns/room/types";
+import {BaseMessage} from "./BaseMessage";
+import {Omit, WithTranslation, withTranslation, WithTranslationProps} from "react-i18next";
+import * as cn from 'classnames';
+import {MessageComponentType, translatedMessageWithClass, withT} from "./helpers";
+import {ChannelPublicData} from "./ChannelPublicData";
+import {ChannelData} from "./ChannelData";
+import {LinkMessage} from "./Link";
+import {UCImageSent} from "./UCImageSent";
+import {SignScoresTable} from "./SignScoresTable";
+import {ChannelScoresTable} from "./ChannelScoresTable";
+
+
+
+export const getMessageComponent = (data: MessageData): React.ComponentType<any> => {
+    if (typeof data === 'string') {
+        return MessageComponentByType[MessageType._StringDefault];
+    }
+
+    return (
+        MessageComponentByType[data.type] || MessageComponentByType[MessageType.UserMessage]
+    );
+};
+
+
+
+
+export const MessageComponentByType: {
+    [type: string]: MessageComponentType
+} = {
+    // STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING
+
+    [MessageType._StringDefault]: ({data, unreaded}) => (
+        <BaseMessage unreaded={unreaded}>{data}</BaseMessage>
+    ),
+
+    // USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE
+
+    [MessageType.UserMessage]: ({data, unreaded}) => (
+        <BaseMessage unreaded={unreaded}>{data.text}</BaseMessage>
+    ),
+
+    // LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK
+
+    [MessageType.Link]: LinkMessage,
+
+    [MessageType.UCImageSent]: UCImageSent,
+
+
+    // SCORES  SCORES  SCORES  SCORES  SCORES  SCORES  SCORES
+    [MessageType.SignScoresTable]: SignScoresTable,
+
+    [MessageType.ChannelScoresTable]: ChannelScoresTable,
+
+    // CHANNNEL   DATA   CHANNNEL   DATA   CHANNNEL   DATA   CHANNNEL   DATA
+
+    [MessageType.ChannelData]: ChannelData,
+    [MessageType.ChannelPublicData]: ChannelPublicData,
+
+    // NOTIFICATIONS    NOTIFICATIONS    NOTIFICATIONS    NOTIFICATIONS    NOTIFICATIONS    NOTIFICATIONS
+
+    [MessageType.UserMessageError]: translatedMessageWithClass('error notification'),
+    [MessageType.AccessDenied]: translatedMessageWithClass('error notification'),
+    [MessageType.CommandSuccess]: translatedMessageWithClass('success notification'),
+    [MessageType.CommandError]: translatedMessageWithClass('error notification'),
+    [MessageType.ImageSent]: translatedMessageWithClass('success notification'),
+    [MessageType.UCAccessDenied]: translatedMessageWithClass('error notification'),
+};

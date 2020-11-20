@@ -4,7 +4,7 @@ import {VideoParams} from "../../../store/patterns/video/types";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
-import {ECFType} from "../../../store/changeFunctions/types";
+import {ChangeFunction, ECFType} from "../../../store/changeFunctions/types";
 import {
     pause,
     play,
@@ -29,12 +29,15 @@ import {SelectButtonsEventData} from "../../_shared/buttons/complex/SelectButton
 import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
 import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
+import {WithTranslation, withTranslation} from "react-i18next";
+import {LabelFormatter} from "../../../store/hotkeys/label-formatters";
+import {Translations} from "../../../store/language/helpers";
 
 export interface VideoControlsStateProps {
 
     videoParams: VideoParams
 
-    changeFunctionsSelectItems: SelectItem[]
+    changeFunctionsSelectItems: ChangeFunction[]
     videoDisabled: boolean
     changeFunctionParams: any
 }
@@ -71,7 +74,7 @@ export interface VideoControlsOwnProps {
     patternId: string
 }
 
-export interface VideoControlsProps extends VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps {
+export interface VideoControlsProps extends VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, WithTranslation {
 
 }
 
@@ -191,7 +194,7 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     handleCFMouseEnter = (data: SelectButtonsEventData) => {
         const {setCFHighlights} = this.props;
-        setCFHighlights(data?.value?.value);
+        setCFHighlights(data?.value?.id);
     };
     handleCFMouseLeave = () => {
         const {setCFHighlights} = this.props;
@@ -237,9 +240,28 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
         return null;
     };
 
+    edgeModeGetValue = id => id;
+    edgeModeGetText = (id) => {
+        const {t} = this.props;
+        return t('pattern.video.edgeMode.' + id);
+    };
+
+    slitModeGetValue = id => id;
+    slitModeGetText = (id) => {
+        const {t} = this.props;
+        return t('pattern.video.slitMode.' + id);
+    };
+
+    stackTypeGetValue = id => id;
+
+    cfGetValue = (item: ChangeFunction) => item.id;
+    cfGetText = (item: ChangeFunction) => {
+         const {t} = this.props;
+         return Translations.cfName(t)(item);
+     }
 
     render() {
-        const {changeFunctionsSelectItems, videoParams: params, patternId, videoDisabled} = this.props;
+        const {changeFunctionsSelectItems, videoParams: params, patternId, videoDisabled, t} = this.props;
         const {on, pause} = params;
 
         return (
@@ -247,6 +269,8 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
 
                 <ButtonHK
+                    hkLabel={'pattern.hotkeysDescription.video.on'}
+                    hkData1={patternId}
                     path={`pattern.${patternId}.video.on`}
                     className={'on-off'}
                     selected={on}
@@ -254,37 +278,44 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     disabled={videoDisabled}
                     onClick={this.handleChangeOnParam}
                 >
-                    {on ? "stop" : "start"}
+                    {on ? t("pattern.video.stop") : t("pattern.video.start")}
                 </ButtonHK>
 
                 <ButtonHK
+                    hkLabel={'pattern.hotkeysDescription.video.pause'}
+                    hkData1={patternId}
                     path={`pattern.${patternId}.video.pause`}
                     className={'pause-play'}
                     disabled={!on}
                     selected={pause && on}
                     name={'pause'}
                     onClick={this.handlePause}
-                >{pause ? "play" : "pause"}</ButtonHK>
+                >{pause ? t("pattern.video.play") : t("pattern.video.pause")}</ButtonHK>
                 <ButtonHK
-
+                    hkLabel={'pattern.hotkeysDescription.video.mirror'}
+                    hkData1={patternId}
                     path={`pattern.${patternId}.video.mirrorMode`}
                     className={'mirror-mode'}
                     name={"mirrorMode"}
                     onClick={this.handleChangeMirrorMode}
                     selected={params.mirrorMode === MirrorMode.HORIZONTAL}
-                ><span>mirror</span></ButtonHK>
+                ><span>{t('pattern.video.mirror')}</span></ButtonHK>
 
                 <CycledToggleHK
+                    hkLabel={'pattern.hotkeysDescription.video.edgeMode'}
+                    hkData1={patternId}
                     path={`pattern.${patternId}.video.edgeMode`}
                     className={'edge-mode'}
-                    getValue={(id) => id}
-                    getText={(id) => id}
+                    getValue={this.edgeModeGetValue}
+                    getText={this.edgeModeGetText}
                     items={Object.values(EdgeMode)}
                     value={params.edgeMode}
                     name={"edgeMode"}
                     onChange={this.handleChangeEdgeMode}/>
 
                 <ButtonNumberCF
+                    hkLabel={'pattern.hotkeysDescription.video.stackSize'}
+                    hkData1={patternId}
                     withoutCF
                     pres={2}
                     className={cn('stack-size', {
@@ -292,7 +323,6 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                         [stackTypeClassNames[params.stackType]]: true
                     })}
                     path={`patterns.${patternId}.video.params.stackSize`}
-                    hkLabel={`p${patternId} video stack size`}
                     name={"stackSize"}
                     getText={this.stackSizeText}
                     value={params.stackSize}
@@ -303,7 +333,8 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                 <ButtonNumberCF
                     pres={2}
                     path={`patterns.${patternId}.video.params.cutOffset`}
-                    hkLabel={`p${patternId} video cut`}
+                    hkLabel={'pattern.hotkeysDescription.video.cutOffset'}
+                    hkData1={patternId}
                     name={"radius"}
                     className={cn('cut-offset', {
                         [stackTypeClassNames[params.stackType]]: true,
@@ -319,8 +350,10 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                 <SelectDrop
                     path={`pattern.${patternId}.video.slitMode`}
                     className={'slit-mode'}
-                    getValue={(id) => id}
-                    getText={(id) => id}
+                    hkLabel={'pattern.hotkeysDescription.video.slitMode'}
+                    hkData1={patternId}
+                    getValue={this.slitModeGetValue}
+                    getText={this.slitModeGetText}
                     items={Object.values(SlitMode)}
                     value={params.slitMode}
                     name={"slitMode"}
@@ -328,18 +361,26 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                 />
 
 
-
                 <CycledToggleHK
                     path={`pattern.${patternId}.video.stackType`}
                     className={'stack-type'}
-                    getValue={(id) => id}
-                    getText={(id) => id}
+                    hkLabel={'pattern.hotkeysDescription.video.stackType'}
+                    hkData1={patternId}
+                    getValue={this.stackTypeGetValue}
+                    getText={this.stackTypeGetValue}
                     items={Object.values(StackType)}
                     value={params.stackType}
                     name={"stackType"}
                     onChange={this.handleChangeStackType}/>
                 <SelectDrop
+
+                    hkByValue={false}
+                    hkLabel={'pattern.hotkeysDescription.video.cutFunction'}
+                    hkLabelFormatter={LabelFormatter.ChangeFunction}
+                    hkData1={patternId}
+
                     className={'cut-function'}
+
                     nullAble
                     nullText={'-'}
                     onValueMouseEnter={this.handleCFValueMouseEnter}
@@ -348,6 +389,8 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
                     onItemMouseLeave={this.handleCFMouseLeave}
                     name={"changeFunctionId"}
                     value={params.changeFunctionId}
+                    getText={this.cfGetText}
+                    getValue={this.cfGetValue}
                     items={changeFunctionsSelectItems}
                     onChange={this.handleChangeChangeFunction}/>
             </div>
@@ -384,4 +427,4 @@ const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoCont
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(VideoControlsComponent);
+)(withTranslation('common')(VideoControlsComponent));

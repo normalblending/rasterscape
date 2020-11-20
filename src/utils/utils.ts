@@ -76,36 +76,32 @@ export const randomZ = () => {
 
 };
 
-const tosSzZ = (string, offset) => string
-    .split(((0 + offset) % 4).toString()).join("z")
-    .split(((1 + offset) % 4).toString()).join("s")
-    .split(((2 + offset) % 4).toString()).join("k")
-    .split(((3 + offset) % 4).toString()).join("i");
-const tozZsS = (string, offset) => string
-    .split(((0 + offset) % 4).toString()).join("s")
-    .split(((1 + offset) % 4).toString()).join("z")
-    .split(((2 + offset) % 4).toString()).join("S")
-    .split(((3 + offset) % 4).toString()).join("z");
+const quadNumberFormat =
+    (arr: string) =>
+        (string, offset) => string
+            .split(((0 + offset) % 4).toString()).join(arr[0])
+            .split(((1 + offset) % 4).toString()).join(arr[1])
+            .split(((2 + offset) % 4).toString()).join(arr[2])
+            .split(((3 + offset) % 4).toString()).join(arr[3]);
 
-
-let offset = 0;
+// let offset = 0;
 export const dateZs = () => {
 
     const date = new Date();
 
-    let f;
+    let f: string = 'rs2D';
+    //
+    // if (date.getDay() === 4) {
+    //     f = 'szSZ';
+    // } else if (date.getDay() === 3) {
+    //     f = 'rs2d';
+    // } else {
+    //     f = 'szSZ';
+    // }
 
-    if (date.getDay() === 4) {
-        f = tozZsS;
-    } else if (date.getDay() === 4) {
-        f = tozZsS;
-    } else {
-        f = tosSzZ;
-    }
+    // offset = (offset + 1) % 4;
 
-    offset = (offset + 1) % 4;
-
-    return f(date.getTime().toString(4), 0);
+    return quadNumberFormat(f)(date.getTime().toString(4), 0);
 
 };
 
@@ -125,13 +121,13 @@ export function throttle(func, wait, options?): Function {
     var timeout = null;
     var previous = 0;
     if (!options) options = {};
-    var later = function() {
+    var later = function () {
         previous = options.leading === false ? 0 : Date.now();
         timeout = null;
         result = func.apply(context, args);
         if (!timeout) context = args = null;
     };
-    return function() {
+    return function () {
         var now = Date.now();
         if (!previous && options.leading === false) previous = now;
         var remaining = wait - (now - previous);

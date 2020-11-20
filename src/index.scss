@@ -11,6 +11,10 @@ body {
   overscroll-behavior-x: none;
 }
 
+*:disabled {
+  pointer-events: all;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

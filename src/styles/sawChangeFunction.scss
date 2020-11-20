@@ -5,7 +5,9 @@
     flex-direction: column;
   }
 
-  canvas {
+  .canvas-image-data {
+    width: 70px;
+    box-sizing: border-box;
     border-width: 1px;
     border-style: solid;
     border-bottom-color: #ededed;

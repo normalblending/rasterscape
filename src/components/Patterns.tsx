@@ -22,6 +22,10 @@ import 'react-resizable/css/styles.css';
 import {Key} from "./_shared/Key";
 import {setActivePattern} from "../store/activePattern";
 import {PatternsHotkeys} from "./PatternsHotkeys";
+import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
+import {readImageFile} from "./_shared/File/helpers";
+import {imageToImageData} from "../utils/canvas/helpers/imageData";
+import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
 
 export interface PatternsStateProps {
     patterns: any
@@ -71,6 +75,24 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
     handleAddClick = () => this.props.addPattern({history: true, selection: true, repeating: false});
 
+    handleCreatePatternFromFile = async (files) => {
+        const {addPattern} = this.props;
+        const image = await readImageFile(files?.[0]);
+
+        addPattern?.({
+            startImage: imageToImageData(image),
+            history: true,
+            selection: true,
+            repeating: false
+        });
+    };
+
+    handleMousePatternEnter = (id) => {
+        this.props.setActivePattern(id);
+    };
+    handleMousePatternLeave = () => {
+        this.props.setActivePattern(null);
+    };
     render() {
         const {
             patterns, removePattern,
@@ -88,7 +110,8 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                             key={id}
                             id={id}
 
-                            onMouseEnter={setActivePattern}
+                            onMouseEnter={this.handleMousePatternEnter}
+                            onMouseLeave={this.handleMousePatternLeave}
 
                             connected={connected}
 
@@ -107,9 +130,17 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                     );
                 })}
                 <PatternsHotkeys/>
-                <div className={'zero-pattern'}>
-                    <Button onClick={this.handleAddClick}>{t("add")}</Button>
-                </div>
+
+                <DragAndDrop
+                    onDrop={this.handleCreatePatternFromFile}
+                    className={'zero-pattern'}
+                >
+                    <ButtonHK
+
+                        hkLabel={'pattern.hotkeysDescription.add'}
+                        path={`pattern.add`}
+                        onClick={this.handleAddClick}>{t("add")}</ButtonHK>
+                </DragAndDrop>
             </>
         );
     }

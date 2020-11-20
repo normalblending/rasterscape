@@ -46,6 +46,8 @@ export const CycledToggle = React.forwardRef<CycledToggleImperativeHandlers, Cyc
         className,
         nullText = '-',
         pressed,
+        autofocus,
+        autoblur,
     } = props;
 
     const [valueMap, setValueMap] = React.useState({});
@@ -115,6 +117,9 @@ export const CycledToggle = React.forwardRef<CycledToggleImperativeHandlers, Cyc
             value={value}
             onClick={handleClick}
             pressed={pressed}
+
+            autofocus={autofocus}
+            autoblur={autoblur}
         >{valueItem ? getText(valueItem) : nullText}</Button>
     );
 });

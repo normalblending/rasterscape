@@ -12,11 +12,15 @@ import {PatternsSelect} from "../../PatternsSelect";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {ChannelImageData} from "../../_shared/canvases/WebWorkerCanvas";
 import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
+import {withTranslation, WithTranslation} from "react-i18next";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface DepthCFStateProps {
     tutorial: boolean
     params: any
     paramsConfig: ParamConfig[]
+    functionParams: ChangeFunction
     patternsImageData: {
         [patternId: string]: ImageData
     }
@@ -32,7 +36,7 @@ export interface DepthCFOwnProps {
 
 }
 
-export interface DepthCFProps extends DepthCFStateProps, DepthCFActionProps, DepthCFOwnProps {
+export interface DepthCFProps extends DepthCFStateProps, DepthCFActionProps, DepthCFOwnProps, WithTranslation {
 
 }
 
@@ -54,6 +58,12 @@ const channelName = ['r', 'g', 'b', 'a'];
 
 export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFState> {
 
+    patternButtonRef;
+    constructor(props) {
+        super(props);
+        this.patternButtonRef = React.createRef();
+
+    }
     handleParamChange = (index) => (data) => {
         const {value, name} = data;
         const items = this.props.params.items;
@@ -85,40 +95,28 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
         }
     };
 
-
-    buttonWrapper = (message) => {
-        const {tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                // secondaryMessage={message === 'period' &&
-                // <span>negative value for movement<br/> in the opposite direction</span>}
-                message={message}>{button}</HelpTooltip>) : null
-    };
-
-    buttonWrapperChannel = this.buttonWrapper('channel');
-    buttonWrapperFrom = this.buttonWrapper('from');
-    buttonWrapperTo = this.buttonWrapper('to');
-
-    helpText = {
-        addPatterns: <span>add pattern to be able to chose it here</span>,
-        chosePattern: <span>chose pattern to use its color data<br/> as a coordinate function</span>,
+    channelsGetText = (item) => {
+        const {t} = this.props;
+        return t('cf.types.rgba.channel.' + item.text);
     };
 
     render() {
-        const {params, name, patternsImageData, patternsCount} = this.props;
+        const {params, name, patternsImageData, t, functionParams} = this.props;
 
         const {items} = params;
 
         return (
             <div className={"depth-change-function"}>
                 <div className={'depth-select-pattern'}>
-                    <Button
+                    <ButtonHK
+                        ref={this.patternButtonRef}
                         className={'depth-select-pattern-button'}
                     >
-                        pattern
-                    </Button>
+                        {t('utils.pattern')}
+                    </ButtonHK>
                     <PatternsSelect
                         HK={false}
+                        blurOnClick
                         value={items.map(({patternId}) => patternId)}
                         onChange={this.handleSelectPattern}
                     />
@@ -132,22 +130,24 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                                 imageData={patternsImageData[item.patternId]}
                                 width={68}
                                 height={58}/>
-                            <Button onClick={this.handleDeleteItem(index)}>delete</Button>
+                            <ButtonHK onClick={this.handleDeleteItem(index)}>{t('utils.delete')}</ButtonHK>
                         </div>
                         <div className={'depth-item-controls'}>
                             <CycledToggleHK
                                 path={`changeFunctions.functions.${name}.params.items.${index}.component`}
-                                hkLabel={`${name} p${index} component`}
+                                hkLabel={'cf.hotkeysDescription.rgba.component'}
+                                hkData1={functionParams.number}
                                 name={'component'}
                                 value={item.component}
                                 items={componentsSelectItems}
+                                getText={this.channelsGetText}
                                 onChange={this.handleParamChange(index)}
                             />
                             <ButtonNumberCF
-                                buttonWrapper={this.buttonWrapperFrom}
                                 pres={2}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zd`}
-                                hkLabel={`${name} p${index} bottom`}
+                                hkLabel={'cf.hotkeysDescription.rgba.zd'}
+                                hkData1={functionParams.number}
                                 value={item.zd}
                                 name={"zd"}
                                 range={seRange}
@@ -155,9 +155,9 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
                                 onChange={this.handleParamChange(index)}
                             />
                             <ButtonNumberCF
-                                buttonWrapper={this.buttonWrapperTo}
                                 path={`changeFunctions.functions.${name}.params.items.${index}.zed`}
-                                hkLabel={`${name} p${index} top`}
+                                hkLabel={'cf.hotkeysDescription.rgba.zed'}
+                                hkData1={functionParams.number}
                                 value={item.zed}
                                 name={"zed"}
                                 range={seRange}
@@ -176,6 +176,7 @@ export class DepthCFComponent extends React.PureComponent<DepthCFProps, DepthCFS
 
 const mapStateToProps: MapStateToProps<DepthCFStateProps, DepthCFOwnProps, AppState> = (state, {name}) => ({
     tutorial: state.tutorial.on,
+    functionParams: state.changeFunctions.functions[name],
     params: state.changeFunctions.functions[name].params,
     paramsConfig: state.changeFunctions.functions[name].paramsConfig,
     patternsImageData: state.changeFunctions.functions[name].params.items.reduce((res, {patternId}) => {
@@ -192,4 +193,4 @@ const mapDispatchToProps: MapDispatchToProps<DepthCFActionProps, DepthCFOwnProps
 export const DepthCF = connect<DepthCFStateProps, DepthCFActionProps, DepthCFOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(DepthCFComponent);
+)(withTranslation('common')(DepthCFComponent));

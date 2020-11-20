@@ -25,7 +25,7 @@ export interface ButtonSelectimperativeHandlers extends ButtonImperativeHandlers
 
 }
 
-export const ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, ButtonSelectProps>((_props, ref) => {
+export const  ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, ButtonSelectProps>((_props, ref) => {
 
     const {
         className,
@@ -50,17 +50,38 @@ export const ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, But
         getElement: () => {
             return buttonRef.current.getElement();
         }
-    }), [])
+    }), []);
+
+
+    const handleClick = React.useCallback((data) => {
+        onClick?.({...data, selected})
+    }, [selected, onClick]);
+
+    const handleMouseDown = React.useCallback((data) => {
+        onMouseDown?.({...data, selected})
+    }, [selected, onMouseDown]);
+
+    const handleMouseUp = React.useCallback((data) => {
+        onMouseUp?.({...data, selected})
+    }, [selected, onMouseUp]);
+
+    const handleMouseEnter = React.useCallback((data) => {
+        onMouseEnter?.({...data, selected});
+    }, [selected, onMouseEnter]);
+
+    const handleMouseLeave = React.useCallback((data) => {
+        onMouseLeave?.({...data, selected})
+    }, [selected, onMouseLeave]);
 
     return (
         <Button
             ref={buttonRef}
             {...props}
-            onClick={data => onClick && onClick({...data, selected})}
-            onMouseDown={data => onMouseDown && onMouseDown({...data, selected})}
-            onMouseUp={data => onMouseUp && onMouseUp({...data, selected})}
-            onMouseEnter={data => onMouseEnter && onMouseEnter({...data, selected})}
-            onMouseLeave={data => onMouseLeave && onMouseLeave({...data, selected})}
+            onClick={handleClick}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
             className={classNames("button-select", className, {
                 ["button-select-selected"]: selected,
             })}/>

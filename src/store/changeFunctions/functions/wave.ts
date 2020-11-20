@@ -1,3 +1,5 @@
+import {coordHelper4, coordHelper5} from "../../../components/Area/canvasPosition.servise";
+
 export enum WaveType {
     Sin = 'sin',
     Saw = 'saw',
@@ -56,12 +58,24 @@ export const waveInitialParams: WaveParams = {
 export const waveParamsConfig = {};
 
 
-const waveFunctionByType = {
+const waveFunctionByType: {
+    [type: string]: (options: {
+        startValue: number
+        range: [number, number]
+        params: any
+        time: number
+    }, prev?: any) => {
+        value?: number
+        prev?: any
+    }
+} = {
     [WaveType.Sin]: ({startValue, range, params, time}) => {
-        return startValue + params.a * (range[1] - range[0]) * Math.sin((time) / params.t * 2 * Math.PI + params.o * 2 * Math.PI)
+        return {
+            value: startValue + params.a * (range[1] - range[0]) * Math.sin((time) / params.t * 2 * Math.PI + params.o * 2 * Math.PI)
+        }
     },
     [WaveType.Saw]: ({startValue, range, params, time}) => {
-        if (!params.t) return startValue;
+        if (!params.t) return {};
 
         const t = (time % params.t) / params.t; // смещение по времени внутри цыкла в процентах %
 
@@ -88,45 +102,59 @@ const waveFunctionByType = {
             newValue -= Math.abs(ES);
         }
 
-        return newValue + range[0];
+        return {value: newValue + range[0]};
     },
-    [WaveType.Noise]: (() => {
-        let random = 0;
-        let prevPeriod = 0;
-        return ({startValue, range, params, time}) => {
-            const {start: amplitude, end, f} = params;
-            const T = f;
-            const period = Math.floor(time / T);
+    [WaveType.Noise]: ({startValue, range, params, time}, prev) => {
+        const {start: amplitude, end, f} = params;
+        const T = f;
+        const period = Math.floor(time / T);
 
 
-            if (prevPeriod !== period) {
-                random = Math.random();
-
-                console.log(period, 'period')
-                prevPeriod = period;
-            }
-
+        // console.log(prev?.period !== period)
+        if (prev?.period !== period) {
+            const random = Math.random();
+            // coordHelper5.setText(prev?.period, period, time);
 
             const min = startValue - (range[1] - range[0]) * amplitude;
             const max = startValue + (range[1] - range[0]) * amplitude;
 
             const newValue = Math.min(Math.max(min + random * (max - min), range[0]), range[1]);
+            // coordHelper5.setText(newValue);
 
-
-
-            return newValue;
+            return {
+                value: newValue,
+                prev: {
+                    period,
+                }
+            };
+        } else {
+            return {
+                prev: {
+                    period
+                }
+            };
         }
-    })()
+    }
+
 };
 
-export const waveChangeFunction =
-    ({params, range, pattern}) =>
-        ({startValue, time, position}) => {
+export const waveChangeFunction = () => {
+    let prev = {};
+    return ({params, range, pattern, startValue, time, position}) => {
+        const {
+            value,
+            prev: newPrev
+        } = waveFunctionByType[params.type]({
+            startValue,
+            range,
+            params: params.typeParams[params.type],
+            time,
+        }, prev);
 
-            return waveFunctionByType[params.type]({
-                startValue,
-                range,
-                params: params.typeParams[params.type],
-                time,
-            })
-        };
+        // coordHelper5.setText(value);
+
+        prev = newPrev;
+
+        return value;
+    }
+};

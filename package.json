@@ -1,7 +1,7 @@
 {
   "homepage": "./",
   "name": "zd2",
-  "version": "0.1.0",
+  "version": "20.4.0",
   "private": true,
   "dependencies": {
     "bbuutoonnss": "^1.0.9",

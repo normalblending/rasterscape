@@ -5,10 +5,13 @@ import {ButtonSelect} from "../../simple/ButtonSelect";
 import {ButtonEventData} from "../../simple/Button";
 import '../../../../../styles/selectButtonsStyles.scss';
 import {ButtonHK} from "../../hotkeyed/ButtonHK";
+import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
 
 export interface SelectButtonsEventData extends ButtonEventData {
     item: any
     items: any[]
+    isPrevValue?: boolean
+    isNextValue?: boolean
 }
 
 export interface SelectButtonsProps {
@@ -39,12 +42,14 @@ export interface SelectButtonsProps {
 
     getText?(item?: any)
 
-    getHKLabel?(item?: any)
-
     HK?: boolean
     path?: string
     hkLabel?: string
     hkByValue?: boolean
+    hkLabelFormatter?: LabelFormatter
+    hkData1?: any
+    hkData2?: any
+    hkData3?: any
 }
 
 export const defaultGetValue = (item) => item?.value;
@@ -67,21 +72,42 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
         name,
         getValue = defaultGetValue,
         getText = defaultGetText,
-        getHKLabel = defaultGetValue,
         br,
         width,
         onItemClick,
         onItemMouseEnter,
         onItemMouseLeave,
-        HK = true,
         path,
+
+        HK = true,
+
         hkLabel,
+        hkLabelFormatter,
         hkByValue = true,
+        hkData1,
+        hkData2,
+        hkData3,
+
         onChange,
         nullAble,
         onBlur,
         onFocus,
     } = props;
+
+
+
+    const arrLength = items.length;
+    const [elRefs, setElRefs] = React.useState(Array(arrLength).fill(null).map((_, i) => React.createRef()));
+
+    React.useEffect(() => {
+        // add or remove refs
+        setElRefs(elRefs => (
+            Array(arrLength).fill(null).map((_, i) => elRefs[i] || React.createRef())
+        ));
+    }, [arrLength]);
+
+
+
 
 
     const handleClick = React.useCallback(({value: item, selected, e}) => {
@@ -140,37 +166,46 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
             }
         },
         nextValue: (e?) => {
+            const isNextValue = true;
+
             const currentValueIndex = items.findIndex((item) => getValue(item) === value);
 
+            let newValue;
+            let nextValueItem;
+            let nextValueIndex;
+
             if (currentValueIndex === -1) {
-                const item = items[0];
-                let newValue = getValue(item);
+                nextValueIndex = 0;
+                nextValueItem = items[nextValueIndex];
+                newValue = getValue(nextValueItem);
 
-                onChange && onChange({
-                    value: newValue,
-                    e, item, items, name
-                });
+
             } else if (currentValueIndex < items.length - 1) {
-                const item = items[currentValueIndex + 1];
-                let newValue = getValue(item);
+                nextValueIndex = currentValueIndex + 1;
+                nextValueItem = items[nextValueIndex];
+                newValue = getValue(nextValueItem);
 
-                onChange && onChange({
-                    value: newValue,
-                    e, item, items, name
-                });
             } else if (currentValueIndex >= items.length - 1) {
-                const item = items[0];
-                let newValue = nullAble
+                nextValueIndex = 0;
+                nextValueItem = items[nextValueIndex];
+                newValue = nullAble
                     ? null
-                    : getValue(item);
-
-                onChange && onChange({
-                    value: newValue,
-                    e, item, items, name
-                });
+                    : getValue(nextValueItem);
             }
+
+            onChange && onChange({
+                value: newValue,
+                e,
+                item: nextValueItem,
+                items, name,
+                isNextValue
+            });
+
+            console.log(elRefs);
+            (elRefs[nextValueIndex]?.current as any)?.focus();
         },
         prevValue: (e?) => {
+            const isPrevValue = true;
             const currentValueIndex = items.findIndex((item) => getValue(item) === value);
 
             if (currentValueIndex === -1) {
@@ -179,7 +214,8 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
 
                 onChange && onChange({
                     value: newValue,
-                    e, item, items, name
+                    e, item, items, name,
+                    isPrevValue
                 });
             } else if (currentValueIndex === 0) {
                 const item = items[items.length - 1];
@@ -189,7 +225,8 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
 
                 onChange && onChange({
                     value: newValue,
-                    e, item, items, name
+                    e, item, items, name,
+                    isPrevValue
                 });
             } else if (currentValueIndex <= items.length - 1) {
                 const item = items[currentValueIndex - 1];
@@ -197,13 +234,15 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
 
                 onChange && onChange({
                     value: newValue,
-                    e, item, items, name
+                    e, item, items, name,
+                    isPrevValue
                 });
             }
         }
-    }), [value, handleFocus, items, nullAble]);
+    }), [value, handleFocus, items, nullAble, elRefs]);
 
     const ButtonComponent = HK ? ButtonHK : ButtonSelect;
+
 
     return (
         <div
@@ -219,7 +258,11 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
                         hkLabel={hkByValue
                             ? `${hkLabel}.${getValue(item)}`
                             : hkLabel}
-                        hkData1={item}
+                        hkLabelFormatter={hkLabelFormatter}
+                        hkData0={item}
+                        hkData1={hkData1}
+                        hkData2={hkData2}
+                        hkData3={hkData3}
                         name={`${path || name}.${getValue(item)}`}
                         width={width}
                         value={item}

@@ -5,6 +5,7 @@ import {EToolType, selectionTools} from "../../store/tool/types";
 import {Selection} from "./Selection";
 import {Draw} from "./Draw";
 import "./area.scss";
+import * as cn from 'classnames';
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/selection/types";
 
@@ -36,6 +37,9 @@ export interface AreaOwnProps {
     demonstration?: boolean
 
     onDemonstrationUnload?()
+
+    onEnterDraw?(e?)
+    onLeaveDraw?(e?)
 }
 
 export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps {
@@ -116,14 +120,21 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             demonstration,
             onDemonstrationUnload,
             children,
+            onEnterDraw,
+            onLeaveDraw
         } = this.props;
 
+        const isSelectionTool = selectionTools.indexOf(currentTool) !== -1;
         return (
             <div
-                className="area"
                 style={this.state.areaStyle}
+                className={cn("area", {
+                    'area-selection-on': isSelectionTool
+                })}
             >
                 <Draw
+                    onEnterDraw={onEnterDraw}
+                    onLeaveDraw={onLeaveDraw}
                     disabled={disabled}
                     mask={mask}
                     patternId={name}
@@ -139,7 +150,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                 <Selection
                     style={this.state.style}
                     isUnable={selectUnable}
-                    isActive={selectionTools.indexOf(currentTool) !== -1}
+                    isActive={isSelectionTool}
                     name={name}
                     width={width}
                     height={height}

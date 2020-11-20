@@ -89,6 +89,8 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
     const selectTypeText = React.useMemo(() =>
         item => t(`brushTypes.${item.text.toLowerCase()}`), [t]);
 
+    const compositeOperationText = React.useMemo(() => ({value}) => t('brush.compositeOperations.' + value), [t])
+
     return (
         <div className='brush-tool'>
             <SelectButtons
@@ -108,6 +110,7 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                         valueD={100}
                         precisionGain={10}
                         path={"brush.params.patternSize"}
+                        hkLabel={'brush.hotkeysDescription.patternSize'}
                         value={paramsValue.patternSize}
                         name={"patternSize"}
                         onChange={handleParamChange}
@@ -119,6 +122,7 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                         pres={0}
                         valueD={1}
                         path={"brush.params.size"}
+                        hkLabel={'brush.hotkeysDescription.size'}
                         value={paramsValue.size}
                         name={"size"}
                         onChange={handleSizeChange}
@@ -131,12 +135,16 @@ const BrushComponent: React.FunctionComponent<BrushProps> = React.memo((props) =
                     precisionGain={5}
                     getText={opacityValueText}
                     path={"brush.params.opacity"}
+                    hkByValue={false}
+                    hkLabel={'brush.hotkeysDescription.opacity'}
                     value={paramsValue.opacity}
                     name={"opacity"}
                     onChange={handleOpacityChange}
                     range={opacityRange}/>
 
                 <SelectDrop
+                    getText={compositeOperationText}
+                    hkLabel={'brush.hotkeysDescription.compositeOperations'}
                     value={paramsValue.compositeOperation}
                     items={compositeOperationSelectItems}
                     onChange={handleCompositeChange}/>

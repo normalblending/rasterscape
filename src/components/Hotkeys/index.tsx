@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as cn from "classnames";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import './styles.scss';
@@ -7,20 +8,26 @@ import {
     highlightHotkey,
     HotkeyControlType,
     HotkeyValue,
-    removeHotkey,
+    removeHotkey, setAutoblur, setAutofocus,
     settingMode,
     updateHotkey
 } from "../../store/hotkeys";
 import {createSelector} from "reselect";
-import {Button} from "bbuutoonnss";
+import {Button} from "../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {ShortcutInput} from "../_shared/inputs/ShortcutInput";
 import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
+import {labelFormatters} from "../../store/hotkeys/label-formatters";
+import {InputText} from "../_shared/inputs/InputText";
+import {GlobalHotkeys} from "./GlobalHotkeys";
+import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 
 export interface HotkeysStateProps {
     hotkeys: HotkeyValue[]
     isSettingMode: boolean
+    autofocus: boolean
+    autoblur: boolean
 }
 
 export interface HotkeysActionProps {
@@ -34,6 +41,10 @@ export interface HotkeysActionProps {
     clearHotkeys()
 
     highlightHotkey(path: string)
+
+    setAutofocus(value: boolean)
+
+    setAutoblur(value: boolean)
 }
 
 export interface HotkeysOwnProps {
@@ -55,6 +66,10 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
         highlightHotkey,
         removeHotkey,
         updateHotkey,
+        setAutofocus,
+        setAutoblur,
+        autoblur,
+        autofocus
     } = props;
 
     const toggleHotkeys = React.useCallback(() => {
@@ -87,49 +102,111 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
         highlightHotkey(null);
     }, [removeHotkey, highlightHotkey]);
 
+
+    const handleSetAutofocus = React.useCallback((data) => {
+        setAutofocus(!data.selected);
+    }, [setAutofocus]);
+
+    const handleSetAutoblur = React.useCallback((data) => {
+        setAutoblur(!data.selected);
+    }, [setAutoblur]);
+
     return (
         <div className={'hotkeys'}>
-            <Button
-                className="app-control-button"
-                onClick={toggleHotkeys}>hk</Button>
             {isSettingMode && (
                 <div className={'hotkeys-list'}>
-                    <Button onClick={clearHotkeys}>clear</Button>
-                    {hotkeys.map((hotkey, index) => {
-                        const {key, label, labelData, path, onRelease, controlType} = hotkey;
-                        return (
-                            <div className={'hotkeys-list-item'} key={path}>
-                                <div className={'hotkey-on-release'}>
-                                    {[
-                                        HotkeyControlType.Button,
-                                        HotkeyControlType.Cycled,
-                                    ].includes(controlType) && (
-                                        <ButtonSelect
-                                            selected={onRelease}
-                                            value={hotkey}
-                                            onClick={handleShortcutParamChange}
-                                        >{onRelease ? '˄' : '˅'}</ButtonSelect>
-                                    )}
-                                </div>
-                                <ShortcutInput
-                                    hotkey={hotkey}
-                                    onBlur={handleShortcutBlur}
-                                    onChange={handleShortcutChange}
-                                    onFocus={handleShortcutFocus}
-                                    value={key}
-                                />
-                                <div className={'hotkey-name'}>
-                                    {t(label, {
-                                        data1: labelData?.[0],
-                                        data2: labelData?.[1],
-                                        data3: labelData?.[2],
-                                    })}
-                                </div>
-                            </div>
-                        )
-                    })}
+                    <div className={'settings'}>
+
+                    </div>
+                    <>
+                        <div className={'hotkeys-list-controls'}>
+                            {!!hotkeys.length && (
+                                <ButtonHK onClick={clearHotkeys}>{t('utils.clear')}</ButtonHK>
+
+                            )}
+                            <ButtonSelect
+                                autofocus
+                                autoblur={autoblur}
+                                selected={autofocus}
+                                onClick={handleSetAutofocus}
+                            >
+                                {t('utils.autofocus')}
+                            </ButtonSelect>
+                            <ButtonSelect
+                                autoblur
+                                autofocus={autofocus}
+                                selected={autoblur}
+                                onClick={handleSetAutoblur}
+                            >
+                                {t('utils.autoblur')}
+                            </ButtonSelect>
+                        </div>
+                        <div className={'hotkeys-list-items'}>
+
+                            {hotkeys.map((hotkey, index) => {
+                                const {
+                                    key,
+                                    label,
+                                    labelData,
+                                    labelFormatter,
+                                    path,
+                                    onRelease,
+                                    controlType
+                                } = hotkey;
+
+                                const data = {
+                                    data0: labelData?.[0],
+                                    data1: labelData?.[1],
+                                    data2: labelData?.[2],
+                                    data3: labelData?.[3],
+                                };
+
+                                const text = (labelFormatter && labelFormatters[labelFormatter])
+                                    ? labelFormatters[labelFormatter](t, label, data)
+                                    : t(label, data);
+
+                                return (
+                                    <div className={'hotkeys-list-item'} key={path}>
+                                        <div className={'hotkey-on-release'}>
+                                            {[
+                                                HotkeyControlType.Button,
+                                                HotkeyControlType.Cycled,
+                                            ].includes(controlType) && (
+                                                <ButtonSelect
+                                                    autofocus={autofocus}
+                                                    autoblur={autoblur}
+                                                    selected={onRelease}
+                                                    value={hotkey}
+                                                    onClick={handleShortcutParamChange}
+                                                >{onRelease ? '˄' : '˅'}</ButtonSelect>
+                                            )}
+                                        </div>
+                                        <ShortcutInput
+                                            autofocus={autofocus}
+                                            autoblur={autoblur}
+                                            hotkey={hotkey}
+                                            onBlur={handleShortcutBlur}
+                                            onChange={handleShortcutChange}
+                                            onFocus={handleShortcutFocus}
+                                            value={key}
+                                        />
+                                        <div className={'hotkey-name'}>
+                                            {text}
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </>
+                    <GlobalHotkeys/>
                 </div>
             )}
+            <Button
+                autofocus
+                className={cn("app-control-button", {
+                    "app-control-button__selected": isSettingMode
+                })}
+                onClick={toggleHotkeys}>{t('globalHotkeys.hk')}</Button>
         </div>
     );
 };
@@ -142,6 +219,8 @@ const hotkeysSelector = createSelector(
 const mapStateToProps: MapStateToProps<HotkeysStateProps, HotkeysOwnProps, AppState> = state => ({
     hotkeys: hotkeysSelector(state),
     isSettingMode: state.hotkeys.setting,
+    autofocus: state.hotkeys.autofocus,
+    autoblur: state.hotkeys.autoblur,
 });
 
 const mapDispatchToProps: MapDispatchToProps<HotkeysActionProps, HotkeysOwnProps> = {
@@ -150,6 +229,8 @@ const mapDispatchToProps: MapDispatchToProps<HotkeysActionProps, HotkeysOwnProps
     settingMode,
     clearHotkeys,
     highlightHotkey,
+    setAutofocus,
+    setAutoblur,
 };
 
 export const Hotkeys = connect<HotkeysStateProps, HotkeysActionProps, HotkeysOwnProps, AppState>(

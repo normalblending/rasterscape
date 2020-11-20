@@ -36,6 +36,11 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
         addHotkey,
         path,
         hkLabel,
+        hkLabelFormatter,
+        hkData0,
+        hkData1,
+        hkData2,
+        hkData3,
         settingMode,
         highlightedPath,
         ...buttonProps
@@ -56,9 +61,16 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
 
     const handleShortcutChange = React.useCallback((shortcut, e) => {
         if (shortcut === null || shortcut.length === 1) {
-            addHotkey(path, shortcut, HotkeyControlType.Cycled, hkLabel || path);
+            addHotkey({
+                path,
+                key: shortcut,
+                controlType: HotkeyControlType.Cycled,
+                label: hkLabel || path,
+                labelFormatter: hkLabelFormatter,
+                labelData: [hkData0, hkData1, hkData2, hkData3]
+            });
         }
-    }, [addHotkey, path, settingMode, hkLabel, path]);
+    }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, path, hkData0, hkData1, hkData2, hkData3]);
 
     const handlePress = React.useCallback((e) => {
 
@@ -93,6 +105,8 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
                 {...buttonProps} />
             {settingMode && (
                 <ShortcutInput
+                    autoblur={buttonProps.autoblur}
+                    autofocus={buttonProps.autofocus}
                     placeholder={t('buttonNumberCF.hotkey')}
                     value={hotkey?.key}
                     onChange={handleShortcutChange}
@@ -114,6 +128,8 @@ const mapStateToProps: MapStateToProps<CycledToggleHKStateProps, CycledToggleHKO
     hotkey: state.hotkeys.keys[path],
     settingMode: state.hotkeys.setting,
     highlightedPath: state.hotkeys.highlightedPath,
+    autofocus: state.hotkeys.autofocus,
+    autoblur: state.hotkeys.autoblur,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CycledToggleHKActionProps, CycledToggleHKOwnProps> = {

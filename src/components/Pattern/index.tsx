@@ -31,10 +31,14 @@ import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 import {setDemonstrationEnabled} from "../../store/patterns/demonstration/actions";
 import {MaskControls} from "./Mask/MaskControls";
 import {DragAndDrop} from "../_shared/File/DragAndDrop/DragAndDrop";
+import {readImageFile} from "../_shared/File/helpers";
+import {canvasToImageData} from "../../utils/canvas/helpers/imageData";
+import {setDrawer} from "../../store/patterns/room/actions";
+import {PatternsSelect} from "../PatternsSelect";
 
 export interface PatternComponentStateProps {
 
-
+    error?: any
     config: PatternConfig
     selection: SelectionState
 
@@ -50,6 +54,11 @@ export interface PatternComponentStateProps {
     meDrawer: boolean
 
     demonstration: boolean
+
+    persistDrawer: boolean
+
+    autofocus: boolean
+    autoblur: boolean
 }
 
 export interface PatternComponentActionProps {
@@ -70,12 +79,16 @@ export interface PatternComponentActionProps {
 
     setDemonstrationEnabled(id: string, enabled: boolean)
 
+    setDrawer(patternId: string, persist?: boolean)
+
 }
 
 export interface PatternComponentOwnProps {
     id: string
 
     onMouseEnter?(patternId: string, e?)
+
+    onMouseLeave?(patternId: string, e?)
 }
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
@@ -102,12 +115,17 @@ export interface PatternComponentProps extends PatternComponentStateProps, Patte
 }
 
 export interface PatternComponentState {
+    error?
 }
 
 const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true};
 
 export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+        console.log(error);
+        this.setState({error});
+    }
 
     handleImageChange = imageData => this.props.updateImage({id: this.props.id, imageData});
 
@@ -115,9 +133,6 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
     handleSelectionChange = (value, bBox: SVGRect) =>
         this.props.onSelectionChange(this.props.id, value, bBox);
-
-    handleClearSelection = () =>
-        this.props.onSelectionChange(this.props.id, [], null);
 
     handleRemove = () => this.props.onRemove(this.props.id);
 
@@ -173,6 +188,12 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         onMouseEnter?.(id, e);
     };
 
+    handleMouseLeave = (e) => {
+        const {onMouseLeave, id} = this.props;
+
+        onMouseLeave?.(id, e);
+    };
+
     handleDemonstrationUnload = () => {
 
         const {setDemonstrationEnabled, id} = this.props;
@@ -180,23 +201,41 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         setDemonstrationEnabled?.(id, false);
     };
 
-    handleDropFiles = (files) => {
-        console.log(files);
+    handleDropFiles = async (files) => {
+        const {onLoad, id} = this.props;
+        const image = await readImageFile(files?.[0]);
+
+        onLoad?.(id, image)
+    };
+
+    handleEnterDraw = () => {
+        const {setDrawer, id, persistDrawer} = this.props;
+        !persistDrawer && setDrawer(id);
+    };
+    handleLeaveDraw = () => {
+        const {setDrawer, id, persistDrawer} = this.props;
+        !persistDrawer && setDrawer(id);
     };
 
     render() {
+        if (this.state?.error || this.props.error) return 'error';
         const {
             imageValue, maskValue,
             height, width, id, config, selection, rotation, importParams,
-            meDrawer, demonstration,
+            meDrawer, persistDrawer,
+            demonstration,
             t,
+            autoblur, autofocus
         } = this.props;
 
         return (
             <DragAndDrop onDrop={this.handleDropFiles}>
                 <div
                     className="pattern"
-                    onMouseEnter={this.handleMouseEnter}>
+                    id={'pattern' + id}
+                    onMouseEnter={this.handleMouseEnter}
+                    onMouseLeave={this.handleMouseLeave}
+                >
                     <div className="left">
                         <div className="flex-col">
 
@@ -217,35 +256,59 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
                             <div className={'flex-row'}>
                                 <ButtonHK
-                                    path={`pattern.${id}.mask`}
-                                    name={"mask"}
-                                    selected={config.mask}
-                                    onClick={this.handleConfigToggle}>{t('plugins.mask')}</ButtonHK>
-                                <ButtonHK
                                     path={`pattern.${id}.repeating`}
                                     name={"repeating"}
+                                    hkLabel={'pattern.hotkeysDescription.config.repeating'}
+                                    hkData1={id}
                                     selected={config.repeating}
-                                    onClick={this.handleConfigToggle}>{t('plugins.repeating')}</ButtonHK>
-                                <ButtonHK
-                                    path={`pattern.${id}.rotation`}
-                                    name={"rotation"}
-                                    selected={config.rotation}
-                                    onClick={this.handleConfigToggle}>{t('plugins.rotating')}</ButtonHK>
-                                <ButtonHK
-                                    path={`pattern.${id}.blur`}
-                                    name={"blur"}
-                                    selected={config.blur}
-                                    onClick={this.handleConfigToggle}>{t('plugins.blur')}</ButtonHK>
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.repeating')}</ButtonHK>
                                 <ButtonHK
                                     path={`pattern.${id}.room`}
                                     name={"room"}
+                                    hkLabel={'pattern.hotkeysDescription.config.room'}
+                                    hkData1={id}
                                     selected={config.room}
-                                    onClick={this.handleConfigToggle}>{t('plugins.room')}</ButtonHK>
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.room')}</ButtonHK>
                                 <ButtonHK
                                     path={`pattern.${id}.video`}
                                     name={"video"}
+                                    hkLabel={'pattern.hotkeysDescription.config.video'}
+                                    hkData1={id}
                                     selected={config.video}
-                                    onClick={this.handleConfigToggle}>{t('plugins.video')}</ButtonHK>
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.video')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.rotation`}
+                                    name={"rotation"}
+                                    hkLabel={'pattern.hotkeysDescription.config.rotation'}
+                                    hkData1={id}
+                                    selected={config.rotation}
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.rotating')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.mask`}
+                                    name={"mask"}
+                                    hkLabel={'pattern.hotkeysDescription.config.mask'}
+                                    hkData1={id}
+                                    selected={config.mask}
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.mask')}</ButtonHK>
+                                <ButtonHK
+                                    path={`pattern.${id}.blur`}
+                                    name={"blur"}
+                                    hkLabel={'pattern.hotkeysDescription.config.blur'}
+                                    hkData1={id}
+                                    selected={config.blur}
+                                    onClick={this.handleConfigToggle}
+                                >
+                                    {t('plugins.blur')}</ButtonHK>
                             </div>
 
                         </div>
@@ -255,21 +318,28 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                             <div className={'flex-col'}>
                                 <div className={'flex-row'}>
                                     <InputNumber
+                                        autoblur={autoblur}
+                                        autofocus={autofocus}
                                         className={"size-input-number"}
                                         onChange={this.handleSetWidth}
                                         value={width}
                                         {...inputNumberProps}/>
                                     <InputNumber
+                                        autoblur={autoblur}
+                                        autofocus={autofocus}
                                         className={"size-input-number"}
                                         onChange={this.handleSetHeight}
                                         value={height}
                                         {...inputNumberProps}/>
                                 </div>
                                 <div className={'flex-row'}>
-                                    <ButtonSelect
+                                    <ButtonHK
                                         selected={this.props.importParams.fit}
-                                        onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonSelect>
+                                        onClick={this.handleFitChange}>{t('patternControls.stretch')}</ButtonHK>
                                     <File
+                                        autofocus={autofocus}
+                                        autoblur={autofocus}
+
                                         name={id + '-fileInput'}
                                         onChange={this.handleLoad}>{t('patternControls.load')}</File>
                                 </div>
@@ -278,25 +348,32 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         </div>
                         <div className="flex-row">
 
-                            <Button
+                            <ButtonHK
                                 onDoubleClick={this.handleRemove}
-                                className={'pattern-delete-button'}>{t('patternControls.delete')}</Button>
-                            <Button
-                                onClick={this.handleDouble}>{t('patternControls.double')}</Button>
-                            <Button onClick={this.handleSave}>{t('patternControls.save')}</Button>
+                                className={'pattern-delete-button'}>{t('patternControls.delete')}</ButtonHK>
+                            <ButtonHK
+                                hkLabel={'pattern.hotkeysDescription.double'}
+                                hkData1={id}
+                                path={`pattern.${id}.double`}
+                                onClick={this.handleDouble}>{t('patternControls.double')}</ButtonHK>
+                            <ButtonHK
+                                hkLabel={'pattern.hotkeysDescription.save'}
+                                hkData1={id}
+                                path={`pattern.${id}.save`}
+                                onClick={this.handleSave}>{t('patternControls.save')}</ButtonHK>
 
                         </div>
                     </div>
 
                     <div className="right">
                         <SelectionControls
-                            selectionValue={selection.value}
-                            onCreatePattern={this.handleCreatePatternFromSelection}
-                            onClear={this.handleClearSelection}
-                            onCut={this.handleCutBySelection}/>
+                            patternId={id}
+                        />
 
                         <div className={"areas"}>
                             <Area
+                                // onEnterDraw={this.handleEnterDraw}
+                                // onLeaveDraw={this.handleLeaveDraw}
 
                                 disabled={!meDrawer}
 
@@ -352,6 +429,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternComponentOwnProps, AppState> = (state, {id}) => {
     const pattern = state.patterns[id];
     return {
+        error: pattern.error,
         importParams: pattern.import.params,
         meDrawer: !pattern.room?.value?.connected || pattern.room?.value?.meDrawer,
         config: pattern.config,
@@ -361,7 +439,10 @@ const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternCompon
         rotation: pattern.config.rotation ? pattern?.rotation?.value : null,
         imageValue: pattern?.current?.imageData || null,
         maskValue: pattern?.mask?.value?.imageData || null,
-        demonstration: pattern?.demonstration?.value?.enabled
+        demonstration: pattern?.demonstration?.value?.enabled,
+        persistDrawer: pattern?.room?.value?.persistMeDrawer,
+        autofocus: state.hotkeys.autofocus,
+        autoblur: state.hotkeys.autoblur,
     }
 };
 
@@ -374,6 +455,7 @@ const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, Patter
     createPatternFromSelection,
     cutPatternBySelection,
     setDemonstrationEnabled,
+    setDrawer
 };
 
 export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(

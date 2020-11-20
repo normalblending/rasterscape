@@ -15,6 +15,14 @@ export interface ShortcutInputProps {
 
     hotkey?: HotkeyValue
 
+
+    autofocus?: boolean
+    autoblur?: boolean
+
+    onMouseEnter?(e)
+    onMouseMove?(e)
+    onMouseLeave?(e)
+
 }
 
 export interface ShortcutInputState {
@@ -71,11 +79,42 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
         this.handleBlur();
     }
 
+    handleMouseEnter = e => {
+
+        const { autofocus, onMouseEnter } = this.props;
+        if (autofocus)
+            this.inputRef.current?.focus();
+
+        onMouseEnter?.(e);
+
+    }
+
+    handleMove = e => {
+        const { autofocus, onMouseMove } = this.props;
+        if (autofocus && document.activeElement !== this.inputRef.current)
+            this.inputRef.current?.focus();
+
+        onMouseMove?.(e);
+
+    }
+
+    handleMouseLeave = e => {
+        const { autoblur, onMouseLeave } = this.props;
+        if (autoblur)
+            this.inputRef.current?.blur();
+
+        onMouseLeave?.(e);
+
+    }
     render() {
         const {value, placeholder} = this.props;
 
         return (
             <InputText
+                onMouseEnter={this.handleMouseEnter}
+                onMouseMove={this.handleMove}
+                onMouseLeave={this.handleMouseLeave}
+
                 ref={this.inputRef}
                 className={classNames("shortcut-input", {
                     ['empty']: !this.state.value

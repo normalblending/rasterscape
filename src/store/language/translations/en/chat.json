@@ -1,0 +1,95 @@
+{
+  "auth": {
+    "success": "authorization complete",
+    "wrongPass": "wrong password",
+    "error":  "error",
+    "accessDenied": "access denied",
+    "accessError":  "access error"
+  },
+
+  "setPass": {
+    "success": "password changed",
+    "wrongPass": "wrong password",
+    "error":  "error"
+  },
+
+  "scores": {
+    "error": "error"
+  },
+
+  "imagePost": {
+    "error": "error"
+  },
+
+  "textMessage": {
+    "error": "error"
+  },
+
+  "message": {
+    "unknownCommand": "unknown command {{command}}"
+  },
+
+
+  "channel": {
+    "add": {
+      "chatIdRequired": "chatId required",
+      "channelSignTooLong": "too long name",
+      "success": "channel {{channelSign}} created",
+      "updateSuccess":  "{{channelSign}}.chatId = {{value}}",
+      "error": "error"
+    },
+    "setParam": {
+      "channelNotExists": "channel not found",
+      "invalidLink": "invalid link",
+      "tooLong": "too big value",
+      "success": "{{channelSign}}.{{param}} = {{value}}",
+      "error":  "error"
+    },
+    "del": {
+      "channelNotExists": "channel not found",
+      "success": "channel {{channelSign}} deleted",
+      "error":  "error"
+    },
+    "postImage": {
+      "success": "posted",
+      "error":  "error"
+    },
+    "post": {
+      "accessDenied": "access denied",
+      "accessError": "error"
+    },
+    "addMember": {
+      "invalidSign": "invalid member name",
+      "channelNotExists": "channel not found",
+      "success": "member {{memberSign}} added to {{channelSign}}",
+      "error":  "error"
+    },
+    "removeMember": {
+      "invalidSign": "invalid member name",
+      "channelNotExists": "channel not found",
+      "success": "member {{memberSign}} removed from {{channelSign}}",
+      "error":  "error"
+    },
+    "data": {
+      "admin":  "admin",
+      "private": "private",
+      "public": "public",
+      "anon":  "anonymous",
+      "caption": "caption",
+      "description":  "description",
+      "chatId": "chatId",
+      "message":  "message",
+      "link": "link",
+      "members":  "members",
+      "score": "rank/score"
+    },
+    "scores": {
+      "accounts": "scores/users",
+      "channels": "scores/channels"
+    },
+    "reservedString": "invalid name",
+    "accessDenied": "channel access denied",
+    "accessError": "channel access error"
+  }
+
+}

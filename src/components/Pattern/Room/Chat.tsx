@@ -2,24 +2,26 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {InputText} from "../../_shared/inputs/InputText";
-import {Button} from "../../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {resetUnreaded, sendMessage, setDrawer} from "../../../store/patterns/room/actions";
-import {ButtonSelect} from "../../_shared/buttons/simple/ButtonSelect";
+import {resetUnreaded, sendMessage, SendMessageAction, setDrawer} from "../../../store/patterns/room/actions";
 import * as classNames from 'classnames';
 import {Resizable} from "../../_shared/Resizable";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
+import {Message} from "../../../store/patterns/room/types";
+import {getMessageComponent} from "./messages";
 
 export interface ChatStateProps {
-    messages: string[]
+    messages: Message[]
     meDrawer: boolean
     drawer: string
-    unreaded: number
+    unreaded: boolean
+    persistentMessagePart: string
 }
 
 export interface ChatActionProps {
     sendMessage(id: string, message: string)
 
-    setDrawer(patternId: string)
+    setDrawer(patternId: string, persist?: boolean)
 
     resetUnreaded(patternId: string)
 }
@@ -35,30 +37,87 @@ export interface ChatProps extends ChatStateProps, ChatActionProps, ChatOwnProps
 
 const ChatComponent: React.FC<ChatProps> = (props) => {
 
-    const {t, patternId, sendMessage, messages, meDrawer, drawer, setDrawer, unreaded, resetUnreaded} = props;
+    const {
+        t, patternId,
+        sendMessage,
+        messages,
+        meDrawer,
+        drawer,
+        setDrawer,
+        unreaded,
+        resetUnreaded,
+        persistentMessagePart
+    } = props;
 
     const inputRef = React.useRef<any>(null);
+
+    const [leftHistory, setLeftHistory] = React.useState([]);
+    const [historyN, setHistoryN] = React.useState(-1);
 
     React.useEffect(() => {
         setTimeout(inputRef.current?.focus, 0);
     }, [inputRef]);
 
-    const [message, setMessage] = React.useState('');
+    const [message, setMessage] = React.useState(persistentMessagePart);
 
     const handleSend = React.useCallback(() => {
-        sendMessage(patternId, message);
+
+        const {leftPersistent, left}: SendMessageAction = sendMessage(patternId, message);
+
+        if (left) {
+            setLeftHistory([
+                left,
+                ...leftHistory.filter(item => item !== left),
+            ]);
+        }
+        setHistoryN(-1);
+
         setMessage('');
-    }, [patternId, message]);
+        setTimeout(setMessage, 0, leftPersistent);
+
+    }, [patternId, message, leftHistory]);
 
     const handleKeyPress = React.useCallback((e) => {
         if (e.key === 'Enter') {
             handleSend();
         }
-    }, [patternId, message]);
+    }, [handleSend]);
+
+    const handleKeyDown = React.useCallback((e) => {
+        if (e.keyCode === 38) {
+            e.preventDefault();
+
+            const command = leftHistory[historyN + 1];
+            if (command) {
+                setMessage(command + ' >');
+                setHistoryN(historyN + 1)
+            }
+
+        }
+        else if (e.keyCode === 40) {
+            e.preventDefault();
+
+            if (historyN > 0) {
+                const command = leftHistory[historyN - 1];
+                if (command) {
+                    setMessage(command + ' >');
+                    setHistoryN(historyN - 1)
+                }
+            } else if (historyN === 0) {
+                setMessage(persistentMessagePart);
+                setHistoryN(historyN - 1)
+            }
+        }
+    }, [historyN, leftHistory, message, persistentMessagePart]);
 
     const handleSetDrawer = React.useCallback(() => {
-        setDrawer(patternId);
-    }, [setDrawer, patternId]);
+
+        // if (meDrawer) {
+        //     setTimeout(() => inputRef.current?.focus(), 10);
+        // }
+
+        setDrawer(patternId, true);
+    }, [setDrawer, patternId, meDrawer, inputRef]);
 
     const handleMouseEnter = React.useCallback(() => {
         unreaded && resetUnreaded(patternId);
@@ -74,7 +133,6 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
                 onMouseEnter={handleMouseEnter}>
                 <div className={'chat-controls'}>
                     {!meDrawer && (<div className={'room-chat-new-message'}>
-                        <div className={'room-chat-sign'}>{'>'}</div>
                         <InputText
                             ref={inputRef}
                             disabled={meDrawer}
@@ -83,27 +141,35 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
                             value={message}
                             onChange={setMessage}
                             onKeyPress={handleKeyPress}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>)}
-                    <ButtonSelect
+                    <ButtonHK
+                        path={`p${patternId}.room.draw`}
+                        hkLabel={'room.hotkeysDescription.draw'}
+                        hkData1={patternId}
                         className={'draw-button'}
                         disabled={!!drawer && !meDrawer}
                         selected={meDrawer}
                         onClick={handleSetDrawer}
-                    >{t('room.draw')}</ButtonSelect>
+                    >{t('room.draw')}</ButtonHK>
                 </div>
 
                 <div className='room-chat-messages'>
 
                     <div className='room-chat-messages-container'>
-                        {messages.map((message, index) => (<>
-                            {/*<br/>*/}
-                            {/*{['-', '—'].includes(message.trim()[0]) && <br/>}*/}
-                            <div
-                                className={classNames('room-chat-message', {
-                                    unreaded: unreaded >= messages.length - index
-                                })}><span>{message}</span></div>
-                        </>))}
+                        {messages.map((message, index) => {
+
+                            const Message = getMessageComponent(message.data);
+                            return (
+                                <Message
+                                    key={index}
+                                    data={message.data}
+                                    unreaded={message.unreaded}
+                                    // t={t}
+                                />
+                            );
+                        })}
                     </div>
                 </div>
 
@@ -120,6 +186,7 @@ const mapStateToProps: MapStateToProps<ChatStateProps, ChatOwnProps, AppState> =
     meDrawer: state.patterns[patternId].room?.value?.meDrawer,
     drawer: state.patterns[patternId].room?.value?.drawer,
     unreaded: state.patterns[patternId].room?.value?.unreaded,
+    persistentMessagePart: state.patterns[patternId].room?.value?.persistentMessagePart,
 });
 
 const mapDispatchToProps: MapDispatchToProps<ChatActionProps, ChatOwnProps> = {

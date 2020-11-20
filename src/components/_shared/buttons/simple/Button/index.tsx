@@ -10,14 +10,21 @@ export interface ButtonEventData {
 
 export interface ButtonProps {
     onClick?(data?: ButtonEventData)
+
     onDoubleClick?(data?: ButtonEventData)
+
     onMouseEnter?(data?: ButtonEventData)
+
     onMouseLeave?(data?: ButtonEventData)
 
     onMouseDown?(data?: ButtonEventData)
 
     onMouseUp?(data?: ButtonEventData)
+
+    onMouseMove?(data?: ButtonEventData)
+
     onBlur?(data?: ButtonEventData)
+
     onFocus?(data?: ButtonEventData)
 
     value?: any
@@ -28,6 +35,8 @@ export interface ButtonProps {
     disabled?: boolean
     width?: number
     height?: number
+    autofocus?: boolean
+    autoblur?: boolean
 
     pressed?: boolean
 
@@ -38,7 +47,9 @@ export interface ButtonProps {
 
 export interface ButtonImperativeHandlers {
     focus()
+
     blur()
+
     getElement(): HTMLButtonElement
 }
 
@@ -53,6 +64,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         onMouseLeave,
         onMouseDown,
         onMouseUp,
+        onMouseMove,
         onBlur,
         onFocus,
         disabled,
@@ -61,6 +73,8 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         value,
         name,
         pressed,
+        autofocus,
+        autoblur,
         ...otherProps
     } = props;
 
@@ -79,22 +93,47 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
     }), [buttonRef])
     const handleClick = React.useCallback(
         e => {
-            console.log(e, value, name);
-            return !disabled && onClick && onClick({e, value, name})
+            if (disabled) return;
+
+            onClick && onClick({e, value, name})
+
+            buttonRef.current.focus();
         },
-        [disabled, onClick, value, name]);
+        [disabled, onClick, value, name, buttonRef]);
 
     const handleDoubleClick = React.useCallback(
         e => !disabled && onDoubleClick && onDoubleClick({e, value, name}),
         [disabled, onDoubleClick, value, name]);
 
-    const handleMouseEnter = React.useCallback(
-        e => !disabled && onMouseEnter && onMouseEnter({e, value, name}),
-        [disabled, onMouseEnter, value, name]);
+    const handleMouseEnter = React.useCallback(e => {
+        if (disabled) return;
 
-    const handleMouseLeave = React.useCallback(
-        e => !disabled && onMouseLeave && onMouseLeave({e, value, name}),
-        [disabled, onMouseLeave, value, name]);
+        if (autofocus)
+            buttonRef.current?.focus();
+
+        onMouseEnter?.({e, value, name});
+
+    }, [disabled, onMouseEnter, value, name, autofocus]);
+
+    const handleMove = React.useCallback(e => {
+        if (disabled) return;
+
+        if (autofocus && document.activeElement !== buttonRef.current)
+            buttonRef.current?.focus();
+
+        onMouseMove?.({e, value, name});
+
+    }, [disabled, onMouseMove, value, name, autofocus]);
+
+    const handleMouseLeave = React.useCallback(e => {
+        if (disabled) return;
+
+        if (autoblur)
+            buttonRef.current?.blur();
+
+        onMouseLeave?.({e, value, name});
+
+    }, [disabled, onMouseLeave, value, name, autoblur]);
 
     const handleUp = React.useCallback(
         e => !disabled && onMouseUp && onMouseUp({e, value, name}),
@@ -126,6 +165,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
             onMouseLeave={handleMouseLeave}
             onMouseUp={handleUp}
             onMouseDown={handleDown}
+            onMouseMove={handleMove}
             onBlur={handleBlur}
             onFocus={handleFocus}
             style={style}

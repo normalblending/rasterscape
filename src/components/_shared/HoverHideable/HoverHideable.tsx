@@ -15,7 +15,7 @@ export interface HoverHideableImperativeHandlers {
 
 }
 
-export const HoverHideable = React.forwardRef<HoverHideableImperativeHandlers, HoverHideableProps>((props) => {
+export const HoverHideable: React.FC<HoverHideableProps> = ((props, ) => {
 
     const {children, button, className, onClick, open, ...otherProps} = props;
 

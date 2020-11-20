@@ -9,7 +9,7 @@ export enum ECompositeOperation {
     DestinationOver = "destination-over",
     // DestinationAtop = "destination-atop",
     // DestinationIn = "destination-in",
-    Lighter = "lighter",
+    Lighter = "lighter", // светлее
     // Copy = "copy",
     Xor = "xor",
     multiply = "multiply",
@@ -17,16 +17,16 @@ export enum ECompositeOperation {
     overlay = "overlay",
     darken = "darken",
     lighten = "lighten",
-    colorDodge = "color-dodge",
-    colorBurn = "color-burn",
-    hardLight = "hard-light",
-    softLight = "soft-light",
-    difference = "difference",
-    exclusion = "exclusion",
-    hue = "hue",
-    saturation = "saturation",
-    color = "color",
-    luminosity = "luminosity",
+    colorDodge = "color-dodge", //
+    colorBurn = "color-burn", //
+    hardLight = "hard-light",// жесткий свет
+    softLight = "soft-light", // мягкий свет
+    difference = "difference", // разница
+    exclusion = "exclusion", // вычитание
+    hue = "hue", //
+    saturation = "saturation", //насыщенность
+    color = "color", // цвет
+    luminosity = "luminosity", // свечение
 }
 
 export const CompositeOperationShortName = {

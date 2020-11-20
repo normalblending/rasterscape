@@ -44,6 +44,9 @@ class SelectToolComponent extends React.PureComponent<SelectToolProps> {
         })
     };
 
+    modeText = ({text}) => this.props.t(`selectTypes.${text.toLowerCase()}`);
+    curveTypeText = ({value}) => this.props.t(`select.curveType.${value}`);
+
     render() {
         const {paramsValue, paramsConfigMap, t} = this.props;
         const {mode, curveType, ...otherParams} = paramsConfigMap;
@@ -51,28 +54,30 @@ class SelectToolComponent extends React.PureComponent<SelectToolProps> {
             <div className='select-tool'>
 
                 <SelectButtons
-                    hkLabel='select mode'
+                    hkLabel={'select.hotkeysDescription.mode'}
                     name="mode"
                     value={paramsValue.mode}
-                    getText={item => t(`selectTypes.${item.text.toLowerCase()}`)}
+                    getText={this.modeText}
                     items={mode.props.items}
                     onChange={this.handleParamChange}/>
 
                 <div className={'select-tool-params'}>
                     {paramsValue.mode === ESelectionMode.Points &&
                     <SelectDrop
-                        hkLabel={'select curve type'}
+                        hkLabel={'select.hotkeysDescription.curveType'}
                         name="curveType"
+                        getText={this.curveTypeText}
                         value={paramsValue.curveType}
                         items={curveType.props.items}
                         onChange={this.handleParamChange}/>}
 
                     {Object.values(otherParams).map(({name, props}) => (
                         <ButtonNumberCF
+                            withoutCF
                             value={paramsValue[name]}
                             name={name}
                             path={`selectTool.params.${name}`}
-                            hkLabel={'select curve type param'}
+                            hkLabel={'select.hotkeysDescription.curveParam.' + name}
                             range={props.range}
                             pres={2}
                             valueD={50}

@@ -7,6 +7,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 // import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
 
@@ -15,6 +16,7 @@ export interface NoiseCFProps {
     params: any
 
     name: string
+    functionParams: ChangeFunction
 
     onChange(value?: any, name?: string)
 
@@ -43,7 +45,7 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
     };
 
     render() {
-        const {params, name, tutorial} = this.props;
+        const {params, name, functionParams} = this.props;
         return (
             // <HelpTooltip component={NoiseHelp} getY={() => 27} offsetX={40}>
             <div className={"noise-change-function"}>
@@ -54,9 +56,10 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
                 <div className={'noise-controls'}>
                     <ButtonNumberCF
                         pres={2}
-                        valueD={100}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Noise}.start`}
                         value={params.start}
+                        hkLabel={'cf.hotkeysDescription.wave.noise.start'}
+                        hkData1={functionParams.number}
                         name={`changeFunctions.${name}.start`}
                         range={seRange}
                         onChange={this.handleParamChange}
@@ -64,7 +67,8 @@ export class NoiseCF extends React.PureComponent<NoiseCFProps, NoiseCFState> {
                     <ButtonNumberCF
                         pres={0}
                         precisionGain={10}
-                        valueD={2 / 128}
+                        hkLabel={'cf.hotkeysDescription.wave.noise.f'}
+                        hkData1={functionParams.number}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Noise}.f`}
                         value={params.f}
                         name={`changeFunctions.${name}.f`}

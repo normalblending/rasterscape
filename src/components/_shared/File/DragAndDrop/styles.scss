@@ -1,0 +1,16 @@
+.drag-n-drop {
+  display: flex;
+  position: relative;
+
+  .drag-n-drop-overlay {
+    //background: #c8ff00;
+    background-color: transparent;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+
+  }
+}

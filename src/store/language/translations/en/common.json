@@ -1,11 +1,5 @@
 {
-  "buttonNumberCF": {
-    "hotkey": "hotkey",
-    "click": "enter hotkey in this field",
-    "backspace": "Backspase for remove",
-    "changeFunction": "change function",
-    "cf1": "change function allows you\nto change the value during drawing\ndepending on the time, coordinates\nand other parameters"
-  },
+  "useChrome": "use chrome",
 
   "tools": {
     "tools": "tool",
@@ -13,9 +7,9 @@
     "line": "line",
     "select": "select",
     "hotkeysDescription": {
-      "brush": "brush tool",
-      "line": "line tool",
-      "select": "select tool"
+      "brush": "brush",
+      "line": "line",
+      "select": "select"
     }
   },
 
@@ -27,24 +21,66 @@
   },
 
   "brush": {
-    "size": "brush size",
-    "blendMode": "blend mode",
-    "opacity": "opacity",
-    "sizePattern": "size of pattern",
+    "pattern": "brush | pattern{{data1}}",
+    "size": "brush | size",
+    "blendMode": "brush | blend mode",
+    "opacity": "brush | opacity",
+    "sizePattern": "brush | pattern size",
     "type": {
-      "Square": "brush square",
-      "Circle": "brush circle",
-      "Pattern": "brush pattern"
-    }
-  },
-
-  "line": {
-    "center": "center",
-    "direction": "direction",
-    "type": {
-      "solid": "line solid",
-      "SolidPattern": "line pattern 1",
-      "trailingPattern": "line pattern 2"
+      "Square": "brush | square",
+      "Circle": "brush | circle",
+      "Pattern": "brush | pattern"
+    },
+    "compositeOperations": {
+      "source-over": "normal",
+      "destination-out": "erase",
+      "source-atop": "over",
+      "destination-over": "under",
+      "lighter": "lighter",
+      "xor": "xor",
+      "multiply": "multiply",
+      "screen": "screen",
+      "overlay": "overlay",
+      "darken": "darken",
+      "lighten": "lighten",
+      "color-dodge": "color dodge",
+      "color-burn": "color burn",
+      "hard-light": "hard light",
+      "soft-light": "soft light",
+      "difference": "difference",
+      "exclusion": "exclusion",
+      "hue": "hue",
+      "saturation": "saturation",
+      "color": "color",
+      "luminosity": "luminosity"
+    },
+    "hotkeysDescription": {
+      "size": "brush | size",
+      "patternSize": "brush | pattern size",
+      "opacity": "brush | opacity",
+      "compositeOperations": {
+        "source-over": "brush | blend mode | normal",
+        "destination-out": "brush | blend mode | erase",
+        "source-atop": "brush | blend mode | over",
+        "destination-over": "brush | blend mode | under",
+        "lighter": "brush | blend mode | lighter",
+        "xor": "brush | blend mode | xor",
+        "multiply": "brush | blend mode | multiply",
+        "screen": "brush | blend mode | screen",
+        "overlay": "brush | blend mode | overlay",
+        "darken": "brush | blend mode | darken",
+        "lighten": "brush | blend mode | lighten",
+        "color-dodge": "brush | blend mode | color dodge",
+        "color-burn": "brush | blend mode | color burn",
+        "hard-light": "brush | blend mode | hard light",
+        "soft-light": "brush | blend mode | soft light",
+        "difference": "brush | blend mode | difference",
+        "exclusion": "brush | blend mode | exclusion",
+        "hue": "brush | blend mode | hue",
+        "saturation": "brush | blend mode | saturation",
+        "color": "brush | blend mode | color",
+        "luminosity": "brush | blend mode | luminosity"
+      }
     }
   },
 
@@ -53,8 +89,97 @@
     "broken": "broken",
     "transp": "transp",
     "pattern": "pattern",
-    "solidpattern": "pattern 1",
-    "trailingpattern": "pattern 2"
+    "solidpattern": "back",
+    "trailingpattern": "brush"
+  },
+
+  "line": {
+    "center": "center",
+    "direction": "direction",
+    "type": {
+      "solid": "line | solid",
+      "SolidPattern": "line | back",
+      "trailingPattern": "line | brush"
+    },
+    "cap": {
+      "butt": "butt",
+      "round": "round",
+      "square": "square"
+    },
+    "join": {
+      "bevel": "bevel",
+      "round": "round",
+      "miter": "miter"
+    },
+    "randomType": {
+      "online": "online",
+      "onframe": "onframe"
+    },
+    "compositeOperations": {
+
+      "source-over": "normal",
+      "destination-out": "erase",
+      "source-atop": "over",
+      "destination-over": "under",
+      "lighter": "lighter",
+      "xor": "xor",
+      "multiply": "multiply",
+      "screen": "screen",
+      "overlay": "overlay",
+      "darken": "darken",
+      "lighten": "lighten",
+      "color-dodge": "color dodge",
+      "color-burn": "color burn",
+      "hard-light": "hard light",
+      "soft-light": "soft light",
+      "difference": "difference",
+      "exclusion": "exclusion",
+      "hue": "hue",
+      "saturation": "saturation",
+      "color": "color",
+      "luminosity": "luminosity"
+    },
+    "hotkeysDescription": {
+      "size": "line | size",
+      "patternSize": "line | pattern size",
+      "opacity": "line | opacity",
+      "randomType": "line | color randomizer mode",
+      "cap": {
+        "butt": "line | cap | butt",
+        "round": "line | cap | round",
+        "square": "line | cap | square"
+      },
+      "join": {
+        "bevel": "line | join | bevel",
+        "round": "line | join | round",
+        "miter": "line | join | miter"
+      },
+      "direction": "line | direction",
+      "center": "line | center",
+      "compositeOperations": {
+        "source-over": "line | blend mode | normal",
+        "destination-out": "line | blend mode | erase",
+        "source-atop": "line | blend mode | over",
+        "destination-over": "line | blend mode | under",
+        "lighter": "line | blend mode | lighter",
+        "xor": "line | blend mode | xor",
+        "multiply": "line | blend mode | multiply",
+        "screen": "line | blend mode | screen",
+        "overlay": "line | blend mode | overlay",
+        "darken": "line | blend mode | darken",
+        "lighten": "line | blend mode | lighten",
+        "color-dodge": "line | blend mode | color dodge",
+        "color-burn": "line | blend mode | color burn",
+        "hard-light": "line | blend mode | hard light",
+        "soft-light": "line | blend mode | soft light",
+        "difference": "line | blend mode | difference",
+        "exclusion": "line | blend mode | exclusion",
+        "hue": "line | blend mode | hue",
+        "saturation": "line | blend mode | saturation",
+        "color": "line | blend mode | color",
+        "luminosity": "line | blend mode | luminosity"
+      }
+    }
   },
 
   "selectTypes": {
@@ -63,7 +188,150 @@
     "points": "points"
   },
 
-  "add": "add",
+
+  "select": {
+    "curveType": {
+      "curveBasis": "basis",
+      "curveBundle": "bundle",
+      "curveCardinal": "cardinal",
+      "curveCatmullRom": "Catmull R.",
+      "curveLinear": "linear",
+      "curveMonotoneX": "monotone x",
+      "curveMonotoneY": "monotone у",
+      "curveNatural": "natural",
+      "curveStep": "step",
+      "curveStepBefore": "step before",
+      "curveStepAfter": "step after"
+    },
+    "hotkeysDescription": {
+      "mode": {
+        "Line": "select | line",
+        "Rect": "select | rect",
+        "SimplePoints": "select | points",
+        "Points": "select | points"
+      },
+      "curveType": {
+        "curveBasis": "select | interpolation | basis",
+        "curveBundle": "select | interpolation | bundle",
+        "curveCardinal": "select | interpolation | cardinal",
+        "curveCatmullRom": "select | interpolation | Catmull R.",
+        "curveLinear": "select | interpolation | linear",
+        "curveMonotoneX": "select | interpolation | monotone x",
+        "curveMonotoneY": "select | interpolation | monotone у",
+        "curveNatural": "select | interpolation | natural",
+        "curveStep": "select | interpolation | step",
+        "curveStepBefore": "select | interpolation | step before",
+        "curveStepAfter": "select | interpolation | step after"
+      },
+      "curveParam": {
+        "beta": "select | interpolation parameter | beta",
+        "tension": "select | interpolation parameter | tension",
+        "alpha": "select | interpolation parameter | alpha"
+      }
+    }
+  },
+
+  "cf": {
+    "type": {
+      "time": "time",
+      "xy": "xy",
+      "rgba": "rgba"
+    },
+    "types": {
+      "time": {
+        "sin": "sin",
+        "saw": "saw",
+        "noise": "noise"
+      },
+      "xy": {
+        "parab": "hill",
+        "sis2": "waves"
+      },
+      "rgba": {
+        "channel": {
+          "red": "red",
+          "blue": "blue",
+          "green": "green",
+          "alpha": "alpha"
+        }
+      }
+    },
+    "mode": {
+      "auto": "auto",
+      "on": "on",
+      "off": "off"
+    },
+    "wave": {
+      "type": {
+        "sin": "sin",
+        "saw": "saw",
+        "noise": "noise"
+      }
+    },
+    "xy": {
+      "type": {
+        "parab": "hill",
+        "sis2": "waves"
+      }
+    },
+    "hotkeysDescription": {
+      "type": {
+        "time": "time",
+        "xy": "xy",
+        "rgba": "rgba"
+      },
+      "wave": {
+        "type": {
+          "sin": "time{{data1}} | sin",
+          "saw": "time{{data1}} | saw",
+          "noise": "time{{data1}} | noise"
+        },
+        "sin": {
+          "a": "time{{data1}} | sin | amplitude",
+          "t": "time{{data1}} | sin | period",
+          "o": "time{{data1}} | sin | phase"
+        },
+        "saw": {
+          "start": "time{{data1}} | saw | from",
+          "end": "time{{data1}} | saw | to",
+          "t": "time{{data1}} | saw | period"
+        },
+        "noise": {
+          "start": "time{{data1}} | noise | center",
+          "f": "time{{data1}} | noise | amplitude"
+        }
+      },
+      "xy": {
+        "type": {
+          "parab": "xy{{data2}} | hill",
+          "sis2": "xy{{data2}} | waves"
+        },
+        "parab": {
+          "zd": "xy{{data1}} | hill | coefficient 1",
+          "x": "xy{{data1}} | hill | coefficient 2",
+          "y": "xy{{data1}} | hill | coefficient 3",
+          "end": "xy{{data1}} | hill | multiplier"
+        },
+        "sis2": {
+          "XA": "xy{{data1}} | waves | coefficient 1",
+          "h": "xy{{data1}} | waves | coefficient 2",
+          "cosA": "xy{{data1}} | waves | coefficient 3",
+          "xN": "xy{{data1}} | waves | coefficient 4",
+          "yN": "xy{{data1}} | waves | coefficient 5",
+          "xD": "xy{{data1}} | waves | coefficient 6",
+          "yD": "xy{{data1}} | waves | coefficient 7",
+          "xdd": "xy{{data1}} | waves | coefficient 8",
+          "ydd": "xy{{data1}} | waves | coefficient 9",
+          "end": "xy{{data1}} | waves | multiplier"
+        }
+      },
+      "rgba": {
+        "component": "каналы{{data1}} | channel",
+        "zd": "каналы{{data1}} | from",
+        "zed": "каналы{{data1}} | multiplier"
+      }
+    }
+  },
 
   "plugins": {
     "repeating": "repeating",
@@ -74,6 +342,96 @@
     "blur": "blur"
   },
 
+  "pattern": {
+    "mask": {
+      "black": "black",
+      "white": "white"
+    },
+    "repeating": {
+      "float": "float",
+      "flat": "flat"
+    },
+    "blur": {
+      "onUpdate": "on update",
+      "once": "once"
+    },
+    "video": {
+      "stop": "stop",
+      "start": "start",
+      "play": "play",
+      "pause": "pause",
+      "mirror": "mirror",
+      "edgeMode": {
+        "no": "no",
+        "top": "top",
+        "bottom": "bottom",
+        "all": "all"
+      },
+      "slitMode": {
+        "front": "front",
+        "back": "back",
+        "top": "top",
+        "bottom": "bottom",
+        "left": "left",
+        "right": "right"
+      }
+    },
+    "hotkeysDescription": {
+      "save": "pattern{{data1}} | save",
+      "double": "pattern{{data1}} | double",
+      "add": "add new pattern",
+      "config": {
+        "mask": "pattern{{data1}} | mask",
+        "repeating": "pattern{{data1}} | repeating",
+        "rotation": "pattern{{data1}} | rotation",
+        "blur": "pattern{{data1}} | blur",
+        "room": "pattern{{data1}} | room",
+        "video": "pattern{{data1}} | camera"
+      },
+      "mask": {
+        "inverse": "pattern{{data1}} | mask | inverse"
+      },
+      "repeating": {
+        "int": "pattern{{data1}} | repeating | float",
+        "x": "pattern{{data1}} | repeating | x",
+        "y": "pattern{{data1}} | repeating | y",
+        "flat": "pattern{{data1}} | repeating | flat",
+        "xOut": "pattern{{data1}} | repeating | x outer",
+        "yOut": "pattern{{data1}} | repeating | y outer"
+      },
+      "rotating": {
+        "xc": "pattern{{data1}} | rotating | rotation center x",
+        "yc": "pattern{{data1}} | rotating | rotation center y",
+        "angle": "pattern{{data1}} | rotating | angle",
+        "xd": "pattern{{data1}} | rotating | offset x",
+        "yd": "pattern{{data1}} | rotating | offset y"
+      },
+      "blur": {
+        "radius": "pattern{{data1}} | blur | radius",
+        "onUpdate": "pattern{{data1}} | blur | on update",
+        "once": "pattern{{data1}} | blur | once"
+      },
+      "video": {
+        "on": "pattern{{data1}} | camera | start/stop",
+        "pause": "pattern{{data1}} | camera | pause/play",
+        "mirror": "pattern{{data1}} | camera | mirror",
+        "edgeMode": "pattern{{data1}} | camera | edge mode",
+        "stackSize": "pattern{{data1}} | camera | stack size",
+        "cutOffset": "pattern{{data1}} | camera | cut offset",
+        "slitMode": {
+          "front": "pattern{{data1}} | camera | point of view | front",
+          "back": "pattern{{data1}} | camera | point of view | back",
+          "top": "pattern{{data1}} | camera | point of view | top",
+          "bottom": "pattern{{data1}} | camera | point of view | bottom",
+          "left": "pattern{{data1}} | camera | point of view | left",
+          "right": "pattern{{data1}} | camera | point of view | right"
+        },
+        "stackType": "pattern{{data1}} | camera | stack type",
+        "cutFunction": "pattern{{data1}} | camera | cut function"
+      }
+    }
+  },
+
   "patternControls": {
     "delete": "delete",
     "double": "copy",
@@ -82,12 +440,6 @@
     "stretch": "stretch",
     "undo": "undo",
     "redo": "redo"
-  },
-
-  "patternControlsHelp": {
-    "stretch": "растягивать изображение при изменении размера и при загрузке",
-    "width": "width",
-    "height": "height"
   },
 
   "patternRotating": {
@@ -102,7 +454,10 @@
     "leave": "leave",
     "enter": "enter",
     "draw": "draw",
-    "chat": "chat"
+    "chat": "chat",
+    "hotkeysDescription": {
+      "draw": "pattern{{data1}} | room | draw"
+    }
   },
 
   "chat": {
@@ -116,5 +471,34 @@
   "patternSelect": {
     "brushPattern": "brush pattern {{data1}}",
     "linePattern": "line pattern {{data1}}"
+  },
+
+
+  "utils": {
+    "delete": "delete",
+    "pattern": "pattern",
+
+    "clear": "clear",
+
+    "autofocus": "autofocus",
+    "autoblur": "autoblur"
+  },
+
+  "add": "add",
+
+  "globalHotkeys": {
+    "hk": "k",
+    "patternSelect": "select tool pattern",
+    "patternGoTo": "go to pattern",
+    "fullscreen": "fullscreen",
+    "hotkeys": "show/hide control settings",
+    "patternWindow": "open pattern view in new window",
+    "selectAll": "select all",
+    "selectClear": "clear selection"
+  },
+
+  "lang": {
+    "ru": "ру",
+    "en": "en"
   }
 }

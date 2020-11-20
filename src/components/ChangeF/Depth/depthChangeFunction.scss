@@ -64,19 +64,22 @@
         border-top-color: rgb(186, 186, 186);
       }
 
-      .button {
+      .hotkey-button {
         position: absolute;
         top: 20px;
         left: 0;
-        color: red;
 
-        background: lightgrey;
-        width: 70px;
-        cursor: pointer;
-        //height: 60px;
-        //border: none;
+        .button {
+          color: red;
 
-        visibility: hidden;
+          background: lightgrey;
+          width: 70px;
+          cursor: pointer;
+          //height: 60px;
+          //border: none;
+
+          visibility: hidden;
+        }
       }
 
       &:hover .button {

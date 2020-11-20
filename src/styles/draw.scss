@@ -1,8 +1,6 @@
 .draw {
   position: relative;
 
-  //cursor: none;
-  z-index: 1;
   .draw-cursors {
     position: absolute;
     top: 0;
@@ -11,7 +9,6 @@
   }
 
   &.disabled {
-    pointer-events: none;
     border: 1px solid rgba(0, 0, 0, .07);
   }
 

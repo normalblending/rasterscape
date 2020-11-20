@@ -28,12 +28,14 @@ export const lineSolid = function () {
             if (!e) return;
 
 
+            const newPrevPoints = {};
+
             const selectionMask = pattern.selection && pattern.selection.value.mask;
             if (selectionMask) {
                 if (!draw) {
                     getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
-                        prevPoints[index] = {x, y};
+                        newPrevPoints[index] = {x, y};
 
                         drawMasked(
                             selectionMask,
@@ -55,7 +57,8 @@ export const lineSolid = function () {
                 } else {
                     getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index} ) => {
 
-                        canvases[index].getContext('2d').clearRect(0,0, width, height);
+                        canvases[index]?.getContext('2d').clearRect(0,0, width, height);
+                        newPrevPoints[index] = {x, y};
 
                         const {canvas: image} = drawMasked(
                             selectionMask,
@@ -82,6 +85,7 @@ export const lineSolid = function () {
                 if (!draw) {
                     getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
                         canvases[index] = createCanvas(width, height).canvas;
+                        newPrevPoints[index] = {x, y};
 
                         const context = canvases[index]?.getContext('2d');
 
@@ -105,6 +109,7 @@ export const lineSolid = function () {
                     getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
 
                         const context = canvases[index]?.getContext('2d');
+                        newPrevPoints[index] = {x, y};
 
                         if (!context) return;
 
@@ -114,7 +119,13 @@ export const lineSolid = function () {
                         if (random === ELineRandomType.OnFrame) {
                             context.strokeStyle = getRandomColor();
                         }
-                        context.lineTo(x, y);
+                        if (prevPoints[index]) {
+                            context.lineTo(x, y);
+                        } else {
+
+                            context.moveTo(x, y);
+                        }
+
                         context.stroke();
 
                         const image = canvases[index];
@@ -125,6 +136,8 @@ export const lineSolid = function () {
                     });
                 }
             }
+
+            prevPoints = newPrevPoints;
         },
         release: e => {
             draw = false;

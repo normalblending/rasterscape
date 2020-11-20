@@ -141,10 +141,14 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         if (prevProps.selectToolParams.mode !== this.props.selectToolParams.mode) {
             this.selectToolHandlers[prevProps.selectToolParams.mode].exit(this.props.selectToolParams.mode)
         }
+
+        this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
+        this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
     }
 
     static getDerivedStateFromProps(nextProps: CanvasSelectionProps, prevState) {
         const {value} = nextProps;
+
         return Array.isArray(value) && value !== prevState.prevPath ? {
             prevPath: value,
             path: value,
@@ -409,9 +413,6 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         } = this.props;
 
         const {path} = this.state;
-
-        this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
-        this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
 
         const subFirst = this.isSecondPoint() && path.filter(({type}) => type === ESegType.M).reverse()[0];
 

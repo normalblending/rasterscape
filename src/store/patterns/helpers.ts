@@ -24,8 +24,8 @@ export const patternId = (state: PatternsState) =>
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
     const {history, store, selection, mask, rotation, repeating, startImage, startMask, room} = config || {};
 
-    const width = startImage ? startImage.width : (config.width || 300);
-    const height = startImage ? startImage.height : (config.height || 300);
+    const width = startImage ? startImage.width : (config.width || 400);
+    const height = startImage ? startImage.height : (config.height || 400);
 
     const current = startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height);
     const maskState = getMaskState(width, height, startMask)(mask, undefined, params?.mask);
@@ -34,12 +34,12 @@ export const createPatternInitialState = (id: string, config?: PatternConfig, pa
         config,
         resultImage: patternValues.setValue(id, current.imageData, mask && startMask, maskState?.params.inverse),
         current,
-        history: getHistoryState(history, undefined, params?.history),
+        history: getHistoryState(true, undefined, params?.history),
         store: getStoreState(store, undefined, params?.store),
-        selection: getSelectionState(selection, undefined, params?.selection),
+        selection: getSelectionState(true, undefined, params?.selection),
         mask: maskState,
-        rotation: getRotationState(rotation, undefined, params?.rotation),
-        repeating: getRepeatingState(repeating, undefined, params?.repeating),
+        rotation: getRotationState(true, undefined, params?.rotation),
+        repeating: getRepeatingState(true, undefined, params?.repeating),
         import: getImportState(true, undefined, params?.import),
         video: getVideoState(true, undefined, params?.video),
         room: getRoomState(true, undefined, params?.room),

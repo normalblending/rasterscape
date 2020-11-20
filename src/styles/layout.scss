@@ -34,22 +34,28 @@
       padding-left: 11px;
 
       &:hover {
-        z-index: 10;
+        z-index: 2;
       }
 
     }
 
     .windows {
+      //z-index: 1;
       height: 100%;
       white-space: nowrap;
-      padding-right: 77vw;
       padding-left: 23vw;
       display: flex;
       align-items: flex-end;
 
+      //&:hover {
+      //  z-index: 2;
+      //}
     }
 
     .app-control-button {
+      position: relative;
+      z-index: 1;
+
       color: rgba(0,0,0,.5);
       border: none;
       outline: none;
@@ -72,6 +78,11 @@
       &:focus {
         @include ffoocus();
       }
+
+      &.app-control-button__selected {
+        background: transparent;
+        color: red;
+      }
     }
 
     .app-controls {
@@ -86,9 +97,16 @@
       display: flex;
       align-items: center;
 
+      &:hover {
+        z-index: 2;
+      }
+
+
       & > button {
         margin-left: 14px;
       }
+
+
 
       .full-button {
         position: relative;

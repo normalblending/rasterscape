@@ -2,6 +2,12 @@
   display: flex;
   position: relative;
 
+  &.area-selection-on {
+    .draw {
+      //border: 1px solid transparent;
+    }
+  }
+
   & > .selection {
     position: absolute;
     top: 0;

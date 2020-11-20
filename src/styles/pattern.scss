@@ -6,6 +6,10 @@
   padding-bottom: 80px;
   box-sizing: border-box;
   border-left: 1px solid rgba(0, 0, 0, .07);
+  padding-right: 77vw;
+  & > * {
+    z-index: 1;
+  }
 }
 
 .pattern {
@@ -77,15 +81,9 @@
     }
   }
 
-  .pattern-sizes {
-    display: flex;
-
-    .size-input-number {
-      width: 70px;
-      text-align: left;
-
-      background: lightgoldenrodyellow;
-    }
+  .size-input-number {
+    max-width: 70px;
+    text-align: left;
   }
   .history-controls {
     display: flex;
@@ -123,9 +121,10 @@
     width: 210px;
     position: sticky;
     bottom: 40px;
+    z-index: 1;
 
     &:hover {
-      z-index: 10;
+      z-index: 2;
     }
   }
 

@@ -2,7 +2,7 @@ import * as React from "react";
 import {
     defaultGetText,
     defaultGetValue,
-    SelectButtons,
+    SelectButtons, SelectButtonsEventData,
     SelectButtonsImperativeHandlers,
     SelectButtonsProps
 } from "../SelectButtons";
@@ -38,11 +38,13 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
         className, nullText, onChange,
         onBlur, onFocus,
         onValueBlur, onSelectBlur,
+        open,
         ...props
     } = _props;
 
     const selectButtonsRef = React.useRef<SelectButtonsImperativeHandlers>(null);
     const valueButtonRef = React.useRef<ButtonImperativeHandlers>(null);
+    const containerRef = React.useRef(null);
     const [_open, setOpen] = React.useState(false);
 
     React.useImperativeHandle(ref, () => ({
@@ -66,11 +68,12 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
     }, [setOpen, valueButtonRef]);
 
 
-    const handleChange = React.useCallback((data) => {
+    const handleChange = React.useCallback((data: SelectButtonsEventData) => {
 
         onChange && onChange(data);
 
-        if (_open) {
+
+        if (_open && !(data.isNextValue || data.isPrevValue)) {
             setOpen(false);
             setTimeout(valueButtonRef.current?.focus, 0);
         }
@@ -106,16 +109,24 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
 
     const handleSelectButtonBlur = React.useCallback(() => {
 
-        setOpen(false);
-        onSelectBlur?.();
-        setTimeout(() => {
-            const isValueButtonActive = document.activeElement === valueButtonRef.current.getElement();
-            if (!isValueButtonActive) {
-                setOpen(false);
-                console.log(2);
-                onBlur?.();
-            }
-        }, 0);
+        const isActiveInside = containerRef.current.contains(document.activeElement);
+
+        const isValueButtonActive = document.activeElement === valueButtonRef.current.getElement()
+
+        // console.log(isActiveInside, isValueButtonActive, document.activeElement);
+        if (!isActiveInside || isValueButtonActive) {
+
+            setOpen(false);
+            onSelectBlur?.();
+            setTimeout(() => {
+                const isValueButtonActive = document.activeElement === valueButtonRef.current.getElement();
+                if (!isValueButtonActive) {
+                    setOpen(false);
+                    onBlur?.();
+                }
+            }, 0);
+        }
+
     }, [setOpen, onSelectBlur, onBlur, valueButtonRef]);
 
     const handleSelectButtonFocus = React.useCallback(() => {
@@ -125,7 +136,6 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
 
     const handleKeyDown = React.useCallback((e) => {
         let i = 0;
-        console.log(e.keyCode);
         if (e.keyCode === 38 || e.keyCode === 37) {
             i = 1;
         } else if (e.keyCode === 40 || e.keyCode === 39) {
@@ -135,13 +145,12 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
         if (!i) return;
 
         if (i < 0)
-            selectButtonsRef.current.nextValue()
+            !_open && !open && selectButtonsRef.current.nextValue()
         else
-            selectButtonsRef.current.prevValue()
-    }, [selectButtonsRef]);
+            !_open && !open && selectButtonsRef.current.prevValue()
+    }, [selectButtonsRef, _open, open]);
 
     const {
-        open,
         value,
         getValue = defaultGetValue,
         getText = defaultGetText,
@@ -163,6 +172,7 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
     const valueItem = items.find(item => getValue(item) === value);
     return (
         <div
+            ref={containerRef}
             className={classNames(className, "select-drop", {
                 'select-drop-open': open || _open,
             })}

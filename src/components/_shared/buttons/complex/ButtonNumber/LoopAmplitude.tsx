@@ -1,11 +1,13 @@
 import * as React from "react";
 import {AmplitudeComponentProps} from "./types";
+import {WithTranslation, withTranslation} from "react-i18next";
+import {Translations} from "../../../../../store/language/helpers";
 
-export interface LoopAmplitudeProps extends AmplitudeComponentProps {
+export interface LoopAmplitudeProps extends AmplitudeComponentProps, WithTranslation {
 
 }
 
-export const LoopAmplitude: React.FC<LoopAmplitudeProps> = ({range, params, changingStartValue, changeFunctionId, changing, buttonWidth}) => {
+export const LoopAmplitudeComponent: React.FC<LoopAmplitudeProps> = ({t, params, changingStartValue, changeFunction, changing, buttonWidth}) => {
 
     return (
         <div
@@ -14,9 +16,9 @@ export const LoopAmplitude: React.FC<LoopAmplitudeProps> = ({range, params, chan
                 width: Math.abs(params.end - params.start) * 100 + "%",
                 left: `${Math.min(params.start, params.end) * 100}%`
             }}>
-                    <span>
-                    {changeFunctionId}saw
-                    </span>
+                <span>{Translations.cf(t)(changeFunction)}</span>
         </div>
     );
 };
+
+export const LoopAmplitude = withTranslation('common')(LoopAmplitudeComponent);

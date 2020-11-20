@@ -6,6 +6,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Saw} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 // import {toFixed2} from "../../utils/utils";
 
@@ -14,6 +15,8 @@ export interface SawCFProps {
     params: any
 
     name: string
+
+    functionParams: ChangeFunction
 
     onChange(value?: any, name?: string)
 
@@ -40,7 +43,7 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
     };
 
     render() {
-        const {params, onChange, name} = this.props;
+        const {params, functionParams, name} = this.props;
         return (
             <div className={"saw-change-function"}>
                 <Saw
@@ -51,7 +54,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                 <div className={'saw-controls'}>
                     <ButtonNumberCF
                         pres={2}
-                        // valueD={100}
+                        hkLabel={'cf.hotkeysDescription.wave.saw.start'}
+                        hkData1={functionParams.number}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.start`}
                         value={params.start}
                         name={`changeFunctions.${name}.start`}
@@ -60,7 +64,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                     />
                     <ButtonNumberCF
                         pres={2}
-                        // valueD={100}
+                        hkLabel={'cf.hotkeysDescription.wave.saw.end'}
+                        hkData1={functionParams.number}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.end`}
                         value={params.end}
                         name={`changeFunctions.${name}.end`}
@@ -69,6 +74,8 @@ export class SawCF extends React.PureComponent<SawCFProps, SawCFState> {
                     />
                     <ButtonNumberCF
                         pres={0}
+                        hkLabel={'cf.hotkeysDescription.wave.saw.t'}
+                        hkData1={functionParams.number}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Saw}.t`}
                         value={params.t}
                         name={`changeFunctions.${name}.t`}

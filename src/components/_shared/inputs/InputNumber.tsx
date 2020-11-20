@@ -2,7 +2,6 @@ import * as React from "react";
 import * as classnames from 'classnames'
 
 export interface InputNumberProps {
-    onChange(value: number): void
 
     min?: number
     max?: number
@@ -12,6 +11,16 @@ export interface InputNumberProps {
     notZero?: boolean
 
     className?: string
+
+    autofocus?: boolean
+    autoblur?: boolean
+
+    onChange(value: number): void
+
+    onMouseEnter?(e?)
+
+
+    onMouseLeave?(e?)
 }
 
 
@@ -20,7 +29,13 @@ export const InputNumber: React.FC<InputNumberProps> = (props) => {
     const {
         className, value, onChange,
         min = 0, max = 1, step = 0.05,
+        autofocus,
+        autoblur,
+        onMouseEnter,
+        onMouseLeave,
     } = props;
+
+    const inputRef = React.useRef<HTMLInputElement>(null);
 
     const [_value, set_value] = React.useState(value);
     const [__value, set__value] = React.useState(value);
@@ -43,13 +58,32 @@ export const InputNumber: React.FC<InputNumberProps> = (props) => {
     }, [onChange, _value]);
 
     const keyPressHandler = React.useCallback((e) => {
-        if(e.key === 'Enter'){
+        if (e.key === 'Enter') {
             onChange?.(_value);
         }
     }, [onChange, _value]);
 
+    const handleMouseEnter = React.useCallback(e => {
+
+        if (autofocus)
+            inputRef.current?.focus();
+
+        onMouseEnter?.(e);
+
+    }, [onMouseEnter, inputRef, autofocus]);
+
+    const handleMouseLeave = React.useCallback(e => {
+
+        if (autoblur)
+            inputRef.current?.blur();
+
+        onMouseLeave?.(e);
+
+    }, [onMouseLeave, inputRef, autoblur]);
+
     return (
         <input
+            ref={inputRef}
             className={classnames("input-number", className)}
             type="number"
             step={step}
@@ -59,6 +93,8 @@ export const InputNumber: React.FC<InputNumberProps> = (props) => {
             onBlur={blurHandler}
             onChange={changeHandler}
             onKeyPress={keyPressHandler}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
         />
     );
 };

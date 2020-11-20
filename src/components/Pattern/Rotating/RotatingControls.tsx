@@ -77,6 +77,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
 
     render() {
         const {angle, offset} = this.props.rotation;
+        const {patternId} = this.props;
         return (
             <div className={'rotating-controls'}>
                 <div className={'left'}>
@@ -85,6 +86,8 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         pres={0}
                         valueD={1}
                         range={offsetRange}
+                        hkLabel={'pattern.hotkeysDescription.rotating.xc'}
+                        hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.offset.xc`}
                         name={"xc"}
                         value={offset.xc}
@@ -96,6 +99,8 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         pres={0}
                         valueD={1}
                         range={offsetRange}
+                        hkLabel={'pattern.hotkeysDescription.rotating.yc'}
+                        hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.offset.yc`}
                         name={"yc"}
                         value={offset.yc}
@@ -107,6 +112,8 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         className={'rotating-angle'}
                         pres={0}
                         width={140}
+                        hkLabel={'pattern.hotkeysDescription.rotating.angle'}
+                        hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.angle`}
                         name={"angle"}
                         value={angle}
@@ -123,6 +130,8 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         pres={0}
                         valueD={1}
                         range={offsetRange}
+                        hkLabel={'pattern.hotkeysDescription.rotating.xd'}
+                        hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.offset.xd`}
                         name={"xd"}
                         value={offset.xd}
@@ -135,6 +144,8 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         pres={0}
                         valueD={1}
                         range={offsetRange}
+                        hkLabel={'pattern.hotkeysDescription.rotating.yd'}
+                        hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.offset.yd`}
                         name={"yd"}
                         value={offset.yd}

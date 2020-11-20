@@ -8,7 +8,7 @@ export const patternValues = new (class PatternValues {
 
     setValue = (id, image, mask, inverse) => {
 
-        coordHelper.setText('inverse ' + inverse)
+        // coordHelper.setText('inverse ' + inverse)
         this.values[id] = getMaskedImage(image, mask, inverse);
         return true;
     }

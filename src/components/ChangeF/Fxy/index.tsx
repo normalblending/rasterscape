@@ -10,12 +10,16 @@ import {ParabCF} from "./Parab";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {Sis2CF} from "./Sis2";
+import {WaveParams} from "../../../store/changeFunctions/functions/wave";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {withTranslation, WithTranslation} from "react-i18next";
 
 // import {FxyHelp} from "../tutorial/tooltips/FxyHelp";
 
 export interface FxyCFStateProps {
 
     tutorial: boolean
+    functionParams: ChangeFunction
     params: FxyParams
 }
 
@@ -28,7 +32,7 @@ export interface FxyCFOwnProps {
     name: string
 }
 
-export interface FxyCFProps extends FxyCFStateProps, FxyCFActionProps, FxyCFOwnProps {
+export interface FxyCFProps extends FxyCFStateProps, FxyCFActionProps, FxyCFOwnProps, WithTranslation {
 
 }
 
@@ -84,9 +88,10 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
     };
     selectItems = arrayToSelectItems([FxyType.Parab, FxyType.Sis2]);
 
+    typeText = ({value}) => this.props.t('cf.xy.type.' + value);
 
     render() {
-        const {params, name, tutorial} = this.props;
+        const {params, name, functionParams} = this.props;
 
         const FxyComponent = this.fxyComponentsByType[params.type];
         return (
@@ -95,12 +100,15 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
                 <SelectDrop
                     className={'select-type'}
                     value={params.type}
+                    getText={this.typeText}
+                    hkLabel={'cf.hotkeysDescription.xy.type'}
+                    hkData2={functionParams.number}
                     onChange={this.handleTypeChange}
                     items={this.selectItems}/>
                 {FxyComponent &&
                 <FxyComponent
                     name={name}
-                    tutorial={tutorial}
+                    functionParams={functionParams}
                     params={params.typeParams[params.type]}
                     onChange={this.handleParamChange}
                 />}
@@ -112,7 +120,8 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
 
 const mapStateToProps: MapStateToProps<FxyCFStateProps, FxyCFOwnProps, AppState> = (state, {name}) => ({
     params: state.changeFunctions.functions[name].params,
-    tutorial: state.tutorial.on
+    tutorial: state.tutorial.on,
+    functionParams: state.changeFunctions.functions[name]
 });
 
 const mapDispatchToProps: MapDispatchToProps<FxyCFActionProps, FxyCFOwnProps> = {
@@ -122,4 +131,4 @@ const mapDispatchToProps: MapDispatchToProps<FxyCFActionProps, FxyCFOwnProps> = 
 export const FxyCF = connect<FxyCFStateProps, FxyCFActionProps, FxyCFOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(FxyCFComponent);
+)(withTranslation('common')(FxyCFComponent));

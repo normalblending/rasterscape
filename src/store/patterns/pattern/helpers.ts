@@ -7,7 +7,17 @@ export type PatternReducer<T extends PatternAction> =
 export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T>) =>
     (state: PatternsState, action: T) => state[action.id] ? ({
         ...state,
-        [action.id]: reducer(state[action.id], action, state)
+        [action.id]: (() => {
+            try {
+                return reducer(state[action.id], action, state);
+            } catch (error) {
+                console.error(error);
+                return {
+                    ...state[action.id],
+                    //error
+                }
+            }
+        })()
     }) : state;
 
 export const getPatternConfig = (pattern: PatternState): PatternConfig => {

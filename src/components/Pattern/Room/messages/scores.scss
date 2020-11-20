@@ -1,0 +1,58 @@
+.sign-scores-container {
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: flex-end;
+  pointer-events: all;
+  .sign-scores {
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 96%;
+    background: radial-gradient(#ffffff, #cccccc57);
+    margin-bottom: 6px;
+
+    .scores-header {
+      font-size: 13px;
+      width: 100%;
+      text-align: right;
+      font-style: italic;
+      font-weight: bold;
+
+      margin-bottom: 6px;
+    }
+
+    .scores-table {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      .scores-table-row {
+
+        display: flex;
+
+        .rank {
+          width: 20px;
+          flex: 0 0 auto;
+        }
+
+        .score {
+          flex: 1 1 auto;
+          background: #efefef;
+        }
+
+        .sign {
+
+          flex: 0 0 auto;
+          text-align: right;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          padding-left: 12px;
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import {Segments, SelectionParams, SelectionValue} from "./types";
 import {PatternState} from "../pattern/types";
-import {getMaskedImage, imageDataToCanvas} from "../../../utils/canvas/helpers/imageData";
+import {getMaskedImage, imageDataToCanvas, maskInverse} from "../../../utils/canvas/helpers/imageData";
 import {createCanvas} from "../../../utils/canvas/helpers/base";
 import {pathDataToString} from "../../../utils/path";
 import {getFunctionState} from "../../../utils/patterns/function";
@@ -24,28 +24,59 @@ export const getMaskFromSegments = (width, height, selectionValue: Segments) => 
 
 };
 
-export const getSelectedImageData = (pattern: PatternState, withMask?: boolean): ImageData => {
+export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, inverse?: boolean): ImageData => {
 
     const maskedImage = withMask
         ? getMaskedImage(pattern.current.imageData, pattern.mask.value.imageData, pattern.mask.params.inverse)
         : imageDataToCanvas(pattern.current.imageData);
 
-    const bbox = pattern.selection.value.bBox;
-    const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
+    if (!inverse) {
 
-    const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
+        const {width, height} = pattern.current.imageData;
 
-    if (maskImageData) {
-        context.putImageData(maskImageData, 0, 0);
-        context.globalCompositeOperation = "source-in";
+        const bbox = pattern.selection.value?.bBox || {
+            width,
+            height,
+            x: 0,
+            y: 0,
+        };
+
+        const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
+
+        const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
+
+        if (maskImageData) {
+            context.putImageData(
+                maskImageData
+                , 0, 0);
+            context.globalCompositeOperation = "source-in";
+        }
+        context.drawImage(maskedImage, 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
+
+        // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+
+        return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+    } else {
+        const {width, height} = pattern.current.imageData;
+        const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
+
+        const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
+
+        if (maskImageData) {
+            context.putImageData(
+                maskInverse(maskImageData)
+                , 0, 0);
+            context.globalCompositeOperation = "source-in";
+        }
+        context.drawImage(maskedImage, 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
+
+        // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+
+
+        return context.getImageData(0, 0, width, height);
     }
-    context.drawImage(maskedImage, 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
-
-    // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
-
-
-    return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
-
 };
 export const getSelectedMask = (pattern: PatternState): ImageData => {
     const bbox = pattern.selection.value.bBox;
@@ -65,10 +96,17 @@ export const getSelectedMask = (pattern: PatternState): ImageData => {
         context.fillRect(0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
     }
 
-    context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+    try {
+
+        context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 
 
-    return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+        return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
+    } catch (e) {
+        console.error(e);
+
+        return new ImageData(0, 0);
+    }
 
 };
 

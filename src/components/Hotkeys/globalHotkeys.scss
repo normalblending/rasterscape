@@ -1,0 +1,66 @@
+.global-hotkeys {
+  display: flex;
+  flex-direction: column;
+
+  font-size: 14px;
+
+  //padding-bottom: 16px;
+
+  .global-hotkeys-item {
+
+    display: flex;
+    align-items: flex-end;
+    //padding-left: 18px;
+    height: 24px;
+
+    .global-hotkeys-item_description {
+
+      width: 100%;
+      border-bottom: 1px dotted #797979;
+      font-size: 14px;
+      font-weight: normal;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .global-hotkeys-item_buttons {
+      display: flex;
+      margin-right: 11px;
+      position: relative;
+      top: 2px;
+      width: 118px;
+
+      .separator {
+        margin: 0 6px;
+      }
+
+      .big-key, .one-key, .digits {
+
+        box-sizing: border-box;
+        background: radial-gradient(white, #ababab);
+        border: 3px solid #e6e6e6;
+        border-bottom-width: 2px;
+        border-bottom-color: gray;
+        border-right-color: gray;
+        color: black;
+        padding: 0;
+        padding-left: 2px;
+        height: 20px;
+      }
+
+      .one-key {
+        width: 21px;
+      }
+
+      .big-key {
+        width: 32px;
+      }
+
+      .digits {
+        width: 38px;
+      }
+    }
+  }
+}

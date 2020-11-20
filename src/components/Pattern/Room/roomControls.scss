@@ -96,50 +96,38 @@
       position: relative;
       width: 210px;
       height: 100%;
-      //height: 60px;
-      //border: 1px solid red;
-
-
 
       .chat-controls {
         display: flex;
 
         justify-content: flex-end;
+
         .draw-button {
           &:disabled {
-            border: 1px solid red !important;
+            //border: 1px solid grey !important;
           }
 
           &.button-select-selected {
             border: 1px solid red !important;
           }
         }
+
         .room-chat-new-message {
           position: relative;
+          width: 100%;
 
 
           .room-chat-sign {
             position: absolute;
-            left: 2px;
+            left: 0;
+            top: 0;
           }
 
           .room-chat-message-input {
-            margin-top: -2px;
-            padding-left: 15px;
-            font-size: 13px;
             width: 100%;
-            height: 20px;
             flex: 1 1 auto;
-            box-sizing: border-box;
-            display: inline-block;
-
             border: none;
             background: transparent;
-
-            &:before {
-              content: '>';
-            }
-
           }
 
           .room-chat-message-input:focus + .room-chat-messages {
@@ -157,56 +145,7 @@
       }
 
 
-      .room-chat-messages {
-        //border: 1px solid black;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
-        position: relative;
-        font-size: 13px;
-
-        span {
-          background: lightgrey;
-        }
-
-        .room-chat-messages-container {
-          position: absolute;
-          right: 0;
-          bottom: 0;
-          box-sizing: border-box;
-          width: 100%;
-          white-space: normal;
-          padding: 2px 2px;
-          word-break: break-all;
-          text-align: left;
-
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-
-          .room-chat-message {
-            margin-bottom: 2px;
-            span {
-              background: #e3e3e3;
-
-            }
-            //background: linear-gradient(90deg, #c8ff00, transparent);
-            &.unreaded span {
-              color: black;
-              background: linear-gradient(90deg, #c8ff00, transparent);
-            }
-
-            //&:after {
-            //  content: ' ';
-            //}
-          }
-        }
-      }
-
 
     }
-
-
   }
 }
-

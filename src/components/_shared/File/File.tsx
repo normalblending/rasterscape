@@ -1,11 +1,19 @@
 import * as React from "react";
-import '../../../styles/inputFile.scss';
+import './inputFile.scss';
 import {readImageFile} from "./helpers";
 
 export interface FileProps {
     onChange(image)
+
     name: string
     children: string
+
+    autofocus?: boolean
+    autoblur?: boolean
+
+    onMouseEnter?(e)
+    onMouseMove?(e)
+    onMouseLeave?(e)
 }
 
 export interface FileState {
@@ -33,10 +41,44 @@ export class File extends React.PureComponent<FileProps, FileState> {
         }
     };
 
+
+    handleMouseEnter = e => {
+
+        const { autofocus, onMouseEnter } = this.props;
+        if (autofocus)
+            this.inputRef.current?.focus();
+
+        onMouseEnter?.(e);
+
+    }
+
+    handleMove = e => {
+        const { autofocus, onMouseMove } = this.props;
+        if (autofocus && document.activeElement !== this.inputRef.current)
+            this.inputRef.current?.focus();
+
+        onMouseMove?.(e);
+
+    }
+
+    handleMouseLeave = e => {
+        const { autoblur, onMouseLeave } = this.props;
+        if (autoblur)
+            this.inputRef.current?.blur();
+
+        onMouseLeave?.(e);
+
+    }
+
     render() {
-        const { name, children } = this.props;
+        const {name, children} = this.props;
         return (
-            <div className={'input-file'}>
+            <div
+                className={'input-file'}
+                onMouseEnter={this.handleMouseEnter}
+                onMouseMove={this.handleMove}
+                onMouseLeave={this.handleMouseLeave}
+            >
                 <input
                     type="file"
                     name={name}

@@ -4,16 +4,21 @@ import {ParamConfig} from "../../components/_shared/Params";
 
 export enum ECFType {
     WAVE = "time",
-    FXY = 'pos',
+    FXY = 'xy',
     DEPTH = 'rgba',
 }
 
 export interface ChangeFunction {
     id: string
-    type: ECFType
     number: number
+    type: ECFType
     params: any
     paramsConfig: ParamConfig[]
+}
+
+export interface ChangeFunctionConstants {
+    number: number
+    type: ECFType
 }
 
 export interface AddCFAction extends Action {

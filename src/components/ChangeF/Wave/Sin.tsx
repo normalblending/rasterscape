@@ -6,10 +6,12 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Sin} from "../../_shared/canvases/WebWorkerCanvas";
+import {ChangeFunction} from "../../../store/changeFunctions/types";
 
 export interface SinCFProps {
     tutorial: boolean
     params: any
+    functionParams: ChangeFunction
 
     name: string
 
@@ -38,7 +40,7 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
     };
 
     render() {
-        const {params, name, tutorial} = this.props;
+        const {params, name, functionParams} = this.props;
         return (
             <div className={"sin-change-function"}>
                 <Sin
@@ -53,6 +55,8 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                         precisionGain={10}
                         valueD={1000}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.a`}
+                        hkLabel={'cf.hotkeysDescription.wave.sin.a'}
+                        hkData1={functionParams.number}
                         value={params.a}
                         name={`changeFunctions.${name}.a`}
                         range={aRange}
@@ -63,6 +67,8 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                         precisionGain={10}
                         valueD={2 / 128}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.t`}
+                        hkLabel={'cf.hotkeysDescription.wave.sin.t'}
+                        hkData1={functionParams.number}
                         value={params.t}
                         name={`changeFunctions.${name}.t`}
                         range={tRange}
@@ -71,6 +77,8 @@ export class SinCF extends React.PureComponent<SinCFProps, SinCFState> {
                     <ButtonNumberCF
                         pres={2}
                         path={`changeFunctions.functions.${name}.params.typeParams.${WaveType.Sin}.o`}
+                        hkLabel={'cf.hotkeysDescription.wave.sin.o'}
+                        hkData1={functionParams.number}
                         value={params.o}
                         name={`changeFunctions.${name}.o`}
                         getText={valueText2}

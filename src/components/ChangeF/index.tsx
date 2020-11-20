@@ -13,12 +13,12 @@ import {getCFs} from "../../store/changeFunctions/selectors";
 import {DepthCF} from "./Depth/DeepthCF";
 import {WaveCF} from "./Wave";
 import {enumToSelectItems} from "../../utils/utils";
-import {CycledToggle} from "../_shared/buttons/simple/CycledToggle";
-import {SelectDrop} from "../_shared/buttons/complex/SelectDrop";
 import {SelectButtons} from "../_shared/buttons/complex/SelectButtons";
+import {WithTranslation, withTranslation} from "react-i18next";
+import {ChangeFItem} from "./ChangeFItem";
 
 export interface ChangeFStateProps {
-    cfs: ChangeFunctions
+    cfs: string[]
     changingMode: ChangingMode
     tutorial: boolean
     highlighted: string
@@ -43,7 +43,7 @@ export interface ChangeFOwnProps {
 
 }
 
-export interface ChangeFProps extends ChangeFStateProps, ChangeFActionProps, ChangeFOwnProps {
+export interface ChangeFProps extends ChangeFStateProps, ChangeFActionProps, ChangeFOwnProps, WithTranslation {
 
 }
 
@@ -59,7 +59,6 @@ const CFComponentByType = {
 
 const modesItems = enumToSelectItems(ChangingMode);
 
-const getTypeValue = type => type;
 const getTypeClassName = typeHighlighted => type => classNames({['highlighted']: typeHighlighted.includes(type)});
 const typesItems = Object.values(ECFType);
 
@@ -74,6 +73,7 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
         removeCF,
         addCF,
         setChangingMode,
+        t,
     } = props;
 
     const handleChange = React.useCallback((value, name) => {
@@ -93,61 +93,40 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
         setChangingMode(value);
     }, [setChangingMode]);
 
+    const getTypeValue = React.useMemo(() => type => type, []);
+    const getTypeText = React.useMemo(() => type => t('cf.type.' + type), [t]);
+    const getModeText = React.useMemo(() => ({value}) => t('cf.mode.' + value), [t]);
+
+    console.log('CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR CF RENDERR ');
 
     return (
         <div className="change-functions">
             <div className="control-buttons">
-
                 <SelectButtons
-                    // nullText=''
                     itemClassName={getTypeClassName(typeHighlighted)}
                     items={typesItems}
-                    getText={getTypeValue}
+                    getText={getTypeText}
                     getValue={getTypeValue}
+                    hkLabel={'cf.type'}
                     onItemClick={handleAddCF}
                 />
-                {!!Object.values(cfs).length && (
+                {!!cfs.length && (
                     <SelectButtons
                         className={classNames('modes', changingMode)}
                         items={modesItems}
                         value={changingMode}
+                        hkLabel={'cf.mode'}
+                        getText={getModeText}
                         onChange={handleModeChange}
                     />
                 )}
-                {/*<div className={classNames("change-functions-select", {*/}
-                {/*    'change-functions-select-open': typeHighlighted?.length*/}
-                {/*})}>*/}
-                {/*    <Button>func</Button>*/}
-                {/*    <div className={'change-functions-select-items'}>*/}
-                {/*        {Object.values(ECFType).map(type => (*/}
-                {/*            <Button*/}
-                {/*                name={type}*/}
-                {/*                className={classNames({['highlighted']: typeHighlighted.includes(type)})}*/}
-                {/*                onClick={this.handleAddCF}>{type}</Button>*/}
-                {/*        ))}*/}
-                {/*    </div>*/}
-                {/*</div>*/}
             </div>
             <div className="functions-list">
-                {Object.values(cfs).reverse().map(cf => {
-                    const {type, id, params, paramsConfig} = cf;
-                    const Component = CFComponentByType[type];
-                    return Component ? (
-                        <div className={classNames('function-container', {
-                            ['highlighted']: highlighted === id
-                        })} key={id}>
-                            <div className={'function-title'}>
-                                <Button className={'function-id'}>{id}</Button>
-                                <Button
-                                    value={id}
-                                    onDoubleClick={handleDelete}
-                                    className={'function-delete'}>delete</Button>
-                            </div>
-                            <Component
-                                name={id}/>
-
-                        </div>
-                    ) : null;
+                {cfs.slice().reverse().map(cf => {
+                    return <ChangeFItem
+                        id={cf}
+                        highlighted={highlighted === cf}
+                    />
                 })}
             </div>
         </div>
@@ -158,7 +137,7 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
 // const cfsSelector
 
 const mapStateToProps: MapStateToProps<ChangeFStateProps, {}, AppState> = (state) => ({
-    cfs: getCFs(state),
+    cfs: state.changeFunctions.namesList,
     changingMode: state.changing.mode,
     tutorial: state.tutorial.on,
     highlighted: state.changeFunctionHighlights.highlighted,
@@ -172,4 +151,4 @@ const mapDispatchToProps: MapDispatchToProps<ChangeFActionProps, ChangeFOwnProps
 export const ChangeF = connect<ChangeFStateProps, ChangeFActionProps, ChangeFOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(ChangeFComponent);
+)(withTranslation("common")(ChangeFComponent));

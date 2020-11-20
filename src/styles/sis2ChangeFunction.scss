@@ -1,9 +1,26 @@
 .sis2-change-function {
   display: flex;
+  flex-direction: column;
+
+  width: 140px;
 
   .sis2-controls {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+
+    &.right {
+      display: flex;
+      .buttons-container {
+        width: 140px;
+      }
+    }
+
+    .buttons-container {
+      width: 70px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
     .canvas-container {
       width: 70px;
       height: 60px;
@@ -17,7 +34,7 @@
   //  margin-top: 10px;
   //}
 
-  canvas {
+  .canvas-image-data {
 
     //border: 1px solid transparent;
     //border: 1px solid red;
