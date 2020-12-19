@@ -1,10 +1,8 @@
 import * as React from "react";
-import {Button} from "../_shared/buttons/simple/Button";
 import "../../styles/pattern.scss";
 import {HistoryControls} from "./HistoryControls";
 import {Area} from "../Area";
 import {InputNumber} from "../_shared/inputs/InputNumber";
-import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {RotationControls} from "./Rotating/RotatingControls";
 import {RepeatingControls} from "./Repeating/RepeatingControls";
 import {SelectionControls} from "./SelectionControls";
@@ -25,16 +23,13 @@ import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./Room/RoomControls";
 import {BlurControls} from "./Blur/BlurControls";
 import '../../styles/inputNumber.scss';
-import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {createPatternFromSelection, cutPatternBySelection} from "../../store/patterns/selection/actions";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 import {setDemonstrationEnabled} from "../../store/patterns/demonstration/actions";
 import {MaskControls} from "./Mask/MaskControls";
 import {DragAndDrop} from "../_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "../_shared/File/helpers";
-import {canvasToImageData} from "../../utils/canvas/helpers/imageData";
 import {setDrawer} from "../../store/patterns/room/actions";
-import {PatternsSelect} from "../PatternsSelect";
 
 export interface PatternComponentStateProps {
 
@@ -85,6 +80,7 @@ export interface PatternComponentActionProps {
 
 export interface PatternComponentOwnProps {
     id: string
+    index: number
 
     onMouseEnter?(patternId: string, e?)
 
@@ -118,7 +114,7 @@ export interface PatternComponentState {
     error?
 }
 
-const inputNumberProps = {min: 0, max: 500, step: 1, delay: 1000, notZero: true};
+const inputNumberProps = {min: 0, max:null, step: 1, delay: 1000, notZero: true};
 
 export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
@@ -221,8 +217,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         if (this.state?.error || this.props.error) return 'error';
         const {
             imageValue, maskValue,
-            height, width, id, config, selection, rotation, importParams,
-            meDrawer, persistDrawer,
+            height, width,
+            id, index,
+            config, selection, rotation,
+            meDrawer,
             demonstration,
             t,
             autoblur, autofocus
@@ -236,6 +234,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     onMouseEnter={this.handleMouseEnter}
                     onMouseLeave={this.handleMouseLeave}
                 >
+                    <div className='numbers'>{index + 1} p{id}</div>
                     <div className="left">
                         <div className="flex-col">
 

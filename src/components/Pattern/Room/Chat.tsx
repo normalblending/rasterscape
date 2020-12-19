@@ -28,7 +28,7 @@ export interface ChatActionProps {
 
 export interface ChatOwnProps {
     patternId: string
-
+    members: number
 }
 
 export interface ChatProps extends ChatStateProps, ChatActionProps, ChatOwnProps, WithTranslation {
@@ -38,7 +38,7 @@ export interface ChatProps extends ChatStateProps, ChatActionProps, ChatOwnProps
 const ChatComponent: React.FC<ChatProps> = (props) => {
 
     const {
-        t, patternId,
+        t, patternId, members,
         sendMessage,
         messages,
         meDrawer,
@@ -149,7 +149,7 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
                         hkLabel={'room.hotkeysDescription.draw'}
                         hkData1={patternId}
                         className={'draw-button'}
-                        disabled={!!drawer && !meDrawer}
+                        disabled={(!!drawer && !meDrawer) || !members}
                         selected={meDrawer}
                         onClick={handleSetDrawer}
                     >{t('room.draw')}</ButtonHK>

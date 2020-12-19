@@ -1,8 +1,8 @@
 import * as React from "react";
-import {InputText} from "./InputText";
+import {InputText} from "../_shared/inputs/InputText";
 import * as keyboardjs from "keyboardjs";
 import * as classNames from 'classnames';
-import "../../../styles/inputShortcut.scss";
+import "../../styles/inputShortcut.scss";
 import {HotkeyValue} from "store/hotkeys";
 
 export interface ShortcutInputProps {
@@ -51,7 +51,6 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
     }
 
     handleChange = (e) => {
-        console.log(e);
         if (e.pressedKeys.length === 1 && (e.key.length === 1 || e.key === "Backspace")) {
             const value = e.key === "Backspace" ? null : e.key;
 
@@ -121,6 +120,7 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
                 })}
                 value={this.state.value}
                 // placeholder={placeholder}
+                data-hotkeys
                 onBlur={this.handleBlur}
                 onFocus={this.handleFocus}/>
         );

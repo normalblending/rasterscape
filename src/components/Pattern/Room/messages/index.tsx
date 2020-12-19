@@ -12,7 +12,6 @@ import {SignScoresTable} from "./SignScoresTable";
 import {ChannelScoresTable} from "./ChannelScoresTable";
 
 
-
 export const getMessageComponent = (data: MessageData): React.ComponentType<any> => {
     if (typeof data === 'string') {
         return MessageComponentByType[MessageType._StringDefault];
@@ -24,12 +23,10 @@ export const getMessageComponent = (data: MessageData): React.ComponentType<any>
 };
 
 
-
-
 export const MessageComponentByType: {
     [type: string]: MessageComponentType
 } = {
-    // STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING
+    //  нахуя это STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING
 
     [MessageType._StringDefault]: ({data, unreaded}) => (
         <BaseMessage unreaded={unreaded}>{data}</BaseMessage>
@@ -37,8 +34,16 @@ export const MessageComponentByType: {
 
     // USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE
 
-    [MessageType.UserMessage]: ({data, unreaded}) => (
-        <BaseMessage unreaded={unreaded}>{data.text}</BaseMessage>
+    [MessageType.UserMessage]: ({data: {text, sign}, unreaded}) => (
+        <BaseMessage
+            unreaded={unreaded}
+            className={'user-message'}
+        >
+            {!!sign && (
+                <span className={'sign'}>{sign} </span>
+            )}
+            <span>{text}</span>
+        </BaseMessage>
     ),
 
     // LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK  LINK

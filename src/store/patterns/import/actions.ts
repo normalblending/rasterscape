@@ -73,6 +73,11 @@ export const load = (id: string, image: HTMLImageElement) => (dispatch, getState
 export const save = (id: string) => (dispatch, getState) => {
     const state: AppState = getState();
 
+    const pattern = state.patterns[id];
+
+    if (!pattern) {
+        return null;
+    }
 
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -82,8 +87,8 @@ export const save = (id: string) => (dispatch, getState) => {
     }
 
 
-    canvas.width = state.patterns[id].current.imageData.width;
-    canvas.height = state.patterns[id].current.imageData.height;
+    canvas.width = pattern.current.imageData.width;
+    canvas.height = pattern.current.imageData.height;
 
     ctx.putImageData(state.patterns[id].current.imageData, 0, 0);
 

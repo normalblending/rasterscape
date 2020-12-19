@@ -58,6 +58,8 @@ export interface UserChannelPublicData {
 }
 
 export interface MessageData {
+    sign?: string
+
     type?: MessageType
     text?: string
 

@@ -21,7 +21,7 @@ import {Resizable, ResizableBox} from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import {Key} from "./_shared/Key";
 import {setActivePattern} from "../store/activePattern";
-import {PatternsHotkeys} from "./PatternsHotkeys";
+import {PatternsHotkeys} from "./Hotkeys/PatternsHotkeys";
 import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "./_shared/File/helpers";
 import {imageToImageData} from "../utils/canvas/helpers/imageData";
@@ -104,11 +104,12 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         } = this.props;
         return (
             <>
-                {patterns.map(({id, store, connected, resultImage}) => {
+                {patterns.map(({id, store, connected, resultImage}, index) => {
                     return (
                         <Pattern
                             key={id}
                             id={id}
+                            index={index}
 
                             onMouseEnter={this.handleMousePatternEnter}
                             onMouseLeave={this.handleMousePatternLeave}
@@ -117,7 +118,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
                             store={store}
                             resultImage={resultImage}
-
 
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
@@ -129,6 +129,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                         />
                     );
                 })}
+
                 <PatternsHotkeys/>
 
                 <DragAndDrop

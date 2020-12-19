@@ -1,23 +1,23 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../store";
-import {Key} from "./_shared/Key";
-import {redo, undo} from "../store/patterns/history/actions";
-import {settingMode} from "../store/hotkeys";
-import {setFullScreen} from "../store/fullscreen";
-import {toggleDemonstration} from "../store/patterns/demonstration/actions";
-import {offOptimization, onOptimization} from "../store/optimization";
-import {getImageFromClipboard} from "../utils/clipboard";
-import {load} from "../store/patterns/import/actions";
-import {copyPatternToClipboard} from "../store/patterns/pattern/actions";
+import {AppState} from "../../store";
+import {Key} from "../_shared/Key";
+import {redo, undo} from "../../store/patterns/history/actions";
+import {settingMode} from "../../store/hotkeys";
+import {setFullScreen} from "../../store/fullscreen";
+import {toggleDemonstration} from "../../store/patterns/demonstration/actions";
+import {offOptimization, onOptimization} from "../../store/optimization";
+import {getImageFromClipboard} from "../../utils/clipboard";
+import {load, save} from "../../store/patterns/import/actions";
+import {copyPatternToClipboard} from "../../store/patterns/pattern/actions";
 import {
     clearSelectionIn,
     cutSelectionInToClipboard, selectAll,
     updateSelection
-} from "../store/patterns/selection/actions";
-import {PatternConfig} from "../store/patterns/pattern/types";
-import {addPattern} from "../store/patterns/actions";
-import {imageToImageData} from "../utils/canvas/helpers/imageData";
+} from "../../store/patterns/selection/actions";
+import {PatternConfig} from "../../store/patterns/pattern/types";
+import {addPattern} from "../../store/patterns/actions";
+import {imageToImageData} from "../../utils/canvas/helpers/imageData";
 
 export interface PatternsHotkeysStateProps {
     activePatternId: string
@@ -40,6 +40,7 @@ export interface PatternsHotkeysActionProps {
     selectAll(id)
     updateSelection: typeof updateSelection
     load: typeof load
+    save: typeof save
     copyToClipboard
 }
 
@@ -70,6 +71,7 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         cutPatternSelectionToClipboard,
         updateSelection,
         load,
+        save,
         addPattern,
         copyToClipboard,
         selectAll,
@@ -141,11 +143,16 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
 
     const toggleFullscreen = React.useCallback((e) => {
         e.preventDefault();
-        setFullScreen(!full);
+        try {
+            setFullScreen(!full);
+        } catch (e) {
+            console.error(e);
+        }
     }, [full, setFullScreen]);
 
     const handleToggleDemonstration = React.useCallback((e) => {
         e.preventDefault();
+        e.stopPropagation();
         toggleDemonstration(activePatternId);
     }, [activePatternId, toggleDemonstration]);
 
@@ -163,6 +170,11 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
         e.preventDefault();
         updateSelection(activePatternId, [], null);
     }, [updateSelection, activePatternId]);
+
+    const handleSave = React.useCallback((e) => {
+        e.preventDefault();
+        save(activePatternId);
+    }, [save, activePatternId]);
 
     const handleSelectAll = React.useCallback((e) => {
         e.preventDefault();
@@ -190,21 +202,20 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
                 onPress={handleRedo}
             />
             <Key
-                keys={['command + k', 'ctrl + k']}
+                keys={['option + k', 'alt + k']}
                 onPress={toggleHotkeys}
             />
+            {/*<Key*/}
+            {/*    keys={['option + f', 'alt + f']}*/}
+            {/*    onPress={toggleFullscreen}*/}
+            {/*/>*/}
             <Key
-                keys={['command + f', 'ctrl + f']}
-                onPress={toggleFullscreen}
-            />
-            <Key
-                // keys={['alt + 5']}
-                keys={['command + j', 'ctrl + j']}
+                keys={['option + w', 'alt + w']}
                 onPress={handleToggleDemonstration}
             />
             <Key
                 // keys={['alt + 5']}
-                keys={['command + o', 'ctrl + o']}
+                keys={['option + o', 'alt + o']}
                 onPress={handleToggleOptimization}
             />
             <Key
@@ -212,20 +223,24 @@ const PatternsHotkeysComponent: React.FC<PatternsHotkeysProps> = (props) => {
                 onPress={handleDeleteSelected}
             />
             <Key
-                keys={['command + d', 'ctrl + d']}
+                keys={['option + d', 'alt + d']}
                 onPress={handleClearSelection}
             />
             <Key
-                keys={['command + a', 'ctrl + a']}
+                keys={['option + a', 'alt + a']}
                 onPress={handleSelectAll}
             />
             <Key
-                keys={[
-                    ...'123456789'.split('').map(n => 'command + ' + n),
-                    ...'123456789'.split('').map(n => 'ctrl + ' + n),
-                ]}
-                onPress={handleScrollToPattern}
+                keys={['option + s', 'alt + s']}
+                onPress={handleSave}
             />
+            {/*<Key*/}
+            {/*    keys={[*/}
+            {/*        ...'123456789'.split('').map(n => 'option + ' + n),*/}
+            {/*        ...'123456789'.split('').map(n => 'alt + ' + n),*/}
+            {/*    ]}*/}
+            {/*    onPress={handleScrollToPattern}*/}
+            {/*/>*/}
         </>
     );
 };
@@ -251,7 +266,8 @@ const mapDispatchToProps: MapDispatchToProps<PatternsHotkeysActionProps, Pattern
     addPattern: addPattern,
     updateSelection: updateSelection,
     cutPatternSelectionToClipboard: cutSelectionInToClipboard,
-    selectAll
+    selectAll,
+    save,
 };
 
 export const PatternsHotkeys = connect<PatternsHotkeysStateProps, PatternsHotkeysActionProps, PatternsHotkeysOwnProps, AppState>(

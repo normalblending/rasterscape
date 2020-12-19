@@ -60,7 +60,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
 
     range?: [number, number]
 
-    shortcut?: string | string[]
+    shortcut?: string
 
     disablePointerLock?: boolean
 
@@ -391,7 +391,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     handleKeyDown = (e) => {
 
         // control
-        if (e.keyCode === 91 || e.keyCode === 93 || e.keyCode === 17) {
+        if (e.keyCode === 32) {
             e.preventDefault();
 
             this.controlKey = e.keyCode;
@@ -425,7 +425,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     };
     // constrol keys up
     handleKeyUp = (e) => {
-        console.log(e.keyCode);
         if (e.keyCode === this.controlKey) {
             e.preventDefault();
 

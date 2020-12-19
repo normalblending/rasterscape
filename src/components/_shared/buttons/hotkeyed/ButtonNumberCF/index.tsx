@@ -14,7 +14,7 @@ import {
 import {toStartValue} from "store/change/actions";
 import "./styles.scss";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
-import {ShortcutInput} from "../../../inputs/ShortcutInput";
+import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
 import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";

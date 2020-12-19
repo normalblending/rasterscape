@@ -6,8 +6,6 @@ import {MessageData} from "./types";
 
 export const createRoomSocket = (name: string, handlers: RoomSocketHandlers) => {
     const socket = io(API_URL, {
-    // const socket = io("http://localhost:3001", {
-        // const socket = io("/", {
         path: '/room',
         query: {name}
     });

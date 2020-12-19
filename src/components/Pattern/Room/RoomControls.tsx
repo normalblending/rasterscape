@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as cn from 'classnames';
 import {InputText} from "../../_shared/inputs/InputText";
-import {Button} from "../../_shared/buttons/simple/Button";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {createRoom, leaveRoom, setDrawer} from "../../../store/patterns/room/actions";
@@ -88,13 +87,14 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
     }
 
     render() {
-        const {connected, t, patternId, drawer, meDrawer, members} = this.props;
+        const {connected, t, patternId, meDrawer, members} = this.props;
         return (
             <div className={cn('room-controls', {
-                ['me-drawer']: meDrawer
+                'me-drawer': meDrawer
             })}>
                 {connected && (<>
                     <Chat
+                        members={members}
                         patternId={patternId}
                     />
                 </>)}
@@ -114,7 +114,7 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
 
                         <div
                             className={'room-name'}>
-                            <span>{this.state.roomName}</span> {members ? <small>({members})</small> : ''}
+                            <span>{this.state.roomName}</span> {members ? <small>({members})</small> : <small>connecting...</small>}
                         </div>
                         <ButtonHK
                             className={'room-delete'}

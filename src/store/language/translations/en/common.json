@@ -231,6 +231,12 @@
     }
   },
 
+  "patternSelection": {
+    "clear": "clear",
+    "pattern": "pattern",
+    "cut": "crop"
+  },
+
   "cf": {
     "type": {
       "time": "time",
@@ -465,7 +471,8 @@
   },
 
   "hotkeys": {
-    "delete": "delete"
+    "delete": "delete",
+    "empty": "no user hotkeys"
   },
 
   "patternSelect": {
@@ -494,7 +501,8 @@
     "hotkeys": "show/hide control settings",
     "patternWindow": "open pattern view in new window",
     "selectAll": "select all",
-    "selectClear": "clear selection"
+    "selectClear": "clear selection",
+    "savePattern": "save pattern"
   },
 
   "lang": {

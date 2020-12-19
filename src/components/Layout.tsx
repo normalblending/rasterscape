@@ -6,9 +6,10 @@ import {ChangeF} from "./ChangeF";
 import {connect} from "react-redux";
 import {setFullScreen} from "../store/fullscreen";
 import {AppState} from "../store";
-import FullScreen from "react-full-screen";
+import {FullScreen, useFullScreenHandle} from "react-full-screen";
 import {AppControls} from "./AppControls";
 import {Test} from "./Test";
+import _throttle from 'lodash/throttle';
 
 export interface LayoutStateProps {
     full: boolean
@@ -23,8 +24,25 @@ export interface LayoutProps extends LayoutStateProps, LayoutActionProps {
 
 export const LayoutComponent: React.FC<LayoutProps> = ({full, setFullScreen}) => {
 
+    const handle = useFullScreenHandle();
+
+    React.useEffect(() => {
+
+            if (!!full !== !!handle.active) {
+                try {
+                if (full) {
+                    handle.enter();
+                } else {
+                    handle.exit();
+                }} catch (e) {
+                    console.log(e);
+                }
+            }
+
+    }, [full])
+
     return (
-        <FullScreen enabled={full} onChange={setFullScreen}>
+        <FullScreen handle={handle} onChange={setFullScreen}>
             <div className={"layout-container"}>
                 <div className="layout">
                     <AppControls/>

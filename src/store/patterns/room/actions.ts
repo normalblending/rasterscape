@@ -7,7 +7,8 @@ import {updateImage} from "../pattern/actions";
 import {stop} from "../video/actions";
 import _throttle from 'lodash/throttle';
 import {getSignedMessage, isMeDrawer, parseMessage} from "./helpers";
-import {MessageData} from "./types";
+import {MessageData, MessageType} from "./types";
+import {base64Size} from "../../../utils/utils";
 
 export enum ERoomAction {
     CREATE_ROOM = "pattern/create-room",
@@ -107,7 +108,9 @@ const sendImageThrottled = _throttle((id, dispatch, getState) => {
     const roomSocket = roomSockets.get(id);
     const resultImageData = state.patterns[id]?.current?.imageData;
     if (roomSocket) {
-        roomSocket.image(imageDataToBase64(resultImageData));
+        const imageBase64 = imageDataToBase64(resultImageData);
+
+        roomSocket.image(imageBase64);
 
         return dispatch({
             type: ERoomAction.IMAGE_SENT,
@@ -121,7 +124,7 @@ export const sendImage = (id: string): ThunkResult<void, AppState> =>
         sendImageThrottled(id, dispatch, getState);
     };
 
-export const sendMessage = (id: string, message: string): ThunkResult<SendMessageAction, AppState> =>
+export const sendMessage = (id: string, message: string): ThunkResult<SendMessageAction | ReceiveMessageAction, AppState> =>
     (dispatch, getState) => {
 
         const state = getState();
@@ -131,6 +134,22 @@ export const sendMessage = (id: string, message: string): ThunkResult<SendMessag
         const {left, right, leftPersistent, leftParts} = parseMessage(message);
 
         if (roomSocket) {
+
+            const imageBase64 = leftParts[1] && imageDataToBase64(resultImageData);
+
+            if (imageBase64 && base64Size(imageBase64) > 4 * 1024 * 1024) {
+                return dispatch(
+                    receiveMessage(
+                        id, {
+                            type: MessageType.CommandError,
+                            translate: {
+                                key: 'message.tooBigImage'
+                            }
+                        },
+                        false
+                    ));
+            }
+
             roomSocket.message(
                 right,
                 left,

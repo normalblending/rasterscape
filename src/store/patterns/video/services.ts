@@ -124,8 +124,8 @@ export class Capture {
 
                 this.capture.parent("v2"); //
                 this.canvas.parent("v1"); //
-                // this.canvas.hide();
-                // this.capture.hide();
+                this.canvas.hide();
+                this.capture.hide();
 
                 sketch.frameRate(20);
             };

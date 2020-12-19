@@ -3,20 +3,16 @@
 
   .hotkeys-list {
 
-    background: radial-gradient(#ffffff -16%, lightgrey);
-
+    background: radial-gradient(#fff -16%,#c8c8c8);//circle,
     z-index: 1;
     position: absolute;
     top: 20px;
-    right: 0px;
+    right: 0;
     width: 485px;
-
-    padding: 33px 0 42px 48px;
+    padding: 36px 0 21px 48px;
     display: flex;
     flex-direction: column;
-
     max-height: calc(100vh - 27px);
-
     overflow: scroll;
     box-sizing: border-box;
 
@@ -33,7 +29,7 @@
       background: transparent;
       height: 24px;
       width: 485px;
-      margin-top: -33px;
+      margin-top: -36px;
       margin-left: -35px;
       align-items: flex-start;
 
@@ -43,6 +39,14 @@
 
     .hotkeys-list-items {
       padding-bottom: calc(20px + 12px);
+
+      .no-user-hotkeys {
+        height: 24px;
+        font-size: 14px;
+        margin-top: 9px;
+        margin-bottom: -9px;
+        color: rgba(0,0,0,.5);
+      }
     }
     .global-hotkeys {
       margin-top: -12px;
@@ -85,6 +89,8 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        background: linear-gradient(0deg, #ececec4a, transparent);
       }
     }
 

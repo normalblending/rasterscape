@@ -18,10 +18,17 @@ export interface KeyProps {
 export interface KeyState {
 }
 
+export const INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE = 'data-hotkeys';
+
 export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     handlePress = e => {
-        if (document.activeElement.nodeName === NodeType.Input) {
+        const activeElement = document.activeElement;
+        console.log(this.props.keys.length === 1);
+        if (activeElement.nodeName === NodeType.Input
+            && (!document.activeElement.getAttribute(INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE)
+                || this.props.keys.length === 1)
+        ) {
             return;
         }
 
@@ -31,7 +38,11 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
     };
 
     handleRelease = e => {
-        if (document.activeElement.nodeName === NodeType.Input) {
+        const activeElement = document.activeElement;
+        if (activeElement.nodeName === NodeType.Input
+            && (!document.activeElement.getAttribute(INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE)
+                || this.props.keys.length === 1)
+        ) {
             return;
         }
 

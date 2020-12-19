@@ -2,7 +2,7 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
 import * as classNames from 'classnames';
-import {ShortcutInput} from "../../../inputs/ShortcutInput";
+import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {Key} from "../../../Key";

@@ -25,7 +25,8 @@
   },
 
   "message": {
-    "unknownCommand": "неизвеестная команда {{command}}"
+    "unknownCommand": "неизвеестная команда {{command}}",
+    "tooBigImage": "слишком большое изображение"
   },
 
   "channel": {

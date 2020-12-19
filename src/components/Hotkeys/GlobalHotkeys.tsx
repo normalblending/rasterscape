@@ -6,6 +6,9 @@ import {WithTranslation, withTranslation} from "react-i18next";
 const CMD_KEY = navigator.userAgent.indexOf('Mac OS X') !== -1
     ? '⌘'
     : 'ctrl'
+const ALT_KEY = navigator.userAgent.indexOf('Mac OS X') !== -1
+    ? '⌥'
+    : 'alt'
 
 export interface GlobalHotkeysProps extends WithTranslation{
 
@@ -57,27 +60,27 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
                 <Key digits value={'1..9'} />
             </Item>
 
-            <Item desc={t('globalHotkeys.patternGoTo')}>
-                <Key big value={CMD_KEY} /><Plus/><Key digits value={'1..9'} />
-            </Item>
+            {/*<Item desc={t('globalHotkeys.patternGoTo')}>*/}
+            {/*    <Key big value={ALT_KEY} /><Plus/><Key digits value={'1..9'} />*/}
+            {/*</Item>*/}
 
-            <Item desc={t('globalHotkeys.fullscreen')}>
-                <Key big value={CMD_KEY} /><Plus/><Key one value={'f'}/>
-            </Item>
-
-            <Item desc={t('globalHotkeys.hotkeys')}>
-                <Key big value={CMD_KEY} /><Plus/><Key one value={'k'}/>
-            </Item>
 
 
             <Item desc={t('globalHotkeys.patternWindow')}>
-                <Key big value={CMD_KEY} /><Plus/><Key one value={'w'}/>
+                <Key big value={ALT_KEY} /><Plus/><Key one value={'w'}/>
             </Item>
             <Item desc={t('globalHotkeys.selectAll')}>
-                <Key big value={CMD_KEY} /><Plus/><Key one value={'a'}/>
+                <Key big value={ALT_KEY} /><Plus/><Key one value={'a'}/>
+            </Item>
+            <Item desc={t('globalHotkeys.savePattern')}>
+                <Key big value={ALT_KEY} /><Plus/><Key one value={'s'}/>
             </Item>
             <Item desc={t('globalHotkeys.selectClear')}>
-                <Key big value={CMD_KEY} /><Plus/><Key one value={'d'}/>
+                <Key big value={ALT_KEY} /><Plus/><Key one value={'d'}/>
+            </Item>
+
+            <Item desc={t('globalHotkeys.hotkeys')}>
+                <Key big value={ALT_KEY} /><Plus/><Key one value={'k'}/>
             </Item>
             {/*<Item*/}
             {/*    desc={'новый паттерн'}*/}

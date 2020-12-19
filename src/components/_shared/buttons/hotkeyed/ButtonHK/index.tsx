@@ -2,10 +2,10 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
 import {Button, ButtonProps} from "bbuutoonnss";
-import {ShortcutInput} from "../../../inputs/ShortcutInput";
+import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
+import {addHotkey, highlightHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {ButtonSelect, ButtonSelectProps} from "../../simple/ButtonSelect";
 import * as classNames from 'classnames';
 import {Key} from "../../../Key";
@@ -21,6 +21,7 @@ export interface ButtonHKStateProps {
 
 export interface ButtonHKActionProps {
     addHotkey: typeof addHotkey
+    highlightHotkey: typeof highlightHotkey
 }
 
 export interface ButtonHKOwnProps extends ButtonSelectProps {
@@ -45,6 +46,7 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         t,
         hotkey,
         addHotkey,
+        highlightHotkey,
         path,
         settingMode,
         containerClassName,
@@ -117,6 +119,14 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
 
+    const handleShortcutFocus = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+        hotkey && highlightHotkey(hotkey.path);
+    }, [highlightHotkey]);
+
+    const handleShortcutBlur = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+        highlightHotkey(null);
+    }, [highlightHotkey]);
+
     return (
         <div className={classNames('hotkey-button', {
             ['hotkey-highlighted']: highlightedPath === hotkey?.path
@@ -127,8 +137,11 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
                     autoblur={buttonProps.autoblur}
                     autofocus={buttonProps.autofocus}
                     placeholder={t('buttonNumberCF.hotkey')}
+                    hotkey={hotkey}
                     value={hotkey?.key}
                     onChange={handleShortcutChange}
+                    onBlur={handleShortcutBlur}
+                    onFocus={handleShortcutFocus}
                 />
             )}
             {!settingMode && hotkey?.key && (
@@ -156,6 +169,7 @@ const mapStateToProps: MapStateToProps<ButtonHKStateProps, ButtonHKOwnProps, App
 
 const mapDispatchToProps: MapDispatchToProps<ButtonHKActionProps, ButtonHKOwnProps> = {
     addHotkey,
+    highlightHotkey,
 };
 
 export const ButtonHK = connect<ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, AppState>(

@@ -158,3 +158,5 @@ export function getRandomColor() {
     }
     return color;
 }
+
+export const base64Size = (string: string) => (string.length - 814) / 1.37;

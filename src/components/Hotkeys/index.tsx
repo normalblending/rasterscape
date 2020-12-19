@@ -15,7 +15,7 @@ import {
 import {createSelector} from "reselect";
 import {Button} from "../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {ShortcutInput} from "../_shared/inputs/ShortcutInput";
+import {ShortcutInput} from "./ShortcutInput";
 import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {labelFormatters} from "../../store/hotkeys/label-formatters";
 import {InputText} from "../_shared/inputs/InputText";
@@ -142,7 +142,11 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                             </ButtonSelect>
                         </div>
                         <div className={'hotkeys-list-items'}>
-
+                            {!hotkeys.length && (
+                                <div
+                                    className={'no-user-hotkeys'}
+                                >{t('hotkeys.empty')}</div>
+                            )}
                             {hotkeys.map((hotkey, index) => {
                                 const {
                                     key,

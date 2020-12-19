@@ -11,6 +11,7 @@ import {
     updateSelection
 } from "../../store/patterns/selection/actions";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {WithTranslation, withTranslation} from "react-i18next";
 
 
 export interface SelectionControlsStateProps {
@@ -32,7 +33,7 @@ export interface SelectionControlsOwnProps {
 
 }
 
-export interface SelectionControlsProps extends SelectionControlsStateProps, SelectionControlsActionProps, SelectionControlsOwnProps {
+export interface SelectionControlsProps extends SelectionControlsStateProps, SelectionControlsActionProps, SelectionControlsOwnProps, WithTranslation {
 
 }
 
@@ -56,16 +57,20 @@ export class SelectionControlsComponent extends React.PureComponent<SelectionCon
     };
 
     render() {
-        const {selectionValue} = this.props;
+        const {
+            selectionValue,
+            t,
+        } = this.props;
+
         return selectionValue.segments && selectionValue.segments.length ? (
             <div className={'selection-controls'}>
                 <ButtonHK
-                    onClick={this.handleClearSelection}>clear</ButtonHK>
+                    onClick={this.handleClearSelection}>{t('patternSelection.clear')}</ButtonHK>
 
                 <ButtonHK
-                    onClick={this.handleCreatePattern}>pattern</ButtonHK>
+                    onClick={this.handleCut}>{t('patternSelection.cut')}</ButtonHK>
                 <ButtonHK
-                    onClick={this.handleCut}>cut</ButtonHK>
+                    onClick={this.handleCreatePattern}>{t('patternSelection.pattern')}</ButtonHK>
             </div>
         ) : null;
     }
@@ -87,4 +92,4 @@ const mapDispatchToProps: MapDispatchToProps<SelectionControlsActionProps, Selec
 export const SelectionControls = connect<SelectionControlsStateProps, SelectionControlsActionProps, SelectionControlsOwnProps, AppState>(
     mapStateToProps,
     mapDispatchToProps
-)(SelectionControlsComponent);
+)(withTranslation('common')(SelectionControlsComponent));

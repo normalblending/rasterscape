@@ -97,6 +97,26 @@
     //}
   }
 }
+
+
+.user-message {
+
+
+  & > span {
+    background: transparent;
+
+    span {
+      background: #e3e3e3;
+      padding-right: 3px;
+    }
+
+    .sign {
+      //font-weight: bold;
+      background: transparent;
+    }
+  }
+}
+
 .channelData-container {
   display: flex;
   flex-direction: column;

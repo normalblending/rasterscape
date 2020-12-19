@@ -54,7 +54,12 @@ export const depthVideoChangeFunction =
         const f = (x, y) => {
             return items?.reduce((res, item) => {
                 const {patternId, zed, zd, component} = item;
-                const imageData = patterns[patternId].current.imageData;
+
+                const pattern = patterns[patternId];
+
+                if (!pattern) return res;
+
+                const imageData = pattern.current.imageData;
 
                 const xnorm = Math.round(x / patternWidth * (imageData.width || 0));
                 const ynorm = Math.round(y / patternHeight * (imageData.height || 0));
