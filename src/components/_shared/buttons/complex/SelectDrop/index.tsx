@@ -109,7 +109,7 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
 
     const handleSelectButtonBlur = React.useCallback(() => {
 
-        const isActiveInside = containerRef.current.contains(document.activeElement);
+        const isActiveInside = containerRef.current?.contains(document.activeElement);
 
         const isValueButtonActive = document.activeElement === valueButtonRef.current.getElement()
 
@@ -119,7 +119,7 @@ export const SelectDrop = React.forwardRef<SelectDropImperativeHandlers, SelectD
             setOpen(false);
             onSelectBlur?.();
             setTimeout(() => {
-                const isValueButtonActive = document.activeElement === valueButtonRef.current.getElement();
+                const isValueButtonActive = document.activeElement === valueButtonRef.current?.getElement();
                 if (!isValueButtonActive) {
                     setOpen(false);
                     onBlur?.();

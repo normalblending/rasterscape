@@ -1,0 +1,31 @@
+.help {
+
+  display: flex;
+  .help-table {
+    display: flex;
+    flex-direction: column;
+    .item {
+      display: flex;
+      flex-direction: column;
+
+      margin-bottom: 2px;
+      .command {
+        font-weight: bold;
+        font-size: 11px;
+      }
+
+      .description {
+        color: #727171;
+        font-size: 11px;
+
+        white-space: pre-line;
+
+        span {
+          color: black;
+          background: transparent;
+          font-style: italic;
+        }
+      }
+    }
+  }
+}

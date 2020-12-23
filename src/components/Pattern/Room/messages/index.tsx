@@ -10,12 +10,15 @@ import {LinkMessage} from "./Link";
 import {UCImageSent} from "./UCImageSent";
 import {SignScoresTable} from "./SignScoresTable";
 import {ChannelScoresTable} from "./ChannelScoresTable";
+import {Help} from "./Help";
 
 
 export const getMessageComponent = (data: MessageData): React.ComponentType<any> => {
     if (typeof data === 'string') {
         return MessageComponentByType[MessageType._StringDefault];
     }
+
+    console.log(MessageComponentByType, data.type);
 
     return (
         MessageComponentByType[data.type] || MessageComponentByType[MessageType.UserMessage]
@@ -52,6 +55,9 @@ export const MessageComponentByType: {
 
     [MessageType.UCImageSent]: UCImageSent,
 
+
+    // HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP HELP
+    [MessageType.Help]: Help,
 
     // SCORES  SCORES  SCORES  SCORES  SCORES  SCORES  SCORES
     [MessageType.SignScoresTable]: SignScoresTable,

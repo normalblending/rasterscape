@@ -30,6 +30,7 @@ import {MaskControls} from "./Mask/MaskControls";
 import {DragAndDrop} from "../_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "../_shared/File/helpers";
 import {setDrawer} from "../../store/patterns/room/actions";
+import {DeleteButton} from "../_shared/buttons/complex/DeleteButton/DeleteButton";
 
 export interface PatternComponentStateProps {
 
@@ -234,8 +235,8 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                     onMouseEnter={this.handleMouseEnter}
                     onMouseLeave={this.handleMouseLeave}
                 >
-                    <div className='numbers'>{index + 1} p{id}</div>
                     <div className="left">
+
                         <div className="flex-col">
 
                             {config.repeating &&
@@ -347,9 +348,11 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         </div>
                         <div className="flex-row">
 
-                            <ButtonHK
+                            <DeleteButton
+                                title={`${index + 1} ${t('utils.p')}${id}`}
+                                deleteText={t('utils.delete')}
                                 onDoubleClick={this.handleRemove}
-                                className={'pattern-delete-button'}>{t('patternControls.delete')}</ButtonHK>
+                            />
                             <ButtonHK
                                 hkLabel={'pattern.hotkeysDescription.double'}
                                 hkData1={id}

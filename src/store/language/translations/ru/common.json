@@ -1,6 +1,5 @@
 {
   "useChrome": "используйте chrome",
-
   "tools": {
     "tools": "инстр-т",
     "brush": "кисть",
@@ -12,14 +11,12 @@
       "select": "выделение"
     }
   },
-
   "brushTypes": {
     "brushType": "тип кисти",
     "circle": "круг",
     "square": "квадрат",
     "pattern": "паттерн"
   },
-
   "brush": {
     "pattern": "кисть | паттерн{{data1}}",
     "size": "кисть | размер",
@@ -85,7 +82,6 @@
       }
     }
   },
-
   "lineTypes": {
     "solid": "цельная",
     "broken": "ломаная",
@@ -94,7 +90,6 @@
     "solidpattern": "фон",
     "trailingpattern": "кисть"
   },
-
   "line": {
     "pattern": "линия | паттерн {{data1}}",
     "center": "центр",
@@ -185,13 +180,11 @@
       }
     }
   },
-
   "selectTypes": {
     "rect": "прямо-к",
     "line": "линия",
     "points": "точки"
   },
-
   "select": {
     "curveType": {
       "curveBasis": "базовая",
@@ -233,13 +226,11 @@
       }
     }
   },
-
   "patternSelection": {
     "clear": "очистить",
     "pattern": "паттерн",
     "cut": "обрезать"
   },
-
   "cf": {
     "type": {
       "time": "время",
@@ -341,8 +332,6 @@
       }
     }
   },
-
-
   "plugins": {
     "repeating": "повторы",
     "rotating": "поворот",
@@ -351,7 +340,6 @@
     "room": "комната",
     "blur": "размытие"
   },
-
   "pattern": {
     "mask": {
       "black": "черный",
@@ -441,7 +429,6 @@
       }
     }
   },
-
   "patternControls": {
     "delete": "удалить",
     "double": "колир-ть",
@@ -451,7 +438,6 @@
     "undo": "назад",
     "redo": "вперед"
   },
-
   "patternRotating": {
     "angle": "угол",
     "centerOffsetX": "центр вращения х",
@@ -459,7 +445,6 @@
     "offsetX": "смещение х",
     "offsetY": "смещение у"
   },
-
   "room": {
     "leave": "покинуть",
     "enter": "войти",
@@ -469,29 +454,22 @@
       "draw": "паттерн{{data1}} | команата | рисовать"
     }
   },
-
   "chat": {
     "send": ">"
   },
-
   "hotkeys": {
     "delete": "удалить",
     "empty": "нет пользовательских горячих клавиш"
   },
-
   "add": "добавить",
-
   "utils": {
+    "p": "п",
     "delete": "удалить",
     "pattern": "паттерн",
-
     "clear": "очистить",
-
     "autofocus": "автофокус",
     "autoblur": "автоблюр"
   },
-
-
   "globalHotkeys": {
     "hk": "k",
     "patternSelect": "выбрать паттерн инструмента",
@@ -503,10 +481,8 @@
     "selectClear": "снять выделение",
     "savePattern": "сохранить паттерн"
   },
-
   "lang": {
     "ru": "ру",
     "en": "en"
   }
-
 }

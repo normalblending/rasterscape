@@ -3,11 +3,14 @@ import {
     ERoomAction,
     ReceiveDrawerAction,
     ReceiveMembersAction,
-    ReceiveMessageAction, SendMessageAction, SetDrawerAction
+    ReceiveMessageAction,
+    SendMessageAction,
+    SetDrawerAction
 } from "./actions";
 import {PatternAction, PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
-import {parseMessage} from "./helpers";
+import {MessageType} from "./types";
+import {messageFilterByType} from "./helpers";
 
 export const roomReducers = {
     [ERoomAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(
@@ -61,15 +64,20 @@ export const roomReducers = {
                 data: action.message,
                 unreaded: !action.isMine,
             };
+
+            const singletonTypes = Object.keys(messageFilterByType);
+
+            const oldMessages = singletonTypes.includes(action.message.type) ? (pattern.room?.value?.messages || []).filter((message) => {
+                return !messageFilterByType[action.message.type]?.(action.message, message.data);
+            }) : (pattern.room?.value?.messages || []);
+
             return {
                 ...pattern,
                 room: {
                     ...pattern.room,
                     value: {
                         ...pattern.room.value,
-                        messages: pattern.room?.value?.messages
-                            ? [...pattern.room.value.messages, newMessage].slice(-69)
-                            : [newMessage],
+                        messages: [...oldMessages, newMessage].slice(-44),
                         unreaded: true,
                     },
                 }

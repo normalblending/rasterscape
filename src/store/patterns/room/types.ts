@@ -4,6 +4,7 @@ export interface RoomParams {
 }
 
 export enum MessageType {
+    Help = 'HELP',
     _StringDefault = 'STRING_DEFAULT',
     UserMessage = "USER_MESSAGE",
     UserMessageError = "USER_MESSAGE_EROR",
@@ -57,6 +58,15 @@ export interface UserChannelPublicData {
     rank: string
 }
 
+export type ChatHelp = {
+    aliases: string[]
+    paramKeys?: string[]
+    slashParam?: string
+    slashParams?: string[]
+    translationKey: string
+}[];
+
+
 export interface MessageData {
     sign?: string
 
@@ -67,6 +77,8 @@ export interface MessageData {
     channelData?: UserChannelData
     channelPublicData?: UserChannelPublicData
     link?: string
+
+    helpData?: ChatHelp
 
     translate?: {
         key: string

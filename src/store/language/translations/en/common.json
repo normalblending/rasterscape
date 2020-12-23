@@ -482,6 +482,7 @@
 
 
   "utils": {
+    "p": "p",
     "delete": "delete",
     "pattern": "pattern",
 

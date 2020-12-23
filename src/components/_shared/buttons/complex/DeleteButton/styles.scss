@@ -1,0 +1,26 @@
+.delete-title-button {
+  & > .delete-button {
+    display: none;
+  }
+
+  &:hover > .delete-button {
+    display: block;
+  }
+
+  & > .delete-title {
+    display: block;
+  }
+
+  &:hover > .delete-title {
+    display: none;
+  }
+
+}
+
+.delete-button {
+
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: red;
+}

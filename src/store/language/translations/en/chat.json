@@ -91,6 +91,33 @@
     "reservedString": "invalid name",
     "accessDenied": "channel access denied",
     "accessError": "channel access error"
+  },
+
+  "help": {
+    "changePass": "set/change password",
+    "authorization": "authorization",
+    "score": "total score ranking",
+    "scoreChannel": "channel score ranking",
+    "addChannel": "create new channel",
+    "channelInfo": "channel info",
+    "changeChannelParameter": "change channel parameter",
+    "chatId": "chat id",
+    "caption": "image caption",
+    "anon": "anonymous mode",
+    "link": "channel link",
+    "message": "'image sent' message",
+    "private": "private mode",
+    "desc": "channel description",
+    "member": "add member",
+    "member-": "delete member",
+    "removeChannel": "delete channel",
+
+    "oldPass": "old",
+    "newPass": "new",
+    "password": "password",
+    "parameter": "parameter",
+    "channelName": "channel",
+    "value": "value"
   }
 
 }

@@ -9,6 +9,7 @@ import {ChangeFunction, ECFType} from "../../store/changeFunctions/types";
 import {WaveCF} from "./Wave";
 import {FxyCF} from "./Fxy";
 import {DepthCF} from "./Depth/DeepthCF";
+import {DeleteButton, DeleteButtonComponent} from "../_shared/buttons/complex/DeleteButton/DeleteButton";
 
 export interface ChangeFItemStateProps {
     changeFunction: ChangeFunction
@@ -62,13 +63,12 @@ const ChangeFItemComponent: React.FC<ChangeFItemProps> = (props) => {
             })}
             key={id}
         >
-            <div className={'function-title'}>
-                <Button className={'function-id'}>{t('cf.hotkeysDescription.type.' + type) + number}</Button>
-                <Button
-                    value={id}
-                    onDoubleClick={handleDelete}
-                    className={'function-delete'}>{t('utils.delete')}</Button>
-            </div>
+            <DeleteButton
+                title={t('cf.hotkeysDescription.type.' + type) + number}
+                deleteText={t('utils.delete')}
+                value={id}
+                onDoubleClick={handleDelete}
+            />
             <Component name={id}/>
         </div>
     )
