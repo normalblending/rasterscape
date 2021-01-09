@@ -122,7 +122,8 @@ const configPersist = {
 export const store = createStore(
     rootReducer,
     compose(
-        applyMiddleware(thunk, logger),
+        // applyMiddleware(thunk, logger),
+        applyMiddleware(thunk),
         persistState(['hotkeys']), //, 'changeFunctions'
     )
 );
