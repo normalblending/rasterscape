@@ -1,16 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {canvasToImageData, imageDataToCanvas, resizeImageData} from "../../../utils/canvas/helpers/imageData";
+import {canvasToImageData, resizeImageData} from "../../../utils/canvas/helpers/imageData";
 import "../../../styles/canvas.scss";
 import * as classNames from "classnames";
 import {getOffset} from "../../../utils/offset";
 import {rotate} from "../../../utils/draw";
 import {RotationValue} from "../../../store/patterns/rotating/types";
-import {clearCanvas} from "../../../utils/canvas/helpers/base";
-import {ECompositeOperation} from "../../../store/compositeOperations";
-import * as StackBlur from 'stackblur-canvas';
-import {coordHelper, coordHelper2} from "../../Area/canvasPosition.servise";
-import {Button} from "./../buttons/simple/Button";
 import {DemonstrationSubApp} from "./Demonstration";
 import _throttle from 'lodash/throttle';
 

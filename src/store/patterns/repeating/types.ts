@@ -10,10 +10,12 @@ export enum ERepeatingType {
 }
 
 export interface RepeatingGridParams {
-    x: number
-    y: number
-    xOut: number
-    yOut: number
+    xd: number
+    yd: number
+    xn0: number
+    yn0: number
+    xn1: number
+    yn1: number
     float: boolean
     bezierPoints?: BezierPoints
     flat: boolean

@@ -2,17 +2,20 @@ import * as React from "react";
 
 import {getRepeatingCoords} from "../../../../utils/draw";
 import {
+    drawMasked,
     drawMaskedWithRotationAndOffset,
     drawWithRotationAndOffset
 } from "../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
 import {patternValues} from "../../../../store/patterns/values";
-import {createCanvas} from "../../../../utils/canvas/helpers/base";
+import {createCanvas, createHelperCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
 import {CanvasDrawProps} from "../index";
 import {EToolType} from "../../../../store/tool/types";
+import {DrawToolProps} from "./types";
+import {LineParams} from "../../../../store/line/types";
 
 function distanceBetween(point1, point2) {
     if (!point1 || !point2) return 0;
@@ -28,184 +31,183 @@ function angleBetween(point1, point2) {
 
 export const lineTrailingPattern = function () {
     let draw: boolean = false;
-    let canvases = {};
+    let canvases: Record<string, HelperCanvas> = {};
     let prevPoints = {};
-    let prevAngle = null;
 
-    const patternLine = (ev) => {
-        const {ctx, e, canvas} = ev;
+    let helperCanvas1 = createCanvas(400, 400);
+    let helperCanvas2 = createCanvas(400, 400);
 
-        if (!e) return;
-
+    return (drawToolProps: DrawToolProps) => {
         const {
-            pattern: destinationPattern,
-            linePattern,
-            line,
-        }: CanvasDrawProps = this.props;
+            targetPattern,
+            toolPattern,
+            toolParams,
+        } = drawToolProps;
 
-        const {patternSize, opacity, compositeOperation, patternDirection} = line.params;
+        const {patternSize, opacity, compositeOperation, patternDirection} = toolParams as LineParams;
 
-        ctx.fillStyle = getRandomColor();
-        ctx.globalAlpha = opacity;
-        ctx.globalCompositeOperation = compositeOperation;
-        ctx.imageSmoothingEnabled = true;
+        const destinationPattern = targetPattern;
+        const linePattern = toolPattern;
 
-        const brushRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
-        const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
+        const patternLine = (ev) => {
+            const {ctx, e, canvas} = ev;
 
-        const linePatternImage = patternValues.values[linePattern?.id];
 
-        if (!linePatternImage) return
+            if (!e) return;
 
-        if (!draw) {
-            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line).forEach(({x, y, id}) => {
-                const index = id;
-                canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height).canvas;
-                prevPoints[index] = {x, y};
-            });
-            draw = true;
-        } else {
-            if (patternSize < 0.01) return;
+            const destCanvas: HelperCanvas = createHelperCanvas(canvas, ctx);
 
-            const repeatingCoords = getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line);
+            ctx.fillStyle = getRandomColor();
+            ctx.globalAlpha = opacity;
+            ctx.globalCompositeOperation = compositeOperation;
+            ctx.imageSmoothingEnabled = true;
 
-            Object.keys(prevPoints)
-                .filter(pointId => repeatingCoords.findIndex(({id}) => pointId === id) === -1)
-                .forEach(pointId => {
-                    prevPoints[pointId] = null
+            const brushRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
+            const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
+
+            const linePatternImage = patternValues.values[linePattern?.id];
+
+            if (!linePatternImage) return
+
+            if (!draw) {
+                getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line).forEach(({x, y, id}) => {
+                    const index = id;
+                    canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height);
+                    prevPoints[index] = {x, y};
                 });
+                draw = true;
+            } else {
+                if (patternSize < 0.01) return;
 
-            repeatingCoords.forEach(({x, y, id}) => {
-                const index = id;
+                const repeatingCoords = getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line);
 
-                console.log(index);
+                Object.keys(prevPoints)
+                    .filter(pointId => repeatingCoords.findIndex(({id}) => pointId === id) === -1)
+                    .forEach(pointId => {
+                        prevPoints[pointId] = null
+                    });
 
-                const prevPoint = prevPoints[index];
-                prevPoints[index] = {x, y};
+                helperCanvas1.clear();
 
-                if (!prevPoint) return;
-
+                const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
 
                 // 1 patternSize - divide two
                 const width = patternSize * linePatternImage.width;
                 const height = patternSize * linePatternImage.height;
 
 
-                //
-                const destAngle = (destinationRotation?.angle || 0)
-                    + (patternDirection ? (angleBetween(prevPoint, {x, y}) / Math.PI * 180) : 0)
+                repeatingCoords.forEach(({x, y, id}) => {
+                    const index = id;
 
-                const brushAngle = brushRotation?.angle || 0;
-                const brushCenter = brushRotation ? {
-                    x: patternSize * brushRotation.offset.xc,
-                    y: patternSize * brushRotation.offset.yc
-                } : {x: 0, y: 0};
-                const brushOffset = brushRotation ? {
-                    x: patternSize * brushRotation.offset.xd,
-                    y: patternSize * brushRotation.offset.yd
-                } : {x: 0, y: 0};
+                    const prevPoint = prevPoints[index];
+                    prevPoints[index] = {x, y};
 
+                    if (!prevPoint) return;
 
-                const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
+                    //
+                    const destAngle = (destinationRotation?.angle || 0)
+                        + (patternDirection ? (angleBetween(prevPoint, {x, y}) / Math.PI * 180) : 0)
 
-                var cp = {x, y};
-                var pp = prevPoint;
-
-                var dist = distanceBetween(pp, cp);
-                var angle = angleBetween(pp, cp);//dist > 1000 ? angleBetween(pp, cp) : (prevAngle | angleBetween(pp, cp));
-
-                // prevAngle = angle;
+                    const brushAngle = brushRotation?.angle || 0;
+                    const brushCenter = brushRotation ? {
+                        x: patternSize * brushRotation.offset.xc,
+                        y: patternSize * brushRotation.offset.yc
+                    } : {x: 0, y: 0};
+                    const brushOffset = brushRotation ? {
+                        x: patternSize * brushRotation.offset.xd,
+                        y: patternSize * brushRotation.offset.yd
+                    } : {x: 0, y: 0};
 
 
-                for (let i = 0; i < dist || i === 0; i += 5) {
-                    x = pp.x + (Math.sin(angle) * i);
-                    y = pp.y + (Math.cos(angle) * i);
 
-                    if (selectionMask) {
+                    var cp = {x, y};
+                    var pp = prevPoint;
+
+                    var dist = distanceBetween(pp, cp);
+                    var angle = angleBetween(pp, cp);//dist > 1000 ? angleBetween(pp, cp) : (prevAngle | angleBetween(pp, cp));
+
+                    // prevAngle = angle;
+
+
+                    for (let i = 0; i < dist || i === 0; i += 5) {
+                        x = pp.x + (Math.sin(angle) * i);
+                        y = pp.y + (Math.cos(angle) * i);
 
                         // var cp = {x: 0, y: 0};
                         // var pp = {x: x - prevPoint.x, y: y - prevPoint.y};
 
-                        const {canvas: image} = drawMaskedWithRotationAndOffset(
-                            selectionMask,
-                            brushAngle,
-                            destAngle,
-                            brushCenter.x, -brushCenter.y,
-                            brushOffset.x, -brushOffset.y,
-                            x, y,
-                            ({context, canvas}) => {
-
-
-                                context.drawImage(linePatternImage, -width / 2, -height / 2, width, height);
-
-                            },
-                            canvases[index]
-                        );
-
-                        ctx.globalCompositeOperation = compositeOperation;
-                        ctx.drawImage(image, 0, 0);
-
-
-                    } else {
                         drawWithRotationAndOffset(
                             brushAngle,
                             destAngle,
                             brushCenter.x, -brushCenter.y,
                             brushOffset.x, -brushOffset.y,
                             x, y,
-                            ({context, canvas}) => {
+                            ({context}) => {
 
                                 context.drawImage(linePatternImage, -width / 2, -height / 2, width, height);
 
                             },
-                        )({context: ctx, canvas})
-
+                        )(helperCanvas1);
                     }
-                }
 
-            });
-        }
-        // getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(dr);
-
-        ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-        ctx.globalAlpha = 1;
-    };
-    return {
-        draw: patternLine,
-        // click: patternLine,
-        release: e => {
-            draw = false;
-            canvases = [];
-            // e.ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-            // e.ctx.globalAlpha = 1;
-            // e.ctx.closePath();
-            // coordHelper2.writeln('release');
-        },
-        cursors: ({x, y, outer}) => {
+                });
 
 
-            const {linePattern, pattern}: CanvasDrawProps = this.props;
-            const {patternSize} = this.props.line.params;
+                const resultCanvas: HelperCanvas = selectionMask
+                    ? drawMasked(
+                        selectionMask,
+                        ({context}) => {
 
-            const patternRotation = pattern?.config?.rotation ? pattern?.rotation?.value : null;
+                            context.drawImage(helperCanvas1.canvas, 0, 0);
+                            helperCanvas1.clear();
+                        }
+                    )(
+                        helperCanvas2
+                    )
+                    : helperCanvas1;
 
-            const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
-            const linePatternImage = patternValues.values[linePattern?.id];
 
-            const width = patternSize * (linePatternImage?.width);
-            const height = patternSize * (linePatternImage?.height);
-            const xd = patternSize * (lineRotation?.offset?.xd || 0);
-            const yd = patternSize * (lineRotation?.offset?.yd || 0);
-            const xc = patternSize * (lineRotation?.offset?.xc || 0);
-            const yc = patternSize * (lineRotation?.offset?.yc || 0);
-            const patternAngle = patternRotation?.angle || 0;
-            const lineAngle = lineRotation?.angle || 0;
+                ctx.globalCompositeOperation = compositeOperation;
+                ctx.globalAlpha = opacity;
+                ctx.drawImage(resultCanvas.canvas, 0, 0);
+                resultCanvas.clear();
+            }
 
-            return (
-                <>
-                    {Cursors.cross(x, y, 10, patternRotation)}
-                    {Cursors.rect(x, y, width, height, {
-                        transform: `
+
+            ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
+            ctx.globalAlpha = 1;
+        };
+        return {
+            draw: patternLine,
+            // click: patternLine,
+            release: () => {
+                draw = false;
+                canvases = {};
+            },
+            cursors: ({x, y, outer}) => {
+
+                const pattern = destinationPattern;
+                const {patternSize} = toolParams;
+
+                const patternRotation = pattern?.config?.rotation ? pattern?.rotation?.value : null;
+
+                const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
+                const linePatternImage = patternValues.values[linePattern?.id];
+
+                const width = patternSize * (linePatternImage?.width);
+                const height = patternSize * (linePatternImage?.height);
+                const xd = patternSize * (lineRotation?.offset?.xd || 0);
+                const yd = patternSize * (lineRotation?.offset?.yd || 0);
+                const xc = patternSize * (lineRotation?.offset?.xc || 0);
+                const yc = patternSize * (lineRotation?.offset?.yc || 0);
+                const patternAngle = patternRotation?.angle || 0;
+                const lineAngle = lineRotation?.angle || 0;
+
+                return (
+                    <>
+                        {Cursors.cross(x, y, 10, patternRotation)}
+                        {Cursors.rect(x, y, width, height, {
+                            transform: `
                             rotate(
                                 ${-patternAngle} 
                                 ${x} 
@@ -221,9 +223,10 @@ export const lineTrailingPattern = function () {
                                 ${y - yc}
                             )
                         `
-                    })}
-                </>
-            );
+                        })}
+                    </>
+                );
+            }
         }
     }
 };

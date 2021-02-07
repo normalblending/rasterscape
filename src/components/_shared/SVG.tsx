@@ -7,6 +7,7 @@ export interface CanvasSVGProps {
     height?: number
     className?: string
     style?: any
+    currentScale?: number
 
     onDrag?(e: MouseEvent, pre: MouseEvent)
 
@@ -75,14 +76,15 @@ export class SVG extends React.PureComponent<CanvasSVGProps, CanvasSVGState> {
     };
 
     render() {
-        const {children, width, height, className, style} = this.props;
+        const {children, width, height, className, style, currentScale} = this.props;
         return (
             <svg
                 ref={this.elementRef}
                 width={width}
                 height={height}
                 className={className}
-                style={style}>
+                style={style}
+            >
                 {children}
             </svg>
         )

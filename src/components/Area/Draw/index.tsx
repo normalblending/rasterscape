@@ -3,13 +3,13 @@ import {Canvas, CanvasEvent, CanvasProps} from "../../_shared/Canvas/index";
 import {AppState} from "../../../store";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {BrushState} from "../../../store/brush/reducer";
-import {EToolType} from "../../../store/tool/types";
+import {DrawToolParams, DrawToolType, EToolType} from "../../../store/tool/types";
 import {EBrushType} from "../../../store/brush/types";
 import {LineState} from "../../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../../store/changing/actions";
-import {getRepeatingCoords} from "../../../utils/draw";
+import {getRepeatingCoords, RepeatingCoordinatesItem} from "../../../utils/draw";
 import {coordHelper2, setPosition} from "../canvasPosition.servise";
 import {SVG} from "../../_shared/SVG";
 import classNames from "classnames";
@@ -19,20 +19,18 @@ import {brushSquare} from "./tools/brushSquare";
 import {brushCircle} from "./tools/brushCircle";
 import {brushPattern} from "./tools/brushPattern";
 import {lineSolid} from "./tools/lineSolid";
-import {lineBroken} from "./tools/old/lineBroken";
-import {lineBrokenTransparent} from "./tools/old/lineBrokenTransparent";
-import {linePattern} from "./tools/old/linePattern";
 import {lineSolidPattern} from "./tools/lineSolidPattern";
 import {lineTrailingPattern} from "./tools/lineTrailingPattern";
-import {patternId} from "../../../store/patterns/helpers";
-import {DragAndDrop} from "../../_shared/File/DragAndDrop/DragAndDrop";
-import {readImageFile} from "../../_shared/File/helpers";
-import {canvasToImageData} from "../../../utils/canvas/helpers/imageData";
+import {toolParamsSelector, toolPatternSelector, toolTypeSelector} from "../../../store/tool/selectors";
+import {DrawToolProps} from "./tools/types";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
     line: LineState
     tool: EToolType
+    toolType: DrawToolType
+    toolParams: DrawToolParams
+    toolPattern: PatternState
     pattern: PatternState
     brushPattern: PatternState
     linePattern: PatternState
@@ -59,160 +57,211 @@ export interface CanvasDrawState {
     coords
 }
 
-class CanvasDrawComponent extends React.PureComponent<CanvasDrawProps, CanvasDrawState> {
+export type ToolHandlers = (drawToolProps: DrawToolProps) => {
+    draw: (e: CanvasEvent) => void,
+    down?: (e: CanvasEvent) => void,
+    click?: (e: CanvasEvent) => void,
+    release?: (e?: CanvasEvent) => void,
+    cursors: ({x, y, outer}, index) => void
+};
 
-    state = {
-        coords: []
-    };
+export type ToolsDrawHandlers = {
+    [EToolType.Brush]: {
+        [EBrushType.Square]: ToolHandlers
+        [EBrushType.Circle]: ToolHandlers
+        [EBrushType.Pattern]: ToolHandlers
+    }
+    [EToolType.Line]: {
+        [ELineType.Solid]: ToolHandlers
+        [ELineType.SolidPattern]: ToolHandlers
+        [ELineType.TrailingPattern]: ToolHandlers
+    },
+};
 
-    handlers = {
+const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
+
+
+    const [coords, setCoords] = React.useState<RepeatingCoordinatesItem[]>([]);
+
+    const toolsDrawHandlers = React.useMemo<ToolsDrawHandlers>(() => ({
         [EToolType.Brush]: {
-            [EBrushType.Square]: brushSquare.call(this),
-            [EBrushType.Circle]: brushCircle.call(this),
-            [EBrushType.Pattern]: brushPattern.call(this),
+            [EBrushType.Square]: brushSquare(),
+            [EBrushType.Circle]: brushCircle(),
+            [EBrushType.Pattern]: brushPattern(),
         },
         [EToolType.Line]: {
-            [ELineType.Solid]: lineSolid.call(this),
-            [ELineType.Broken]: lineBroken.call(this),
-            [ELineType.BrokenTransparent]: lineBrokenTransparent.call(this),
-            [ELineType.Pattern]: linePattern.call(this),
-            [ELineType.SolidPattern]: lineSolidPattern.call(this),
-            [ELineType.TrailingPattern]: lineTrailingPattern.call(this),
+            [ELineType.Solid]: lineSolid(),
+            [ELineType.SolidPattern]: lineSolidPattern(),
+            [ELineType.TrailingPattern]: lineTrailingPattern(),
         },
-    };
+    }), []);
 
-    componentDidUpdate(prevProps: CanvasDrawProps) {
-        const {pattern} = this.props;
-        if (pattern.selection.params.mask) {
-            //todo чо я тут хотел
-        }
+    const {
+        patternId,
+        pattern,
+        tool,
+        toolType,
+        toolParams,
+        toolPattern,
+        mask,
 
-    }
+        startChanging,
+        stopChanging,
 
-    downHandler = (e: CanvasEvent) => {
-        const {startChanging} = this.props;
+        onLeave,
+        onChange,
+    } = props;
+
+
+    const downHandler = React.useCallback((e: CanvasEvent) => {
 
         startChanging();
 
-        this.setState({
-            coords: []
-        });
-    };
+        setCoords([]);
 
-    clickHandler = () => {
+    }, [startChanging]);
 
-    };
+    const clickHandler = React.useCallback(() => {
 
-    moveHandler = ({e, drawing}: CanvasEvent) => {
+    }, []);
+
+    const moveHandler = React.useCallback(({e, drawing}: CanvasEvent) => {
 
         if (!drawing) {
-            this.setState({
-                coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true, this.props.tool)
-            });
+            setCoords(
+                getRepeatingCoords(
+                    e.offsetX,
+                    e.offsetY,
+                    pattern,
+                    true,
+                    tool
+                )
+            );
         }
 
-        setPosition(e.offsetX, e.offsetY, this.props.patternId);
-    };
+        setPosition(e.offsetX, e.offsetY, patternId);
+    }, [patternId, pattern, tool]);
 
-    leaveHandler = () => {
-        this.props.onLeave && this.props.onLeave();
+    const leaveHandler = React.useCallback(() => {
+        onLeave?.();
 
-        this.setState({coords: []})
-    };
+        setCoords([]);
+    }, [onLeave]);
 
-    upHandler = ({e}) => {
-        const {stopChanging, tool} = this.props;
+    const upHandler = React.useCallback(({e}) => {
 
         stopChanging();
 
-        this.setState({coords: getRepeatingCoords(e.offsetX, e.offsetY, this.props.pattern, true, tool)})
-    };
+        setCoords(
+            getRepeatingCoords(
+                e.offsetX,
+                e.offsetY,
+                pattern,
+                true,
+                tool)
+        )
+    }, [stopChanging, pattern, tool]);
 
-    getHandlers = () => {
-        const {tool} = this.props;
 
-        const getType = ToolTypeGetter[tool];
-        const type = getType && getType(this.props);
-        return this.handlers && this.handlers[tool] && this.handlers[tool][type];
-        //todo рефакторинг
-        // хендлеры событий вынести в методы класса ? что
-        //
-    };
+    const handlers = React.useMemo(() => {
 
-    handleChange = (imageData: ImageData) => {
-        if (this.props.mask)
+        return toolsDrawHandlers[tool]?.[toolType]({
+            targetPattern: pattern,
+            toolPattern,
+            toolParams,
+        });
+
+    }, [tool, toolType, pattern, toolParams, toolPattern]);
+
+    // React.useEffect(() => {
+    //
+    //     const ha = handlers;
+    //     return () => {
+    //         console.log(handlers === ha);
+    //         handlers?.release?.();
+    //     };
+    // }, [handlers]);
+    // componentDidUpdate(prevProps: CanvasDrawProps) {
+    //     const {tool} = this.props;
+    //
+    //     if (prevProps.tool !== tool) {
+    //
+    //         const handlers = this.getHandlers(prevProps.tool);
+    //         handlers?.release?.();
+    //     }
+    //
+    // }
+
+
+    const handleChange = React.useCallback((imageData: ImageData) => {
+        if (mask) {
             for (let i = 0; i < imageData.data.length; i += 4) {
 
                 imageData.data[i] = 0;
                 imageData.data[i + 1] = 0;
                 imageData.data[i + 2] = 0;
             }
+        }
 
-        this.props.onChange(imageData);
-    };
+        onChange(imageData);
+    }, [mask, onChange]);
 
-    render() {
-        const {
-            children,
-            width,
-            height,
-            className,
-            mask,
-            disabled,
-            patternId,
-            activePattern,
-            optimization,
-            ...props
-        } = this.props;
+    const {
+        children,
+        width,
+        height,
+        className,
+        disabled,
+        activePattern,
+        optimization,
+        ...restProps
+    } = props;
 
-        const handlers = this.getHandlers();
-
-        return (
-            <Canvas
-                {...props}
-                name={patternId}
-                throttle={!activePattern && optimization}
-                // pointerLock={true}
-                // drawOnMove={true}
-                disabled={disabled}
-                className={classNames("draw", {
-                    'mask': mask,
-                    'disabled': disabled
-                }, className)}
-                onDown={this.downHandler}
-                downProcess={handlers && handlers.down}
-                onClick={handlers && handlers.click}
-                onMove={this.moveHandler}
-                onDraw={handlers && handlers.draw}
-                onLeave={this.leaveHandler}
-                onUp={this.upHandler}
-                releaseProcess={handlers && handlers.release}
-                width={width}
-                height={height}
-                onChange={this.handleChange}
-            >
-                {handlers && handlers.cursors &&
+    return (
+        <Canvas
+            {...restProps}
+            name={patternId}
+            throttle={!activePattern && optimization}
+            // pointerLock={true}
+            // drawOnMove={true}
+            disabled={disabled}
+            className={classNames("draw", {
+                'mask': mask,
+                'disabled': disabled
+            }, className)}
+            onDown={downHandler}
+            downProcess={handlers && handlers.down}
+            onClick={handlers && handlers.click}
+            onMove={moveHandler}
+            onDraw={handlers && handlers.draw}
+            onLeave={leaveHandler}
+            onUp={upHandler}
+            releaseProcess={handlers && handlers.release}
+            width={width}
+            height={height}
+            onChange={handleChange}
+        >
+            {handlers && handlers.cursors && (
                 <SVG
                     className={"draw-cursors"}
                     width={width}
                     height={height}>
-                    {this.state.coords.map(handlers.cursors)}
-                </SVG>}
-                {children}
-            </Canvas>
-        );
-    }
-}
+                    {coords.map(handlers.cursors)}
+                </SVG>
+            )}
+            {children}
+        </Canvas>
+    );
 
-const ToolTypeGetter = {
-    [EToolType.Line]: props => get(props, "line.params.type"),
-    [EToolType.Brush]: props => get(props, "brush.params.type"),
-};
+}
 
 const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps, AppState> = (state, {patternId}) => ({
     brush: state.brush,
     line: state.line,
     tool: state.tool.current,
+    toolType: toolTypeSelector(state),
+    toolParams: toolParamsSelector(state),
+    toolPattern: toolPatternSelector(state),
     pattern: state.patterns[patternId],
     brushPattern: state.patterns[state.brush.params.pattern],
     linePattern: state.patterns[state.line.params.pattern],
@@ -221,7 +270,8 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
-    startChanging: startDrawChanging, stopChanging: stopDrawChanging
+    startChanging: startDrawChanging,
+    stopChanging: stopDrawChanging
 };
 
 export const Draw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(

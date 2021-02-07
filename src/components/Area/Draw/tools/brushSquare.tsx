@@ -1,73 +1,75 @@
-import * as React from "react";
-
 import {getRepeatingCoords} from "../../../../utils/draw";
-import {drawMaskedWithRotation, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
-import {ECompositeOperation} from "../../../../store/compositeOperations";
+import {drawMasked, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
 import {getRandomColor} from "../../../../utils/utils";
-import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
+import {CanvasEvent} from "../../../_shared/Canvas";
+import {DrawToolProps} from "./types";
+import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
+import {BrushParams} from "../../../../store/brush/types";
 
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 export const brushSquare = function () {
-    const squareBrush = (ev) => {
-        const {ctx, e, canvas, rotation} = ev;
 
-        if (!e) return;
+    let helperCanvas1 = createCanvas(400, 400);
+    let helperCanvas2 = createCanvas(400, 400);
 
-        const {pattern} = this.props;
-        const {size, opacity, compositeOperation} = this.props.brush.params;
+    return (drawToolProps: DrawToolProps) => {
+        const {
+            targetPattern,
+            toolParams,
+        } = drawToolProps;
 
-        ctx.fillStyle = getRandomColor();
-        ctx.globalAlpha = opacity;
-        ctx.globalCompositeOperation = compositeOperation;
-        const angle = rotation ? rotation.angle : 0;
+        const pattern = targetPattern;
+        const {size, opacity, compositeOperation} = toolParams as BrushParams;
 
-        const selectionMask = pattern.selection && pattern.selection.value.mask;
-        if (selectionMask) {
+        const squareBrush = (ev: CanvasEvent) => {
+            const {ctx, e, canvas, rotation} = ev;
 
-            getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+            if (!e) return;
 
-                const {canvas: image} = drawMaskedWithRotation(
-                    selectionMask,
-                    -angle,
-                    x, y,
-                    ({context}) => {
+            const angle = rotation ? rotation.angle : 0;
 
-                        context.fillStyle = ctx.fillStyle;
-                        context.fillRect(-size / 2, -size / 2, size, size)
-                    }
-                );
+            const selectionMask = pattern.selection && pattern.selection.value.mask;
 
-                ctx.globalCompositeOperation = compositeOperation;
-                ctx.drawImage(image, 0, 0);
-            });
-
-
-        } else {
             getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
                 drawWithRotation(
                     -angle,
                     x, y,
                     ({context}) => {
+                        context.fillStyle = getRandomColor();
                         context.fillRect(-size / 2, -size / 2, size, size)
                     },
-                )({context: ctx, canvas});
+                )(helperCanvas1);
             });
-        }
+
+            const resultCanvas: HelperCanvas = selectionMask
+                ? drawMasked(
+                    selectionMask,
+                    ({context}) => {
+
+                        context.drawImage(helperCanvas1.canvas, 0, 0);
+                        helperCanvas1.clear();
+                    }
+                )(
+                    helperCanvas2
+                )
+                : helperCanvas1;
 
 
-        ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-        ctx.globalAlpha = 1;
-    };
-    return {
-        draw: squareBrush,
-        click: squareBrush,
-        cursors: ({x, y, outer}) => {
+            ctx.globalCompositeOperation = compositeOperation;
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(resultCanvas.canvas, 0, 0);
+            resultCanvas.clear();
+        };
+        return {
+            draw: squareBrush,
+            click: squareBrush,
+            cursors: ({x, y, outer}) => {
 
-            let width = Math.max(this.props.brush.params.size, 1);
+                let width = Math.max((toolParams as BrushParams).size, 1);
 
-            const {rotation} = this.props;
-            return Cursors.rect(x, y, width, width, {rotation});
+                const rotation = pattern.rotation.value;
+                return Cursors.rect(x, y, width, width, {rotation});
+            }
         }
     }
 };

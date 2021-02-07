@@ -1,8 +1,8 @@
 import * as React from "react";
 import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
-import {BezierCurveRepeating} from "../../_shared/canvases/BezierCurveRepeating";
-import {ERepeatingType, RepeatingParams} from "../../../store/patterns/repeating/types";
+import {BezierCurveRepeating} from "../../_shared/SVG/BezierCurveRepeating";
+import {ERepeatingType, RepeatingGridParams, RepeatingParams} from "../../../store/patterns/repeating/types";
 import './repeatingControls.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {WithTranslation, withTranslation} from "react-i18next";
@@ -38,13 +38,28 @@ const repeatingValueD = ValueD.VerticalLinear(9);
 
 export class RepeatingControlsComponent extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
 
-    handleGridParamsChange = ({value, name}) => {
+    handleGridParamChange = ({value, name}) => {
         const {setRepeating, repeating, patternId} = this.props;
         setRepeating(patternId, {
             ...repeating,
             gridParams: {
                 ...repeating.gridParams,
                 [name]: value
+            }
+        })
+    };
+
+    handleGridParamsChange = (params: Partial<RepeatingGridParams>) => {
+        const {setRepeating, repeating, patternId} = this.props;
+        console.log( {
+        ...repeating.gridParams,
+        ...params
+        })
+        setRepeating(patternId, {
+            ...repeating,
+            gridParams: {
+                ...repeating.gridParams,
+                ...params
             }
         })
     };
@@ -98,23 +113,23 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                     range={repeatingRange}
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.x`}
-                                    name={"x"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.x'}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xd`}
+                                    name={"xd"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.xd'}
                                     hkData1={patternId}
-                                    value={gridParams.x}
-                                    onChange={this.handleGridParamsChange}/>
+                                    value={gridParams.xd}
+                                    onChange={this.handleGridParamChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.y`}
-                                    name={"y"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.y'}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yd`}
+                                    name={"yd"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.yd'}
                                     hkData1={patternId}
-                                    value={gridParams.y}
+                                    value={gridParams.yd}
                                     pres={gridParams.float ? 2 : 1}
                                     range={repeatingRange}
-                                    onChange={this.handleGridParamsChange}/>
+                                    onChange={this.handleGridParamChange}/>
 
                             </div>
 
@@ -133,34 +148,63 @@ export class RepeatingControlsComponent extends React.PureComponent<RepeatingCon
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xOut`}
-                                    name={"xOut"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.xOut'}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xn0`}
+                                    name={"xn0"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.xn0'}
                                     hkData1={patternId}
-                                    value={gridParams.xOut}
+                                    value={gridParams.xn0}
                                     range={repeatingOutRange}
                                     pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamsChange}/>
+                                    onChange={this.handleGridParamChange}/>
                                 <ButtonNumberCF
                                     className={'repeating-button-number'}
                                     integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yOut`}
-                                    name={"yOut"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.yOut'}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yn0`}
+                                    name={"yn0"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.yn0'}
                                     hkData1={patternId}
-                                    value={gridParams.yOut}
+                                    value={gridParams.yn0}
                                     range={repeatingOutRange}
                                     pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamsChange}/>
+                                    onChange={this.handleGridParamChange}/>
+                            </div>
+
+                            <div className={'repeating-controls-grid-buttons-row'}>
+
+                                <ButtonNumberCF
+                                    className={'repeating-button-number'}
+                                    integer={!gridParams.float}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xn1`}
+                                    name={"xn1"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.xn1'}
+                                    hkData1={patternId}
+                                    value={gridParams.xn1}
+                                    range={repeatingOutRange}
+                                    pres={gridParams.float ? 2 : 1}
+                                    onChange={this.handleGridParamChange}/>
+                                <ButtonNumberCF
+                                    className={'repeating-button-number'}
+                                    integer={!gridParams.float}
+                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yn1`}
+                                    name={"yn1"}
+                                    hkLabel={'pattern.hotkeysDescription.repeating.yn1'}
+                                    hkData1={patternId}
+                                    value={gridParams.yn1}
+                                    range={repeatingOutRange}
+                                    pres={gridParams.float ? 2 : 1}
+                                    onChange={this.handleGridParamChange}/>
                             </div>
                         </div>
                         <BezierCurveRepeating
                             disabled={gridParams.flat}
-                            xn={gridParams.x}
-                            yn={gridParams.y}
-                            xOut={gridParams.xOut}
-                            yOut={gridParams.yOut}
+                            xd={gridParams.xd}
+                            yd={gridParams.yd}
+                            xn0={gridParams.xn0}
+                            yn0={gridParams.yn0}
+                            xn1={gridParams.xn1}
+                            yn1={gridParams.yn1}
                             value={gridParams.bezierPoints}
+                            onParamsChange={this.handleGridParamsChange}
                             onChange={this.handleBezierChange}/>
                     </div>)}
             </div>

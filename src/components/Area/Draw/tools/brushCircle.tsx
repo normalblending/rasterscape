@@ -1,70 +1,74 @@
-import * as React from "react";
-
 import {getRepeatingCoords} from "../../../../utils/draw";
-import {drawMaskedWithRotation, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
-import {ECompositeOperation} from "../../../../store/compositeOperations";
+import {drawMasked, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
 import {getRandomColor} from "../../../../utils/utils";
 import {circle} from "../../../../utils/canvas/helpers/geometry";
-import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
-import {coordHelper5} from "../../canvasPosition.servise";
+import {DrawToolProps} from "./types";
+import {BrushParams} from "../../../../store/brush/types";
+import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 export const brushCircle = function () {
-    const circleBrush = (ev) => {
-        const {ctx, e, canvas, rotation} = ev;
 
-        if (!e) return;
 
-        const {pattern} = this.props;
-        const {size, opacity, compositeOperation} = this.props.brush.params;
+    let helperCanvas1 = createCanvas(400, 400);
+    let helperCanvas2 = createCanvas(400, 400);
 
-        ctx.fillStyle = getRandomColor();
-        ctx.globalAlpha = opacity;
-        ctx.globalCompositeOperation = compositeOperation;
+    return (drawToolProps: DrawToolProps) => {
+        const {
+            targetPattern,
+            toolParams,
+        } = drawToolProps;
 
-        const angle = rotation ? rotation.angle : 0;
+        const pattern = targetPattern;
+        const {size, opacity, compositeOperation} = toolParams as BrushParams;
 
-        const selectionMask = pattern.selection && pattern.selection.value.mask;
-        if (selectionMask) {
+        const circleBrush = (ev) => {
+            const {ctx, e, rotation} = ev;
 
-            getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+            if (!e) return;
 
-                const {canvas: image} = drawMaskedWithRotation(
-                    selectionMask,
-                    -angle,
-                    x, y,
-                    ({context}) => {
-                        context.fillStyle = ctx.fillStyle;
-                        circle(context, 0, 0, size / 2);
-                    },
-                );
+            const angle = rotation ? rotation.angle : 0;
 
-                ctx.globalCompositeOperation = compositeOperation;
-                ctx.drawImage(image, 0, 0);
-            });
+            const selectionMask = pattern.selection && pattern.selection.value.mask;
 
-        } else {
 
             getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
                 drawWithRotation(
                     -angle,
                     x, y,
                     ({context}) => {
+                        context.fillStyle = getRandomColor();
+
                         circle(context, 0, 0, size / 2);
                     }
-                )({context: ctx, canvas});
+                )(helperCanvas1);
             });
-        }
 
-        ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-        ctx.globalAlpha = 1;
-    };
-    return {
-        draw: circleBrush,
-        click: circleBrush,
-        cursors: ({x, y}) => {
-            return Cursors.circle(x, y, this.props.brush.params.size)
+            const resultCanvas: HelperCanvas = selectionMask
+                ? drawMasked(
+                    selectionMask,
+                    ({context}) => {
+
+                        context.drawImage(helperCanvas1.canvas, 0, 0);
+                        helperCanvas1.clear();
+                    }
+                )(
+                    helperCanvas2
+                )
+                : helperCanvas1;
+
+
+            ctx.globalCompositeOperation = compositeOperation;
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(resultCanvas.canvas, 0, 0);
+            resultCanvas.clear();
+        };
+        return {
+            draw: circleBrush,
+            click: circleBrush,
+            cursors: ({x, y}) => {
+                return Cursors.circle(x, y, (toolParams as BrushParams).size)
+            }
         }
     }
 };

@@ -2,45 +2,54 @@ import * as React from "react";
 
 import {getRepeatingCoords} from "../../../../utils/draw";
 import {
-    drawMaskedWithRotation, drawMaskedWithRotationAndOffset,
-    drawWithRotation,
+    drawMasked,
     drawWithRotationAndOffset
 } from "../../../../utils/canvas/helpers/draw";
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {getRandomColor} from "../../../../utils/utils";
 import {patternValues} from "../../../../store/patterns/values";
-import {CSSProperties} from "react";
 import {Cursors} from "./cursors";
-import {CanvasDrawProps} from "../index";
+import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
+import {DrawToolProps} from "./types";
+import {BrushParams} from "../../../../store/brush/types";
 
 export const brushPattern = function () {
-    const patternBrush = (ev) => {
-        const {ctx, e, canvas} = ev;
 
-        if (!e) return;
+    let helperCanvas1 = createCanvas(400, 400);
+    let helperCanvas2 = createCanvas(400, 400);
 
+    return (drawToolProps: DrawToolProps) => {
         const {
-            pattern: destinationPattern,
-            brushPattern,
+            targetPattern,
+            toolPattern,
+            toolParams,
+        } = drawToolProps;
 
-            brush,
-        }: CanvasDrawProps = this.props;
+        const {patternSize, opacity, compositeOperation} = toolParams as BrushParams;
+        const brushPattern = toolPattern;
+        const destinationPattern = targetPattern;
 
-        const {patternSize, opacity, compositeOperation} = brush.params;
+        const patternBrush = (ev) => {
+            const {ctx, e, canvas} = ev;
 
-        ctx.fillStyle = getRandomColor();
-        ctx.globalAlpha = opacity;
-        ctx.globalCompositeOperation = compositeOperation;
-        ctx.imageSmoothingEnabled = true;
+            if (!e) return;
 
-        const brushRotation = brushPattern?.config?.rotation ? brushPattern?.rotation?.value : null;
-        const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
 
-        const brushPatternImage = patternValues.values[brushPattern?.id];
+            ctx.fillStyle = getRandomColor();
+            ctx.globalAlpha = opacity;
+            ctx.globalCompositeOperation = compositeOperation;
+            ctx.imageSmoothingEnabled = true;
 
-        if (brushPatternImage) {
+            const brushRotation = brushPattern?.config?.rotation ? brushPattern?.rotation?.value : null;
+            const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
 
-            const dr = ({x, y}) => {
+            const brushPatternImage = patternValues.values[brushPattern?.id];
+
+            if (!brushPatternImage) return;
+
+            const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
+
+            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(({x, y}) => {
 
                 // 1 patternSize - divide two
                 const width = patternSize * brushPatternImage.width;
@@ -61,71 +70,69 @@ export const brushPattern = function () {
                 } : {x: 0, y: 0};
 
 
-                const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
-
-                if (selectionMask) {
-                    const {canvas: image} = drawMaskedWithRotationAndOffset(
-                        selectionMask,
-                        brushAngle,
-                        destAngle,
-                        brushCenter.x, -brushCenter.y,
-                        brushOffset.x, -brushOffset.y,
-                        x, y,
-                        ({context, canvas}) => {
-                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
-                        }
-                    );
-
-                    ctx.globalCompositeOperation = compositeOperation;
-                    ctx.drawImage(image, 0, 0);
-                } else {
+                drawWithRotationAndOffset(
+                    brushAngle,
+                    destAngle,
+                    brushCenter.x, -brushCenter.y,
+                    brushOffset.x, -brushOffset.y,
+                    x, y,
+                    ({context, canvas}) => {
+                        context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
+                    }
+                )(helperCanvas1);
 
 
-                    drawWithRotationAndOffset(
-                        brushAngle,
-                        destAngle,
-                        brushCenter.x, -brushCenter.y,
-                        brushOffset.x, -brushOffset.y,
-                        x, y,
-                        ({context, canvas}) => {
-                            context.drawImage(brushPatternImage, -width / 2, -height / 2, width, height);
-                        }
-                    )({context: ctx, canvas})
-                }
+            });
 
-            };
+            const resultCanvas: HelperCanvas = selectionMask
+                ? drawMasked(
+                    selectionMask,
+                    ({context}) => {
 
-            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(dr);
-        }
-        ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-        ctx.globalAlpha = 1;
-    };
-    return {
-        draw: patternBrush,
-        click: patternBrush,
-        cursors: ({x, y, outer}) => {
+                        context.drawImage(helperCanvas1.canvas, 0, 0);
+                        helperCanvas1.clear();
+                    }
+                )(
+                    helperCanvas2
+                )
+                : helperCanvas1;
 
-            const {brushPattern, pattern}: CanvasDrawProps = this.props;
-            const {patternSize} = this.props.brush.params;
 
-            const patternRotation = pattern?.config.rotation ? pattern?.rotation?.value : null;
+            ctx.globalCompositeOperation = compositeOperation;
+            ctx.globalAlpha = opacity;
+            ctx.drawImage(resultCanvas.canvas, 0, 0);
+            resultCanvas.clear();
 
-            const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
-            const brushPatternImage = patternValues.values[brushPattern?.id];
+            ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
+            ctx.globalAlpha = 1;
+        };
+        return {
+            draw: patternBrush,
+            click: patternBrush,
+            cursors: ({x, y, outer}) => {
 
-            const width = patternSize * (brushPatternImage?.width);
-            const height = patternSize * (brushPatternImage?.height);
-            const xd = patternSize * (brushRotation?.offset?.xd || 0);
-            const yd = patternSize * (brushRotation?.offset?.yd || 0);
-            const xc = patternSize * (brushRotation?.offset?.xc || 0);
-            const yc = patternSize * (brushRotation?.offset?.yc || 0);
-            const patternAngle = patternRotation?.angle || 0;
-            const brushAngle = brushRotation?.angle || 0;
+                const brushPattern = toolPattern;
+                const pattern = destinationPattern;
+                const {patternSize} = toolParams as BrushParams;
 
-            return (
-                <>
-                    {Cursors.rect(x, y, width, height, {
-                        transform: `
+                const patternRotation = pattern?.config.rotation ? pattern?.rotation?.value : null;
+
+                const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
+                const brushPatternImage = patternValues.values[brushPattern?.id];
+
+                const width = patternSize * (brushPatternImage?.width);
+                const height = patternSize * (brushPatternImage?.height);
+                const xd = patternSize * (brushRotation?.offset?.xd || 0);
+                const yd = patternSize * (brushRotation?.offset?.yd || 0);
+                const xc = patternSize * (brushRotation?.offset?.xc || 0);
+                const yc = patternSize * (brushRotation?.offset?.yc || 0);
+                const patternAngle = patternRotation?.angle || 0;
+                const brushAngle = brushRotation?.angle || 0;
+
+                return (
+                    <>
+                        {Cursors.rect(x, y, width, height, {
+                            transform: `
                             rotate(
                                 ${-patternAngle} 
                                 ${x} 
@@ -141,10 +148,11 @@ export const brushPattern = function () {
                                 ${y - yc}
                             )
                         `
-                    })}
-                    {Cursors.cross(x, y, 20)}
-                </>
-            );
+                        })}
+                        {Cursors.cross(x, y, 20)}
+                    </>
+                );
+            }
         }
     }
 };

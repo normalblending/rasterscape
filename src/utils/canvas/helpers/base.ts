@@ -8,14 +8,26 @@ export const clearCanvas = (canvas: HTMLCanvasElement): void =>
  * создать вспомогательный канвас
  */
 
-export const createCanvas = (width: number, height: number) => {
+export type HelperCanvas = {
+    canvas: HTMLCanvasElement
+    context: CanvasRenderingContext2D
+    clear: Function
+}
+export const createHelperCanvas = (canvas: HTMLCanvasElement, context?: CanvasRenderingContext2D): HelperCanvas => {
+    context = context || canvas.getContext('2d');
+
+    const clear = () => context.clearRect(0, 0, canvas.width, canvas.height);
+
+    return {
+        canvas, context, clear
+    }
+};
+
+export const createCanvas = (width: number, height: number): HelperCanvas => {
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
 
     canvas.width = width;
     canvas.height = height;
 
-    return {
-        canvas, context
-    }
+    return createHelperCanvas(canvas);
 };

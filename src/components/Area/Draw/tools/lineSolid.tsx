@@ -1,158 +1,146 @@
-import * as React from "react";
-import {CSSProperties} from "react";
 import {getRandomColor} from "../../../../utils/utils";
-import {ECompositeOperation} from "../../../../store/compositeOperations";
-import {ELineRandomType} from "../../../../store/line/types";
-import {createCanvas} from "../../../../utils/canvas/helpers/base";
+import {ELineRandomType, LineParams} from "../../../../store/line/types";
+import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {drawMasked} from "../../../../utils/canvas/helpers/draw";
 import {getRepeatingCoords} from "../../../../utils/draw";
-import {coordHelper4} from "../../canvasPosition.servise";
 import {Cursors} from "./cursors";
 import {EToolType} from "../../../../store/tool/types";
+import {CanvasEvent} from "../../../_shared/Canvas";
+import {DrawToolProps} from "./types";
 
-const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
+export const lineSolid = () => {
 
-export const lineSolid = function () {
     let draw: boolean = false;
-    let canvases = {};
-    let prevPoints = {};
+    let canvases: Record<string, HelperCanvas> = {};
+    let prevPoints: Record<string, {x: number, y: number}> = {};
 
-    return {
-        draw: (ev) => {
-            const {ctx, e} = ev;
-            const {pattern} = this.props;
-            const {size, opacity, compositeOperation, cap, join, random} = this.props.line.params;
+    let helperCanvas1 = createCanvas(400, 400);
+    let helperCanvas2 = createCanvas(400, 400);
 
-            const {width, height} = pattern.current.imageData;
+    return (drawToolProps: DrawToolProps) => {
+        const {
+            targetPattern,
+            toolParams,
+        } = drawToolProps;
 
-            if (!e) return;
+        const {size, opacity, compositeOperation, cap, join, random} = toolParams as LineParams;
+        const pattern = targetPattern;
+        const {width, height} = pattern.current.imageData;
 
+        return {
+            draw: (ev: CanvasEvent) => {
+                const {ctx, e} = ev;
 
-            const newPrevPoints = {};
+                if (!e) return;
 
-            const selectionMask = pattern.selection && pattern.selection.value.mask;
-            if (selectionMask) {
+                const newPrevPoints = {};
+
+                const selectionMask = pattern.selection && pattern.selection.value.mask;
+
                 if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
-                        canvases[index] = createCanvas(selectionMask.width, selectionMask.height).canvas;
-                        newPrevPoints[index] = {x, y};
-
-                        drawMasked(
-                            selectionMask,
-                            ({context, canvas}) => {
-                                context.strokeStyle = getRandomColor();
-                                context.lineJoin = join;
-                                context.lineCap = cap;
-
-                                context.beginPath();
-                                context.moveTo(x, y);
-                            },
-                            canvases[index]
-                        );
-
-                    });
 
                     draw = true;
 
-                } else {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index} ) => {
+                    if (helperCanvas1.canvas.height !== height || helperCanvas1.canvas.width !== width
+                        || helperCanvas2.canvas.height !== height || helperCanvas2.canvas.width !== width) {
 
-                        canvases[index]?.getContext('2d').clearRect(0,0, width, height);
-                        newPrevPoints[index] = {x, y};
+                        helperCanvas1.canvas.height = height;
+                        helperCanvas1.canvas.width = width;
 
-                        const {canvas: image} = drawMasked(
-                            selectionMask,
-                            ({context, canvas}) => {
-                                // context.clearRect(0,0, width, height);
-                                context.lineWidth = size;
+                        helperCanvas2.canvas.height = height;
+                        helperCanvas2.canvas.width = width;
+                    }
 
-                                if (random === ELineRandomType.OnFrame) {
-                                    context.strokeStyle = getRandomColor();
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line)
+                        .forEach(({x, y, id: index}) => {
+                            canvases[index] = createCanvas(width, height);
+                            newPrevPoints[index] = {x, y};
 
-                                }
-                                context.lineTo(x, y);
-                                context.stroke();
-                            },
-                            canvases[index]
-                        )
+                            const context = canvases[index].context;
 
-                        ctx.globalCompositeOperation = compositeOperation;
-                        ctx.globalAlpha = opacity;
-                        ctx.drawImage(image, 0, 0);
-                    });
-                }
-            } else {
-                if (!draw) {
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
-                        canvases[index] = createCanvas(width, height).canvas;
-                        newPrevPoints[index] = {x, y};
+                            if (!context) return;
 
-                        const context = canvases[index]?.getContext('2d');
-
-                        if (!context) return;
-
-                        context.lineWidth = size;
-
-                        context.lineJoin = join;
-                        context.lineCap = cap;
-                        context.globalAlpha = opacity;
-
-                        context.strokeStyle = getRandomColor();
-
-                        context.beginPath();
-                        context.moveTo(x, y);
-                    });
-                    draw = true;
-
-                } else {
-
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line).forEach(({x, y, id: index}) => {
-
-                        const context = canvases[index]?.getContext('2d');
-                        newPrevPoints[index] = {x, y};
-
-                        if (!context) return;
-
-                        context.clearRect(0,0, width, height);
-
-                        context.lineWidth = size;
-                        if (random === ELineRandomType.OnFrame) {
                             context.strokeStyle = getRandomColor();
-                        }
-                        if (prevPoints[index]) {
-                            context.lineTo(x, y);
-                        } else {
 
+                            context.beginPath();
                             context.moveTo(x, y);
-                        }
 
-                        context.stroke();
+                        });
+                } else {
 
-                        const image = canvases[index];
+                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line)
+                        .forEach(({x, y, id: index}) => {
 
-                        ctx.globalCompositeOperation = compositeOperation;
-                        ctx.globalAlpha = opacity;
-                        ctx.drawImage(image, 0, 0);
-                    });
+                            if (!canvases[index]) {
+                                canvases[index] = createCanvas(width, height);
+                            }
+
+                            const context = canvases[index].context;
+                            canvases[index].clear();
+
+                            newPrevPoints[index] = {x, y};
+
+                            context.lineWidth = size;
+                            context.lineJoin = join;
+                            context.lineCap = cap;
+                            context.globalAlpha = opacity;
+
+                            if (random === ELineRandomType.OnFrame) {
+                                context.strokeStyle = getRandomColor();
+                            }
+
+
+                            if (prevPoints[index]) {
+                                // if (Math.abs(prevPoints[index].x - x) > 20
+                                // || Math.abs(prevPoints[index].y - y) > 20) {
+                                //
+                                //     context.moveTo(x, y);
+                                // } else {
+                                //     context.lineTo(x, y);
+                                // }
+                                context.lineTo(x, y);
+                            } else {
+                                context.closePath();
+                                context.moveTo(x, y);
+                            }
+
+                            context.stroke();
+
+                            helperCanvas1.context.drawImage(canvases[index].canvas, 0, 0);
+
+                        });
+
+                    const resultCanvas: HelperCanvas = selectionMask
+                        ? drawMasked(
+                            selectionMask,
+                            ({context}) => {
+
+                                context.drawImage(helperCanvas1.canvas, 0, 0);
+                                helperCanvas1.clear();
+                            }
+                        )(helperCanvas2)
+                        : helperCanvas1;
+
+                    ctx.globalCompositeOperation = compositeOperation;
+                    ctx.globalAlpha = opacity;
+                    ctx.drawImage(resultCanvas.canvas, 0, 0);
+                    resultCanvas.clear();
+
                 }
+                prevPoints = newPrevPoints;
+            },
+            release: () => {
+                draw = false;
+                canvases = {};
+            },
+            cursors: ({x, y, outer}, index) => {
+
+                const size = Math.max((toolParams as LineParams).size, 10);
+
+                const rotation = pattern.rotation.value;
+
+                return Cursors.cross(x, y, size, rotation, index);
             }
-
-            prevPoints = newPrevPoints;
-        },
-        release: e => {
-            draw = false;
-            canvases = [];
-            e.ctx.globalCompositeOperation = ECompositeOperation.SourceOver;
-            e.ctx.globalAlpha = 1;
-            // e.ctx.closePath();
-            // coordHelper2.writeln('release');
-        },
-        cursors: ({x, y, outer}, index) => {
-
-            let size = Math.max(this.props.line.params.size, 10);
-
-            const {rotation} = this.props;
-            return Cursors.cross(x, y, size, rotation, index);
         }
     }
 };
