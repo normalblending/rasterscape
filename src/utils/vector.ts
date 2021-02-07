@@ -17,4 +17,4 @@ export const vectorMul = (v1: Vector, c: number) => {
     )
 };
 
-export const rect = () =>
+// export const rect = () =>
