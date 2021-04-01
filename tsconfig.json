@@ -21,7 +21,8 @@
     "noImplicitThis": false,
     "isolatedModules": true,
     "strictNullChecks": false,
-    "baseUrl": "src"
+    "baseUrl": "src",
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"

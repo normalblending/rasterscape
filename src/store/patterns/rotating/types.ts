@@ -14,6 +14,7 @@ export interface RotationValue {
         yd: number
     }
     changing: boolean
+    rotateDrawAreaElement: boolean
 }
 
 export type RotationState = FunctionState<RotationValue, RotationParams>;

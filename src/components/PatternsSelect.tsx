@@ -6,7 +6,7 @@ import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
 import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
-import {Key} from "./_shared/Key";
+import {Key} from "./Hotkeys/Key";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]

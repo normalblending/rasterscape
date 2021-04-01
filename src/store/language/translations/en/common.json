@@ -1,6 +1,5 @@
 {
   "useChrome": "use chrome",
-
   "tools": {
     "tools": "tool",
     "brush": "brush",
@@ -12,14 +11,12 @@
       "select": "select"
     }
   },
-
   "brushTypes": {
     "brushType": "brush type",
     "circle": "circle",
     "square": "square",
     "pattern": "pattern"
   },
-
   "brush": {
     "pattern": "brush | pattern{{data1}}",
     "size": "brush | size",
@@ -83,7 +80,6 @@
       }
     }
   },
-
   "lineTypes": {
     "solid": "solid",
     "broken": "broken",
@@ -92,7 +88,6 @@
     "solidpattern": "back",
     "trailingpattern": "brush"
   },
-
   "line": {
     "center": "center",
     "direction": "direction",
@@ -116,7 +111,6 @@
       "onframe": "onframe"
     },
     "compositeOperations": {
-
       "source-over": "normal",
       "destination-out": "erase",
       "source-atop": "over",
@@ -181,14 +175,11 @@
       }
     }
   },
-
   "selectTypes": {
     "rect": "rect",
     "line": "line",
     "points": "points"
   },
-
-
   "select": {
     "curveType": {
       "curveBasis": "basis",
@@ -230,13 +221,11 @@
       }
     }
   },
-
   "patternSelection": {
     "clear": "clear",
     "pattern": "pattern",
     "cut": "crop"
   },
-
   "cf": {
     "type": {
       "time": "time",
@@ -338,7 +327,6 @@
       }
     }
   },
-
   "plugins": {
     "repeating": "repeating",
     "rotating": "rotating",
@@ -347,7 +335,6 @@
     "room": "room",
     "blur": "blur"
   },
-
   "pattern": {
     "mask": {
       "black": "black",
@@ -355,7 +342,10 @@
     },
     "repeating": {
       "float": "float",
-      "flat": "flat"
+      "type": {
+        "flat": "flat",
+        "bezier": "bezier"
+      }
     },
     "blur": {
       "onUpdate": "on update",
@@ -398,12 +388,27 @@
         "inverse": "pattern{{data1}} | mask | inverse"
       },
       "repeating": {
-        "int": "pattern{{data1}} | repeating | float",
-        "x": "pattern{{data1}} | repeating | x",
-        "y": "pattern{{data1}} | repeating | y",
-        "flat": "pattern{{data1}} | repeating | flat",
-        "xOut": "pattern{{data1}} | repeating | x outer",
-        "yOut": "pattern{{data1}} | repeating | y outer"
+        "type": {
+          "flat": "pattern{{data1}} | repeating | type | flat",
+          "bezier": "pattern{{data1}} | repeating | type | bezier"
+        },
+        "bezier": {
+          "float": "pattern{{data1}} | repeating | bezier | float values",
+          "xd": "pattern{{data1}} | repeating | bezier | horizontal splits",
+          "yd": "pattern{{data1}} | repeating | bezier | vertical splits",
+          "xn0": "pattern{{data1}} | repeating | bezier | top repeats",
+          "yn0": "pattern{{data1}} | repeating | bezier | left repeats",
+          "xn1": "pattern{{data1}} | repeating | bezier | right repeats",
+          "yn1": "pattern{{data1}} | repeating | bezier | bottom repeats",
+          "bezierPoints": "pattern{{data1}} | repeating | bezier | point {{data2}} | {{data3}}"
+        },
+        "flat": {
+          "float": "pattern{{data1}} | repeating | flat | float values",
+          "xd": "pattern{{data1}} | repeating | flat | horizontal splits",
+          "yd":  "pattern{{data1}} | repeating | flat | vertical splits",
+          "xn0": "pattern{{data1}} | repeating | flat | horizontal outer repeats",
+          "yn0":  "pattern{{data1}} | repeating | flat | vertical outer repeats"
+        }
       },
       "rotating": {
         "xc": "pattern{{data1}} | rotating | rotation center x",
@@ -437,7 +442,6 @@
       }
     }
   },
-
   "patternControls": {
     "delete": "delete",
     "double": "copy",
@@ -447,7 +451,6 @@
     "undo": "undo",
     "redo": "redo"
   },
-
   "patternRotating": {
     "angle": "angle",
     "offsetX": "offset x",
@@ -455,7 +458,6 @@
     "centerOffsetX": "rotate center x",
     "centerOffsetY": "rotate center y"
   },
-
   "room": {
     "leave": "leave",
     "enter": "enter",
@@ -465,35 +467,26 @@
       "draw": "pattern{{data1}} | room | draw"
     }
   },
-
   "chat": {
     "send": ">"
   },
-
   "hotkeys": {
     "delete": "delete",
     "empty": "no user hotkeys"
   },
-
   "patternSelect": {
     "brushPattern": "brush pattern {{data1}}",
     "linePattern": "line pattern {{data1}}"
   },
-
-
   "utils": {
     "p": "p",
     "delete": "delete",
     "pattern": "pattern",
-
     "clear": "clear",
-
     "autofocus": "autofocus",
     "autoblur": "autoblur"
   },
-
   "add": "add",
-
   "globalHotkeys": {
     "hk": "k",
     "patternSelect": "select tool pattern",
@@ -503,9 +496,9 @@
     "patternWindow": "open pattern view in new window",
     "selectAll": "select all",
     "selectClear": "clear selection",
-    "savePattern": "save pattern"
+    "savePattern": "save pattern",
+    "doublePattern": "double pattern"
   },
-
   "lang": {
     "ru": "ру",
     "en": "en"

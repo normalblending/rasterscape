@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
-import {Key} from "../../../Key";
+import {Key} from "../../../../Hotkeys/Key";
 import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
 import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
@@ -59,6 +59,8 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     getText?(value?: any): string
 
     range?: [number, number]
+    from?: number
+    to?: number
 
     shortcut?: string
 
@@ -90,6 +92,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
 
 export interface ButtonNumberState {
     value?: any
+    range: [number, number]
     startPoint: [number, number]
     startValue?: any
     pressed: boolean
@@ -106,14 +109,16 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
     constructor(props) {
         super(props);
 
-        const {range} = props;
+        const {range, from, to} = props;
+
 
         this.state = {
-            value: props.value || range[0],
+            value: props.value|| range?.[0] || from,
             startPoint: null,
             startValue: null,
             pressed: false,
             clicked: false,
+            range: range || [from, to],
         };
 
         this.buttonRef = React.createRef();
@@ -121,7 +126,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps: ButtonNumberProps, nextState) {
         return nextState.value !== this.state.value
             || !!nextState.startPoint || !!this.state.startPoint
             || nextProps.changingStartValue !== this.props.changingStartValue
@@ -131,13 +136,21 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             || nextProps.className !== this.props.className
             || nextProps.style !== this.props.style
             || nextProps.autoblur !== this.props.autoblur
-            || nextProps.autofocus !== this.props.autofocus;
+            || nextProps.autofocus !== this.props.autofocus
+            || nextProps.getText !== this.props.getText;
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
+    static getDerivedStateFromProps(nextProps: ButtonNumberProps, prevState) {
+        const {range, from, to} = nextProps;
         return {
             ...(!prevState.startPoint && nextProps.value !== prevState.value ? {
-                value: nextProps.value
+                value: nextProps.value,
+            } : {}),
+            ...((prevState.range !== range
+                || prevState.from !== from
+                || prevState.to !== to
+            ) ? {
+                range: range || [from, to],
             } : {}),
         };
     }
@@ -224,7 +237,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             selected,
             width = DEFAULT_WIDTH,
             precisionGain = 2,
-            range
+            range,
+            from,
+            to
         } = this.props;
         let value = this.calcValue(e, true);
 
@@ -241,7 +256,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         //
         //     value = Math.min(Math.max(
         //         this.state.startValue + increment
-        //         , range[0]), range[1]);
+        //         , from || range?.[0]), to || range?.[1]);
         //
         //     onChange && onChange({e, value, name, selected});
         // } else {
@@ -273,7 +288,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
      BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY BY KEY
      * */
 
-    handlePress = (e, priority) => {
+    handlePress = (e: undefined | number, priority) => {
 
         if (this.props.hotkeyDisabled && !priority) {
             return;
@@ -340,7 +355,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
 
     calcValue = (e, locked?) => {
         // console.log(this.state.startValue);
-        const {range, integer, pres} = this.props;
+        const {range, from, to, integer, pres} = this.props;
         let valueD = this.props.valueD;
 
         if (!valueD) {
@@ -348,7 +363,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         } else if (typeof valueD === 'number') {
             valueD = ValueD.VerticalLinear(valueD);
         }
-        valueD = ValueD.VerticalLinear(Math.pow(10, pres))
+        // valueD = ValueD.VerticalLinear(Math.pow(10, pres))
 
 
         console.log(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1])
@@ -356,7 +371,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         let nextValue = !locked
             ? valueD(this.state.startValue, e.clientX - this.state.startPoint[0], e.clientY - this.state.startPoint[1])
             : valueD(this.state.startValue, e.movementX + this.pre?.pageX - this.state.startPoint[0], e.movementY + this.pre?.pageY - this.state.startPoint[1]);
-        nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
+        nextValue = Math.min(Math.max(nextValue, range ? range?.[0] : from),  range ? range?.[1] : to);
 
         if (integer) {
             nextValue = Math.round(nextValue);
@@ -415,10 +430,9 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         if (!i) return;
 
 
-
         i *= e.shiftKey ? 10 : 1;
 
-        const { onChange, name, value: oldValue, selected} = this.props;
+        const {onChange, name, value: oldValue, selected} = this.props;
 
         const value = oldValue + i * this.calculateOneStep();
         onChange?.({e, value, name, selected});
@@ -445,7 +459,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             changeFunctionId,
             changeFunctionType,
             changeFunctionParams,
-            range,
             width = DEFAULT_WIDTH,
             className,
             text,
@@ -464,8 +477,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             getText,
             ...otherProps
         } = this.props;
-        const {value = 0, startValue, startPoint} = this.state;
-
+        const {value = 0, startValue, startPoint, range} = this.state;
 
         const Amplitude = amplitudeComponent[changeFunctionParams?.type || changeFunctionType];
 
@@ -489,7 +501,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             >
                 <div
                     className={"button-number-value"}
-                    style={{width: (value - range[0]) / (range[1] - range[0]) * 100 + "%"}}>
+                    style={{width: (value - range?.[0]) / (range?.[1] - range?.[0]) * 100 + "%"}}>
                     <span>{this.getText(value)}</span>
                 </div>
 

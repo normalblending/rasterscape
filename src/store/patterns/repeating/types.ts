@@ -1,15 +1,16 @@
-// REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING REPEATING
+// REPEATS REPEATS REPEATS REPEATS REPEATS REPEATS REPEATS REPEATS REPEATS REPEATS
 
-import {BezierPoints} from "../../../components/_shared/canvases/BezierCurveRepeating";
 import {FunctionState} from "../../../utils/patterns/function";
+import {BezierPoints} from "../../../components/_shared/SVG/_utils";
 
-export enum ERepeatingType {
-    Grid = "Grid",
+export enum ERepeatsType {
+    BezierGrid = "bezier",
+    FlatGrid = "flat",
     Center = "Center",
     Dart = "Dart",
 }
 
-export interface RepeatingGridParams {
+export interface RepeatsBezierGridParams {
     xd: number
     yd: number
     xn0: number
@@ -18,16 +19,26 @@ export interface RepeatingGridParams {
     yn1: number
     float: boolean
     bezierPoints?: BezierPoints
-    flat: boolean
-    // x = (1−t)2x1 + 2(1−t)tx2 + t2x3
 }
 
-export interface RepeatingParams {
-    type: ERepeatingType
-    gridParams: RepeatingGridParams
+export interface RepeatsFlatGridParams {
+    xd: number
+    yd: number
+    xOut: number
+    yOut: number
+    float: boolean
 }
 
-export interface RepeatingValue {
+export interface RepeatsParams {
+    type: ERepeatsType
+    typeParams: {
+        [ERepeatsType.BezierGrid]: RepeatsBezierGridParams
+        [ERepeatsType.FlatGrid]: RepeatsFlatGridParams
+    }
+    // gridParams: RepeatsBezierGridParams
 }
 
-export type RepeatingState = FunctionState<RepeatingValue, RepeatingParams>;
+export interface RepeatsValue {
+}
+
+export type RepeatsState = FunctionState<RepeatsValue, RepeatsParams>;

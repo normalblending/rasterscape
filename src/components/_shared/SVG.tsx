@@ -16,6 +16,7 @@ export interface CanvasSVGProps {
     onDown?(e: MouseEvent)
 
     onUp?(e: MouseEvent)
+    onScroll?(e: React.UIEvent<SVGSVGElement>)
 }
 
 export interface CanvasSVGState {
@@ -76,7 +77,7 @@ export class SVG extends React.PureComponent<CanvasSVGProps, CanvasSVGState> {
     };
 
     render() {
-        const {children, width, height, className, style, currentScale} = this.props;
+        const {children, width, height, className, style, onScroll} = this.props;
         return (
             <svg
                 ref={this.elementRef}
@@ -84,6 +85,7 @@ export class SVG extends React.PureComponent<CanvasSVGProps, CanvasSVGState> {
                 height={height}
                 className={className}
                 style={style}
+                onScroll={onScroll}
             >
                 {children}
             </svg>

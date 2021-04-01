@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {
     drawMasked,
     drawWithRotationAndOffset
@@ -12,6 +11,7 @@ import {Cursors} from "./cursors";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {DrawToolProps} from "./types";
 import {BrushParams} from "../../../../store/brush/types";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const brushPattern = function () {
 
@@ -29,6 +29,18 @@ export const brushPattern = function () {
         const brushPattern = toolPattern;
         const destinationPattern = targetPattern;
 
+        if (destinationPattern.current.imageData.width !== helperCanvas1.canvas.width ||
+            destinationPattern.current.imageData.height !== helperCanvas1.canvas.height) {
+            helperCanvas1.canvas.width = destinationPattern.current.imageData.width;
+            helperCanvas1.canvas.height = destinationPattern.current.imageData.height;
+        }
+
+        if (destinationPattern.current.imageData.width !== helperCanvas2.canvas.width ||
+            destinationPattern.current.imageData.height !== helperCanvas2.canvas.height) {
+            helperCanvas2.canvas.width = destinationPattern.current.imageData.width;
+            helperCanvas2.canvas.height = destinationPattern.current.imageData.height;
+        }
+
         const patternBrush = (ev) => {
             const {ctx, e, canvas} = ev;
 
@@ -41,7 +53,10 @@ export const brushPattern = function () {
             ctx.imageSmoothingEnabled = true;
 
             const brushRotation = brushPattern?.config?.rotation ? brushPattern?.rotation?.value : null;
-            const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
+            const destinationRotation = (
+                destinationPattern?.config?.rotation &&
+                destinationPattern?.rotation?.value?.rotateDrawAreaElement
+            ) ? destinationPattern?.rotation?.value : null;
 
             const brushPatternImage = patternValues.values[brushPattern?.id];
 
@@ -115,7 +130,10 @@ export const brushPattern = function () {
                 const pattern = destinationPattern;
                 const {patternSize} = toolParams as BrushParams;
 
-                const patternRotation = pattern?.config.rotation ? pattern?.rotation?.value : null;
+                const patternRotation = (
+                    pattern?.config.rotation &&
+                    pattern?.rotation?.value.rotateDrawAreaElement
+                ) ? pattern?.rotation?.value : null;
 
                 const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
                 const brushPatternImage = patternValues.values[brushPattern?.id];

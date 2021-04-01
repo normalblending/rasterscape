@@ -19,8 +19,9 @@ import {ShortcutInput} from "./ShortcutInput";
 import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {labelFormatters} from "../../store/hotkeys/label-formatters";
 import {InputText} from "../_shared/inputs/InputText";
-import {GlobalHotkeys} from "./GlobalHotkeys";
+import {GlobalHotkeysInfo} from "./GlobalHotkeysInfo";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {GlobalHotkeys} from "./GlobalHotkeys";
 
 
 export interface HotkeysStateProps {
@@ -202,9 +203,10 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                             })}
                         </div>
                     </>
-                    <GlobalHotkeys/>
+                    <GlobalHotkeysInfo/>
                 </div>
             )}
+            <GlobalHotkeys/>
             <Button
                 autofocus
                 className={cn("app-control-button", {

@@ -4,7 +4,7 @@ import {CanvasState} from "../../../utils/canvas/types";
 import {HistoryParams, HistoryState} from "../history/types";
 import {StoreParams, StoreState} from "../store/types";
 import {RotationParams, RotationState} from "../rotating/types";
-import {RepeatingParams, RepeatingState} from "../repeating/types";
+import {RepeatsParams, RepeatsState} from "../repeating/types";
 import {SelectionParams, SelectionState} from "../selection/types";
 import {MaskParams, MaskState} from "../mask/types";
 import {VideoParams, VideoState} from "../video/types";
@@ -23,7 +23,7 @@ export interface PatternParams {
 
     rotation?: RotationParams
 
-    repeating?: RepeatingParams
+    repeating?: RepeatsParams
 
     selection?: SelectionParams
 
@@ -79,7 +79,7 @@ export interface PatternState {
     selection?: SelectionState
     mask?: MaskState
     rotation?: RotationState
-    repeating?: RepeatingState
+    repeating?: RepeatsState
     import?: ImportState
     video?: VideoState
     room?: RoomState

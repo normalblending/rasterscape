@@ -2,11 +2,11 @@ import {getRandomColor} from "../../../../utils/utils";
 import {ELineRandomType, LineParams} from "../../../../store/line/types";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {drawMasked} from "../../../../utils/canvas/helpers/draw";
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {Cursors} from "./cursors";
 import {EToolType} from "../../../../store/tool/types";
 import {CanvasEvent} from "../../../_shared/Canvas";
 import {DrawToolProps} from "./types";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const lineSolid = () => {
 
@@ -73,6 +73,7 @@ export const lineSolid = () => {
 
                             if (!canvases[index]) {
                                 canvases[index] = createCanvas(width, height);
+                                canvases[index].context.strokeStyle = getRandomColor();
                             }
 
                             const context = canvases[index].context;
@@ -100,7 +101,7 @@ export const lineSolid = () => {
                                 // }
                                 context.lineTo(x, y);
                             } else {
-                                context.closePath();
+                                // context.closePath();
                                 context.moveTo(x, y);
                             }
 
@@ -137,7 +138,7 @@ export const lineSolid = () => {
 
                 const size = Math.max((toolParams as LineParams).size, 10);
 
-                const rotation = pattern.rotation.value;
+                const rotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;
 
                 return Cursors.cross(x, y, size, rotation, index);
             }

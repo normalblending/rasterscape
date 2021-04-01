@@ -55,21 +55,21 @@ export interface AreaState {
     offsetCenterStyle?: any
 }
 
-const getAreaStyle = (rotation, width, height) => rotation ? {
+const getAreaStyle = (rotation: RotationValue, width, height) => rotation?.rotateDrawAreaElement ? {
     transform: `translateX(${rotation.offset.xd}px) translateY(${-rotation.offset.yd}px)`,
 } : null;
 
-const getStyle = (rotation, width, height) => rotation ? {
+const getStyle = (rotation: RotationValue, width, height) => rotation?.rotateDrawAreaElement ? {
     transformOrigin: `${width / 2 + rotation.offset?.xc}px ${height / 2 - rotation.offset?.yc}px`,
     transform: `rotate(${rotation.angle}deg)`,
 } : null;
-const getRotationCenterStyle = (rotation, width, height) => rotation ? {
+const getRotationCenterStyle = (rotation: RotationValue, width, height) => rotation?.rotateDrawAreaElement ? {
     transform: `translateX(${width / 2 + rotation.offset?.xc}px) translateY(${height / 2 - rotation.offset?.yc}px)`,
 } : null;
-const getOffsetCenterStyle = (rotation, width, height) => rotation ? {
+const getOffsetCenterStyle = (rotation: RotationValue, width, height) => rotation?.rotateDrawAreaElement ? {
     transform: `translateX(${width / 2 - rotation.offset?.xd}px) translateY(${height / 2 + rotation.offset?.yd}px)`,
 } : null;
-const getCenterStyle = (rotation, width, height) => rotation ? {
+const getCenterStyle = (rotation: RotationValue, width, height) => rotation?.rotateDrawAreaElement ? {
     transform: `translateX(${width / 2}px) translateY(${height / 2}px)`,
 } : null;
 

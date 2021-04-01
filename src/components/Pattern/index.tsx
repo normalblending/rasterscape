@@ -90,13 +90,6 @@ export interface PatternComponentOwnProps {
 
 export interface PatternComponentProps extends PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, WithTranslation {
 
-
-    connected?: string
-
-    store: StoreState
-
-    resultImage: HTMLCanvasElement
-
     onSelectionChange(id: string, selectionValue: Segments, bBox: SVGRect)
 
     onRemove(id: string)

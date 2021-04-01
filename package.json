@@ -26,7 +26,7 @@
     "react-i18next": "11.3.4",
     "react-redux": "7.1.1",
     "react-resizable": "^1.10.1",
-    "react-scripts": "3.4.1",
+    "react-scripts": "4.0.2",
     "reduce-reducers": "1.0.4",
     "redux": "4.0.4",
     "redux-actions": "2.6.5",
@@ -52,13 +52,15 @@
     "@types/reselect": "2.2.0",
     "@welldone-software/why-did-you-render": "^4.2.0",
     "gh-pages": "2.1.1",
+    "webpack-bundle-analyzer": "^4.4.0",
     "worker-loader": "^2.0.0"
   },
   "scripts": {
+    "bundle-anal": "node analyze-bundle.js",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

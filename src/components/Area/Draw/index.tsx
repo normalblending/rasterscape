@@ -9,7 +9,6 @@ import {LineState} from "../../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../../store/changing/actions";
-import {getRepeatingCoords, RepeatingCoordinatesItem} from "../../../utils/draw";
 import {coordHelper2, setPosition} from "../canvasPosition.servise";
 import {SVG} from "../../_shared/SVG";
 import classNames from "classnames";
@@ -23,6 +22,7 @@ import {lineSolidPattern} from "./tools/lineSolidPattern";
 import {lineTrailingPattern} from "./tools/lineTrailingPattern";
 import {toolParamsSelector, toolPatternSelector, toolTypeSelector} from "../../../store/tool/selectors";
 import {DrawToolProps} from "./tools/types";
+import {getRepeatingCoords, RepeatingCoordinatesItem} from "../../../store/patterns/repeating/helpers";
 
 export interface CanvasDrawStateProps {
     brush: BrushState

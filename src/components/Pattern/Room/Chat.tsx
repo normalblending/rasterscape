@@ -127,7 +127,9 @@ const ChatComponent: React.FC<ChatProps> = (props) => {
         <Resizable
             height={60}
             minHeight={60}
-            className={classNames('room', {unread: unreaded})}>
+            wrapperClassName={classNames('room', {unread: unreaded})}
+            renderOnMinHeight
+        >
             <div
                 className='room-chat'
                 onMouseEnter={handleMouseEnter}>

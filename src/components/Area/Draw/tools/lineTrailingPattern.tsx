@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {
     drawMasked,
     drawMaskedWithRotationAndOffset,
@@ -16,6 +15,7 @@ import {CanvasDrawProps} from "../index";
 import {EToolType} from "../../../../store/tool/types";
 import {DrawToolProps} from "./types";
 import {LineParams} from "../../../../store/line/types";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 function distanceBetween(point1, point2) {
     if (!point1 || !point2) return 0;
@@ -49,6 +49,18 @@ export const lineTrailingPattern = function () {
         const destinationPattern = targetPattern;
         const linePattern = toolPattern;
 
+        if (destinationPattern.current.imageData.width !== helperCanvas1.canvas.width ||
+            destinationPattern.current.imageData.height !== helperCanvas1.canvas.height) {
+            helperCanvas1.canvas.width = destinationPattern.current.imageData.width;
+            helperCanvas1.canvas.height = destinationPattern.current.imageData.height;
+        }
+
+        if (destinationPattern.current.imageData.width !== helperCanvas2.canvas.width ||
+            destinationPattern.current.imageData.height !== helperCanvas2.canvas.height) {
+            helperCanvas2.canvas.width = destinationPattern.current.imageData.width;
+            helperCanvas2.canvas.height = destinationPattern.current.imageData.height;
+        }
+
         const patternLine = (ev) => {
             const {ctx, e, canvas} = ev;
 
@@ -63,7 +75,10 @@ export const lineTrailingPattern = function () {
             ctx.imageSmoothingEnabled = true;
 
             const brushRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
-            const destinationRotation = destinationPattern?.config?.rotation ? destinationPattern?.rotation?.value : null;
+            const destinationRotation =
+                destinationPattern?.config?.rotation
+                && destinationPattern?.rotation?.value?.rotateDrawAreaElement
+                    ? destinationPattern?.rotation?.value : null;
 
             const linePatternImage = patternValues.values[linePattern?.id];
 
@@ -117,7 +132,6 @@ export const lineTrailingPattern = function () {
                         x: patternSize * brushRotation.offset.xd,
                         y: patternSize * brushRotation.offset.yd
                     } : {x: 0, y: 0};
-
 
 
                     var cp = {x, y};
@@ -189,7 +203,7 @@ export const lineTrailingPattern = function () {
                 const pattern = destinationPattern;
                 const {patternSize} = toolParams;
 
-                const patternRotation = pattern?.config?.rotation ? pattern?.rotation?.value : null;
+                const patternRotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;;
 
                 const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
                 const linePatternImage = patternValues.values[linePattern?.id];

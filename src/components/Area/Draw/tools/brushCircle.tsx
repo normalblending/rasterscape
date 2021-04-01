@@ -1,4 +1,3 @@
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {drawMasked, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
 import {getRandomColor} from "../../../../utils/utils";
 import {circle} from "../../../../utils/canvas/helpers/geometry";
@@ -6,6 +5,7 @@ import {Cursors} from "./cursors";
 import {DrawToolProps} from "./types";
 import {BrushParams} from "../../../../store/brush/types";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const brushCircle = function () {
 

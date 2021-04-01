@@ -24,7 +24,6 @@ export enum EVideoAction {
     STOP = 'pattern/video/stop',
     PAUSE = 'pattern/video/pause',
     PLAY = 'pattern/video/play',
-
 }
 
 export interface SetVideoParamsAction extends PatternAction {

@@ -6,6 +6,7 @@ $blue: darkblue;
   background: black;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .repeating-controls-grid {
     display: flex;
@@ -27,30 +28,37 @@ $blue: darkblue;
     outline: 2px dotted #ffcd00;
     //box-shadow: 0 0 6px black;
   }
+
+  .type-select {
+    position: absolute;
+
+  }
 }
 
-.repeating-button {
-  .button {
-    background: black;
-    color: white;
 
-    &.button-select.button-select-selected {
-      background: $blue;
+
+.repeating-controls {
+  .repeating-button {
+    .button {
+      background: black;
+      color: white;
+
+      &.button-select.button-select-selected {
+        background: $blue;
+      }
+    }
+
+    .shortcut-input.empty {
+      background: radial-gradient(white -50%, transparent);
     }
   }
 
-  .shortcut-input.empty {
-    background: radial-gradient(white -50%, transparent);
+  .repeating-button .hotkey-key, .repeating-button-number .hotkey-key {
+    background: white;
+    color: black;
+    min-width: 7px;
   }
-}
 
-.repeating-button .hotkey-key, .repeating-button-number .hotkey-key {
-  background: white;
-  color: black;
-  min-width: 7px;
-}
-
-.repeating-button-number {
   .button {
     background: black;
     color: white;
@@ -61,7 +69,7 @@ $blue: darkblue;
     color: $yellow;
   }
 
-  .select-drop>.select-drop-items>.select-buttons-items {
+  .select-drop > .select-drop-items > .select-buttons-items {
     border: 1px solid $yellow;
   }
 
@@ -99,6 +107,7 @@ $blue: darkblue;
     outline: 2px dotted #ffcd00;
     //box-shadow: 0 0 6px black;
   }
+
   .button-number-cf-value-active {
     border: 1px solid $yellow;
 

@@ -6,12 +6,16 @@ export interface ResizableProps {
     children: any
     height: number
     minHeight: number
+    maxHeight?: number
     className?: string
+    wrapperClassName?: string
+    renderOnMinHeight?: boolean
+    renderOnZeroHeight?: boolean
 }
 
 export const Resizable: React.FC<ResizableProps> = (props) => {
 
-    const {children, height, className, minHeight} = props;
+    const {children, height, className, wrapperClassName, renderOnZeroHeight, renderOnMinHeight, minHeight, maxHeight} = props;
 
     const [_height, setHeight] = React.useState(height);
     const startEvent = React.useRef(null);
@@ -28,10 +32,17 @@ export const Resizable: React.FC<ResizableProps> = (props) => {
 
     const moveHandler = React.useCallback((e) => {
         const newHeight = _height + startEvent.current - e.pageY;
-        if (newHeight >= minHeight) {
+        if (((minHeight === undefined || minHeight === null) ? true : newHeight >= minHeight)
+            && ((maxHeight === undefined || maxHeight === null) ? true : newHeight <= maxHeight)) {
             setHeight(_height + startEvent.current - e.pageY);
         }
-    }, [_height, minHeight]);
+        if (newHeight < minHeight) {
+            setHeight(minHeight);
+        }
+        if (newHeight > maxHeight) {
+            setHeight(maxHeight);
+        }
+    }, [_height, minHeight, maxHeight]);
 
     const upHandler = React.useCallback(() => {
         document.removeEventListener('mousemove', moveHandler);
@@ -45,17 +56,22 @@ export const Resizable: React.FC<ResizableProps> = (props) => {
         document.addEventListener('mouseup', upHandler);
     }, [_height]);
 
-
     return (
-        <div
-            className={cn('resizable', className)}
-            style={containerStyle}
-        >
+        <div className={cn('resizable-wrapper', wrapperClassName)}>
             <div
                 className={'resizable-handler-top'}
                 onMouseDown={handlerDown}
             />
-            {children}
+            <div
+                className={cn('resizable', className)}
+                style={containerStyle}
+            >
+                {
+                    (_height || renderOnZeroHeight)
+                    && (_height !== minHeight || renderOnMinHeight)
+                    && children
+                }
+            </div>
         </div>
     );
 };

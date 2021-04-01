@@ -1,23 +1,25 @@
 import * as React from "react";
-import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
-import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
-import {BezierCurveRepeating} from "../../_shared/SVG/BezierCurveRepeating";
-import {ERepeatingType, RepeatingGridParams, RepeatingParams} from "../../../store/patterns/repeating/types";
+import {ERepeatsType, RepeatsParams} from "../../../store/patterns/repeating/types";
 import './repeatingControls.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {AppState} from "../../../store";
-import {setRepeating} from "../../../store/patterns/repeating/actions";
-import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
+import {Resizable} from "../../_shared/Resizable";
+import {BezierGridPrimary} from "./BezierGrid/BezierGridPrimary";
+import {BezierGridSecondary} from "./BezierGrid/BezierGridSecondary";
+import {PrimaryComponentType, SecondaryComponentType} from "./types";
+import {setType} from "../../../store/patterns/repeating/actions";
+import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
+import {enumToSelectItems} from "../../../utils/utils";
+import {FlatGridPrimary} from "./FlatGrid/FlatGridPrimary";
+import {FlatGridSecondary} from "./FlatGrid/FlatGridSecondary";
 
 export interface RepeatingControlsStateProps {
-
-    repeating: RepeatingParams
+    params: RepeatsParams
 }
 
 export interface RepeatingControlsActionProps {
-    setRepeating(id: string, repeating: RepeatingParams)
-
+    setType: typeof setType
 }
 
 export interface RepeatingControlsOwnProps {
@@ -28,197 +30,72 @@ export interface RepeatingControlsProps extends RepeatingControlsStateProps, Rep
 
 }
 
-export interface RepeatingControlsState {
+const primaryComponentByType = {
+    [ERepeatsType.BezierGrid]: BezierGridPrimary,
+    [ERepeatsType.FlatGrid]: FlatGridPrimary,
+};
+const secondaryComponentByType = {
 
-}
+    [ERepeatsType.BezierGrid]: BezierGridSecondary,
+    [ERepeatsType.FlatGrid]: FlatGridSecondary,
+};
 
-const repeatingRange = [1, 10] as [number, number];
-const repeatingOutRange = [0, 3] as [number, number];
-const repeatingValueD = ValueD.VerticalLinear(9);
+const typesSelectItems = enumToSelectItems(ERepeatsType).filter(({value}) =>
+    [ERepeatsType.FlatGrid, ERepeatsType.BezierGrid].includes(value));
 
-export class RepeatingControlsComponent extends React.PureComponent<RepeatingControlsProps, RepeatingControlsState> {
+export const RepeatingControlsComponent: React.FC<RepeatingControlsProps> = (props) => {
 
-    handleGridParamChange = ({value, name}) => {
-        const {setRepeating, repeating, patternId} = this.props;
-        setRepeating(patternId, {
-            ...repeating,
-            gridParams: {
-                ...repeating.gridParams,
-                [name]: value
-            }
-        })
-    };
+    const {params, patternId, setType, t} = props;
 
-    handleGridParamsChange = (params: Partial<RepeatingGridParams>) => {
-        const {setRepeating, repeating, patternId} = this.props;
-        console.log( {
-        ...repeating.gridParams,
-        ...params
-        })
-        setRepeating(patternId, {
-            ...repeating,
-            gridParams: {
-                ...repeating.gridParams,
-                ...params
-            }
-        })
-    };
+    const {type} = params;
 
-    handleBoolParamChange = (data) => {
-        const {selected, name} = data;
-        const {setRepeating, repeating, patternId} = this.props;
-        setRepeating(patternId, {
-            ...repeating,
-            gridParams: {
-                ...repeating.gridParams,
-                [name]: !selected
-            }
-        })
-    };
+    const PrimaryComponent: PrimaryComponentType = primaryComponentByType[type];
+    const SecondaryComponent: SecondaryComponentType = secondaryComponentByType[type];
 
-    handleBezierChange = (points) => {
-        const {setRepeating, repeating, patternId} = this.props;
-        setRepeating(patternId, {
-            ...repeating,
-            gridParams: {
-                ...repeating.gridParams,
-                bezierPoints: points
-            }
-        })
-    };
+    const handleChangeType = React.useCallback((data) => {
+        setType(patternId, data.value);
+    }, [setType, patternId]);
 
-    render() {
+    const getTypeText = React.useCallback((item) => {
+        return t('pattern.repeating.type.' + item.value);
+    }, [t]);
 
-        const {patternId, t} = this.props;
-        const {type, gridParams} = this.props.repeating;
-        return (
-            <div className={'repeating-controls'}>
-                {type === ERepeatingType.Grid && (
-                    <div className={'repeating-controls-grid'}>
-                        <div className={'repeating-controls-grid-buttons'}>
-                            <div className={'repeating-controls-grid-buttons-row'}>
-                                <ButtonHK
-                                    path={`pattern.${patternId}.repeating.params.gridParams.float`}
-                                    containerClassName={'repeating-button'}
-                                    name={"float"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.int'}
-                                    hkData1={patternId}
-                                    onClick={this.handleBoolParamChange}
-                                    selected={gridParams.float}
-                                >
-                                    {t('pattern.repeating.float')}
-                                </ButtonHK>
-                                <ButtonNumberCF
-                                    pres={gridParams.float ? 2 : 1}
-                                    range={repeatingRange}
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xd`}
-                                    name={"xd"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.xd'}
-                                    hkData1={patternId}
-                                    value={gridParams.xd}
-                                    onChange={this.handleGridParamChange}/>
-                                <ButtonNumberCF
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yd`}
-                                    name={"yd"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.yd'}
-                                    hkData1={patternId}
-                                    value={gridParams.yd}
-                                    pres={gridParams.float ? 2 : 1}
-                                    range={repeatingRange}
-                                    onChange={this.handleGridParamChange}/>
-
-                            </div>
-
-                            <div className={'repeating-controls-grid-buttons-row'}>
-                                <ButtonHK
-                                    path={`pattern.${patternId}.repeating.params.gridParams.flat`}
-                                    containerClassName={'repeating-button'}
-                                    name={"flat"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.flat'}
-                                    hkData1={patternId}
-                                    onClick={this.handleBoolParamChange}
-                                    selected={gridParams.flat}
-                                >
-                                    {t('pattern.repeating.flat')}
-                                </ButtonHK>
-                                <ButtonNumberCF
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xn0`}
-                                    name={"xn0"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.xn0'}
-                                    hkData1={patternId}
-                                    value={gridParams.xn0}
-                                    range={repeatingOutRange}
-                                    pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamChange}/>
-                                <ButtonNumberCF
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yn0`}
-                                    name={"yn0"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.yn0'}
-                                    hkData1={patternId}
-                                    value={gridParams.yn0}
-                                    range={repeatingOutRange}
-                                    pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamChange}/>
-                            </div>
-
-                            <div className={'repeating-controls-grid-buttons-row'}>
-
-                                <ButtonNumberCF
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.xn1`}
-                                    name={"xn1"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.xn1'}
-                                    hkData1={patternId}
-                                    value={gridParams.xn1}
-                                    range={repeatingOutRange}
-                                    pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamChange}/>
-                                <ButtonNumberCF
-                                    className={'repeating-button-number'}
-                                    integer={!gridParams.float}
-                                    path={`patterns.${this.props.patternId}.repeating.params.gridParams.yn1`}
-                                    name={"yn1"}
-                                    hkLabel={'pattern.hotkeysDescription.repeating.yn1'}
-                                    hkData1={patternId}
-                                    value={gridParams.yn1}
-                                    range={repeatingOutRange}
-                                    pres={gridParams.float ? 2 : 1}
-                                    onChange={this.handleGridParamChange}/>
-                            </div>
-                        </div>
-                        <BezierCurveRepeating
-                            disabled={gridParams.flat}
-                            xd={gridParams.xd}
-                            yd={gridParams.yd}
-                            xn0={gridParams.xn0}
-                            yn0={gridParams.yn0}
-                            xn1={gridParams.xn1}
-                            yn1={gridParams.yn1}
-                            value={gridParams.bezierPoints}
-                            onParamsChange={this.handleGridParamsChange}
-                            onChange={this.handleBezierChange}/>
-                    </div>)}
+    return (
+        <div className={'repeating-controls'}>
+            <div className={'repeating-controls-grid'}>
+                {PrimaryComponent && (
+                    <PrimaryComponent patternId={patternId}/>
+                )}
+                <SelectDrop
+                    className='repeating-button type-select'
+                    items={typesSelectItems}
+                    getText={getTypeText}
+                    onChange={handleChangeType}
+                    hkLabel={'pattern.hotkeysDescription.repeating.type'}
+                    hkData1={patternId}
+                    value={type}/>
+                <Resizable
+                    height={140}
+                    minHeight={3}
+                    maxHeight={140}
+                    wrapperClassName={'resizable-wrapper'}
+                >
+                    {SecondaryComponent && (
+                        <SecondaryComponent patternId={patternId}/>
+                    )}
+                </Resizable>
             </div>
-        );
-    }
+        </div>
+    );
 }
 
 
 const mapStateToProps: MapStateToProps<RepeatingControlsStateProps, RepeatingControlsOwnProps, AppState> = (state, {patternId}) => ({
-    repeating: state.patterns[patternId]?.repeating?.params || null
+    params: state.patterns[patternId]?.repeating?.params || null
 });
 
 const mapDispatchToProps: MapDispatchToProps<RepeatingControlsActionProps, RepeatingControlsOwnProps> = {
-    setRepeating
+    setType,
 };
 
 export const RepeatingControls = connect<RepeatingControlsStateProps, RepeatingControlsActionProps, RepeatingControlsOwnProps, AppState>(

@@ -24,7 +24,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     handlePress = e => {
         const activeElement = document.activeElement;
-        console.log(this.props.keys.length === 1);
+        console.log(this.props);
         if (activeElement.nodeName === NodeType.Input
             && (!document.activeElement.getAttribute(INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE)
                 || this.props.keys.length === 1)
@@ -52,6 +52,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     componentDidMount() {
         const {keys, emptyKeys} = this.props;
+        console.log(keys);
         if (keys || emptyKeys)
             keyboardjs.bind(keys, this.handlePress, this.handleRelease)
     }
@@ -60,6 +61,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
         const {keys, name, emptyKeys} = this.props;
 
 
+        console.log(keys);
         if (prevProps.keys !== keys) {
             keyboardjs.unbind(prevProps.keys, this.handlePress, this.handleRelease);
 

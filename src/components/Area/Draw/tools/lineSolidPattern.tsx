@@ -1,13 +1,13 @@
 import {ECompositeOperation} from "../../../../store/compositeOperations";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {drawMasked} from "../../../../utils/canvas/helpers/draw";
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {patternValues} from "../../../../store/patterns/values";
 import {Cursors} from "./cursors";
 import {PatternState} from "../../../../store/patterns/pattern/types";
 import {EToolType} from "../../../../store/tool/types";
 import {DrawToolProps} from "./types";
 import {LineParams} from "../../../../store/line/types";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState, linePatternImage, patternMouseCentered: boolean) => {
     const patternStrokeStyle = ctx.createPattern(linePatternImage, "repeat");
@@ -161,7 +161,7 @@ export const lineSolidPattern = function () {
 
                 let size = Math.max((toolParams as LineParams).size, 10);
 
-                const rotation = pattern.config.rotation ? pattern.rotation?.value : null;
+                const rotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;
 
                 return Cursors.cross(x, y, size, rotation);
             }

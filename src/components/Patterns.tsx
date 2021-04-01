@@ -19,16 +19,16 @@ import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
 import {whyDidYouRender} from "../utils/props";
 import {Resizable, ResizableBox} from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import {Key} from "./_shared/Key";
+import {Key} from "./Hotkeys/Key";
 import {setActivePattern} from "../store/activePattern";
-import {PatternsHotkeys} from "./Hotkeys/PatternsHotkeys";
+import {GlobalHotkeys} from "./Hotkeys/GlobalHotkeys";
 import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "./_shared/File/helpers";
 import {imageToImageData} from "../utils/canvas/helpers/imageData";
 import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
 
 export interface PatternsStateProps {
-    patterns: any
+    patternsIds: string[]
 }
 
 export interface PatternsActionProps {
@@ -95,7 +95,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
     };
     render() {
         const {
-            patterns, removePattern,
+            patternsIds, removePattern,
             updateSelection, setWidth,
             setHeight,
             save, load,
@@ -104,7 +104,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
         } = this.props;
         return (
             <>
-                {patterns.map(({id, store, connected, resultImage}, index) => {
+                {patternsIds.map((id, index) => {
                     return (
                         <Pattern
                             key={id}
@@ -113,11 +113,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
                             onMouseEnter={this.handleMousePatternEnter}
                             onMouseLeave={this.handleMousePatternLeave}
-
-                            connected={connected}
-
-                            store={store}
-                            resultImage={resultImage}
 
                             onSelectionChange={updateSelection}
                             onRemove={removePattern}
@@ -129,8 +124,6 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
                         />
                     );
                 })}
-
-                <PatternsHotkeys/>
 
                 <DragAndDrop
                     onDrop={this.handleCreatePatternFromFile}
@@ -149,7 +142,7 @@ class PatternsComponent extends React.PureComponent<PatternsProps, PatternsState
 
 
 const mapStateToProps: MapStateToProps<PatternsStateProps, {}, AppState> = state => ({
-    patterns: Object.values(state.patterns)
+    patternsIds: Object.keys(state.patterns),
 });
 
 const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnProps> = {

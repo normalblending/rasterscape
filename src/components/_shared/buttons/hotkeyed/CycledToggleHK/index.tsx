@@ -5,7 +5,7 @@ import * as classNames from 'classnames';
 import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
-import {Key} from "../../../Key";
+import {Key} from "../../../../Hotkeys/Key";
 import './styles.scss';
 import {CycledToggle, CycledToggleImperativeHandlers, CycledToggleProps} from "../../simple/CycledToggle";
 

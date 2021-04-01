@@ -10,5 +10,6 @@ export const getRotationState = getFunctionState<RotationValue, RotationParams>(
             xd: 0,
             yd: 0,
         },
-        changing: false
+        changing: false,
+        rotateDrawAreaElement: true,
     }, {});

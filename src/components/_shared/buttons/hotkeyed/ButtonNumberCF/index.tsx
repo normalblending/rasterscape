@@ -77,7 +77,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         deactivateValueChanging,
         activateValueChanging,
         addHotkey,
-        setValueInChangingList, range,
+        setValueInChangingList,
+        range,
+        from, to,
         setCFHighlights, setCFTypeHighlights,
         t,
         settingMode,
@@ -122,9 +124,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
 
-        setValueInChangingList(path, changeFunctionId, range, value);
+        setValueInChangingList(path, changeFunctionId, range || [from, to], value);
 
-    }, [setValueInChangingList, path, range, value]);
+    }, [setValueInChangingList, path, range, from, to, value]);
 
     const handleChange = React.useCallback((data) => {
 

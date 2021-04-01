@@ -6,9 +6,9 @@ import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, highlightHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
-import {ButtonSelect, ButtonSelectProps} from "../../simple/ButtonSelect";
+import {ButtonSelect, ButtonSelectEventData, ButtonSelectProps} from "../../simple/ButtonSelect";
 import * as classNames from 'classnames';
-import {Key} from "../../../Key";
+import {Key} from "../../../../Hotkeys/Key";
 import './styles.scss';
 import {homedir} from "os";
 import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
@@ -24,6 +24,10 @@ export interface ButtonHKActionProps {
     highlightHotkey: typeof highlightHotkey
 }
 
+export interface ButtonHKEventData {
+    path?: string
+}
+
 export interface ButtonHKOwnProps extends ButtonSelectProps {
     path?: string
     containerClassName?: string
@@ -34,6 +38,16 @@ export interface ButtonHKOwnProps extends ButtonSelectProps {
     hkData1?: any
     hkData2?: any
     hkData3?: any
+
+    onClick?(data?: ButtonSelectEventData)
+
+    onMouseDown?(data?: ButtonSelectEventData)
+
+    onMouseUp?(data?: ButtonSelectEventData)
+
+    onMouseEnter?(data?: ButtonSelectEventData)
+
+    onMouseLeave?(data?: ButtonSelectEventData)
 }
 
 export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, WithTranslation {
@@ -57,6 +71,11 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         hkData1,
         hkData2,
         hkData3,
+        onClick,
+        onMouseDown,
+        onMouseUp,
+        onMouseEnter,
+        onMouseLeave,
         ...buttonProps
     } = props;
 
@@ -69,7 +88,6 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         value,
         name,
         selected,
-        onClick,
     } = buttonProps
 
     const handleShortcutChange = React.useCallback((shortcut, e) => {
@@ -127,11 +145,38 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         highlightHotkey(null);
     }, [highlightHotkey]);
 
+    const handleClick = React.useCallback((data) => {
+        onClick?.({...data, path})
+    }, [path, onClick]);
+
+    const handleMouseDown = React.useCallback((data) => {
+        onMouseDown?.({...data, path})
+    }, [path, onMouseDown]);
+
+    const handleMouseUp = React.useCallback((data) => {
+        onMouseUp?.({...data, path})
+    }, [path, onMouseUp]);
+
+    const handleMouseEnter = React.useCallback((data) => {
+        onMouseEnter?.({...data, path});
+    }, [path, onMouseEnter]);
+
+    const handleMouseLeave = React.useCallback((data) => {
+        onMouseLeave?.({...data, path})
+    }, [path, onMouseLeave]);
+
     return (
         <div className={classNames('hotkey-button', {
             ['hotkey-highlighted']: highlightedPath === hotkey?.path
         }, containerClassName)}>
-            <ButtonSelect {...buttonProps} pressed={pressed}/>
+            <ButtonSelect
+                onClick={handleClick}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
+                {...buttonProps}
+                pressed={pressed}/>
             {settingMode && path && (
                 <ShortcutInput
                     autoblur={buttonProps.autoblur}

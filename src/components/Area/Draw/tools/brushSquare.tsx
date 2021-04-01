@@ -1,4 +1,3 @@
-import {getRepeatingCoords} from "../../../../utils/draw";
 import {drawMasked, drawWithRotation} from "../../../../utils/canvas/helpers/draw";
 import {getRandomColor} from "../../../../utils/utils";
 import {Cursors} from "./cursors";
@@ -6,6 +5,7 @@ import {CanvasEvent} from "../../../_shared/Canvas";
 import {DrawToolProps} from "./types";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {BrushParams} from "../../../../store/brush/types";
+import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const brushSquare = function () {
 
@@ -26,7 +26,7 @@ export const brushSquare = function () {
 
             if (!e) return;
 
-            const angle = rotation ? rotation.angle : 0;
+            const angle = targetPattern.config.rotation && rotation?.rotateDrawAreaElement ? rotation.angle : 0;
 
             const selectionMask = pattern.selection && pattern.selection.value.mask;
 
@@ -67,7 +67,7 @@ export const brushSquare = function () {
 
                 let width = Math.max((toolParams as BrushParams).size, 1);
 
-                const rotation = pattern.rotation.value;
+                const rotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;
                 return Cursors.rect(x, y, width, width, {rotation});
             }
         }

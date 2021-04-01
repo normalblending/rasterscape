@@ -51,8 +51,10 @@ export class ShortcutInput extends React.PureComponent<ShortcutInputProps, Short
     }
 
     handleChange = (e) => {
-        if (e.pressedKeys.length === 1 && (e.key.length === 1 || e.key === "Backspace")) {
+        console.log(e.pressedKeys, e.key);
+        if ((e.key.length === 1 || e.key === "Backspace")) {
             const value = e.key === "Backspace" ? null : e.key;
+
 
             console.log(value);
             this.setState({value});

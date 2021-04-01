@@ -6,6 +6,7 @@ export interface ButtonEventData {
     value: any,
     name?: string,
     e?: any,
+    data?: any,
 }
 
 export interface ButtonProps {
@@ -29,6 +30,7 @@ export interface ButtonProps {
 
     value?: any
     name?: string
+    data?: any
 
     className?: string
     children?: React.ReactNode,
@@ -72,6 +74,7 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         className,
         value,
         name,
+        data,
         pressed,
         autofocus,
         autoblur,
@@ -90,20 +93,27 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         getElement: () => {
             return buttonRef.current
         }
-    }), [buttonRef])
+    }), [buttonRef]);
+
+    const getButtonEventData = React.useCallback((e): ButtonEventData => {
+        return {
+            value, name, data, e
+        }
+    }, [value, name, data]);
+
     const handleClick = React.useCallback(
         e => {
             if (disabled) return;
 
-            onClick && onClick({e, value, name})
+            onClick && onClick(getButtonEventData(e))
 
             buttonRef.current.focus();
         },
-        [disabled, onClick, value, name, buttonRef]);
+        [disabled, onClick, getButtonEventData, buttonRef]);
 
     const handleDoubleClick = React.useCallback(
-        e => !disabled && onDoubleClick && onDoubleClick({e, value, name}),
-        [disabled, onDoubleClick, value, name]);
+        e => !disabled && onDoubleClick && onDoubleClick(getButtonEventData(e)),
+        [disabled, onDoubleClick, getButtonEventData]);
 
     const handleMouseEnter = React.useCallback(e => {
         if (disabled) return;
@@ -111,9 +121,9 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         if (autofocus)
             buttonRef.current?.focus();
 
-        onMouseEnter?.({e, value, name});
+        onMouseEnter?.(getButtonEventData(e));
 
-    }, [disabled, onMouseEnter, value, name, autofocus]);
+    }, [disabled, onMouseEnter, getButtonEventData, autofocus]);
 
     const handleMove = React.useCallback(e => {
         if (disabled) return;
@@ -121,9 +131,9 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         if (autofocus && document.activeElement !== buttonRef.current)
             buttonRef.current?.focus();
 
-        onMouseMove?.({e, value, name});
+        onMouseMove?.(getButtonEventData(e));
 
-    }, [disabled, onMouseMove, value, name, autofocus]);
+    }, [disabled, onMouseMove, getButtonEventData, autofocus]);
 
     const handleMouseLeave = React.useCallback(e => {
         if (disabled) return;
@@ -131,25 +141,25 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         if (autoblur)
             buttonRef.current?.blur();
 
-        onMouseLeave?.({e, value, name});
+        onMouseLeave?.(getButtonEventData(e));
 
-    }, [disabled, onMouseLeave, value, name, autoblur]);
+    }, [disabled, onMouseLeave, getButtonEventData, autoblur]);
 
     const handleUp = React.useCallback(
-        e => !disabled && onMouseUp && onMouseUp({e, value, name}),
-        [disabled, onMouseUp, value, name]);
+        e => !disabled && onMouseUp?.(getButtonEventData(e)),
+        [disabled, onMouseUp, getButtonEventData]);
 
     const handleDown = React.useCallback(
-        e => !disabled && onMouseDown && onMouseDown({e, value, name}),
-        [disabled, onMouseDown, value, name]);
+        e => !disabled && onMouseDown?.(getButtonEventData(e)),
+        [disabled, onMouseDown, getButtonEventData]);
 
     const handleBlur = React.useCallback(
-        e => !disabled && onBlur && onBlur({e, value, name}),
-        [disabled, onBlur, value, name]);
+        e => !disabled && onBlur?.(getButtonEventData(e)),
+        [disabled, onBlur, getButtonEventData]);
 
     const handleFocus = React.useCallback(
-        e => !disabled && onFocus && onFocus({e, value, name}),
-        [disabled, onFocus, value, name]);
+        e => !disabled && onFocus?.(getButtonEventData(e)),
+        [disabled, onFocus, getButtonEventData]);
 
     const style = React.useMemo(() => ({width, height}), [width, height]);
 

@@ -9,6 +9,7 @@ import {setRotation} from "../../../store/patterns/rotating/actions";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {buttonNumberHelpWrapper} from "../../tutorial/ButtonNumberHelpWrapper";
+import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface RotationControlsStateProps {
     rotation: RotationValue
@@ -59,8 +60,16 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
         })
     };
 
+    handleRotateDrawAreaElementChange = (data) => {
+        const {selected} = data;
+        const {setRotation, rotation, patternId} = this.props;
+        setRotation(patternId, {
+            ...rotation,
+            rotateDrawAreaElement: !selected,
+        })
+    };
+
     handleMouseDown = () => {
-        console.log('down');
         const {setRotation, rotation, patternId} = this.props;
         setRotation(patternId, {
             ...rotation,
@@ -76,7 +85,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
     };
 
     render() {
-        const {angle, offset} = this.props.rotation;
+        const {angle, offset, rotateDrawAreaElement} = this.props.rotation;
         const {patternId} = this.props;
         return (
             <div className={'rotating-controls'}>
@@ -111,7 +120,7 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                     <ButtonNumberCF
                         className={'rotating-angle'}
                         pres={0}
-                        width={140}
+                        // width={140}
                         hkLabel={'pattern.hotkeysDescription.rotating.angle'}
                         hkData1={patternId}
                         path={`patterns.${this.props.patternId}.rotation.value.angle`}
@@ -124,6 +133,10 @@ export class RotationControlsComponent extends React.PureComponent<RotationContr
                         valueD={1}
                         onChange={this.handleAngleChange}
                     />
+                    <ButtonHK
+                        selected={rotateDrawAreaElement}
+                        onClick={this.handleRotateDrawAreaElementChange}
+                    >view</ButtonHK>
                 </div>
                 <div className={'right'}>
                     <ButtonNumberCF
