@@ -2,56 +2,63 @@ import {handleActions} from "redux-actions";
 import * as immutable from 'object-path-immutable';
 import {AppState} from "../index";
 import {ChangeAction, ChangeToStartValueAction, EChangeAction} from "./actions";
-import {changeFunctionByType} from "../changeFunctions/helpers";
-import {act} from "react-dom/test-utils";
-import {coordHelper4, position} from "../../components/Area/canvasPosition.servise";
 import {changeFunctionFactory} from "../changeFunctions/factory";
-
 
 export const changeReducer = handleActions<AppState>({
     [EChangeAction.CHANGE]: (state: AppState, action: ChangeAction) => {
         // console.log(state, action.time, action.position);
 
-        const {changeFunctions: {functions: changeFunctions}, changingValues, patterns} = state;
+        const {changeFunctions: {functions: changeFunctions}, changingValues, patterns, position} = state;
 
+        let r;
 
-        return Object.values(changingValues).reduce((res, changingValue) => {
+        r = Object.values(changingValues).reduce((res, changingValue) => {
 
-            const {
-                active,
-                path,
-                range,
-                changeFunctionId,
-                startValue
-            } = changingValue;
+            let vPath, nextValue;
 
-            const pattern = patterns[action.position.patternId];
+            // for (let i = 0; i < position.coordinates.length; i++) {
+                const {
+                    active,
+                    path,
+                    range,
+                    changeFunctionId,
+                    startValue
+                } = changingValue;
 
-            // console.log(path, active);
-            if (!active) return res;
+                const pattern = patterns[action.position.patternId];
 
-            const changeFunctionData = changeFunctions[changeFunctionId];
+                // console.log(path, active);
+                if (!active) return res;
 
-            const changeFunction = changeFunctionFactory.getFunction(changeFunctionId + '-' + path, changeFunctionData.type);
+                const changeFunctionData = changeFunctions[changeFunctionId];
 
-            // console.log(changeFunction(changeFunctionData.params, range, pattern)(startValue, action.time, action.position), changeFunctionData.params, range, pattern, startValue, action.time, action.position);
+                const changeFunction = changeFunctionFactory.getFunction(changeFunctionId + '-' + path, changeFunctionData.type);
 
-            let nextValue = changeFunction({
-                params: changeFunctionData.params,
-                range,
-                pattern,
-                startValue,
-                time: action.time,
-                position: action.position
-            });
+                // console.log(changeFunction(changeFunctionData.params, range, pattern)(startValue, action.time, action.position), changeFunctionData.params, range, pattern, startValue, action.time, action.position);
 
-            if (nextValue === undefined)
-                return res;
+                // let nextValue = changeFunction({
+                console.log(1, pattern);
+                nextValue = changeFunction({
+                    params: changeFunctionData.params,
+                    range,
+                    pattern,
+                    startValue,
+                    time: action.time,
+                    position: action.position
+                });
 
-            nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
+                if (nextValue === undefined)
+                    return res;
 
-            return res.set(path, nextValue)
+                nextValue = Math.min(Math.max(nextValue, range[0]), range[1]);
+
+                vPath = path
+            // }
+
+            return res.set(vPath, nextValue)
         }, immutable.wrap(state)).value();
+
+        return r;
     },
     [EChangeAction.TO_START_VALUE]: (state: AppState, action: ChangeToStartValueAction) => {
         const {path} = action;

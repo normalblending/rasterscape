@@ -16,6 +16,7 @@ export const brushSquare = function () {
         const {
             targetPattern,
             toolParams,
+            coordinates
         } = drawToolProps;
 
         const pattern = targetPattern;
@@ -30,7 +31,7 @@ export const brushSquare = function () {
 
             const selectionMask = pattern.selection && pattern.selection.value.mask;
 
-            getRepeatingCoords(e.offsetX, e.offsetY, pattern).forEach(({x, y}) => {
+            coordinates.forEach(({x, y}) => {
                 drawWithRotation(
                     -angle,
                     x, y,

@@ -6,7 +6,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Saw} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 // import {toFixed2} from "../../utils/utils";
 
@@ -16,7 +16,7 @@ export interface SawCFProps {
 
     name: string
 
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 
     onChange(value?: any, name?: string)
 

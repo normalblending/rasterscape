@@ -6,13 +6,13 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 export interface ParabCFProps {
     params: any
 
     name: string
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 
     onChange(value?: any, name?: string)
 

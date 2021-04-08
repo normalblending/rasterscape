@@ -1,7 +1,6 @@
 import * as Bezier from "bezier-js";
 import {ERepeatsType, RepeatsBezierGridParams, RepeatsFlatGridParams, RepeatsParams, RepeatsValue} from "./types";
 import {getFunctionState} from "../../../utils/patterns/function";
-import {PatternState} from "../pattern/types";
 import {EToolType} from "../../tool/types";
 
 export const getRepeatingState = getFunctionState<RepeatsValue, RepeatsParams>(
@@ -41,9 +40,20 @@ export type RepeatingCoordinatesItem = {
     outer?: boolean
 };
 
-export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, withColor?: boolean, tool?: EToolType): RepeatingCoordinatesItem[] => {
+export interface GetRepeatsCoordsOptions {
+    repeatsParams: RepeatsParams
+    width: number
+    height: number
+    x: number
+    y: number
+    tool?: EToolType
+}
 
-    if (!pattern.config.repeating || !pattern.repeating) {
+export const getRepeatingCoords = (options: GetRepeatsCoordsOptions): RepeatingCoordinatesItem[] => {
+
+    const {repeatsParams, width, height, x, y, tool} = options;
+
+    if (!repeatsParams) {
         return [{
             x,
             y,
@@ -51,11 +61,7 @@ export const getRepeatingCoords = (x: number, y: number, pattern: PatternState, 
         }];
     }
 
-    const {current: {imageData: {width, height}}} = pattern;
-
-    const {params} = pattern.repeating;
-
-    const {type, typeParams} = params;
+    const {type, typeParams} = repeatsParams;
 
     return repeatsCoordsByType[type]?.(x, y, width, height, typeParams[type], tool)
         || [{x, y, id: canvasItemId(0, 0)}];

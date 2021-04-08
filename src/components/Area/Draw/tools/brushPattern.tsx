@@ -11,7 +11,6 @@ import {Cursors} from "./cursors";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {DrawToolProps} from "./types";
 import {BrushParams} from "../../../../store/brush/types";
-import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const brushPattern = function () {
 
@@ -23,6 +22,7 @@ export const brushPattern = function () {
             targetPattern,
             toolPattern,
             toolParams,
+            coordinates,
         } = drawToolProps;
 
         const {patternSize, opacity, compositeOperation} = toolParams as BrushParams;
@@ -64,12 +64,11 @@ export const brushPattern = function () {
 
             const selectionMask = destinationPattern.selection && destinationPattern.selection.value.mask;
 
-            getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern).forEach(({x, y}) => {
+            // 1 patternSize - divide two
+            const width = patternSize * brushPatternImage.width;
+            const height = patternSize * brushPatternImage.height;
 
-                // 1 patternSize - divide two
-                const width = patternSize * brushPatternImage.width;
-                const height = patternSize * brushPatternImage.height;
-
+            coordinates.forEach(({x, y}) => {
 
                 //
                 const destAngle = destinationRotation ? destinationRotation.angle : 0;

@@ -4,7 +4,7 @@ import {VideoParams} from "../../../store/patterns/video/types";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
-import {ChangeFunction, ECFType} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState, ECFType} from "../../../store/changeFunctions/types";
 import {
     pause,
     play,
@@ -37,7 +37,7 @@ export interface VideoControlsStateProps {
 
     videoParams: VideoParams
 
-    changeFunctionsSelectItems: ChangeFunction[]
+    changeFunctionsSelectItems: ChangeFunctionState[]
     videoDisabled: boolean
     changeFunctionParams: any
 }
@@ -254,8 +254,8 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     stackTypeGetValue = id => id;
 
-    cfGetValue = (item: ChangeFunction) => item.id;
-    cfGetText = (item: ChangeFunction) => {
+    cfGetValue = (item: ChangeFunctionState) => item.id;
+    cfGetText = (item: ChangeFunctionState) => {
          const {t} = this.props;
          return Translations.cfName(t)(item);
      }

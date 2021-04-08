@@ -8,7 +8,7 @@ export enum ECFType {
     DEPTH = 'rgba',
 }
 
-export interface ChangeFunction {
+export interface ChangeFunctionState {
     id: string
     number: number
     type: ECFType
@@ -33,3 +33,9 @@ export interface ChangeCFParamsAction extends Action {
     id: string
     params: any
 }
+
+export interface ChangeFunctionResult {
+    value
+}
+
+// export type ChangeFunction = () =>

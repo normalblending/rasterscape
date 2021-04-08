@@ -7,7 +7,7 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 // import {Noise} from "../../_shared/canvases/WebWorkerCanvas";
 
@@ -16,7 +16,7 @@ export interface NoiseCFProps {
     params: any
 
     name: string
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 
     onChange(value?: any, name?: string)
 

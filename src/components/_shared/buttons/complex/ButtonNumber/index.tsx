@@ -2,7 +2,7 @@ import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
 import {Key} from "../../../../Hotkeys/Key";
-import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
+import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
 import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude, Sis2Amplitude} from "./ParaboloidAmplitude";
@@ -81,7 +81,7 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     onRelease?(data?: ButtonNumberEventData)
 
 
-    changeFunction?: ChangeFunction
+    changeFunction?: ChangeFunctionState
     changeFunctionId?: string
     changeFunctionType?: ECFType
     changingStartValue?: number

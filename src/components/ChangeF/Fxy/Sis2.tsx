@@ -7,13 +7,13 @@ import {FxyType} from "../../../store/changeFunctions/functions/fxy";
 import {Sis2} from "../../_shared/canvases/WebWorkerCanvas";
 import {xySis2} from "../../../store/changeFunctions/functions/_helpers";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 export interface Sis2CFProps {
     params: any
 
     name: string
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 
     onChange(value?: any, name?: string)
 

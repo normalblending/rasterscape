@@ -65,6 +65,9 @@ export const fxyParamsConfig = {};
 const fxyFunctionByType = {
     [FxyType.Parab]: ({startValue, range, params, pattern, position}) => {
 
+        console.log(3, pattern);
+        if (!pattern) return;
+
         const {x, y, end, zd} = params;
 
         const f = xyParaboloid(1 / 2, 1 / 2, x, y);
@@ -114,6 +117,7 @@ const fxyFunctionByType = {
 export const fxyChangeFunction = () => {
     return ({params, range, pattern, startValue, time, position}) => {
 
+        console.log(2, pattern);
         return fxyFunctionByType[params.type]({
             startValue,
             range,

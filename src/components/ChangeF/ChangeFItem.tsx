@@ -5,14 +5,14 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
 import {removeCF} from "../../store/changeFunctions/actions";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {ChangeFunction, ECFType} from "../../store/changeFunctions/types";
+import {ChangeFunctionState, ECFType} from "../../store/changeFunctions/types";
 import {WaveCF} from "./Wave";
 import {FxyCF} from "./Fxy";
 import {DepthCF} from "./Depth/DeepthCF";
 import {DeleteButton, DeleteButtonComponent} from "../_shared/buttons/complex/DeleteButton/DeleteButton";
 
 export interface ChangeFItemStateProps {
-    changeFunction: ChangeFunction
+    changeFunction: ChangeFunctionState
 }
 
 export interface ChangeFItemActionProps {

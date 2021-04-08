@@ -19,11 +19,12 @@ import {fullscreenReducer, FullScreenState} from "./fullscreen";
 import {languageReducer, LanguageState} from "./language";
 import {hotkeysReducer, HotkeysState} from "./hotkeys";
 import {PatternsState} from "./patterns/types";
-import {ChangeFunction, ECFType} from "./changeFunctions/types";
+import {ChangeFunctionState, ECFType} from "./changeFunctions/types";
 import {tutorialReducer, TutorialState} from "./tutorial";
 import {changeFunctionHighlightsReducer, ChangeFunctionHighlightsState} from "./changeFunctionsHighlights";
 import {activePatternReducer, ActivePatternState} from "./activePattern";
 import {optimizationReducer, OptimizationState} from "./optimization";
+import {positionReducer, PositionState} from "./position";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -35,6 +36,7 @@ export interface AppState {
 
     patterns: PatternsState
     activePattern: ActivePatternState
+    position: PositionState
 
     color: ColorState
 
@@ -62,6 +64,7 @@ const rootReducer = reduceReducers(
 
         patterns: patternsReducer,
         activePattern: activePatternReducer,
+        position: positionReducer,
 
         color: colorReducer,
 
@@ -89,7 +92,7 @@ const configPersist = {
 
             const changeFunctions = Object.keys(state.changeFunctions)
                 .reduce((res, cfId) => {
-                    const cf: ChangeFunction = state.changeFunctions[cfId];
+                    const cf: ChangeFunctionState = state.changeFunctions[cfId];
                     switch (cf.type) {
                         case ECFType.DEPTH:
                             console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', cf);

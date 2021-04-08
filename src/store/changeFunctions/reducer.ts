@@ -2,7 +2,7 @@ import {handleActions} from "redux-actions";
 import {
     AddCFAction,
     ChangeCFParamsAction,
-    ChangeFunction,
+    ChangeFunctionState,
     ChangeFunctionConstants,
     RemoveCFAction
 } from "./types";
@@ -11,7 +11,7 @@ import {cfId, createCFInitialState} from "./helpers";
 import {omit} from "lodash";
 
 export interface ChangeFunctions {
-    [id: string]: ChangeFunction
+    [id: string]: ChangeFunctionState
 }
 
 export interface ChangeFunctionsConstants {

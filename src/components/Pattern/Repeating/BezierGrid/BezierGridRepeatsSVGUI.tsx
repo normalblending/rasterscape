@@ -290,7 +290,7 @@ export const BezierGridRepeatsSVGUI: React.FC<BezierCurveRepeatingProps> = (prop
     const handleXdChange = React.useCallback((v: Vector) => {
         onParamChange('xd', Math.max(1, float ? v.x : Math.round(v.x)));
     }, [onParamChange, float]);
-    const startChangeXd = useDragPoint(handleXdChange, scale * 100);
+    const startChangeXd = useDragPoint(handleXdChange, scale * 10);
     const handleChangeXdStart = React.useCallback((e) => {
         startChangeXd(e, createVector(xd, 0));
     }, [startChangeXd, xd]);
@@ -300,7 +300,7 @@ export const BezierGridRepeatsSVGUI: React.FC<BezierCurveRepeatingProps> = (prop
             'yd', Math.max(1, float ? v.y : Math.round(v.y))
         );
     }, [onParamChange, float]);
-    const startChangeYd = useDragPoint(handleYdChange, scale * 100);
+    const startChangeYd = useDragPoint(handleYdChange, scale * 10);
     const handleChangeYdStart = React.useCallback((e) => {
         startChangeYd(e, createVector(0, yd));
     }, [startChangeYd, yd]);

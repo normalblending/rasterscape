@@ -11,7 +11,7 @@ import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
 import {Sis2CF} from "./Sis2";
 import {WaveParams} from "../../../store/changeFunctions/functions/wave";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 import {withTranslation, WithTranslation} from "react-i18next";
 
 // import {FxyHelp} from "../tutorial/tooltips/FxyHelp";
@@ -19,7 +19,7 @@ import {withTranslation, WithTranslation} from "react-i18next";
 export interface FxyCFStateProps {
 
     tutorial: boolean
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
     params: FxyParams
 }
 

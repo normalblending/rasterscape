@@ -13,14 +13,14 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {ChannelImageData} from "../../_shared/canvases/WebWorkerCanvas";
 import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
 
 export interface DepthCFStateProps {
     tutorial: boolean
     params: any
     paramsConfig: ParamConfig[]
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
     patternsImageData: {
         [patternId: string]: ImageData
     }

@@ -1,11 +1,11 @@
-import {ChangeFunction} from "../../../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../../../store/changeFunctions/types";
 
 export interface AmplitudeComponentProps {
     range,
     params,
     changingStartValue,
     changeFunctionId,
-    changeFunction: ChangeFunction
+    changeFunction: ChangeFunctionState
     type?
     number?
     changing,

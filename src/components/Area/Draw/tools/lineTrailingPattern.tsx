@@ -42,6 +42,7 @@ export const lineTrailingPattern = function () {
             targetPattern,
             toolPattern,
             toolParams,
+            coordinates
         } = drawToolProps;
 
         const {patternSize, opacity, compositeOperation, patternDirection} = toolParams as LineParams;
@@ -85,16 +86,17 @@ export const lineTrailingPattern = function () {
             if (!linePatternImage) return
 
             if (!draw) {
-                getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line).forEach(({x, y, id}) => {
-                    const index = id;
-                    canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height);
-                    prevPoints[index] = {x, y};
-                });
+                coordinates
+                    .forEach(({x, y, id}) => {
+                        const index = id;
+                        canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height);
+                        prevPoints[index] = {x, y};
+                    });
                 draw = true;
             } else {
                 if (patternSize < 0.01) return;
 
-                const repeatingCoords = getRepeatingCoords(e.offsetX, e.offsetY, destinationPattern, false, EToolType.Line);
+                const repeatingCoords = coordinates;
 
                 Object.keys(prevPoints)
                     .filter(pointId => repeatingCoords.findIndex(({id}) => pointId === id) === -1)
@@ -203,7 +205,8 @@ export const lineTrailingPattern = function () {
                 const pattern = destinationPattern;
                 const {patternSize} = toolParams;
 
-                const patternRotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;;
+                const patternRotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;
+                ;
 
                 const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
                 const linePatternImage = patternValues.values[linePattern?.id];

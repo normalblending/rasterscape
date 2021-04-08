@@ -13,7 +13,7 @@ export enum EChangingAction {
 
 let requestID = null;
 
-export const startChanging = () => (dispatch, getState) => {
+export const startChanging = () => (dispatch, getState: () => AppState) => {
 
     if (!requestID) {
         requestID && cancelAnimationFrame(requestID);
@@ -22,7 +22,8 @@ export const startChanging = () => (dispatch, getState) => {
 
         requestID = requestAnimationFrame(function changing(time) {
 
-            dispatch(change(Math.abs(time - startTime), position));
+            // getState().position
+            dispatch(change(Math.abs(time - startTime), getState().position));
 
             requestID = requestAnimationFrame(changing);
         });

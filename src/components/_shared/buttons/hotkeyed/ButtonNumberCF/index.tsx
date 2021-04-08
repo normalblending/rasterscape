@@ -16,7 +16,7 @@ import "./styles.scss";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
-import {ChangeFunction, ECFType} from "../../../../../store/changeFunctions/types";
+import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {ChangingValue} from "../../../../../store/changingValues/types";
 import {WithTranslation, withTranslation} from "react-i18next";
@@ -26,8 +26,8 @@ import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
 import {Translations} from "../../../../../store/language/helpers";
 
 export interface ButtonNumberCFStateProps {
-    changeFunctionsSelectItems: ChangeFunction[]
-    changeFunction?: ChangeFunction
+    changeFunctionsSelectItems: ChangeFunctionState[]
+    changeFunction?: ChangeFunctionState
     changingValue: ChangingValue
     hotkey: HotkeyValue
     settingMode: boolean
@@ -290,11 +290,11 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
 
 
-    const cfGetText = React.useMemo(() => (item: ChangeFunction) => {
+    const cfGetText = React.useMemo(() => (item: ChangeFunctionState) => {
         return Translations.cfName(t)(item);
     }, [t]);
 
-    const cfGetValue = React.useMemo(() => (item: ChangeFunction) => {
+    const cfGetValue = React.useMemo(() => (item: ChangeFunctionState) => {
         return item.id
     }, []);
 

@@ -21,6 +21,7 @@ export const lineSolid = () => {
         const {
             targetPattern,
             toolParams,
+            coordinates,
         } = drawToolProps;
 
         const {size, opacity, compositeOperation, cap, join, random} = toolParams as LineParams;
@@ -51,7 +52,7 @@ export const lineSolid = () => {
                         helperCanvas2.canvas.width = width;
                     }
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line)
+                    coordinates
                         .forEach(({x, y, id: index}) => {
                             canvases[index] = createCanvas(width, height);
                             newPrevPoints[index] = {x, y};
@@ -68,7 +69,7 @@ export const lineSolid = () => {
                         });
                 } else {
 
-                    getRepeatingCoords(e.offsetX, e.offsetY, pattern, false, EToolType.Line)
+                    coordinates
                         .forEach(({x, y, id: index}) => {
 
                             if (!canvases[index]) {

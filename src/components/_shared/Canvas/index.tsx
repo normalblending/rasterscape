@@ -8,6 +8,7 @@ import {rotate} from "../../../utils/draw";
 import {RotationValue} from "../../../store/patterns/rotating/types";
 import {DemonstrationSubApp} from "./Demonstration";
 import _throttle from 'lodash/throttle';
+import {coordHelper} from "../../Area/canvasPosition.servise";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -54,6 +55,7 @@ export interface CanvasProps {
     onChange?(imageData?: ImageData)
 
     onLeave?(e?)
+    onEnter?(e?)
 
     onEnterDraw?(e?)
 
@@ -342,7 +344,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         const changing = (time) => {
 
             // DRAW SPEED
-            // coordHelper.setText(time - prevT);
+            coordHelper.setText(time - prevT);
             prevT = time;
 
             this.onFrame();
@@ -462,10 +464,12 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     mouseEnterHandler = (e) => {
 
+        const {onEnter} = this.props;
+
+        onEnter?.(e);
     };
 
     mouseLeaveHandler = (e) => {
-
 
         const {onLeave} = this.props;
 

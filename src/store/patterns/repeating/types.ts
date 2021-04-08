@@ -35,7 +35,6 @@ export interface RepeatsParams {
         [ERepeatsType.BezierGrid]: RepeatsBezierGridParams
         [ERepeatsType.FlatGrid]: RepeatsFlatGridParams
     }
-    // gridParams: RepeatsBezierGridParams
 }
 
 export interface RepeatsValue {

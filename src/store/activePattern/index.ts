@@ -18,12 +18,6 @@ export const activePatternReducer = handleActions<ActivePatternState>({
             patternId: action.patternId,
         }
     },
-    [EActivePatternAction.SET]: (state, action: SetActivePatternAction) => {
-        return {
-            ...state,
-            patternId: action.patternId,
-        }
-    },
 }, {
     patternId: null
 });

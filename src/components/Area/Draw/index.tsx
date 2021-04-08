@@ -9,7 +9,7 @@ import {LineState} from "../../../store/line/reducer";
 import get from "lodash/get";
 import {ELineType} from "../../../store/line/types";
 import {startDrawChanging, stopDrawChanging} from "../../../store/changing/actions";
-import {coordHelper2, setPosition} from "../canvasPosition.servise";
+import {coordHelper2} from "../canvasPosition.servise";
 import {SVG} from "../../_shared/SVG";
 import classNames from "classnames";
 import '../../../styles/draw.scss';
@@ -23,6 +23,7 @@ import {lineTrailingPattern} from "./tools/lineTrailingPattern";
 import {toolParamsSelector, toolPatternSelector, toolTypeSelector} from "../../../store/tool/selectors";
 import {DrawToolProps} from "./tools/types";
 import {getRepeatingCoords, RepeatingCoordinatesItem} from "../../../store/patterns/repeating/helpers";
+import {setPosition} from "../../../store/position";
 
 export interface CanvasDrawStateProps {
     brush: BrushState
@@ -36,12 +37,14 @@ export interface CanvasDrawStateProps {
     linePattern: PatternState
     activePattern: boolean
     optimization: boolean
+    coordinates: RepeatingCoordinatesItem[]
 }
 
 export interface CanvasDrawActionProps {
     startChanging()
 
     stopChanging()
+    setPosition(patternId: string, x: number, y: number)
 }
 
 export interface CanvasDrawOwnProps extends CanvasProps {
@@ -81,7 +84,8 @@ export type ToolsDrawHandlers = {
 const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
 
 
-    const [coords, setCoords] = React.useState<RepeatingCoordinatesItem[]>([]);
+    const [_changing, setStateChanging] = React.useState<boolean>(false);
+    const [_moving, setStateMoving] = React.useState<boolean>(false);
 
     const toolsDrawHandlers = React.useMemo<ToolsDrawHandlers>(() => ({
         [EToolType.Brush]: {
@@ -107,17 +111,23 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
 
         startChanging,
         stopChanging,
+        setPosition,
+
+        coordinates,
 
         onLeave,
+        onEnter,
         onChange,
     } = props;
 
 
     const downHandler = React.useCallback((e: CanvasEvent) => {
 
+        setStateChanging(true);
+
         startChanging();
 
-        setCoords([]);
+        // setCoords([]);
 
     }, [startChanging]);
 
@@ -127,39 +137,47 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
 
     const moveHandler = React.useCallback(({e, drawing}: CanvasEvent) => {
 
-        if (!drawing) {
-            setCoords(
-                getRepeatingCoords(
-                    e.offsetX,
-                    e.offsetY,
-                    pattern,
-                    true,
-                    tool
-                )
-            );
-        }
+        // if (!drawing) {
+        //     setCoords(
+        //         getRepeatingCoords(
+        //             e.offsetX,
+        //             e.offsetY,
+        //             pattern,
+        //             true,
+        //             tool
+        //         )
+        //     );
+        // }
 
-        setPosition(e.offsetX, e.offsetY, patternId);
-    }, [patternId, pattern, tool]);
+        setPosition(patternId, e.offsetX, e.offsetY);
+    }, [patternId, pattern, tool, setPosition]);
 
+    const enterHandler = React.useCallback(() => {
+        onEnter?.();
+
+        setStateMoving(true);
+        // setCoords([]);
+    }, [onEnter]);
     const leaveHandler = React.useCallback(() => {
         onLeave?.();
 
-        setCoords([]);
+        setStateMoving(false);
+        // setCoords([]);
     }, [onLeave]);
 
     const upHandler = React.useCallback(({e}) => {
 
+        setStateChanging(false);
         stopChanging();
 
-        setCoords(
-            getRepeatingCoords(
-                e.offsetX,
-                e.offsetY,
-                pattern,
-                true,
-                tool)
-        )
+        // setCoords(
+        //     getRepeatingCoords(
+        //         e.offsetX,
+        //         e.offsetY,
+        //         pattern,
+        //         true,
+        //         tool)
+        // )
     }, [stopChanging, pattern, tool]);
 
 
@@ -169,9 +187,10 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
             targetPattern: pattern,
             toolPattern,
             toolParams,
+            coordinates: coordinates || [],
         });
 
-    }, [tool, toolType, pattern, toolParams, toolPattern]);
+    }, [tool, toolType, pattern, toolParams, toolPattern, coordinates]);
 
     // React.useEffect(() => {
     //
@@ -234,6 +253,7 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
             onClick={handlers && handlers.click}
             onMove={moveHandler}
             onDraw={handlers && handlers.draw}
+            onEnter={enterHandler}
             onLeave={leaveHandler}
             onUp={upHandler}
             releaseProcess={handlers && handlers.release}
@@ -241,12 +261,12 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
             height={height}
             onChange={handleChange}
         >
-            {handlers && handlers.cursors && (
+            {!_changing && _moving && handlers && handlers.cursors && (
                 <SVG
                     className={"draw-cursors"}
                     width={width}
                     height={height}>
-                    {coords.map(handlers.cursors)}
+                    {coordinates?.map(handlers.cursors)}
                 </SVG>
             )}
             {children}
@@ -267,11 +287,13 @@ const mapStateToProps: MapStateToProps<CanvasDrawStateProps, CanvasDrawOwnProps,
     linePattern: state.patterns[state.line.params.pattern],
     activePattern: state.activePattern.patternId === patternId,
     optimization: state.optimization.on,
+    coordinates: (state.position.patternId === patternId) ? state.position.coordinates : null,
 });
 
 const mapDispatchToProps: MapDispatchToProps<CanvasDrawActionProps, CanvasDrawOwnProps> = {
     startChanging: startDrawChanging,
-    stopChanging: stopDrawChanging
+    stopChanging: stopDrawChanging,
+    setPosition,
 };
 
 export const Draw = connect<CanvasDrawStateProps, CanvasDrawActionProps, CanvasDrawOwnProps, AppState>(

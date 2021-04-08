@@ -6,12 +6,12 @@ import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {WaveType} from "../../../store/changeFunctions/functions/wave";
 import {Sin} from "../../_shared/canvases/WebWorkerCanvas";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 export interface SinCFProps {
     tutorial: boolean
     params: any
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 
     name: string
 

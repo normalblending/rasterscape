@@ -12,7 +12,7 @@ import {arrayToSelectItems} from "../../../utils/utils";
 import {SawCF} from "./Saw";
 import {NoiseCF} from "./Noise";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {ChangeFunction} from "../../../store/changeFunctions/types";
+import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 
 // import {WaveHelp} from "../tutorial/tooltips/WaveHelp";
 
@@ -20,7 +20,7 @@ export interface WaveCFStateProps {
 
     tutorial: boolean
     params: WaveParams
-    functionParams: ChangeFunction
+    functionParams: ChangeFunctionState
 }
 
 export interface WaveCFActionProps {
