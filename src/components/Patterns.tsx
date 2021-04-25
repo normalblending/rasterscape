@@ -19,7 +19,7 @@ import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
 import {whyDidYouRender} from "../utils/props";
 import {Resizable, ResizableBox} from 'react-resizable';
 import 'react-resizable/css/styles.css';
-import {Key} from "./Hotkeys/Key";
+import {UserHotkeyTrigger} from "./Hotkeys/UserHotkeyTrigger";
 import {setActivePattern} from "../store/activePattern";
 import {GlobalHotkeys} from "./Hotkeys/GlobalHotkeys";
 import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";

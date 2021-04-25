@@ -15,13 +15,14 @@ import {
 import {createSelector} from "reselect";
 import {Button} from "../_shared/buttons/simple/Button";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {ShortcutInput} from "./ShortcutInput";
+import {UserHotkeyInput} from "./UserHotkeyInput";
 import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {labelFormatters} from "../../store/hotkeys/label-formatters";
 import {InputText} from "../_shared/inputs/InputText";
 import {GlobalHotkeysInfo} from "./GlobalHotkeysInfo";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 import {GlobalHotkeys} from "./GlobalHotkeys";
+import {HKLabelTypes} from "../_shared/buttons/hotkeyed/types";
 
 
 export interface HotkeysStateProps {
@@ -91,17 +92,17 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
     }, [updateHotkey]);
 
 
-    const handleShortcutFocus = React.useCallback((shortcut, hotkey: HotkeyValue) => {
-        highlightHotkey(hotkey.path);
-    }, [highlightHotkey]);
-
-    const handleShortcutBlur = React.useCallback((shortcut, hotkey: HotkeyValue) => {
-        if (shortcut === null) {
-            removeHotkey(hotkey.path);
-        }
-
-        highlightHotkey(null);
-    }, [removeHotkey, highlightHotkey]);
+    // const handleShortcutFocus = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+    //     highlightHotkey(hotkey.path);
+    // }, [highlightHotkey]);
+    //
+    // const handleShortcutBlur = React.useCallback((shortcut, hotkey: HotkeyValue) => {
+    //     if (shortcut === null) {
+    //         removeHotkey(hotkey.path);
+    //     }
+    //
+    //     highlightHotkey(null);
+    // }, [removeHotkey, highlightHotkey]);
 
 
     const handleSetAutofocus = React.useCallback((data) => {
@@ -159,6 +160,16 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                                     controlType
                                 } = hotkey;
 
+                                const hkLabelProps = {
+                                    hkLabel: label,
+                                    hkLabelFormatter: labelFormatter,
+                                    hkData0: labelData[0],
+                                    hkData1: labelData[1],
+                                    hkData2: labelData[2],
+                                    hkData3: labelData[3],
+                                } as HKLabelTypes;
+
+
                                 const data = {
                                     data0: labelData?.[0],
                                     data1: labelData?.[1],
@@ -186,14 +197,12 @@ const HotkeysComponent: React.FC<HotkeysProps> = (props) => {
                                                 >{onRelease ? '˄' : '˅'}</ButtonSelect>
                                             )}
                                         </div>
-                                        <ShortcutInput
+                                        <UserHotkeyInput
+                                            path={path}
+                                            type={controlType}
                                             autofocus={autofocus}
                                             autoblur={autoblur}
-                                            hotkey={hotkey}
-                                            onBlur={handleShortcutBlur}
-                                            onChange={handleShortcutChange}
-                                            onFocus={handleShortcutFocus}
-                                            value={key}
+                                            {...hkLabelProps}
                                         />
                                         <div className={'hotkey-name'}>
                                             {text}

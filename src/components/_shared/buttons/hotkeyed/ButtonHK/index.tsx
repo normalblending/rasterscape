@@ -2,16 +2,17 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
 import {Button, ButtonProps} from "bbuutoonnss";
-import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
+import {UserHotkeyInput} from "../../../../Hotkeys/UserHotkeyInput";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, highlightHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {ButtonSelect, ButtonSelectEventData, ButtonSelectProps} from "../../simple/ButtonSelect";
 import * as classNames from 'classnames';
-import {Key} from "../../../../Hotkeys/Key";
+import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
 import './styles.scss';
 import {homedir} from "os";
 import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
+import {HKLabelTypes} from "../types";
 
 export interface ButtonHKStateProps {
     hotkey: HotkeyValue
@@ -28,16 +29,9 @@ export interface ButtonHKEventData {
     path?: string
 }
 
-export interface ButtonHKOwnProps extends ButtonSelectProps {
+export interface ButtonHKOwnProps extends ButtonSelectProps, HKLabelTypes {
     path?: string
     containerClassName?: string
-
-    hkLabel?: string
-    hkLabelFormatter?: LabelFormatter
-    hkData0?: any
-    hkData1?: any
-    hkData2?: any
-    hkData3?: any
 
     onClick?(data?: ButtonSelectEventData)
 
@@ -79,6 +73,15 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         ...buttonProps
     } = props;
 
+    const hkLabelProps = {
+        hkLabel,
+        hkLabelFormatter,
+        hkData0,
+        hkData1,
+        hkData2,
+        hkData3,
+    };
+
     const [pressed, setPressed] = React.useState(false);
 
     const isOnRelease = hotkey?.onRelease;
@@ -89,19 +92,19 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
         name,
         selected,
     } = buttonProps
-
-    const handleShortcutChange = React.useCallback((shortcut, e) => {
-        if (shortcut === null || shortcut.length === 1) {
-            addHotkey({
-                path,
-                key: shortcut,
-                controlType: HotkeyControlType.Button,
-                label: hkLabel || path,
-                labelFormatter: hkLabelFormatter,
-                labelData: [hkData0, hkData1, hkData2, hkData3]
-            });
-        }
-    }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3]);
+    //
+    // const handleShortcutChange = React.useCallback((shortcut, e) => {
+    //     if (shortcut === null || shortcut.length === 1) {
+    //         addHotkey({
+    //             path,
+    //             key: shortcut,
+    //             controlType: HotkeyControlType.Button,
+    //             label: hkLabel || path,
+    //             labelFormatter: hkLabelFormatter,
+    //             labelData: [hkData0, hkData1, hkData2, hkData3]
+    //         });
+    //     }
+    // }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3]);
 
     const handlePress = React.useCallback((e) => {
 
@@ -137,14 +140,6 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
 
-    const handleShortcutFocus = React.useCallback((shortcut, hotkey: HotkeyValue) => {
-        hotkey && highlightHotkey(hotkey.path);
-    }, [highlightHotkey]);
-
-    const handleShortcutBlur = React.useCallback((shortcut, hotkey: HotkeyValue) => {
-        highlightHotkey(null);
-    }, [highlightHotkey]);
-
     const handleClick = React.useCallback((data) => {
         onClick?.({...data, path})
     }, [path, onClick]);
@@ -178,15 +173,12 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
                 {...buttonProps}
                 pressed={pressed}/>
             {settingMode && path && (
-                <ShortcutInput
+                <UserHotkeyInput
+                    path={path}
+                    type={HotkeyControlType.Button}
                     autoblur={buttonProps.autoblur}
                     autofocus={buttonProps.autofocus}
-                    placeholder={t('buttonNumberCF.hotkey')}
-                    hotkey={hotkey}
-                    value={hotkey?.key}
-                    onChange={handleShortcutChange}
-                    onBlur={handleShortcutBlur}
-                    onFocus={handleShortcutFocus}
+                    {...hkLabelProps}
                 />
             )}
             {!settingMode && hotkey?.key && (
@@ -194,8 +186,9 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
             )}
 
             {path && (
-                <Key
-                    keys={hotkey?.key}
+                <UserHotkeyTrigger
+                    path={path}
+                    // keys={hotkey?.code}
                     onRelease={handleRelease}
                     onPress={handlePress}
                 />

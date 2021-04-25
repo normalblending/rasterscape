@@ -10,7 +10,7 @@ import {ButtonHK} from "../buttons/hotkeyed/ButtonHK";
 import {EdgeMode} from "../../../store/patterns/video/services";
 import {CycledToggleHK} from "../buttons/hotkeyed/CycledToggleHK";
 import {DemonstrationMode, DemonstrationParams} from "../../../store/patterns/demonstration/types";
-import {Key} from "../../Hotkeys/Key";
+import {UserHotkeyTrigger} from "../../Hotkeys/UserHotkeyTrigger";
 
 export interface DemonstrationStateProps {
     demonstrationParams: DemonstrationParams

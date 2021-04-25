@@ -6,7 +6,7 @@ import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
 import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
-import {Key} from "./Hotkeys/Key";
+import {UserHotkeyTrigger} from "./Hotkeys/UserHotkeyTrigger";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -80,7 +80,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
             buttonRef.current?.blur();
     }, [action, blurOnClick]);
 
-    const handlePress = React.useCallback((e, keys, data) => {
+    const handlePress = React.useCallback((e, hotkey, data) => {
         const id = data;
         const selected = Array.isArray(value) ? value?.includes(id) : (id === value);
         action(id, selected);
@@ -112,7 +112,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                                 imageData={imageData}
                             />
                             {HK && (
-                                <Key
+                                <UserHotkeyTrigger
                                     keys={(i + 1).toString()}
                                     data={id}
                                     onPress={handlePress}

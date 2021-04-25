@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as keyboardjs from "keyboardjs";
 import {NodeType} from "../../utils/consts";
+import {coordHelper} from "../Area/canvasPosition.servise";
 
 export interface KeyProps {
     keys: string | string[]
@@ -20,11 +21,12 @@ export interface KeyState {
 
 export const INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE = 'data-hotkeys';
 
-export class Key extends React.PureComponent<KeyProps, KeyState> {
+export class AppHotkeyTrigger extends React.PureComponent<KeyProps, KeyState> {
 
     handlePress = e => {
         const activeElement = document.activeElement;
-        console.log(this.props);
+        console.log(this.props, e);
+
         if (activeElement.nodeName === NodeType.Input
             && (!document.activeElement.getAttribute(INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE)
                 || this.props.keys.length === 1)
@@ -39,6 +41,7 @@ export class Key extends React.PureComponent<KeyProps, KeyState> {
 
     handleRelease = e => {
         const activeElement = document.activeElement;
+
         if (activeElement.nodeName === NodeType.Input
             && (!document.activeElement.getAttribute(INPUT_WITH_HOTKEYS_DATA_ATTRIBUTE)
                 || this.props.keys.length === 1)

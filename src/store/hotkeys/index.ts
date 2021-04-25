@@ -24,7 +24,10 @@ export interface HotkeyValue {
     label: string
     labelFormatter?: LabelFormatter
     labelData: string
+
     key: string
+    code: string
+
     controlType: HotkeyControlType
     onRelease: boolean
 }
@@ -53,6 +56,7 @@ export const hotkeysReducer = handleActions<HotkeysState>({
                 ...state.keys,
                 [action.path]: {
                     key: action.key,
+                    code: action.code,
                     path: action.path,
                     controlType: action.controlType,
                     // onRelease: true,
@@ -123,6 +127,7 @@ export const hotkeysReducer = handleActions<HotkeysState>({
 export interface HotkeyAction extends Action {
     path: string
     key?: string
+    code?: string
     label?: string
     labelFormatter?: LabelFormatter
     labelData?: any[]
@@ -132,6 +137,7 @@ export interface HotkeyAction extends Action {
 
 export interface HotkeyUpdateData {
     key?: string
+    code?: string
     name?: string
     onRelease?: boolean
 }
@@ -143,6 +149,7 @@ export interface HotkeyUpdateAction extends Action {
 
 export interface AddHotkeyOptions {
     path: string,
+    code: string,
     key: string,
     controlType?: HotkeyControlType,
     label?: string,
@@ -153,6 +160,7 @@ export interface AddHotkeyOptions {
 export const addHotkey = (options: AddHotkeyOptions): HotkeyAction => {
     const {
         path,
+        code,
         key,
         controlType,
         label,
@@ -163,6 +171,7 @@ export const addHotkey = (options: AddHotkeyOptions): HotkeyAction => {
     return {
         type: EHotkeysAction.ADD,
         path,
+        code,
         key,
         label,
         labelFormatter,

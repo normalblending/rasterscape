@@ -1,7 +1,7 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {Key} from "./Key";
+import {AppHotkeyTrigger} from "./AppHotkeyTrigger";
 import {redo, undo} from "../../store/patterns/history/actions";
 import {settingMode} from "../../store/hotkeys";
 import {setFullScreen} from "../../store/fullscreen";
@@ -201,52 +201,52 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
 
     return (
         <>
-            <Key
+            <AppHotkeyTrigger
                 keys={['command + z', 'ctrl + z']}
                 onPress={handleUndo}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['command + shift + z', 'ctrl + shift + z']}
                 onPress={handleRedo}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + k', 'alt + k']}
                 onPress={toggleHotkeys}
             />
-            {/*<Key*/}
+            {/*<AppHotkeyTrigger*/}
             {/*    keys={['option + f', 'alt + f']}*/}
             {/*    onPress={toggleFullscreen}*/}
             {/*/>*/}
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + w', 'alt + w']}
                 onPress={handleToggleDemonstration}
             />
-            <Key
+            <AppHotkeyTrigger
                 // keys={['alt + 5']}
                 keys={['option + o', 'alt + o']}
                 onPress={handleToggleOptimization}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['backspace', 'del']}
                 onPress={handleDeleteSelected}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + d', 'alt + d']}
                 onPress={handleClearSelection}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + a', 'alt + a']}
                 onPress={handleSelectAll}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + s', 'alt + s']}
                 onPress={handleSave}
             />
-            <Key
+            <AppHotkeyTrigger
                 keys={['option + c', 'alt + c']}
                 onPress={handleCopy}
             />
-            {/*<Key*/}
+            {/*<AppHotkeyTrigger*/}
             {/*    keys={[*/}
             {/*        ...'123456789'.split('').map(n => 'option + ' + n),*/}
             {/*        ...'123456789'.split('').map(n => 'alt + ' + n),*/}

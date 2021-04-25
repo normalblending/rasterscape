@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
-import {Key} from "../../../../Hotkeys/Key";
+import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
 import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
@@ -518,12 +518,13 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                     changeFunction={changeFunction}
                 />}
 
-                {shortcut &&
-                <Key
-                    name={otherProps.name}
-                    keys={shortcut}
-                    onPress={this.handlePress}
-                    onRelease={this.handleRelease}/>}
+                {/*{shortcut &&*/}
+                {/*<UserHotkeyTrigger*/}
+                {/*    path={path}*/}
+                {/*    name={otherProps.name}*/}
+                {/*    keys={shortcut}*/}
+                {/*    onPress={this.handlePress}*/}
+                {/*    onRelease={this.handleRelease}/>}*/}
                 <canvas
                     width={width}
                     height={20}

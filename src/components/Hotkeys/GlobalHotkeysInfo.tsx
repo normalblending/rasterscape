@@ -61,7 +61,7 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
             </Item>
 
             {/*<Item desc={t('globalHotkeys.patternGoTo')}>*/}
-            {/*    <Key big value={ALT_KEY} /><Plus/><Key digits value={'1..9'} />*/}
+            {/*    <UserHotkeyTrigger big value={ALT_KEY} /><Plus/><UserHotkeyTrigger digits value={'1..9'} />*/}
             {/*</Item>*/}
 
 
@@ -90,9 +90,9 @@ const GlobalHotkeysComponent: React.FC<GlobalHotkeysProps> = (props) => {
             {/*<Item*/}
             {/*    desc={'новый паттерн'}*/}
             {/*>*/}
-            {/*    <Key big value={CMD_KEY} />*/}
+            {/*    <UserHotkeyTrigger big value={CMD_KEY} />*/}
             {/*    <Plus/>*/}
-            {/*    <Key value={'n'}/>*/}
+            {/*    <UserHotkeyTrigger value={'n'}/>*/}
             {/*</Item>*/}
         </div>
     );

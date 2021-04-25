@@ -2,12 +2,13 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
 import * as classNames from 'classnames';
-import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
+import {UserHotkeyInput} from "../../../../Hotkeys/UserHotkeyInput";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
-import {Key} from "../../../../Hotkeys/Key";
+import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
 import './styles.scss';
 import {CycledToggle, CycledToggleImperativeHandlers, CycledToggleProps} from "../../simple/CycledToggle";
+import {HKLabelTypes} from "../types";
 
 export interface CycledToggleHKStateProps {
     hotkey: HotkeyValue
@@ -19,9 +20,8 @@ export interface CycledToggleHKActionProps {
     addHotkey: typeof addHotkey
 }
 
-export interface CycledToggleHKOwnProps extends CycledToggleProps {
+export interface CycledToggleHKOwnProps extends CycledToggleProps, HKLabelTypes {
     path: string
-    hkLabel?: string
 }
 
 export interface CycledToggleHKProps extends CycledToggleHKStateProps, CycledToggleHKActionProps, CycledToggleHKOwnProps, WithTranslation {
@@ -46,6 +46,15 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
         ...buttonProps
     } = props;
 
+    const hkLabelProps = {
+        hkLabel,
+        hkLabelFormatter,
+        hkData0,
+        hkData1,
+        hkData2,
+        hkData3,
+    };
+
     const {
         value,
         name,
@@ -59,18 +68,18 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
 
     const buttonRef = React.useRef<CycledToggleImperativeHandlers>();
 
-    const handleShortcutChange = React.useCallback((shortcut, e) => {
-        if (shortcut === null || shortcut.length === 1) {
-            addHotkey({
-                path,
-                key: shortcut,
-                controlType: HotkeyControlType.Cycled,
-                label: hkLabel || path,
-                labelFormatter: hkLabelFormatter,
-                labelData: [hkData0, hkData1, hkData2, hkData3]
-            });
-        }
-    }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, path, hkData0, hkData1, hkData2, hkData3]);
+    // const handleShortcutChange = React.useCallback((shortcut, e) => {
+    //     if (shortcut === null || shortcut.length === 1) {
+    //         addHotkey({
+    //             path,
+    //             key: shortcut,
+    //             controlType: HotkeyControlType.Cycled,
+    //             label: hkLabel || path,
+    //             labelFormatter: hkLabelFormatter,
+    //             labelData: [hkData0, hkData1, hkData2, hkData3]
+    //         });
+    //     }
+    // }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, path, hkData0, hkData1, hkData2, hkData3]);
 
     const handlePress = React.useCallback((e) => {
 
@@ -104,22 +113,25 @@ const CycledToggleHKComponent: React.FC<CycledToggleHKProps> = (props) => {
                 ref={buttonRef}
                 {...buttonProps} />
             {settingMode && (
-                <ShortcutInput
+                <UserHotkeyInput
+                    path={path}
+                    type={HotkeyControlType.Cycled}
                     autoblur={buttonProps.autoblur}
                     autofocus={buttonProps.autofocus}
-                    placeholder={t('buttonNumberCF.hotkey')}
-                    value={hotkey?.key}
-                    onChange={handleShortcutChange}
+                    {...hkLabelProps}
                 />
             )}
             {!settingMode && hotkey?.key && (
                 <div className={'hotkey-key'}>{hotkey?.key}</div>
             )}
-            <Key
-                keys={hotkey?.key}
+            {path &&
+            <UserHotkeyTrigger
+                // keys={hotkey?.code}
+                path={path}
                 onRelease={handleRelease}
                 onPress={handlePress}
             />
+            }
         </div>
     );
 };

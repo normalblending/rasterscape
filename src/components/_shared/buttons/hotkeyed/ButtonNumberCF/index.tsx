@@ -14,7 +14,7 @@ import {
 import {toStartValue} from "store/change/actions";
 import "./styles.scss";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
-import {ShortcutInput} from "../../../../Hotkeys/ShortcutInput";
+import {UserHotkeyInput} from "../../../../Hotkeys/UserHotkeyInput";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
 import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
@@ -24,6 +24,8 @@ import {SelectButtonsEventData} from "../../complex/SelectButtons";
 import {setCFHighlights, setCFTypeHighlights} from "../../../../../store/changeFunctionsHighlights";
 import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
 import {Translations} from "../../../../../store/language/helpers";
+import {HKLabelTypes} from "../types";
+import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: ChangeFunctionState[]
@@ -56,9 +58,8 @@ export interface ButtonNumberCFActionProps {
     setCFTypeHighlights(cfType?: ECFType[])
 }
 
-export interface ButtonNumberCFOwnProps extends ButtonNumberProps {
+export interface ButtonNumberCFOwnProps extends ButtonNumberProps, HKLabelTypes {
     path: string
-    hkLabel?: string
     buttonWrapper?
     withoutCF?: boolean
 }
@@ -88,6 +89,15 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         hkData0, hkData1, hkData2, hkData3,
         highlightedPath,
     } = props;
+
+    const hkLabelProps = {
+        hkLabel,
+        hkLabelFormatter,
+        hkData0,
+        hkData1,
+        hkData2,
+        hkData3,
+    };
 
     const {
         changeFunction,
@@ -158,19 +168,19 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         setActive(false);
         onRelease?.(e);
     }, [activateValueChanging, path, onRelease]);
-
-    const handleShortcutChange = React.useCallback((shortcut) => {
-        if (shortcut === null || shortcut.length === 1) {
-            addHotkey({
-                path,
-                key: shortcut,
-                controlType: HotkeyControlType.Number,
-                label: hkLabel || path,
-                labelFormatter: hkLabelFormatter,
-                labelData: [hkData0, hkData1, hkData2, hkData3]
-            });
-        }
-    }, [addHotkey, path, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3, path]);
+    //
+    // const handleShortcutChange = React.useCallback((shortcut) => {
+    //     if (shortcut === null || shortcut.length === 1) {
+    //         addHotkey({
+    //             path,
+    //             key: shortcut,
+    //             controlType: HotkeyControlType.Number,
+    //             label: hkLabel || path,
+    //             labelFormatter: hkLabelFormatter,
+    //             labelData: [hkData0, hkData1, hkData2, hkData3]
+    //         });
+    //     }
+    // }, [addHotkey, path, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3, path]);
 
 
     const handleCFMouseEnter = React.useCallback((data: SelectButtonsEventData) => {
@@ -205,13 +215,21 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     const buttonNumberRef = React.useRef(null);
 
+    const handlePressHotkey = React.useCallback((...args) => {
+        buttonNumberRef.current.handlePress(...args);
+    }, [buttonNumberRef]);
+
+    const handleReleaseHotkey = React.useCallback((...args) => {
+        buttonNumberRef.current.handleRelease(...args);
+    }, [buttonNumberRef]);
+
     const button = (
         <>
             <ButtonNumber
                 ref={buttonNumberRef}
                 {...othersButtonNumberProps}
 
-                shortcut={hotkey?.key}
+                shortcut={hotkey?.code}
                 hotkeyDisabled={settingMode}
 
                 className={buttonClassName}
@@ -230,13 +248,20 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                 onRelease={handleRelease}
             />
             {settingMode && (
-                <ShortcutInput
+                <UserHotkeyInput
+                    path={path}
+                    type={HotkeyControlType.Number}
                     autoblur={othersButtonNumberProps.autoblur}
                     autofocus={othersButtonNumberProps.autofocus}
-                    placeholder={t('buttonNumberCF.hotkey')}
-                    value={hotkey?.key}
-                    onChange={handleShortcutChange}/>
+                    {...hkLabelProps}
+                />
             )}
+            {path &&
+            <UserHotkeyTrigger
+                path={path}
+                onPress={handlePressHotkey}
+                onRelease={handleReleaseHotkey}/>
+            }
             {!settingMode && hotkey?.key && (
                 <div className={'hotkey-key'}>{hotkey?.key}</div>
             )}
