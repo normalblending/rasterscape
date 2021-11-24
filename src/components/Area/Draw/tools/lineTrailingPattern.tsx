@@ -81,7 +81,7 @@ export const lineTrailingPattern = function () {
                 && destinationPattern?.rotation?.value?.rotateDrawAreaElement
                     ? destinationPattern?.rotation?.value : null;
 
-            const linePatternImage = patternValues.values[linePattern?.id];
+            const linePatternImage = patternValues.values[linePattern?.id]?.current;
 
             if (!linePatternImage) return
 
@@ -203,13 +203,12 @@ export const lineTrailingPattern = function () {
             cursors: ({x, y, outer}) => {
 
                 const pattern = destinationPattern;
-                const {patternSize} = toolParams;
+                const {patternSize} = toolParams as LineParams;
 
                 const patternRotation = (pattern.config.rotation && pattern.rotation.value.rotateDrawAreaElement) ? pattern.rotation.value : null;
-                ;
 
                 const lineRotation = linePattern?.config?.rotation ? linePattern?.rotation?.value : null;
-                const linePatternImage = patternValues.values[linePattern?.id];
+                const linePatternImage = patternValues.values[linePattern?.id]?.current;
 
                 const width = patternSize * (linePatternImage?.width);
                 const height = patternSize * (linePatternImage?.height);

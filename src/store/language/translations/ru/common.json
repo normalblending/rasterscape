@@ -15,6 +15,8 @@
     "brushType": "тип кисти",
     "circle": "круг",
     "square": "квадрат",
+    "shape": "форма",
+    "select": "выдел-е",
     "pattern": "паттерн"
   },
   "brush": {
@@ -57,6 +59,10 @@
       "size": "кисть | размер",
       "patternSize": "кисть | размер паттерна",
       "opacity": "кисть | прозрачность",
+      "shape": {
+        "size": "кисть | форма | размер",
+        "opacity": "кисть | форма | прозрачность"
+      },
       "compositeOperations": {
         "source-over": "кисть | режим наложения | обычный",
         "destination-out": "кисть | режим наложения | ластик",
@@ -186,6 +192,7 @@
     "points": "точки"
   },
   "select": {
+    "autoReset": "автосброс",
     "curveType": {
       "curveBasis": "базовая",
       "curveBundle": "пакет",
@@ -200,6 +207,7 @@
       "curveStepAfter": "ступ. после"
     },
     "hotkeysDescription": {
+      "autoReset": "выделение | автосброс",
       "mode": {
         "Line": "выделение | линия",
         "Rect": "выделение | прямоугольник",
@@ -241,7 +249,8 @@
       "time": {
         "sin": "синус",
         "saw": "пила",
-        "noise": "шум"
+        "noise": "шум",
+        "draw": "массив"
       },
       "xy": {
         "parab": "холм",
@@ -265,13 +274,33 @@
       "type": {
         "sin": "синус",
         "saw": "пила",
-        "noise": "шум"
+        "noise": "шум",
+        "draw": "массив"
+      },
+      "draw": {
+        "type": {
+          "stretch": "от/до",
+          "center": "центр"
+        },
+        "center": {
+          "loop": "цикл"
+        },
+        "stretch": {
+          "loop": "цикл"
+        }
       }
     },
     "xy": {
       "type": {
         "parab": "холм",
-        "sis2": "волны"
+        "sis2": "волны",
+        "array": "массив"
+      },
+      "array": {
+        "type": {
+          "x": "x",
+          "y": "y"
+        }
       }
     },
     "hotkeysDescription": {
@@ -468,6 +497,7 @@
     "enter": "войти",
     "draw": "рисовать",
     "chat": "писать",
+    "connecting": "подключение",
     "hotkeysDescription": {
       "draw": "паттерн{{data1}} | команата | рисовать"
     }
@@ -486,7 +516,9 @@
     "pattern": "паттерн",
     "clear": "очистить",
     "autofocus": "автофокус",
-    "autoblur": "автоблюр"
+    "autoblur": "автоблюр",
+    "sec": "с",
+    "milliSec": "мс"
   },
   "globalHotkeys": {
     "hk": "k",
@@ -494,6 +526,7 @@
     "patternGoTo": "перейти к паттерну",
     "fullscreen": "на весь экран",
     "hotkeys": "показать/скрыть настройки управления",
+    "hotkeyInvert": "переключить режим срабатывания горячей клавиши нажатие/отпускание",
     "patternWindow": "открыть паттерн в окне",
     "selectAll": "выделить все",
     "selectClear": "снять выделение",

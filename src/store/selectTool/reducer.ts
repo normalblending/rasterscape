@@ -1,9 +1,9 @@
 import {handleActions} from "redux-actions";
 import {SetSelectToolParamsAction, SelectToolParams, CurveValueName} from "./types";
 import {ESelectToolAction} from "./actions";
-import {ParamConfig} from "../../components/_shared/Params";
 import {ECurveType, ESelectionMode} from "./types";
 import {getSelectToolParamsConfig} from "./helpers";
+import {ParamConfig} from "../../components/_shared/Params.types";
 
 export interface SelectToolState {
     params: SelectToolParams
@@ -28,7 +28,8 @@ export const selectToolReducer = handleActions<SelectToolState>({
         curveType: ECurveType.CurveLinear,
         [CurveValueName[ECurveType.CurveBundle]]: 0,
         [CurveValueName[ECurveType.CurveCardinal]]: 1,
-        [CurveValueName[ECurveType.CurveCatmullRom]]: 1
+        [CurveValueName[ECurveType.CurveCatmullRom]]: 1,
+        autoReset: false,
     },
     paramsConfig: getSelectToolParamsConfig(),
 });

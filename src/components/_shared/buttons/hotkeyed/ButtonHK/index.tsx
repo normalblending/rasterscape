@@ -1,27 +1,29 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
-import {Button, ButtonProps} from "bbuutoonnss";
-import {UserHotkeyInput} from "../../../../Hotkeys/UserHotkeyInput";
-import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {addHotkey, highlightHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
-import {ButtonSelect, ButtonSelectEventData, ButtonSelectProps} from "../../simple/ButtonSelect";
+import {highlightHotkey} from "../../../../../store/hotkeys/actions";
+import {
+    ButtonSelect,
+    ButtonSelectEventData,
+    ButtonSelectimperativeHandlers,
+    ButtonSelectProps
+} from "../../simple/ButtonSelect";
 import * as classNames from 'classnames';
-import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
+import {ButtonHotkeyTrigger} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyTrigger";
 import './styles.scss';
-import {homedir} from "os";
-import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
-import {HKLabelTypes} from "../types";
+import {HKLabelProps} from "../types";
+import {ButtonHotkeyInputs} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyInputs";
+import {useRef} from "react";
+import {HotkeyControlType} from "../../../../../store/hotkeys/types";
 
 export interface ButtonHKStateProps {
-    hotkey: HotkeyValue
+    isHotkeyed: boolean
     settingMode: boolean
     highlightedPath: string
 }
 
 export interface ButtonHKActionProps {
-    addHotkey: typeof addHotkey
     highlightHotkey: typeof highlightHotkey
 }
 
@@ -29,8 +31,9 @@ export interface ButtonHKEventData {
     path?: string
 }
 
-export interface ButtonHKOwnProps extends ButtonSelectProps, HKLabelTypes {
+export interface ButtonHKOwnProps extends ButtonSelectProps, HKLabelProps {
     path?: string
+    maxKeysCount?: number
     containerClassName?: string
 
     onClick?(data?: ButtonSelectEventData)
@@ -52,10 +55,10 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     const {
         t,
-        hotkey,
-        addHotkey,
+        isHotkeyed,
         highlightHotkey,
         path,
+        maxKeysCount,
         settingMode,
         containerClassName,
         highlightedPath,
@@ -84,63 +87,28 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     const [pressed, setPressed] = React.useState(false);
 
-    const isOnRelease = hotkey?.onRelease;
+    const buttonRef = useRef<ButtonSelectimperativeHandlers>(null);
 
-    const {
-        disabled,
-        value,
-        name,
-        selected,
-    } = buttonProps
-    //
-    // const handleShortcutChange = React.useCallback((shortcut, e) => {
-    //     if (shortcut === null || shortcut.length === 1) {
-    //         addHotkey({
-    //             path,
-    //             key: shortcut,
-    //             controlType: HotkeyControlType.Button,
-    //             label: hkLabel || path,
-    //             labelFormatter: hkLabelFormatter,
-    //             labelData: [hkData0, hkData1, hkData2, hkData3]
-    //         });
-    //     }
-    // }, [addHotkey, path, settingMode, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3]);
+    const handleHotkeyTrigger = React.useCallback((e, _, __, isRelease) => {
+        console.log('ButtonHK trigger', path);
+        buttonRef.current?.click(e);
+
+        !isRelease && setTimeout(setPressed, 200, false);
+
+    }, [setPressed, buttonRef, path]);
 
     const handlePress = React.useCallback((e) => {
 
         setPressed(true);
-
-        if (settingMode || disabled || isOnRelease)
-            return;
-
-        onClick && onClick({
-            e,
-            value,
-            name,
-            selected
-        });
-
-        setTimeout(setPressed, 200, false);
-
-    }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
+    }, [setPressed]);
 
     const handleRelease = React.useCallback((e) => {
-
-        if (settingMode || disabled || !isOnRelease)
-            return;
-
-        onClick && onClick({
-            e,
-            value,
-            name,
-            selected
-        });
-
         setPressed(false);
 
-    }, [onClick, value, name, selected, settingMode, disabled, isOnRelease]);
+    }, [setPressed]);
 
     const handleClick = React.useCallback((data) => {
+        console.log('ButtonHK handleClick', {...data, path})
         onClick?.({...data, path})
     }, [path, onClick]);
 
@@ -162,9 +130,10 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
 
     return (
         <div className={classNames('hotkey-button', {
-            ['hotkey-highlighted']: highlightedPath === hotkey?.path
+            // ['hotkey-highlighted']: highlightedPath === path
         }, containerClassName)}>
             <ButtonSelect
+                ref={buttonRef}
                 onClick={handleClick}
                 onMouseDown={handleMouseDown}
                 onMouseUp={handleMouseUp}
@@ -172,33 +141,33 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
                 onMouseLeave={handleMouseLeave}
                 {...buttonProps}
                 pressed={pressed}/>
-            {settingMode && path && (
-                <UserHotkeyInput
-                    path={path}
-                    type={HotkeyControlType.Button}
-                    autoblur={buttonProps.autoblur}
-                    autofocus={buttonProps.autofocus}
-                    {...hkLabelProps}
-                />
-            )}
-            {!settingMode && hotkey?.key && (
-                <div className={'hotkey-key'}>{hotkey?.key}</div>
-            )}
-
             {path && (
-                <UserHotkeyTrigger
-                    path={path}
-                    // keys={hotkey?.code}
-                    onRelease={handleRelease}
-                    onPress={handlePress}
-                />
+                <>
+                    <ButtonHotkeyInputs
+                        maxKeysCount={maxKeysCount}
+                        path={path}
+                        type={HotkeyControlType.Cycled}
+                        autoblur={buttonProps.autoblur}
+                        autofocus={buttonProps.autofocus}
+                        {...hkLabelProps}
+                    />
+                    {isHotkeyed && (
+                        <ButtonHotkeyTrigger
+                            // debug
+                            path={path}
+                            onRelease={handleRelease}
+                            onEveryPress={handlePress}
+                            onTrigger={handleHotkeyTrigger}
+                        />
+                    )}
+                </>
             )}
         </div>
     );
 };
 
 const mapStateToProps: MapStateToProps<ButtonHKStateProps, ButtonHKOwnProps, AppState> = (state, {path}) => ({
-    hotkey: state.hotkeys.keys[path],
+    isHotkeyed: !!state.hotkeys.buttons[path],
     settingMode: state.hotkeys.setting,
     highlightedPath: state.hotkeys.highlightedPath,
     autoblur: state.hotkeys.autoblur,
@@ -206,7 +175,6 @@ const mapStateToProps: MapStateToProps<ButtonHKStateProps, ButtonHKOwnProps, App
 });
 
 const mapDispatchToProps: MapDispatchToProps<ButtonHKActionProps, ButtonHKOwnProps> = {
-    addHotkey,
     highlightHotkey,
 };
 

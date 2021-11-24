@@ -34,10 +34,10 @@ export enum SlitMode {
 
 
 export interface CaptureOptions {
+    patternId
     width?: number,
     height?: number,
     depth?: number,
-    patternId
     onNewFrame: (pixels, width, height) => any
     cutFunction: (x, y) => any
     edgeMode: EdgeMode,
@@ -149,7 +149,7 @@ export class Capture {
 
                     return this.updateImage();
                 } catch (e) {
-                    
+
                 }
             }
         });

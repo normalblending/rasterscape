@@ -7,7 +7,6 @@ export interface CanvasSVGProps {
     height?: number
     className?: string
     style?: any
-    currentScale?: number
 
     onDrag?(e: MouseEvent, pre: MouseEvent)
 
@@ -44,8 +43,6 @@ export class SVG extends React.PureComponent<CanvasSVGProps, CanvasSVGState> {
         document.addEventListener("mouseup", this.mouseUpHandler);
         this.elementRef.current.addEventListener("mousemove", this.mouseMoveHandler);
     }
-
-    // selectToolHandlers
 
     private mouseDownHandler = e => {
         this.setState({dragging: true});

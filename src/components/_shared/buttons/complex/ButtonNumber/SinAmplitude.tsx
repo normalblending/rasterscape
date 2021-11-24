@@ -17,7 +17,7 @@ export const SinAmplitudeComponent: React.FC<SinAmplitudeProps> = ({t, changeFun
             className={"button-number-amplitude"}
             style={{
                 width: ampWidth * 100 + "%",
-                left: `calc(${(Math.max(startVPerc - params.a, 0)) * 100}%)`
+                left: `${(Math.max(startVPerc - params.a, 0)) * 100}%`
             }}>
                     <span>
                     {Translations.cf(t)(changeFunction)}

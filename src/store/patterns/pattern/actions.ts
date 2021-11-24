@@ -1,35 +1,27 @@
 import {
     EditPatternConfigAction,
     PatternConfig,
+    PatternState,
     SetPatternHeightAction,
-    SetPatternWidthAction, UpdateOptions,
-    UpdatePatternImageAction
+    SetPatternWidthAction,
+    UpdateOptions,
 } from "./types";
 import {AppState} from "../../index";
-import {ThunkResult} from "../../../utils/actions/types";
-import {copyImageData, imageDataToBase64, imageDataToCanvas} from "../../../utils/canvas/helpers/imageData";
+import {copyImageData} from "../../../utils/canvas/helpers/imageData";
 import {addPattern} from "../actions";
 import {getPatternConfig, getPatternParams} from "./helpers";
 import * as StackBlur from 'stackblur-canvas';
 import {sendImage} from "../room/actions";
 import {ThunkAction} from 'redux-thunk'
-import {setSize, setVideoHeight, setVideoWidth} from "../video/actions";
+import {setVideoHeight, setVideoWidth} from "../video/actions";
 import {patternValues} from "../values";
 import {copyToClipboard} from "../../../utils/clipboard";
-import {getSelectedImageData} from "../selection/helpers";
-import {coordHelper5} from "../../../components/Area/canvasPosition.servise";
-
-export enum EPatternAction {
-    UPDATE_IMAGE = "pattern/update-image",
-
-    EDIT_CONFIG = "pattern/edit-config",
-
-    SET_WIDTH = "pattern/set-width",
-    SET_HEIGHT = "pattern/set-height",
-}
+import {EPatternAction} from "./consts";
+import {getMaskFromSegments} from "../selection/helpers";
+import {updateSelectionImage} from "../selection/actions";
 
 export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePatternImageAction, AppState> =>
-    (dispatch, getState) => {
+    (dispatch, getState: () => AppState) => {
 
         const {
             id,
@@ -40,6 +32,7 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
         } = options;
 
         const pattern = getState().patterns[id];
+        const tool = getState().tool.current;
 
         if (!pattern)
             return;
@@ -61,10 +54,14 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
             }
         }
 
-
         dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id, noHistory});
 
-        return emit && dispatch(sendImage(id));
+        //отправка в сокет еслинужно
+        emit && dispatch(sendImage(id));
+
+        //обновление изображения выделения
+        dispatch(updateSelectionImage(id));
+
     };
 export const editConfig = (id: string, config: PatternConfig): EditPatternConfigAction =>
     ({type: EPatternAction.EDIT_CONFIG, id, config});
@@ -94,8 +91,10 @@ export const copyPatternToClipboard = (id: string) => async (dispatch, getState:
 
 
     (pattern.selection.value.segments.length
-            ? imageDataToCanvas(getSelectedImageData(pattern, pattern.config.mask))
-            : patternValues.values[id]
+            // ? patternValues.values[id]?.selected//
+            // ? imageDataToCanvas(getSelectedImageData(pattern, pattern.config.mask))
+            ? patternValues.values[id]?.selected
+            : patternValues.values[id]?.current
     ).toBlob((blob) => {
         copyToClipboard(blob);
     });

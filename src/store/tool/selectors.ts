@@ -9,7 +9,7 @@ export const toolTypeSelector =
         (state: AppState) => state.tool.current,
         (state: AppState) => ({
             [EToolType.Line]: state.line.params.type,
-            [EToolType.Brush]: state.brush.params.type
+            [EToolType.Brush]: state.brush.params.brushType
         }),
         (tool, toolTypes) =>
             toolTypes[tool]
@@ -20,7 +20,7 @@ export const toolParamsSelector =
         (state: AppState) => state.tool.current,
         (state: AppState) => ({
             [EToolType.Line]: state.line.params,
-            [EToolType.Brush]: state.brush.params
+            [EToolType.Brush]: state.brush.params.paramsByType[state.brush.params.brushType]
         }),
         (tool, toolsParams) =>
             toolsParams[tool]
@@ -31,5 +31,5 @@ export const toolPatternSelector =
         toolParamsSelector,
         (state: AppState) => state.patterns,
         (toolParams, patterns) =>
-            toolParams ? patterns[toolParams.pattern] : null
+            toolParams?.['patternId'] ? patterns[toolParams['patternId']] : null
     );

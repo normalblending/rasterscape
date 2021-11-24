@@ -9,7 +9,6 @@ import {
 import * as classNames from "classnames";
 import "./styles.scss";
 import {Button, ButtonImperativeHandlers} from "components/_shared/buttons/simple/Button";
-import {HoverHideable} from "../../../HoverHideable/HoverHideable";
 
 export interface SelectDropProps extends SelectButtonsProps {
     open?: boolean

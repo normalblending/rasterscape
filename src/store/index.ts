@@ -1,4 +1,5 @@
 import {createStore, combineReducers, applyMiddleware, compose} from "redux";
+import {useDispatch as useReduxDispatch, useSelector as useReduxSelector, TypedUseSelectorHook} from "react-redux";
 import logger from 'redux-logger';
 import thunk from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
@@ -17,7 +18,6 @@ import {colorReducer, ColorState} from "./color/reducer";
 import {changeReducer} from "./change/reducer";
 import {fullscreenReducer, FullScreenState} from "./fullscreen";
 import {languageReducer, LanguageState} from "./language";
-import {hotkeysReducer, HotkeysState} from "./hotkeys";
 import {PatternsState} from "./patterns/types";
 import {ChangeFunctionState, ECFType} from "./changeFunctions/types";
 import {tutorialReducer, TutorialState} from "./tutorial";
@@ -25,6 +25,8 @@ import {changeFunctionHighlightsReducer, ChangeFunctionHighlightsState} from "./
 import {activePatternReducer, ActivePatternState} from "./activePattern";
 import {optimizationReducer, OptimizationState} from "./optimization";
 import {positionReducer, PositionState} from "./position";
+import {HotkeysState} from "./hotkeys/types";
+import {hotkeysReducer} from "./hotkeys/reducer";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -130,4 +132,8 @@ export const store = createStore(
         persistState(['hotkeys']), //, 'changeFunctions'
     )
 );
+
 // export const store = createStore(rootReducer, applyMiddleware(thunk));
+
+// export const useDispatch = () => useReduxDispatch<typeof store.dispatch>();
+// export const useSelector: TypedUseSelectorHook<AppState> = useReduxSelector;

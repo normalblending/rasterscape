@@ -53,6 +53,8 @@ export interface ButtonImperativeHandlers {
     blur()
 
     getElement(): HTMLButtonElement
+
+    click(e)
 }
 
 export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
@@ -83,33 +85,22 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
 
     const buttonRef = React.useRef<HTMLButtonElement>(null);
 
-    React.useImperativeHandle(ref, () => ({
-        focus: () => {
-            buttonRef.current.focus();
-        },
-        blur: () => {
-            buttonRef.current.blur();
-        },
-        getElement: () => {
-            return buttonRef.current
-        }
-    }), [buttonRef]);
-
     const getButtonEventData = React.useCallback((e): ButtonEventData => {
         return {
             value, name, data, e
         }
     }, [value, name, data]);
 
-    const handleClick = React.useCallback(
-        e => {
-            if (disabled) return;
+    const handleClick = React.useCallback(e => {
 
-            onClick && onClick(getButtonEventData(e))
 
-            buttonRef.current.focus();
-        },
-        [disabled, onClick, getButtonEventData, buttonRef]);
+        console.log('Button handleClick', getButtonEventData(e));
+        if (disabled) return;
+
+        onClick && onClick(getButtonEventData(e))
+
+        buttonRef.current.focus();
+    }, [disabled, onClick, getButtonEventData, buttonRef]);
 
     const handleDoubleClick = React.useCallback(
         e => !disabled && onDoubleClick && onDoubleClick(getButtonEventData(e)),
@@ -162,6 +153,23 @@ export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHa
         [disabled, onFocus, getButtonEventData]);
 
     const style = React.useMemo(() => ({width, height}), [width, height]);
+
+    React.useImperativeHandle(ref, () => ({
+        focus: () => {
+            buttonRef.current.focus();
+        },
+        blur: () => {
+            buttonRef.current.blur();
+        },
+        getElement: () => {
+            return buttonRef.current
+        },
+        click: (e, ...args) => {
+
+            console.log('Button click', e, ...args);
+            return handleClick(e)
+        }
+    }), [buttonRef, handleClick]);
 
     return (
         <button

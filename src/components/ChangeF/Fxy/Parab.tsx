@@ -3,10 +3,11 @@ import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../../styles/XYParaboloidChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
-import {FxyType} from "../../../store/changeFunctions/functions/fxy";
+import {FxyType, ParabParams} from "../../../store/changeFunctions/functions/fxy";
 import {Paraboloid} from "../../_shared/canvases/WebWorkerCanvas";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
+import {FxyTypeComponentProps, FxyTypeComponentPropsWithTranslation} from "./types";
 
 export interface ParabCFProps {
     params: any
@@ -25,7 +26,7 @@ export interface ParabCFState {
 const seRange = [0, 1] as [number, number];
 const seValueD = ValueD.VerticalLinear(100);
 
-export class ParabCF extends React.PureComponent<ParabCFProps, ParabCFState> {
+export class ParabCF extends React.PureComponent<FxyTypeComponentProps<ParabParams>, ParabCFState> {
 
     handleParamChange = ({value, name}) => {
         this.props.onChange({...this.props.params, [name.split('.').reverse()[0]]: value}, this.props.name)

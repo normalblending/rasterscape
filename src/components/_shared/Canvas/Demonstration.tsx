@@ -1,16 +1,9 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps, Provider as ReduxProvider} from "react-redux";
 import {AppState, store} from "../../../store";
-import {Main} from "../../Main";
 import './demonstration.scss';
 import {setDemonstrationParams} from "../../../store/patterns/demonstration/actions";
-import {Button} from "../buttons/simple/Button";
-import {CycledToggle} from "../buttons/simple/CycledToggle";
-import {ButtonHK} from "../buttons/hotkeyed/ButtonHK";
-import {EdgeMode} from "../../../store/patterns/video/services";
-import {CycledToggleHK} from "../buttons/hotkeyed/CycledToggleHK";
 import {DemonstrationMode, DemonstrationParams} from "../../../store/patterns/demonstration/types";
-import {UserHotkeyTrigger} from "../../Hotkeys/UserHotkeyTrigger";
 
 export interface DemonstrationStateProps {
     demonstrationParams: DemonstrationParams

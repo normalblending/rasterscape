@@ -72,7 +72,7 @@ export const webWorkerCanvas = <ParamsType extends any>(workerPath: string): Rea
                     console.log(22222);
                 }
             };
-            return !throttled ? _throttle(post, 200) : post;
+            return !throttled ? _throttle(post, 100) : post;
         }, [throttled]);
 
 

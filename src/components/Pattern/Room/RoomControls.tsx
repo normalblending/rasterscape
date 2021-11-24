@@ -114,7 +114,7 @@ export class RoomControlsComponent extends React.PureComponent<RoomControlsProps
 
                         <div
                             className={'room-name'}>
-                            <span>{this.state.roomName}</span> {members ? <small>({members})</small> : <small>connecting...</small>}
+                            <span>{this.state.roomName}</span> {members ? <small>({members})</small> : <small>{t('room.connecting')}...</small>}
                         </div>
                         <ButtonHK
                             className={'room-delete'}

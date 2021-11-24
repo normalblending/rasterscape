@@ -8,9 +8,11 @@ import "./area.scss";
 import * as cn from 'classnames';
 import {RotationValue} from "../../store/patterns/rotating/types";
 import {Segments, SelectionParams, SelectionValue} from "../../store/patterns/selection/types";
+import {EBrushType} from "../../store/brush/types";
 
 export interface AreaStateProps {
     currentTool: EToolType
+    brushType: EBrushType
     selectUnable: boolean
 }
 
@@ -39,6 +41,7 @@ export interface AreaOwnProps {
     onDemonstrationUnload?()
 
     onEnterDraw?(e?)
+
     onLeaveDraw?(e?)
 }
 
@@ -106,6 +109,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
         const {
             mask,
             currentTool,
+            brushType,
             name,
             height,
             width,
@@ -133,11 +137,11 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                 })}
             >
                 <Draw
+                    patternId={name}
                     onEnterDraw={onEnterDraw}
                     onLeaveDraw={onLeaveDraw}
                     disabled={disabled}
                     mask={mask}
-                    patternId={name}
                     style={this.state.style}
                     rotation={rotation}
                     value={imageValue}
@@ -146,17 +150,20 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                     onChange={onImageChange}
                     demonstration={demonstration}
                     onDemonstrationUnload={onDemonstrationUnload}
-                />
-                <Selection
-                    style={this.state.style}
-                    isUnable={selectUnable}
-                    isActive={isSelectionTool}
-                    name={name}
-                    width={width}
-                    height={height}
-                    value={selectionValue}
-                    params={selectionParams}
-                    onChange={onSelectionChange}/>
+                >
+                    <Selection
+                        // style={this.state.style}
+                        isUnable={selectUnable}
+                        isActive={isSelectionTool}
+                        name={name}
+                        width={width}
+                        height={height}
+                        value={selectionValue}
+                        params={selectionParams}
+                        onChange={onSelectionChange}
+                        transparent={currentTool === EToolType.Brush && brushType === EBrushType.Select}
+                    />
+                </Draw>
                 {rotation?.changing && (
                     <>
                         <div
@@ -181,6 +188,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
 
 const mapStateToProps: MapStateToProps<AreaStateProps, AreaOwnProps, AppState> = (state, {name}) => ({
     currentTool: state.tool.current,
+    brushType: state.brush.params.brushType,
     selectUnable: false,//state.tool.current === EToolType.Line
 });
 

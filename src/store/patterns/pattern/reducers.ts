@@ -1,4 +1,3 @@
-import {EPatternAction} from "./actions";
 import {updatePatternState} from "../helpers";
 import {
     EditPatternConfigAction,
@@ -11,6 +10,7 @@ import {resizeImageData} from "../../../utils/canvas/helpers/imageData";
 import {reducePattern} from "./helpers";
 import {historyPush} from "../history/helpers";
 import {patternValues} from "../values";
+import {EPatternAction} from "./consts";
 
 export const patternReducers = {
     [EPatternAction.EDIT_CONFIG]: reducePattern<EditPatternConfigAction>(

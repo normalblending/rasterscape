@@ -23,6 +23,17 @@ export const brushCircle = function () {
         const pattern = targetPattern;
         const {size, opacity, compositeOperation} = toolParams as BrushParams;
 
+        if (targetPattern.current.imageData.width !== helperCanvas1.canvas.width ||
+            targetPattern.current.imageData.height !== helperCanvas1.canvas.height) {
+            helperCanvas1.canvas.width = targetPattern.current.imageData.width;
+            helperCanvas1.canvas.height = targetPattern.current.imageData.height;
+        }
+
+        if (targetPattern.current.imageData.width !== helperCanvas2.canvas.width ||
+            targetPattern.current.imageData.height !== helperCanvas2.canvas.height) {
+            helperCanvas2.canvas.width = targetPattern.current.imageData.width;
+            helperCanvas2.canvas.height = targetPattern.current.imageData.height;
+        }
         const circleBrush = (ev) => {
             const {ctx, e, rotation} = ev;
 

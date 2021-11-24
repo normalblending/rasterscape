@@ -1,13 +1,9 @@
-import {AddPatternAction, PatternConfig, PatternParams, RemovePatternAction} from "./pattern/types";
+import {AddPatternAction, PatternConfig, PatternParams} from "./pattern/types";
 import {leaveRoom} from "./room/actions";
+import {EPatternsAction} from "./consts";
 
 // TODO типы
 
-
-export enum EPatternsAction {
-    ADD_PATTERN = "patterns/add",
-    REMOVE_PATTERN = "patterns/remove",
-}
 
 export const addPattern = (config?: PatternConfig, params?: PatternParams): AddPatternAction =>
     ({type: EPatternsAction.ADD_PATTERN, config, params});

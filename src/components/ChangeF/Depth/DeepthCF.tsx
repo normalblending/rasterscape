@@ -1,5 +1,4 @@
 import * as React from "react";
-import {ParamConfig} from "../../_shared/Params";
 import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "./depthChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
@@ -15,11 +14,11 @@ import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
+import {ParamConfig} from "../../_shared/Params.types";
 
 export interface DepthCFStateProps {
     tutorial: boolean
     params: any
-    paramsConfig: ParamConfig[]
     functionParams: ChangeFunctionState
     patternsImageData: {
         [patternId: string]: ImageData
@@ -178,7 +177,6 @@ const mapStateToProps: MapStateToProps<DepthCFStateProps, DepthCFOwnProps, AppSt
     tutorial: state.tutorial.on,
     functionParams: state.changeFunctions.functions[name],
     params: state.changeFunctions.functions[name].params,
-    paramsConfig: state.changeFunctions.functions[name].paramsConfig,
     patternsImageData: state.changeFunctions.functions[name].params.items.reduce((res, {patternId}) => {
         res[patternId] = state.patterns[patternId]?.current.imageData;
         return res;

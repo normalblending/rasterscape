@@ -15,7 +15,7 @@ export interface PixelsItem {
 
 export class PixelsStack {
 
-    array: PixelsItem[];
+    array: PixelsItem[]; // todo нужно переписывать на TypeArray
     type: StackType;
     edgeMode: EdgeMode;
     size;
@@ -123,7 +123,7 @@ export class PixelsStack {
 
 
 export const get = (pixels, width, d, x, y) => {
-    const n = (x + y * width) * d;
+    const n = (x + y * width) * d; // d получается бесполезный параметр
     return pixels?.[n] !== undefined ? [
         pixels[n],
         pixels[n + 1],

@@ -1,5 +1,4 @@
 import {handleActions} from "redux-actions";
-import {EPatternsAction} from "./actions";
 import {createPatternInitialState, patternId, removePattern} from "./helpers";
 import {AddPatternAction, RemovePatternAction,} from "./pattern/types";
 import {PatternsState} from "./types";
@@ -15,6 +14,7 @@ import {videoReducers} from "./video/reducers";
 import {roomReducers} from "./room/reducers";
 import {blurReducers} from "./blur/reducers";
 import {demonstrationReducers} from "./demonstration/reducers";
+import {EPatternsAction} from "./consts";
 
 export const patternsReducer = handleActions<PatternsState>({
     [EPatternsAction.ADD_PATTERN]: (state: PatternsState, action: AddPatternAction) => {

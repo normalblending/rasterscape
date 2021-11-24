@@ -373,12 +373,11 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 disabled={!meDrawer}
 
                                 name={id}
+                                rotation={rotation}
+                                imageValue={imageValue}
+
                                 width={width}
                                 height={height}
-
-                                rotation={rotation}
-
-                                imageValue={imageValue}
 
                                 selectionValue={selection.value.segments}
                                 selectionParams={selection.params}
@@ -393,19 +392,20 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 <Area
 
                                     mask
+
                                     name={id}
                                     rotation={rotation}
                                     imageValue={maskValue}
 
+                                    width={width}
+                                    height={height}
+
                                     selectionValue={selection.value.segments}
                                     selectionParams={selection.params}
 
-                                    width={width}
-                                    height={height}
-                                    onSelectionChange={this.handleSelectionChange}
                                     onImageChange={this.handleMaskChange}
+                                    onSelectionChange={this.handleSelectionChange}
                                 >
-
                                     <MaskControls
                                         patternId={id}
                                     />

@@ -2,7 +2,6 @@ import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {ButtonSelect} from 'bbuutoonnss';
 import {AppState} from "../../store";
-import {ParamConfig} from "../_shared/Params";
 import {ELineType, LineParams} from "../../store/line/types";
 import {setLineParams} from "../../store/line/actions";
 import {createSelector} from "reselect";
@@ -17,6 +16,7 @@ import {PatternsSelect} from "../PatternsSelect";
 import {arrayToSelectItems} from "../../utils/utils";
 import {CycledToggleHK} from "../_shared/buttons/hotkeyed/CycledToggleHK";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
+import {ParamConfig} from "../_shared/Params.types";
 
 export interface LineStateProps {
     paramsConfigMap: {
@@ -40,7 +40,7 @@ export interface LineProps extends LineStateProps, LineActionProps, LineOwnProps
 }
 
 
-const sizeRange = [0, 200] as [number, number];
+const sizeRange = [0, 500] as [number, number];
 const opacityRange = [0, 1] as [number, number];
 
 const patternSizeValueText = value => (value * 100).toFixed(0) + '%';
@@ -72,7 +72,7 @@ class LineComponent extends React.PureComponent<LineProps> {
         const {setLineParams, paramsValue} = this.props;
         setLineParams({
             ...paramsValue,
-            pattern
+            patternId: pattern
         })
     };
 
@@ -219,7 +219,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                     <PatternsSelect
                         name={'linePattern'}
                         hkLabel={'line.pattern'}
-                        value={paramsValue.pattern}
+                        value={paramsValue.patternId}
                         onChange={this.handlePatternChange}
                     />
                 )}

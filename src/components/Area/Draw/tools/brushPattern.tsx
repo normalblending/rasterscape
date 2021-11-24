@@ -10,7 +10,7 @@ import {patternValues} from "../../../../store/patterns/values";
 import {Cursors} from "./cursors";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {DrawToolProps} from "./types";
-import {BrushParams} from "../../../../store/brush/types";
+import {BrushParams, BrushPatternParams} from "../../../../store/brush/types";
 
 export const brushPattern = function () {
 
@@ -25,7 +25,7 @@ export const brushPattern = function () {
             coordinates,
         } = drawToolProps;
 
-        const {patternSize, opacity, compositeOperation} = toolParams as BrushParams;
+        const {size: patternSize, opacity, compositeOperation} = toolParams as BrushPatternParams;
         const brushPattern = toolPattern;
         const destinationPattern = targetPattern;
 
@@ -58,7 +58,7 @@ export const brushPattern = function () {
                 destinationPattern?.rotation?.value?.rotateDrawAreaElement
             ) ? destinationPattern?.rotation?.value : null;
 
-            const brushPatternImage = patternValues.values[brushPattern?.id];
+            const brushPatternImage = patternValues.values[brushPattern?.id]?.current;
 
             if (!brushPatternImage) return;
 
@@ -127,7 +127,7 @@ export const brushPattern = function () {
 
                 const brushPattern = toolPattern;
                 const pattern = destinationPattern;
-                const {patternSize} = toolParams as BrushParams;
+                const {size: patternSize} = toolParams as BrushPatternParams;
 
                 const patternRotation = (
                     pattern?.config.rotation &&
@@ -135,7 +135,7 @@ export const brushPattern = function () {
                 ) ? pattern?.rotation?.value : null;
 
                 const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
-                const brushPatternImage = patternValues.values[brushPattern?.id];
+                const brushPatternImage = patternValues.values[brushPattern?.id]?.current;
 
                 const width = patternSize * (brushPatternImage?.width);
                 const height = patternSize * (brushPatternImage?.height);

@@ -69,7 +69,7 @@ export const lineSolidPattern = function () {
 
                 const newPrevPoints = {};
 
-                const linePatternImage = patternValues.values[linePattern?.id];
+                const linePatternImage = patternValues.values[linePattern?.id]?.current;
 
                 if (!linePatternImage || !linePattern) return;
 
@@ -94,7 +94,7 @@ export const lineSolidPattern = function () {
                             canvases[index] = createCanvas(width, height);
 
 
-                            const context = canvases[index].context;
+                            const context = canvases[index]?.context;
 
                             if (!context) return;
 
@@ -107,7 +107,9 @@ export const lineSolidPattern = function () {
                     coordinates
                         .forEach(({x, y, id: index}) => {
 
-                            const context = canvases[index].context;
+                            const context = canvases[index]?.context;
+                            if (!context) return;
+
                             canvases[index].clear();
 
                             newPrevPoints[index] = {x, y};
@@ -115,7 +117,7 @@ export const lineSolidPattern = function () {
                             context.lineWidth = size;
                             context.lineJoin = join;
                             context.lineCap = cap;
-                            context.globalAlpha = opacity;
+                            context.globalAlpha = size ? opacity : 0; // нулеввой размер почему то не устанавливается
 
                             context.strokeStyle = getPatternStrokeStyle(ctx, x, y, patternSize, linePattern, linePatternImage, patternMouseCentered);
 

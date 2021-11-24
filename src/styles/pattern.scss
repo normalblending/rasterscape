@@ -5,7 +5,11 @@
   align-items: flex-end;
   padding-bottom: 80px;
   box-sizing: border-box;
-  border-left: 1px solid rgba(0, 0, 0, .07);
+  //border-left: 1px solid rgba(0, 0, 0, .07);
+  border-left: 1px solid #dfdede;
+  /* border-right: 1px solid rgb(196 196 196); */
+  box-shadow: -1px 0 0 #b8b8b8, 1px 0 0 #dfdede;
+
   padding-right: 77vw;
   & > * {
     z-index: 1;
@@ -26,7 +30,10 @@
   padding-top: 270px;
   box-sizing: border-box;
 
-  border-left: 1px solid rgba(0, 0, 0, .07);
+  //border-left: 1px solid rgba(0, 0, 0, .07);
+  border-left: 1px solid #dfdede;
+  /* border-right: 1px solid rgb(196 196 196); */
+  box-shadow: -1px 0 0 #b8b8b8, 1px 0 0 #dfdede;
 
   .areas {
     display: flex;

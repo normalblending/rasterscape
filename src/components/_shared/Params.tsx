@@ -4,19 +4,7 @@ import {ButtonNumber} from "./buttons/complex/ButtonNumber";
 import {SelectButtons} from "./buttons/complex/SelectButtons";
 import {EventData} from "../../utils/types";
 import {File} from "./File/File";
-
-export interface ParamConfig {
-    type: EParamType
-    props?: any
-    name: string
-}
-
-export enum EParamType {
-    Boolean = "boolean",
-    Number = "number",
-    Select = "select",
-    ImageData = "imageData",
-}
+import {EParamType} from "./Params.types";
 
 export const ParamComponents = {
     [EParamType.Boolean]: ButtonSelect,

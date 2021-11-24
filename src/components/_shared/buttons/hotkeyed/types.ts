@@ -1,6 +1,6 @@
 import {LabelFormatter} from "../../../../store/hotkeys/label-formatters";
 
-export interface HKLabelTypes {
+export interface HKLabelProps {
     hkLabel?: string
     hkLabelFormatter?: LabelFormatter
     hkData0?: any

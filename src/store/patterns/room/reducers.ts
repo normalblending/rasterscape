@@ -1,6 +1,5 @@
 import {
     CreateRoomAction,
-    ERoomAction,
     ReceiveDrawerAction,
     ReceiveMembersAction,
     ReceiveMessageAction,
@@ -11,6 +10,7 @@ import {PatternAction, PatternState} from "../pattern/types";
 import {reducePattern} from "../pattern/helpers";
 import {MessageType} from "./types";
 import {messageFilterByType} from "./helpers";
+import {ERoomAction} from "./consts";
 
 export const roomReducers = {
     [ERoomAction.CREATE_ROOM]: reducePattern<CreateRoomAction>(

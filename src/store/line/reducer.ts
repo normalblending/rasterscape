@@ -1,9 +1,9 @@
 import {handleActions} from "redux-actions";
 import {ELineCapType, ELineJoinType, ELineRandomType, ELineType, LineParams, SetLineParamsAction} from "./types";
 import {ELineAction} from "./actions";
-import {ParamConfig} from "../../components/_shared/Params";
 import {getLineParamsConfig} from "./helpers";
 import {ECompositeOperation} from "../compositeOperations";
+import {ParamConfig} from "../../components/_shared/Params.types";
 
 export interface LineState {
     params: LineParams

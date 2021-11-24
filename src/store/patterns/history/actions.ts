@@ -2,6 +2,7 @@ import {PatternAction} from "../pattern/types";
 import {sendImage} from "../room/actions";
 import {AppState} from "../../index";
 import {isMeDrawer} from "../room/helpers";
+import {updateSelectionImage} from "../selection/actions";
 
 
 export enum EHistoryAction {
@@ -23,7 +24,10 @@ export const undo = (id: string) => (dispatch, getState) => {
 
     dispatch({type: EHistoryAction.UNDO, id});
 
-    return dispatch(sendImage(id));
+    dispatch(sendImage(id));
+
+    //обновление изображения выделения
+    dispatch(updateSelectionImage(id));
 }
 export const redo = (id: string) => (dispatch, getState) => {
     if (!isMeDrawer(getState().patterns[id].room?.value)) {
@@ -32,5 +36,8 @@ export const redo = (id: string) => (dispatch, getState) => {
 
     dispatch({type: EHistoryAction.REDO, id});
 
-    return dispatch(sendImage(id));
+    dispatch(sendImage(id));
+
+    //обновление изображения выделения
+    dispatch(updateSelectionImage(id));
 };

@@ -7,6 +7,7 @@ import {EToolType} from "../../../../store/tool/types";
 import {CanvasEvent} from "../../../_shared/Canvas";
 import {DrawToolProps} from "./types";
 import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
+import {coordHelper4} from "../../canvasPosition.servise";
 
 export const lineSolid = () => {
 
@@ -26,6 +27,9 @@ export const lineSolid = () => {
 
         const {size, opacity, compositeOperation, cap, join, random} = toolParams as LineParams;
         const pattern = targetPattern;
+
+        if (!pattern) return;
+
         const {width, height} = pattern.current.imageData;
 
         return {
@@ -85,7 +89,7 @@ export const lineSolid = () => {
                             context.lineWidth = size;
                             context.lineJoin = join;
                             context.lineCap = cap;
-                            context.globalAlpha = opacity;
+                            context.globalAlpha = size ? opacity : 0; // нулеввой размер почему то не устанавливается
 
                             if (random === ELineRandomType.OnFrame) {
                                 context.strokeStyle = getRandomColor();

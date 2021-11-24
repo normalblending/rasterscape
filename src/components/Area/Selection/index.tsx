@@ -1,4 +1,5 @@
 import * as React from "react";
+import {CSSProperties} from "react";
 import {pointsDistance} from "../../../utils/geometry";
 import {SVG} from "../../_shared/SVG";
 import * as d3 from "d3";
@@ -17,10 +18,9 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import classNames from "classnames";
 import {EToolType} from "../../../store/tool/types";
-import {ESelectionMode, ECurveType, CurveValueName, SelectToolParams} from "../../../store/selectTool/types";
+import {CurveValueName, ECurveType, ESelectionMode, SelectToolParams} from "../../../store/selectTool/types";
 import "./selection.scss"
 import {Segments, SelectionParams} from "../../../store/patterns/selection/types";
-import {CSSProperties} from "react";
 
 
 const lineFunction = d3
@@ -59,6 +59,7 @@ export interface CanvasSelectionOwnProps {
     value?: Segments
     className?: string
     style?: any
+    transparent?: boolean
 
     onChange?(value: any, bBox: SVGRect)
 }
@@ -91,15 +92,37 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
 
     canvasRef;
     pathRef;
+    pathRefWhiteDash;
     pathPointsRef;
     maskPathRef;
     maskRef;
 
+    static getDerivedStateFromValue = (value?: Segments) => {
+        return {
+            prevPath: value,
+            path: value,
+            currentSliceN: value.filter(({type}) => type === ESegType.M).length,
+        }
+    }
+
+    static getDerivedStateFromProps(nextProps: CanvasSelectionProps, prevState) {
+        const {value} = nextProps;
+
+        return (
+            Array.isArray(value) && value !== prevState.prevPath
+                ? CanvasSelectionComponent.getDerivedStateFromValue(value)
+                : {}
+        );
+    }
+
     constructor(props) {
         super(props);
 
+        const {value} = props;
+
         this.canvasRef = React.createRef();
         this.pathRef = React.createRef();
+        this.pathRefWhiteDash = React.createRef();
         this.pathPointsRef = React.createRef();
         this.maskPathRef = React.createRef();
         this.maskRef = React.createRef();
@@ -115,7 +138,12 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             prevPath: null,
             curvePath: [],
             currentSliceN: 0,
-            cursor: SelectionCursorType.def
+            cursor: SelectionCursorType.def,
+            ...(
+                Array.isArray(value)
+                    ? CanvasSelectionComponent.getDerivedStateFromValue(value)
+                    : {}
+            )
         };
     }
 
@@ -127,14 +155,17 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         })
 
 
-        let ii = 0
-        setInterval(() => {
-            ii = ii % 20;
-            if (this.pathRef.current)
-                this.pathRef.current.strokeDasharray = `${ii}, ${20 - ii}`
-        }, 200);
+        // let ii = 0
+        // setInterval(() => {
+        //     ii = ii % 20;
+        //     if (this.pathRef.current)
+        //         this.pathRef.current.strokeDasharray = `${ii}, ${20 - ii}`
+        // }, 200);
 
 
+        this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
+        this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
+        this.pathRefWhiteDash.current && this.pathRefWhiteDash.current.setPathData(this.state.path);
     }
 
     componentDidUpdate(prevProps: CanvasSelectionProps) {
@@ -142,18 +173,10 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             this.selectToolHandlers[prevProps.selectToolParams.mode].exit(this.props.selectToolParams.mode)
         }
 
+        console.log(!!this.maskPathRef.current?.setPathData, this.state.path);
         this.maskPathRef.current && this.maskPathRef.current.setPathData(this.state.path);
         this.pathRef.current && this.pathRef.current.setPathData(this.state.path);
-    }
-
-    static getDerivedStateFromProps(nextProps: CanvasSelectionProps, prevState) {
-        const {value} = nextProps;
-
-        return Array.isArray(value) && value !== prevState.prevPath ? {
-            prevPath: value,
-            path: value,
-            currentSliceN: value.filter(({type}) => type === ESegType.M).length,
-        } : {}
+        this.pathRefWhiteDash.current && this.pathRefWhiteDash.current.setPathData(this.state.path);
     }
 
     commitChanges = () => {
@@ -184,49 +207,61 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         [ESelectionMode.Rect]: ({
             down: e => {
                 const {path} = this.state;
+                const {selectToolParams: {autoReset}} = this.props;
 
-                if (path.length) {
+                if (!autoReset) {
+                    if (path.length) {
 
-                    const nearest: NearestSegmentData = getNearestSegment(path, e.offsetX, e.offsetY);
+                        const nearest: NearestSegmentData = getNearestSegment(path, e.offsetX, e.offsetY);
 
-                    if (nearest && nearest.distance < HANDLER_SIZE * 2) {
+                        if (nearest && nearest.distance < HANDLER_SIZE * 2) {
 
-                        if (nearest.slice.length !== 5) {
-                            return this.setState(state => ({
-                                startX: e.offsetX,
-                                startY: e.offsetY,
-                                offsetX: 0,
-                                offsetY: 0,
-                                currentSliceN: nearest.sliceN,
-                                path: Path[EPathModeType.Rect](state.path, [e.offsetX, e.offsetY, e.offsetX, e.offsetY], nearest.sliceN)
-                            }));
-                        } else {
+                            if (nearest.slice.length !== 5) {
+                                return this.setState(state => ({
+                                    startX: e.offsetX,
+                                    startY: e.offsetY,
+                                    offsetX: 0,
+                                    offsetY: 0,
+                                    currentSliceN: nearest.sliceN,
+                                    path: Path[EPathModeType.Rect](state.path, [e.offsetX, e.offsetY, e.offsetX, e.offsetY], nearest.sliceN)
+                                }));
+                            } else {
 
-                            const oppositeIndex = (nearest.startInSlice + 2) % 4;
-                            const oppositeSeg = nearest.slice[oppositeIndex];
+                                const oppositeIndex = (nearest.startInSlice + 2) % 4;
+                                const oppositeSeg = nearest.slice[oppositeIndex];
 
-                            const offsetX = nearest.segment.values[0] - e.offsetX;
-                            const offsetY = nearest.segment.values[1] - e.offsetY;
+                                const offsetX = nearest.segment.values[0] - e.offsetX;
+                                const offsetY = nearest.segment.values[1] - e.offsetY;
 
-                            const startX = oppositeSeg.values[0];
-                            const startY = oppositeSeg.values[1];
+                                const startX = oppositeSeg.values[0];
+                                const startY = oppositeSeg.values[1];
 
-                            return this.setState(state => ({
-                                startX, startY,
-                                offsetX, offsetY,
-                                currentSliceN: nearest.sliceN,
-                                path: Path[EPathModeType.Rect](state.path, [startX, startY, e.offsetX + offsetX, e.offsetY + offsetY], nearest.sliceN)
-                            }));
+                                return this.setState(state => ({
+                                    startX, startY,
+                                    offsetX, offsetY,
+                                    currentSliceN: nearest.sliceN,
+                                    path: Path[EPathModeType.Rect](state.path, [startX, startY, e.offsetX + offsetX, e.offsetY + offsetY], nearest.sliceN)
+                                }));
+                            }
                         }
                     }
+                    this.setState(({currentSliceN, path}) => ({
+                        offsetX: 0,
+                        offsetY: 0,
+                        startX: e.offsetX,
+                        startY: e.offsetY,
+                        path: Path[EPathModeType.Rect](path, [e.offsetX, e.offsetY, e.offsetX, e.offsetY], currentSliceN)
+                    }));
+                } else {
+                    this.setState(({currentSliceN, path}) => ({
+                        currentSliceN: 0,
+                        offsetX: 0,
+                        offsetY: 0,
+                        startX: e.offsetX,
+                        startY: e.offsetY,
+                        path: Path[EPathModeType.Rect]([], [e.offsetX, e.offsetY, e.offsetX, e.offsetY], 0)
+                    }));
                 }
-                this.setState(({currentSliceN, path}) => ({
-                    offsetX: 0,
-                    offsetY: 0,
-                    startX: e.offsetX,
-                    startY: e.offsetY,
-                    path: Path[EPathModeType.Rect](path, [e.offsetX, e.offsetY, e.offsetX, e.offsetY], currentSliceN)
-                }));
 
             },
             drag: e => {
@@ -290,9 +325,10 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         [ESelectionMode.Points]: ({
             down: e => {
                 const {path, curvePath} = this.state;
+                const {selectToolParams: {autoReset}} = this.props;
 
-                if (!path.length || path[path.length - 1].type === ESegType.Z) {
-                    // если пустой путь или закрытый
+                if (!path.length) {
+                    // если пустой путь
 
                     const curvePath = Path[EPathModeType.M](this.state.curvePath, [e.offsetX, e.offsetY]);
 
@@ -300,6 +336,22 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                         curvePath,
                         path: Path[EPathModeType.M](path, [e.offsetX, e.offsetY])
                     }));
+                } else if (path[path.length - 1].type === ESegType.Z) {
+                    // если закрытый
+
+                    const curvePath = Path[EPathModeType.M](this.state.curvePath, [e.offsetX, e.offsetY]);
+
+                    if (autoReset) {
+                        this.setState(() => ({
+                            curvePath,
+                            path: Path[EPathModeType.M]([], [e.offsetX, e.offsetY])
+                        }));
+                    } else {
+                        this.setState(({path}) => ({
+                            curvePath,
+                            path: Path[EPathModeType.M](path, [e.offsetX, e.offsetY])
+                        }));
+                    }
                 } else {
                     if (!curvePath.length) {
                         this.setState(({path}) => ({curvePath: getLastSlice(path)}))
@@ -368,8 +420,11 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
         }),
         [ESelectionMode.Line]: {
             down: e => {
+
+                const {selectToolParams: {autoReset}} = this.props;
+
                 this.setState(({path}) => ({
-                    path: Path[EPathModeType.M](path, [e.offsetX, e.offsetY])
+                    path: Path[EPathModeType.M](autoReset ? [] : path, [e.offsetX, e.offsetY])
                 }));
             },
             drag: e => {
@@ -409,12 +464,14 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
             width, height,
             selectToolParams: {mode},
             isActive, isUnable,
-            name, style
+            name, style,
+            transparent,
         } = this.props;
 
         const {path} = this.state;
 
-        const subFirst = this.isSecondPoint() && path.filter(({type}) => type === ESegType.M).reverse()[0];
+        // const subFirst = this.isSecondPoint() && path.filter(({type}) => type === ESegType.M).reverse()[0];
+        const subFirst = !this.isClosedOrEmptyPath() && path.filter(({type}) => type === ESegType.M).reverse()[0];
 
         return (
             <div
@@ -447,37 +504,42 @@ class CanvasSelectionComponent extends React.PureComponent<CanvasSelectionProps,
                                 fill="black"
                             />
                         </mask>
-                        <rect
-                            x="0" y="0"
-                            width={width}
-                            height={height}
-                            fill="black"
-                            fillOpacity={0.2}
-                            mask={`url(#selectionMask${name})`}
-                        />
-                        {/*ПЕРВАЯ ТОЧКА*/}
-                        {subFirst && (
+                        {!transparent && (
                             <rect
-                                x={subFirst.values[0]}
-                                y={subFirst.values[1]}
-                                width={1}
-                                height={1}
-                                fillOpacity={0}
+                                x="0" y="0"
+                                width={width}
+                                height={height}
                                 fill="black"
-                                stroke={isActive ? "red" : "red"}
+                                fillOpacity={0.2}
+                                mask={`url(#selectionMask${name})`}
                             />
                         )}
+
                         <path
                             ref={this.pathRef}
                             fillOpacity={0}
                             fill="black"
                             className={'selection-path'}
-                            // strokeDasharray={"1, 1, 1"}
-
-                            // style={{}}
-                            strokeWidth={1}
-                            // stroke={isActive ? "greenyellow" : "red"}
                         />
+                        <path
+                            ref={this.pathRefWhiteDash}
+                            fillOpacity={0}
+                            fill="black"
+                            className={'selection-path-white-dash'}
+                        />
+                        {/*ПЕРВАЯ ТОЧКА*/}
+                        {(subFirst) && (
+                            <rect
+                                x={subFirst.values[0] - 2}
+                                y={subFirst.values[1] - 2}
+                                width={4}
+                                height={4}
+                                fillOpacity={1}
+                                fill="white"
+                                stroke={"black"}
+                                strokeWidth={1}
+                            />
+                        )}
                     </>}
                 </SVG>
             </div>

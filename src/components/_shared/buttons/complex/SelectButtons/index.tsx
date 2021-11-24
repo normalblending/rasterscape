@@ -44,6 +44,7 @@ export interface SelectButtonsProps {
 
     HK?: boolean
     path?: string
+    maxKeysCount?: number
     hkLabel?: string
     hkByValue?: boolean
     hkLabelFormatter?: LabelFormatter
@@ -78,6 +79,7 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
         onItemMouseEnter,
         onItemMouseLeave,
         path,
+        maxKeysCount,
 
         HK = true,
 
@@ -273,6 +275,7 @@ export const SelectButtons = React.forwardRef<SelectButtonsImperativeHandlers, S
                         onBlur={handleBlur}
                         onFocus={handleFocus}
                         onClick={handleClick}
+                        maxKeysCount={maxKeysCount}
                     >
                         {getText(item)}
                     </ButtonComponent>

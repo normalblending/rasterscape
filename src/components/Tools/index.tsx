@@ -6,12 +6,10 @@ import {EToolType} from "../../store/tool/types";
 import {setCurrentTool} from "../../store/tool/actions";
 import {Brush} from "./Brush";
 import {Line} from "./Line";
-import {ButtonSelect} from "../_shared/buttons/simple/ButtonSelect";
 import {SelectTool} from "./SelectTool";
 import {reverseFullScreen} from "../../store/fullscreen";
 import * as classNames from "classnames";
 import "../../styles/tools.scss";
-import {HelpTooltip} from "../tutorial/HelpTooltip";
 import {ButtonHK} from "../_shared/buttons/hotkeyed/ButtonHK";
 
 export const ToolsParams = {
@@ -42,9 +40,12 @@ const ToolsComponent: React.FC<ToolsProps> = (props) => {
     const {t, i18n, currentTool, setCurrentTool, reverseFullScreen, className} = props;
 
     const ToolControls = ToolsParams[currentTool].component;
+
     const handleToolClick = React.useCallback((data) => {
+        console.log('handleToolClick', data);
         setCurrentTool(ToolsParams[data.value].type)
-    }, [setCurrentTool])
+    }, [setCurrentTool]);
+
     return (
         <div className={classNames("tools", className)}>
             <div className={'tools-select'}>

@@ -10,4 +10,5 @@ export type DrawToolProps = {
     toolPattern?: PatternState
     toolParams: DrawToolParams
     coordinates: RepeatingCoordinatesItem[]
+
 };

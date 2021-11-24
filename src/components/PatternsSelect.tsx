@@ -1,12 +1,11 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../store";
-import {ButtonSelect} from "./_shared/buttons/simple/ButtonSelect";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
 import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
-import {UserHotkeyTrigger} from "./Hotkeys/UserHotkeyTrigger";
+import {KeyTrigger} from "./Hotkeys/simple/KeyTrigger";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -97,6 +96,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                 return (
                     <>
                         <ButtonHK
+                            key={id}
                             ref={buttonRef}
                             path={HK ? `patternSelect.${name}.${id}` : null}
                             hkLabel={hkLabel}
@@ -105,6 +105,7 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                             width={42} height={42}
                             value={id}
                             onClick={handleClick}
+                            maxKeysCount={2}
                             selected={Array.isArray(value) ? value?.includes(id) : (id === value)}>
                             <ChannelImageData
                                 width={40 * (w / h <= 1 ? w / h : 1)}
@@ -112,9 +113,11 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
                                 imageData={imageData}
                             />
                             {HK && (
-                                <UserHotkeyTrigger
-                                    keys={(i + 1).toString()}
-                                    data={id}
+                                <KeyTrigger
+                                    debug
+                                    keyValue={(i + 1).toString()}
+                                    codeValue={(i + 1).toString()}
+                                    name={id}
                                     onPress={handlePress}
                                 />
                             )}

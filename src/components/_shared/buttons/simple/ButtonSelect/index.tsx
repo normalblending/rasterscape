@@ -35,6 +35,8 @@ export const  ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, Bu
         onMouseUp,
         onMouseEnter,
         onMouseLeave,
+        disabled,
+        value,
         ...props
     } = _props;
 
@@ -42,20 +44,26 @@ export const  ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, Bu
 
     React.useImperativeHandle(ref, () => ({
         focus: () => {
-            buttonRef.current.focus();
+            !disabled && buttonRef.current.focus();
         },
         blur: () => {
             buttonRef.current.blur();
         },
         getElement: () => {
             return buttonRef.current.getElement();
+        },
+        click: (e, ...args) => {
+
+            console.log('ButtonSelect click', value, e, ...args);
+            !disabled && buttonRef.current.click(e);
         }
-    }), []);
+    }), [buttonRef, disabled, value]);
 
 
     const handleClick = React.useCallback((data) => {
+        console.log('ButtonSelect handleClick', data, value);
         onClick?.({...data, selected})
-    }, [selected, onClick]);
+    }, [selected, onClick, value]);
 
     const handleMouseDown = React.useCallback((data) => {
         onMouseDown?.({...data, selected})
@@ -77,6 +85,8 @@ export const  ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, Bu
         <Button
             ref={buttonRef}
             {...props}
+            value={value}
+            disabled={disabled}
             onClick={handleClick}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}

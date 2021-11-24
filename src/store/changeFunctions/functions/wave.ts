@@ -4,6 +4,7 @@ export enum WaveType {
     Sin = 'sin',
     Saw = 'saw',
     Noise = 'noise',
+    Draw = 'draw',
 }
 
 export interface SinParams {
@@ -25,7 +26,46 @@ export interface NoiseParams {
     f: number
 }
 
-export type AnyWaveParams = SinParams | SawParams | NoiseParams;
+export enum DrawType {
+    Center = 'center',
+    Stretch = 'stretch',
+}
+
+export interface DrawCenterParams {
+    drawWidth: number
+    drawHeight: number
+    valuesArray: number[]
+    period: number
+
+    offset: number
+    amplitude: number
+
+    loop: boolean
+}
+
+export interface DrawStretchParams {
+    drawWidth: number
+    drawHeight: number
+    valuesArray: number[]
+    period: number
+
+    from: number
+    to: number
+
+    loop: boolean
+}
+
+export type AnyDrawWaveParams = DrawStretchParams | DrawCenterParams;
+
+export interface DrawParams {
+    type: DrawType
+    typeParams: {
+        [DrawType.Center]: DrawCenterParams
+        [DrawType.Stretch]: DrawStretchParams
+    }
+}
+
+export type AnyWaveParams = SinParams | SawParams | NoiseParams | DrawParams;
 
 export interface WaveParams {
     type: WaveType
@@ -51,12 +91,107 @@ export const waveInitialParams: WaveParams = {
             start: 0,
             end: 1,
             f: 0.5,
+        },
+        [WaveType.Draw]: {
+            type: DrawType.Center,
+            typeParams: {
+                [DrawType.Center]: {
+                    drawWidth: 100,
+                    drawHeight: 100,
+                    valuesArray: new Array(1000).fill(0),
+                    period: 3000,
+
+                    offset: 0,
+                    amplitude: 1,
+
+                    loop: true,
+                },
+                [DrawType.Stretch]: {
+                    drawWidth: 100,
+                    drawHeight: 100,
+                    valuesArray: new Array(1000).fill(0),
+                    period: 3000,
+
+                    from: 0,
+                    to: 1,
+
+                    loop: true,
+                }
+            },
         }
     },
 
 };
-export const waveParamsConfig = {};
+export const waveParamsConfig = {}; //?
 
+const drawWaveFunctionByType: {
+    [type: string]: (options: {
+        startValue: number
+        range: [number, number]
+        params: AnyDrawWaveParams
+        time: number
+    }, prev?: any) => {
+        value?: number
+        prev?: any // хранилище для межитерационных данных
+    }
+} = {
+    [DrawType.Center]: ({startValue, range, params, time}, prev) => {
+        const {offset, period, loop, drawWidth, drawHeight, amplitude, valuesArray} = params as DrawCenterParams;
+
+        const t = (time % period) / period; // смещение по времени внутри цыкла в процентах %
+
+        const i = !loop && time >= period  // если не нужно зацылить
+            ? drawWidth - 1 // последний элемент в массиве
+            : Math.floor(drawWidth * t) // координа в массиве
+
+        const timeValue = i < drawWidth ? (valuesArray[i]) / drawHeight : 0; // значение соответствующее времени
+
+        const R = range[1] - range[0]; //
+
+        // const min = startValue - R * amplitude;
+        // const max = startValue + R * amplitude;
+
+        const newValue = startValue + timeValue * amplitude * R - offset * amplitude * R;
+        // coordHelper5.setText(newValue);
+
+        return {
+            value: Math.min(Math.max(newValue, range[0]), range[1]),
+        };
+    },
+    [DrawType.Stretch]: ({startValue, range, params, time}, prev) => {
+        const {from, to, period, loop, drawWidth, drawHeight, valuesArray} = params as DrawStretchParams;
+
+        const amplitude = Math.abs(to - from);
+        const min = Math.min(from, to);
+        const inverse = to < from;
+
+        const t = (time % period) / period; // смещение по времени внутри цыкла в процентах %
+
+        const i = !loop && time >= period  // если не нужно зацылить
+            ? drawWidth - 1 // последний элемент в массиве
+            : Math.floor(drawWidth * t) // координа в массиве
+
+        const timeValue = i < drawWidth
+            ? (
+                inverse
+                    ? (drawHeight - valuesArray[i])
+                    : valuesArray[i]
+                ) / drawHeight
+            : 0; // значение соответствующее времени
+
+        const R = range[1] - range[0]; //
+
+        // const min = startValue - R * amplitude;
+        // const max = startValue + R * amplitude;
+
+        const newValue = min * R + timeValue * amplitude * R;
+        // coordHelper5.setText(newValue);
+
+        return {
+            value: Math.min(Math.max(newValue, range[0]), range[1]),
+        };
+    },
+};
 
 const waveFunctionByType: {
     [type: string]: (options: {
@@ -66,7 +201,7 @@ const waveFunctionByType: {
         time: number
     }, prev?: any) => {
         value?: number
-        prev?: any
+        prev?: any // хранилище для межитерационных данных
     }
 } = {
     [WaveType.Sin]: ({startValue, range, params, time}) => {
@@ -134,8 +269,17 @@ const waveFunctionByType: {
                 }
             };
         }
-    }
+    },
+    [WaveType.Draw]: ({startValue, range, params, time}, prev) => {
+        const {
+            type,
+            typeParams,
+        }: DrawParams = params;
 
+        return drawWaveFunctionByType[type](
+            {startValue, range, params: typeParams[type], time}, prev
+        );
+    }
 };
 
 export const waveChangeFunction = () => {

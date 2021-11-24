@@ -69,7 +69,8 @@ const ChangeFItemComponent: React.FC<ChangeFItemProps> = (props) => {
                 value={id}
                 onDoubleClick={handleDelete}
             />
-            <Component name={id}/>
+            {Component && <Component name={id}/>}
+
         </div>
     )
 };

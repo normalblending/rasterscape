@@ -11,12 +11,13 @@ export const getSelectionState = getFunctionState<SelectionValue, SelectionParam
     mask: null
 }, {});
 
-export const getMaskFromSegments = (width, height, selectionValue: Segments) => {
+export const getMaskFromSegments = (width, height, selectionValue: Segments): ImageData => {
 
     const {context} = createCanvas(width, height);
 
     const path = new Path2D(pathDataToString(selectionValue));
 
+    console.log(selectionValue, path);
     context.fillStyle = "black";
     context.fill(path);
 
@@ -26,13 +27,17 @@ export const getMaskFromSegments = (width, height, selectionValue: Segments) => 
 
 export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, inverse?: boolean): ImageData => {
 
+    const {current, mask} = pattern;
+    const {imageData, } = current;
+    const {width, height} = imageData;
+
     const maskedImage = withMask
-        ? getMaskedImage(pattern.current.imageData, pattern.mask.value.imageData, pattern.mask.params.inverse)
-        : imageDataToCanvas(pattern.current.imageData);
+        ? getMaskedImage(imageData, pattern.mask.value.imageData, pattern.mask.params.inverse)
+        : imageDataToCanvas(imageData);
 
     if (!inverse) {
 
-        const {width, height} = pattern.current.imageData;
+        const {width, height} = imageData;
 
         const bbox = pattern.selection.value?.bBox || {
             width,
@@ -41,9 +46,9 @@ export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, 
             y: 0,
         };
 
-        const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
+        const maskImageData = getMaskFromSegments(width, height, pattern.selection.value.segments);
 
-        const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
+        const {context} = createCanvas(width, height);
 
         if (maskImageData) {
             context.putImageData(
@@ -51,18 +56,14 @@ export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, 
                 , 0, 0);
             context.globalCompositeOperation = "source-in";
         }
-        context.drawImage(maskedImage, 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
-
-        // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
-
+        context.drawImage(maskedImage, 0, 0, width, height);
 
         return context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 
     } else {
-        const {width, height} = pattern.current.imageData;
-        const maskImageData = getMaskFromSegments(pattern.current.imageData.width, pattern.current.imageData.height, pattern.selection.value.segments);
+        const maskImageData = getMaskFromSegments(width, height, pattern.selection.value.segments);
 
-        const {context} = createCanvas(pattern.current.imageData.width, pattern.current.imageData.height);
+        const {context} = createCanvas(width, height);
 
         if (maskImageData) {
             context.putImageData(
@@ -70,7 +71,7 @@ export const getSelectedImageData = (pattern: PatternState, withMask?: boolean, 
                 , 0, 0);
             context.globalCompositeOperation = "source-in";
         }
-        context.drawImage(maskedImage, 0, 0, pattern.current.imageData.width, pattern.current.imageData.height);
+        context.drawImage(maskedImage, 0, 0, width, height);
 
         // context.getImageData(bbox.x, bbox.y, bbox.width, bbox.height);
 

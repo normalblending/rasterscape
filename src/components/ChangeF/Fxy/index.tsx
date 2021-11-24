@@ -13,6 +13,8 @@ import {Sis2CF} from "./Sis2";
 import {WaveParams} from "../../../store/changeFunctions/functions/wave";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
 import {withTranslation, WithTranslation} from "react-i18next";
+import {FxyArrayCF} from "./Array";
+import {FxyTypeComponentType} from "./types";
 
 // import {FxyHelp} from "../tutorial/tooltips/FxyHelp";
 
@@ -82,11 +84,14 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
             >{button}</HelpTooltip>) : null
     };
 
-    fxyComponentsByType = {
+    fxyComponentsByType: {
+        [type: string]: FxyTypeComponentType<any>
+    } = {
         [FxyType.Parab]: ParabCF,
         [FxyType.Sis2]: Sis2CF,
+        [FxyType.Array]: FxyArrayCF,
     };
-    selectItems = arrayToSelectItems([FxyType.Parab, FxyType.Sis2]);
+    selectItems = arrayToSelectItems([FxyType.Parab, FxyType.Sis2, FxyType.Array]);
 
     typeText = ({value}) => this.props.t('cf.xy.type.' + value);
 

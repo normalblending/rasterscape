@@ -1,7 +1,6 @@
 import {reducePattern} from "../pattern/helpers";
 import {PatternAction, PatternState} from "../pattern/types";
 import {
-    EVideoAction,
     SetCFAction, SetCutOffsetAction,
     SetEdgeModeAction, SetMirrorModeAction,
     SetSlitModeAction, SetStackSizeAction,
@@ -9,6 +8,7 @@ import {
     SetVideoParamsAction
 } from "./actions";
 import {act} from "react-dom/test-utils";
+import {EVideoAction} from "./consts";
 
 export const videoReducers = {
     [EVideoAction.SET_VIDEO_PARAMS]: reducePattern<SetVideoParamsAction>(

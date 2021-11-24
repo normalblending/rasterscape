@@ -1,8 +1,8 @@
 .selection {
   display: flex;
-  position: relative;
-
-  border: 1px solid transparent;
+  position: absolute;
+  //position: relative;
+  //border: 1px solid transparent;
 
   cursor: crosshair;
 
@@ -26,34 +26,32 @@
   }
 
   .selection-path {
-    stroke: red;
-    box-shadow: black;
-    //mix-blend-mode: difference;
-    //animation-iteration-count: infinite;
+    stroke: black;
     animation: crowl 3s linear infinite;
-    stroke-dasharray: 2, 1;
-    stroke-width: 1;
+    stroke-dasharray: 3, 3;
+    stroke-width: 1px;
+  }
+  .selection-path-white-dash {
+    stroke: white;
+    animation: crowl-white 3s linear infinite;
+    stroke-dasharray: 3, 3;
+    stroke-width: 1px;
   }
 
   @keyframes crowl {
     0% {
       stroke-dashoffset: 0;
     }
-    //25% {
-    //  stroke-dasharray: 2, 1;
-    //  stroke-dashoffset: 1;
-    //}
-    //50% {
-    //  stroke-dasharray: 3, 2;
-    //  stroke-dashoffset: 2;
-    //}
-    //75% {
-    //  stroke-dasharray: 4, 3;
-    //  stroke-dashoffset: 3;
-    //}
-
     100% {
       stroke-dashoffset: 40;
+    }
+  }
+  @keyframes crowl-white {
+    0% {
+      stroke-dashoffset: 3;
+    }
+    100% {
+      stroke-dashoffset: 43;
     }
   }
 }

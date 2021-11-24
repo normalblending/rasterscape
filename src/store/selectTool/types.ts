@@ -30,7 +30,10 @@ export enum ESelectionMode {
 export interface SelectToolParams {
     mode: ESelectionMode
     curveType?: ECurveType
-    curveValue?: number
+    autoReset: boolean
+    beta: number
+    tension: number
+    alpha: number
 }
 
 export interface SetSelectToolParamsAction extends Action {

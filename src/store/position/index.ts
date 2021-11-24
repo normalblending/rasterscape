@@ -44,23 +44,25 @@ export interface SetPositionAction extends Action {
 export const setPosition = (patternId: string, x: number, y: number): ThunkResult<SetPositionAction, AppState> =>
     (dispatch, getState) => {
 
-    const { patterns, tool } = getState();
-    const pattern = patterns[patternId];
+        const {patterns, tool} = getState();
+        const pattern = patterns[patternId];
 
-    const coordinates = getRepeatingCoords({
-        repeatsParams: pattern.config.repeating ? pattern.repeating.params : null,
-        width: pattern.current.imageData.width,
-        height: pattern.current.imageData.height,
-        x,
-        y,
-        tool: tool.current
-    });
+        if (!pattern) return;
 
-    return dispatch({
-        type: EPositionAction.SET,
-        patternId,
-        x,
-        y,
-        coordinates
-    })
-};
+        const coordinates = getRepeatingCoords({
+            repeatsParams: pattern.config.repeating ? pattern.repeating.params : null,
+            width: pattern.current.imageData.width,
+            height: pattern.current.imageData.height,
+            x,
+            y,
+            tool: tool.current
+        });
+
+        return dispatch({
+            type: EPositionAction.SET,
+            patternId,
+            x,
+            y,
+            coordinates
+        })
+    };

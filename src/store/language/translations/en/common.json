@@ -14,6 +14,8 @@
   "brushTypes": {
     "brushType": "brush type",
     "circle": "circle",
+    "shape": "shape",
+    "select": "select",
     "square": "square",
     "pattern": "pattern"
   },
@@ -181,6 +183,7 @@
     "points": "points"
   },
   "select": {
+    "autoReset": "auto reset",
     "curveType": {
       "curveBasis": "basis",
       "curveBundle": "bundle",
@@ -195,6 +198,7 @@
       "curveStepAfter": "step after"
     },
     "hotkeysDescription": {
+      "autoReset": "select | auto reset",
       "mode": {
         "Line": "select | line",
         "Rect": "select | rect",
@@ -236,11 +240,13 @@
       "time": {
         "sin": "sin",
         "saw": "saw",
-        "noise": "noise"
+        "noise": "noise",
+        "draw": "array"
       },
       "xy": {
         "parab": "hill",
-        "sis2": "waves"
+        "sis2": "waves",
+        "array": "array"
       },
       "rgba": {
         "channel": {
@@ -260,13 +266,33 @@
       "type": {
         "sin": "sin",
         "saw": "saw",
-        "noise": "noise"
+        "noise": "noise",
+        "draw": "array"
+      },
+      "draw": {
+        "type": {
+          "stretch": "from/to",
+          "center": "center"
+        },
+        "center": {
+          "loop": "loop"
+        },
+        "stretch": {
+          "loop": "loop"
+        }
       }
     },
     "xy": {
       "type": {
         "parab": "hill",
-        "sis2": "waves"
+        "sis2": "waves",
+        "array": "array"
+      },
+      "array": {
+        "type": {
+          "x": "x",
+          "y": "y"
+        }
       }
     },
     "hotkeysDescription": {
@@ -463,6 +489,7 @@
     "enter": "enter",
     "draw": "draw",
     "chat": "chat",
+    "connecting": "connecting",
     "hotkeysDescription": {
       "draw": "pattern{{data1}} | room | draw"
     }
@@ -484,7 +511,9 @@
     "pattern": "pattern",
     "clear": "clear",
     "autofocus": "autofocus",
-    "autoblur": "autoblur"
+    "autoblur": "autoblur",
+    "sec": "s",
+    "milliSec": "ms"
   },
   "add": "add",
   "globalHotkeys": {
@@ -493,6 +522,7 @@
     "patternGoTo": "go to pattern",
     "fullscreen": "fullscreen",
     "hotkeys": "show/hide control settings",
+    "hotkeyInvert": "switch onPress/onRelease hotkey mode",
     "patternWindow": "open pattern view in new window",
     "selectAll": "select all",
     "selectClear": "clear selection",
