@@ -1,0 +1,18 @@
+type i8 = number;
+type i16 = number;
+type i32 = number;
+type i64 = bigint;
+type isize = number;
+type u8 = number;
+type u16 = number;
+type u32 = number;
+type u64 = bigint;
+type usize = number;
+type f32 = number;
+type f64 = number;
+type bool = boolean | number;
+export var CHECKERBOARD_BUFFER_POINTER: i32;
+export var CHECKERBOARD_BUFFER_SIZE: i32;
+export function generateCheckerBoard(darkValueRed: i32, darkValueGreen: i32, darkValueBlue: i32, lightValueRed: i32, lightValueGreen: i32, lightValueBlue: i32): void;
+export const memory: WebAssembly.Memory;
+export const __setArgumentsLength: ((n: i32) => void) | undefined;

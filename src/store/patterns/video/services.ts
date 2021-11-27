@@ -1,4 +1,4 @@
-import {get, PixelsStack, set, StackType} from "./capture/pixels";
+import {PixelsStack, set, StackType} from "./capture/pixels";
 import * as P5 from 'p5';
 import {patternReducers} from "../pattern/reducers";
 import {VideoParams} from "./types";
@@ -88,7 +88,7 @@ export class Capture {
         this.width = width;
         this.height = height;
         this.depth = depth;
-        this.stack = new PixelsStack(this.depth, stackType, edgeMode);
+        this.stack = new PixelsStack(width, height, this.depth, stackType, edgeMode);
         this.slitMode = slitMode;
         this.mirrorMode = mirrorMode;
         this.mirrorH = mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.HORIZONTAL;
@@ -140,7 +140,7 @@ export class Capture {
                     this.capture.loadPixels();
                     // this.canvas.scale(-1.0, 1.0);
 
-                    this.stack.push(this.capture.pixels, this.width, this.height);
+                    this.stack.push(this.capture.pixels);
 
                     // coordHelper2.setText(this.width, this.height);
                     // coordHelper3.setText(sketch.pixels.length);
@@ -235,7 +235,6 @@ export class Capture {
                 set(
                     this.sketch.pixels,
                     this.width,
-                    4,
                     x,
                     y,
                     this.stack.getPixel(
@@ -316,7 +315,7 @@ export class Capture {
     };
 
     setDepth = (depth) => {
-        this.stack.setSize(depth);
+        // this.stack.setSize(depth);// todo тут надо вернуть функцию
     }
 
 }

@@ -7,22 +7,25 @@ export enum StackType {
     ToCenter = "><",
 }
 
-export interface PixelsItem {
-    pixels
-    width
-    height
-}
-
 export class PixelsStack {
 
-    array: PixelsItem[]; // todo нужно переписывать на TypeArray
+    width: number;
+    height: number;
+    depth: number;
+    oneFrameLength: number;
+
+    data: Uint8ClampedArray;
     type: StackType;
     edgeMode: EdgeMode;
-    size;
 
-    constructor(size, type?, edgeMode?) {
-        this.size = size = Math.ceil(size);
-        this.array = new Array(size);
+    constructor(width: number, height: number, depth: number, type?, edgeMode?) {
+
+        this.width = width;
+        this.height = height;
+        this.depth = Math.floor(depth);
+        this.oneFrameLength = width * height * 4;
+        this.data = new Uint8ClampedArray(this.oneFrameLength * this.depth);
+
         this.type = type || StackType.Right;
         this.edgeMode = edgeMode || EdgeMode.ALL;
     }
@@ -53,91 +56,81 @@ export class PixelsStack {
         },
     };
 
-    getPixel = (x: number, y: number, z: number) => {
-        const getC = this.GetFrameN[this.edgeMode];
-        const zz = this.array[getC(z * (this.array.length - 1), this.array.length)];
+    getPixel = (x: number, y: number, zNormalized: number): Uint8ClampedArray => {
+        const getClampedCoordinate = this.GetFrameN[this.edgeMode];
 
-        if (!zz)
-            return [0, 0, 0, 0];
+        const xx = getClampedCoordinate(x, this.width);
+        const yy = getClampedCoordinate(y, this.height);
+        const frame = getClampedCoordinate(zNormalized * (this.depth - 1), this.depth);
 
-        return get(zz.pixels, zz.width, 4, getC(x, zz.width), getC(y, zz.height));
+
+
+        const n = this.oneFrameLength * frame + (xx + yy * this.width) * 4;
+        return this.data.slice(n, n + 4);
     };
 
-    getArray = () => {
-        return this.array;
-    };
+    // setSize = (size) => {
+    //     if (!Math.ceil(size)) return;
+    //
+    //     this.size = size = Math.ceil(size);
+    //     this.array = new Array(...(
+    //         this.array.length > size
+    //             ? this.array.slice(0, size)
+    //             : [
+    //                 ...new Array(size - this.array.length).fill(undefined),
+    //                 ...this.array
+    //             ] //todo можно заполнять старыми значениями
+    //     ));
+    //     // this.array = new Array(...(
+    //     //     this.array.slice(0, size).concat(Array(size).fill(undefined)).slice(0, size)
+    //     // ));
+    // };
 
-    setSize = (size) => {
-        if (!Math.ceil(size)) return;
-
-        this.size = size = Math.ceil(size);
-        this.array = new Array(...(
-            this.array.length > size
-                ? this.array.slice(0, size)
-                : [
-                    ...new Array(size - this.array.length).fill(undefined),
-                    ...this.array
-                ] //todo можно заполнять старыми значениями
-        ));
-        // this.array = new Array(...(
-        //     this.array.slice(0, size).concat(Array(size).fill(undefined)).slice(0, size)
-        // ));
-    };
-
-    push(pixels, width, height) {
-        const item = {pixels, width, height};
+    push(pixels: Uint8ClampedArray) {
+        // const item = {pixels, width, height};
         switch (this.type) {
             case StackType.Right:
-                this.array.shift();
-                this.array.push(item);
+                this.data.set(this.data.subarray(this.oneFrameLength), 0);
+                this.data.set(pixels, this.data.length - this.oneFrameLength);
+
+                // this.array.shift();
+                // this.array.push(item);
                 break;
             case StackType.Left:
-                this.array.pop();
-                this.array.unshift(item);
+                // this.array.pop();
+                // this.array.unshift(item);
                 break;
             case StackType.FromCenter:
-                this.array.pop();
-                this.array.shift();
-                this.array = [
-                    ...this.array.slice(0, this.array.length / 2),
-                    item,
-                    item,
-                    ...this.array.slice(this.array.length / 2, this.array.length)
-                ];
+                // this.array.pop();
+                // this.array.shift();
+                // this.array = [
+                //     ...this.array.slice(0, this.array.length / 2),
+                //     item,
+                //     item,
+                //     ...this.array.slice(this.array.length / 2, this.array.length)
+                // ];
                 break;
             case StackType.ToCenter:
-                this.array.push(item);
-                this.array.unshift(item);
-                this.array = [
-                    ...this.array.slice(0, this.array.length / 2 - 1),
-                    ...this.array.slice(this.array.length / 2 + 1, this.array.length)
-                ];
+                // this.array.push(item);
+                // this.array.unshift(item);
+                // this.array = [
+                //     ...this.array.slice(0, this.array.length / 2 - 1),
+                //     ...this.array.slice(this.array.length / 2 + 1, this.array.length)
+                // ];
                 break;
             default:
-                this.array.shift();
-                this.array.push(item);
+                // this.array.shift();
+                // this.array.push(item);
                 break;
         }
     }
 }
 
 
-export const get = (pixels, width, d, x, y) => {
-    const n = (x + y * width) * d; // d получается бесполезный параметр
-    return pixels?.[n] !== undefined ? [
-        pixels[n],
-        pixels[n + 1],
-        pixels[n + 2],
-        pixels[n + 3]
-    ] : [0, 0, 0, 0];
-};
 
 
-export const set = (pixels, width, d, x, y, value) => {
-    const n = (x + y * width) * d;
-    pixels[n] = value[0];
-    pixels[n + 1] = value[1];
-    pixels[n + 2] = value[2];
-    pixels[n + 3] = value[3];
+export const set = (pixels: Uint8ClampedArray, width, x, y, value: Uint8ClampedArray) => {
+    const n = (x + y * width) * 4;
+    pixels.set(value, n);
     return pixels;
 };
