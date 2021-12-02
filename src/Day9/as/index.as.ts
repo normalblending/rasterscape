@@ -75,3 +75,32 @@ export function generateCheckerBoard(
         }
     }
 }
+
+export const numberParamsByFunctionType = new Map<string, Map<string, i32>>();
+numberParamsByFunctionType.set('sis', new Map<string, i32>());
+numberParamsByFunctionType.set('sas', new Map<string, i32>());
+
+export function getNumberParam(type: string, name: string): i32 {
+    return numberParamsByFunctionType.get(type).get(name);
+}
+
+export function setNumberParam(type: string, name: string, value: i32): i32 {
+    numberParamsByFunctionType.get(type).set(name, value);
+    return numberParamsByFunctionType.get(type).get(name);
+}
+
+
+export const arrayParamsByFunctionType = new Map<string, Map<string, Int32Array>>();
+arrayParamsByFunctionType.set('sis', new Map<string, Int32Array>());
+arrayParamsByFunctionType.set('sas', new Map<string, Int32Array>());
+
+export function getArrayParam(type: string, name: string): Int32Array {
+    return arrayParamsByFunctionType.get(type).get(name);
+}
+
+export function setArrayParam(type: string, name: string, value: Int32Array): Int32Array {
+    arrayParamsByFunctionType.get(type).set(name, value);
+    return arrayParamsByFunctionType.get(type).get(name);
+}
+
+export const Int32Array_ID = idof<Int32Array>()

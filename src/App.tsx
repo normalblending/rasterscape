@@ -5,12 +5,12 @@ import {Provider as ReduxProvider} from "react-redux";
 import {store} from "./store";
 
 import './store/language/translations';
+import {Day9} from "./Day9/Day9";
 
 const App: React.FC = () => (
     <ReduxProvider store={store}>
-        {/*<I18nextProvider i18n={i18next}>*/}
-            <Main/>
-        {/*</I18nextProvider>*/}
+        <Day9/>
+        <Main/>
     </ReduxProvider>
 );
 

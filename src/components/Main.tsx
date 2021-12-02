@@ -5,7 +5,6 @@ import {Layout} from "./Layout";
 //     return 'Are you sure you want to leave?';
 // };
 
-
 export const Main: React.FC<{}> = ({}) => {
     return  <Layout/>;
 };

@@ -54,7 +54,7 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
             // coordHelper.setText(pixels.length);
             dispatch(updateImage({
                 id: patternId,
-                imageData: new ImageData(new Uint8ClampedArray(pixels), width, pixels.length / 4 / width),
+                imageData: new ImageData(pixels, width, pixels.length / 4 / width),
                 emit: false,
                 blur: false,
                 noHistory: true,
@@ -166,7 +166,7 @@ export const setChangeFunction = (id: string, value: string) => (dispatch, getSt
         id,
         value
     });
-    Captures.captures[id]?.updateImage();
+    Captures.captures[id]?.update();
 };
 
 export const setStackSize = (id: string, value: number): ThunkAction<any, any, any, SetStackSizeAction> => (dispatch, getState: () => AppState) => {
@@ -188,7 +188,7 @@ export const setCutOffset = (id: string, value: number): ThunkAction<any, any, a
     });
     // const pattern = getState().patterns[id];
 
-    Captures.captures[id]?.updateImage();
+    Captures.captures[id]?.update();
 };
 
 export const setSize = (id: string, width?: number, height?: number): ThunkAction<any, any, any, any> => dispatch => {
@@ -205,5 +205,5 @@ export const setVideoHeight = (id: string, height?: number): ThunkAction<any, an
 
 
 export const updateVideo = (id: string) => (dispatch, getState: () => AppState) => {
-    Captures.captures[id]?.updateImage();
+    Captures.captures[id]?.update();
 };

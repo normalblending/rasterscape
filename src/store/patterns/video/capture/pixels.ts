@@ -6,6 +6,13 @@ export enum StackType {
     FromCenter = "<>",
     ToCenter = "><",
 }
+export const StackTypeASMap = {
+    [StackType.Right]: 0,
+    [StackType.Left]: 1,
+    [StackType.FromCenter]: 2,
+    [StackType.ToCenter]: 3,
+}
+
 
 export class PixelsStack {
 
