@@ -1,10 +1,12 @@
 import {VideoParams, VideoValue} from "./types";
 import {getFunctionState} from "../../../utils/patterns/function";
 import {EdgeMode, MirrorMode, SlitMode} from "./services";
-import {StackType} from "./capture/pixels";
+import {StackType} from "./_old/capture/pixels";
 
 export const getVideoState = getFunctionState<VideoValue, VideoParams>(
     {}, {
+        cameraOn: false,
+        updatingOn: false,
         on: false,
         pause: false,
         changeFunctionId: null,
@@ -14,4 +16,5 @@ export const getVideoState = getFunctionState<VideoValue, VideoParams>(
         stackType: StackType.Right,
         mirrorMode: MirrorMode.NO,
         stackSize: 1,
+        device: null
     });

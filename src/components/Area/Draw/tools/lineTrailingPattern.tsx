@@ -50,16 +50,16 @@ export const lineTrailingPattern = function () {
         const destinationPattern = targetPattern;
         const linePattern = toolPattern;
 
-        if (destinationPattern.current.imageData.width !== helperCanvas1.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas1.canvas.height) {
-            helperCanvas1.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas1.canvas.height = destinationPattern.current.imageData.height;
+        if (destinationPattern.width !== helperCanvas1.canvas.width ||
+            destinationPattern.height !== helperCanvas1.canvas.height) {
+            helperCanvas1.canvas.width = destinationPattern.width;
+            helperCanvas1.canvas.height = destinationPattern.height;
         }
 
-        if (destinationPattern.current.imageData.width !== helperCanvas2.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas2.canvas.height) {
-            helperCanvas2.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas2.canvas.height = destinationPattern.current.imageData.height;
+        if (destinationPattern.width !== helperCanvas2.canvas.width ||
+            destinationPattern.height !== helperCanvas2.canvas.height) {
+            helperCanvas2.canvas.width = destinationPattern.width;
+            helperCanvas2.canvas.height = destinationPattern.height;
         }
 
         const patternLine = (ev) => {
@@ -89,7 +89,7 @@ export const lineTrailingPattern = function () {
                 coordinates
                     .forEach(({x, y, id}) => {
                         const index = id;
-                        canvases[index] = createCanvas(destinationPattern.current.imageData.width, destinationPattern.current.imageData.height);
+                        canvases[index] = createCanvas(destinationPattern.width, destinationPattern.height);
                         prevPoints[index] = {x, y};
                     });
                 draw = true;

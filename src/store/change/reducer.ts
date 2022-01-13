@@ -10,10 +10,7 @@ export const changeReducer = handleActions<AppState>({
 
         const {changeFunctions: {functions: changeFunctions}, changingValues, patterns, position} = state;
 
-        let r;
-
-        r = Object.values(changingValues).reduce((res, changingValue) => {
-
+        return Object.values(changingValues).reduce((res, changingValue) => {
 
             let vPath, nextValue;
 
@@ -58,8 +55,6 @@ export const changeReducer = handleActions<AppState>({
 
             return res.set(vPath, nextValue)
         }, immutable.wrap(state)).value();
-
-        return r;
     },
     [EChangeAction.TO_START_VALUE]: (state: AppState, action: ChangeToStartValueAction) => {
         const {path} = action;

@@ -1,7 +1,6 @@
-import {createStore, combineReducers, applyMiddleware, compose} from "redux";
-import {useDispatch as useReduxDispatch, useSelector as useReduxSelector, TypedUseSelectorHook} from "react-redux";
+import {createStore, combineReducers, applyMiddleware, compose, Store, AnyAction} from "redux";
 import logger from 'redux-logger';
-import thunk from 'redux-thunk';
+import thunk, {ThunkAction} from 'redux-thunk';
 import reduceReducers from 'reduce-reducers';
 import persistState from 'redux-localstorage';
 
@@ -27,6 +26,8 @@ import {optimizationReducer, OptimizationState} from "./optimization";
 import {positionReducer, PositionState} from "./position";
 import {HotkeysState} from "./hotkeys/types";
 import {hotkeysReducer} from "./hotkeys/reducer";
+import {PatternsService} from "./patterns/_service";
+import {dependenciesReducer, DependenciesState} from "./dependencies";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -53,9 +54,10 @@ export interface AppState {
     changeFunctions: ChangeFunctionsState
     changingValues: ChangingValuesState
     changing: ChangingState
+    dependencies: DependenciesState
 }
 
-const rootReducer = reduceReducers(
+const rootReducer = reduceReducers<AppState>(
     combineReducers<AppState>({
         fullScreen: fullscreenReducer,
         optimization: optimizationReducer,
@@ -80,7 +82,8 @@ const rootReducer = reduceReducers(
 
         changeFunctions: changeFunctionsReducer,
         changingValues: changingValuesReducer,
-        changing: changingReducer
+        changing: changingReducer,
+        dependencies: dependenciesReducer,
     }),
     changeReducer
 );
@@ -124,7 +127,7 @@ const configPersist = {
     }
 };
 
-export const store = createStore(
+export const store: Store<AppState, AnyAction> = createStore(
     rootReducer,
     compose(
         applyMiddleware(thunk, logger),
@@ -132,6 +135,10 @@ export const store = createStore(
         persistState(['hotkeys']), //, 'changeFunctions'
     )
 );
+
+
+export const patternsService = new PatternsService(store);
+
 
 // export const store = createStore(rootReducer, applyMiddleware(thunk));
 

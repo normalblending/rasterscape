@@ -1,24 +1,48 @@
 import {
     EditPatternConfigAction,
     PatternConfig,
-    PatternState,
     SetPatternHeightAction,
     SetPatternWidthAction,
     UpdateOptions,
 } from "./types";
-import {AppState} from "../../index";
-import {copyImageData} from "../../../utils/canvas/helpers/imageData";
+import {AppState, patternsService} from "../../index";
+import {imageDataToCanvas} from "../../../utils/canvas/helpers/imageData";
 import {addPattern} from "../actions";
 import {getPatternConfig, getPatternParams} from "./helpers";
 import * as StackBlur from 'stackblur-canvas';
 import {sendImage} from "../room/actions";
 import {ThunkAction} from 'redux-thunk'
 import {setVideoHeight, setVideoWidth} from "../video/actions";
-import {patternValues} from "../values";
 import {copyToClipboard} from "../../../utils/clipboard";
 import {EPatternAction} from "./consts";
-import {getMaskFromSegments} from "../selection/helpers";
-import {updateSelectionImage} from "../selection/actions";
+import {pushHistory} from "../history/actions";
+import {getSelectedImageData} from "../selection/helpers";
+import {PreviewCanvasType} from "../_service/patternServices/PatternPreviewService";
+
+export const bindCanvas = (id: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
+
+    const state = getState();
+    const pattern = state.patterns[id];
+
+    patternsService.pattern[id]
+        .bindCanvas(canvas, pattern.width, pattern.height);
+};
+export const bindPreview = (id: string, previewId: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
+    patternsService.pattern[id]
+        .previewService.bindCanvas(previewId, canvas, PreviewCanvasType.Select);
+};
+
+export const bindChannelPreview = (id: string, previewId: string, canvas: HTMLCanvasElement) => (dispatch, getState: () => AppState) => {
+    console.log('bindChannelPreview', id, previewId);
+    patternsService.pattern[id]
+        .previewService.bindCanvas(previewId, canvas, PreviewCanvasType.Channel);
+};
+
+export const unbindPreview = (id: string, previewId: string) => (dispatch, getState: () => AppState) => {
+    console.log('unbindPreview', id, previewId);
+    patternsService.pattern[id]
+        ?.previewService.unbindCanvas(previewId);
+};
 
 export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePatternImageAction, AppState> =>
     (dispatch, getState: () => AppState) => {
@@ -32,18 +56,25 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
         } = options;
 
         const pattern = getState().patterns[id];
-        const tool = getState().tool.current;
+        const patternService = patternsService.pattern[id];
+        // const tool = getState().tool.current;
 
         if (!pattern)
             return;
 
+        if (!noHistory) {
+            dispatch(pushHistory(id));
+        }
+
         let resultImageData;
 
         if (imageData) {
-            resultImageData = imageData;
+            patternService.canvasService.setImageData(imageData);
+            resultImageData = imageData; //
         } else {
-            const oldImageData = pattern.current?.imageData;
-            resultImageData = copyImageData(oldImageData);
+            // const oldImageData = patternService.canvasService.getImageData();
+            // resultImageData = copyImageData(oldImageData);
+            resultImageData = patternService.canvasService.getImageData();
         }
 
         const needBlur = pattern.config.blur && (pattern.blur?.value?.onUpdate || blur);
@@ -56,30 +87,52 @@ export const updateImage = (options: UpdateOptions) => //: ThunkResult<UpdatePat
 
         dispatch({type: EPatternAction.UPDATE_IMAGE, imageData: resultImageData, id, noHistory});
 
-        //отправка в сокет еслинужно
+        //отправка в сокет если нужно
         emit && dispatch(sendImage(id));
 
         //обновление изображения выделения
-        dispatch(updateSelectionImage(id));
+        patternService
+            .valuesService.update()
+            .previewService.update();
+        // dispatch(updateSelectionImage(id));
 
     };
-export const editConfig = (id: string, config: PatternConfig): EditPatternConfigAction =>
-    ({type: EPatternAction.EDIT_CONFIG, id, config});
+export const editConfig = (id: string, config: PatternConfig) => (dispatch, getState) => {
+    patternsService.pattern[id]
+        .maskService.setEnabled(config.mask)
+        .valuesService.updateMasked()
+        .previewService.update();
 
-export const setWidth = (id: string, width: number): ThunkAction<any, any, any, SetPatternWidthAction> => dispatch => {
+    dispatch({type: EPatternAction.EDIT_CONFIG, id, config} as EditPatternConfigAction);
+};
+
+export const setWidth = (id: string, width: number): ThunkAction<any, any, any, SetPatternWidthAction> => (dispatch, getState: () => AppState) => {
+
+
+    patternsService.pattern[id]
+        .setWidth(width, !getState().patterns[id].import.params.fit);
+
     dispatch(setVideoWidth(id, width));
+
     dispatch({type: EPatternAction.SET_WIDTH, id, width});
+    dispatch(pushHistory(id));
 }
-export const setHeight = (id: string, height: number): ThunkAction<any, any, any, SetPatternHeightAction> => dispatch => {
+export const setHeight = (id: string, height: number): ThunkAction<any, any, any, SetPatternHeightAction> => (dispatch, getState: () => AppState) => {
+
+    patternsService.pattern[id]
+        .setHeight(height, !getState().patterns[id].import.params.fit);
+
     dispatch(setVideoHeight(id, height));
     dispatch({type: EPatternAction.SET_HEIGHT, id, height});
+
+    dispatch(pushHistory(id));
 }
 export const doublePattern = (id: string) => (dispatch, getState) => {
     const state: AppState = getState();
 
     const pattern = state.patterns[id];
 
-    const config = getPatternConfig(pattern);
+    const config = getPatternConfig(pattern, patternsService.pattern[id]);
     const params = getPatternParams(pattern);
 
     dispatch(addPattern(config, params));
@@ -87,14 +140,12 @@ export const doublePattern = (id: string) => (dispatch, getState) => {
 
 
 export const copyPatternToClipboard = (id: string) => async (dispatch, getState: () => AppState) => {
-    const pattern = getState().patterns[id];
+    const patternService = patternsService.pattern[id];
 
-
-    (pattern.selection.value.segments.length
-            // ? patternValues.values[id]?.selected//
-            // ? imageDataToCanvas(getSelectedImageData(pattern, pattern.config.mask))
-            ? patternValues.values[id]?.selected
-            : patternValues.values[id]?.current
+    (
+        patternService.valuesService.selected
+            ? imageDataToCanvas(getSelectedImageData(getState().patterns[id], false))
+            : patternService.canvasService.canvas
     ).toBlob((blob) => {
         copyToClipboard(blob);
     });

@@ -1,4 +1,4 @@
-import {EdgeMode} from "../services";
+import {EdgeMode} from "../../services";
 
 export enum StackType {
     Right = ">",

@@ -2,18 +2,9 @@ import {PatternAction} from "../pattern/types";
 import {ERepeatsType, RepeatsBezierGridParams, RepeatsFlatGridParams, RepeatsParams} from "./types";
 
 export enum ERepeatingAction {
-    SET_REPEATING = "pattern/set-repeating",
     SET_PARAMS = "pattern/set-params",
     SET_TYPE = "pattern/set-type",
 }
-
-export interface SetRepeatingAction extends PatternAction {
-    repeating: RepeatsParams
-}
-
-export const setRepeating = (id: string, repeating: RepeatsParams): SetRepeatingAction =>
-    ({type: ERepeatingAction.SET_REPEATING, id, repeating});
-
 
 export type AnyRepeatsTypeParams = RepeatsBezierGridParams | RepeatsFlatGridParams;
 

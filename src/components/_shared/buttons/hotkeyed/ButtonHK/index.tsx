@@ -16,6 +16,7 @@ import {HKLabelProps} from "../types";
 import {ButtonHotkeyInputs} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyInputs";
 import {useRef} from "react";
 import {HotkeyControlType} from "../../../../../store/hotkeys/types";
+import {ButtonImperativeHandlers} from "../../simple/Button";
 
 export interface ButtonHKStateProps {
     isHotkeyed: boolean
@@ -50,8 +51,11 @@ export interface ButtonHKOwnProps extends ButtonSelectProps, HKLabelProps {
 export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, WithTranslation {
 
 }
+export interface ButtonHKimperativeHandlers extends ButtonSelectimperativeHandlers {
 
-const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
+}
+
+const ButtonHKComponent = React.forwardRef<ButtonSelectimperativeHandlers, ButtonHKProps>((props, ref) => {
 
     const {
         t,
@@ -88,6 +92,8 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
     const [pressed, setPressed] = React.useState(false);
 
     const buttonRef = useRef<ButtonSelectimperativeHandlers>(null);
+
+    React.useImperativeHandle(ref, () => (buttonRef.current), [buttonRef]);
 
     const handleHotkeyTrigger = React.useCallback((e, _, __, isRelease) => {
         console.log('ButtonHK trigger', path);
@@ -164,7 +170,7 @@ const ButtonHKComponent: React.FC<ButtonHKProps> = (props) => {
             )}
         </div>
     );
-};
+});
 
 const mapStateToProps: MapStateToProps<ButtonHKStateProps, ButtonHKOwnProps, AppState> = (state, {path}) => ({
     isHotkeyed: !!state.hotkeys.buttons[path],

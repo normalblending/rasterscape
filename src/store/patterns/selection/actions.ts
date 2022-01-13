@@ -1,6 +1,6 @@
 import {PatternAction, PatternState} from "../pattern/types";
 import {Segments} from "./types";
-import {AppState} from "../../index";
+import {AppState, patternsService} from "../../index";
 import {addPattern} from "../actions";
 import {copyPatternToClipboard, updateImage} from "../pattern/actions";
 import {getPatternConfig, getPatternParams} from "../pattern/helpers";
@@ -10,6 +10,7 @@ import {createCleanCanvasState} from "../../../utils/state";
 import {EPathModeType, Path} from "../../../utils/path";
 import {isMeDrawer} from "../room/helpers";
 import {patternValues} from "../values";
+import {pushHistory} from "../history/actions";
 
 export enum ESelectionAction {
     UPDATE_SELECTION = "pattern/update-selection",
@@ -28,27 +29,10 @@ export const updateSelection = (id: string, value: Segments, bBox: SVGRect) =>
 
         dispatch({type: ESelectionAction.UPDATE_SELECTION, value, bBox, id});
 
-        dispatch(updateSelectionImage(id));
-    };
-
-export const updateSelectionImage = (id: string) =>
-    (dispatch, getState: () => AppState) => {
-
-        const pattern = getState().patterns[id];
-        if (!pattern)
-            return;
-
-        const {selection, current} = pattern;
-
-        if (selection.value.segments?.length) {
-            const imageData = current.imageData;
-            const mask = selection.value.mask;
-
-            patternValues.setSelectedValue(id, imageData, mask);
-        } else if (patternValues.values[id].selected) {
-            patternValues.setSelectedValue(id);
-        }
-
+        patternsService.pattern[id]
+            .selectionService.update(value, bBox)
+            .valuesService.update();
+        // dispatch(updateSelectionImage(id));
     };
 
 export const selectAll = (id: string) => (dispatch, getState: () => AppState) => {
@@ -57,10 +41,13 @@ export const selectAll = (id: string) => (dispatch, getState: () => AppState) =>
     const pattern = state.patterns[id];
 
     if (!pattern) return;
+    // const patternService = patternsService.pattern[id];
 
-    const {width, height} = pattern.current.imageData
+    const {width, height} = pattern;
 
     const path = Path[EPathModeType.Rect]([], [0, 0, width, height]);
+
+    const segments = [...path, ...pattern.selection?.value?.segments];
 
     const rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
     rect.setAttributeNS(null, 'x', '0');
@@ -70,7 +57,7 @@ export const selectAll = (id: string) => (dispatch, getState: () => AppState) =>
 
     const bBox = rect.getBBox();
 
-    dispatch(updateSelection(id, [...path, ...pattern.selection?.value?.segments], bBox));
+    dispatch(updateSelection(id, segments, bBox));
     // dispatch({type: ESelectionAction.UPDATE_SELECTION, value: [...path, ...pattern.selection?.value?.segments], bBox, id});
 };
 
@@ -79,7 +66,7 @@ export const createPatternFromSelection = (id: string) => (dispatch, getState) =
 
     const pattern = state.patterns[id];
 
-    const config = {...getPatternConfig(pattern)};
+    const config = getPatternConfig(pattern, patternsService.pattern[id]);
     const params = getPatternParams(pattern);
 
     config.startImage = getSelectedImageData(pattern);
@@ -96,9 +83,17 @@ export const cutPatternBySelection = (id: string) => (dispatch, getState) => {
 
     if (!isMeDrawer(pattern.room?.value)) return;
 
-    dispatch(updateImage({id, imageData: getSelectedImageData(pattern)}));
-    dispatch(updateMask(id, getSelectedMask(pattern), true));
+    const patternService = patternsService.pattern[pattern.id];
+
+    const canvasImageData = getSelectedImageData(pattern);
+    const maskImageData = getSelectedMask(pattern);
+
+    patternService.setCanvasAndMaskImageData(canvasImageData, maskImageData);
+
+
     dispatch(updateSelection(id, [], null));
+
+    dispatch(pushHistory(id));
 };
 
 export const clearSelectionIn = (id: string) => (dispatch, getState) => {
@@ -119,7 +114,7 @@ export const clearSelectionIn = (id: string) => (dispatch, getState) => {
     } else {
         dispatch(updateImage({
             id,
-            imageData: createCleanCanvasState(pattern.current.imageData.width, pattern.current.imageData.height).imageData,
+            imageData: createCleanCanvasState(pattern.width, pattern.height).imageData,
             noHistory: false
         }));
     }

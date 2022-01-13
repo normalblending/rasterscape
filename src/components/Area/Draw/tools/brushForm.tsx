@@ -5,7 +5,6 @@ import {Cursors} from "./cursors";
 import {DrawToolProps} from "./types";
 import {BrushParams, BrushShapeParams} from "../../../../store/brush/types";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
-import {getRepeatingCoords} from "../../../../store/patterns/repeating/helpers";
 
 export const brushForm = function () {
 
@@ -26,17 +25,18 @@ export const brushForm = function () {
         if (!targetPattern) {
             return;
         }
-        if (targetPattern.current.imageData.width !== helperCanvas1.canvas.width ||
-            targetPattern.current.imageData.height !== helperCanvas1.canvas.height) {
-            helperCanvas1.canvas.width = targetPattern.current.imageData.width;
-            helperCanvas1.canvas.height = targetPattern.current.imageData.height;
+        if (
+            targetPattern.width !== helperCanvas1.canvas.width ||
+            targetPattern.height !== helperCanvas1.canvas.height ||
+            targetPattern.width !== helperCanvas2.canvas.width ||
+            targetPattern.height !== helperCanvas2.canvas.height
+        ) {
+            helperCanvas1.canvas.width = targetPattern.width;
+            helperCanvas1.canvas.height = targetPattern.height;
+            helperCanvas2.canvas.width = targetPattern.width;
+            helperCanvas2.canvas.height = targetPattern.height;
         }
 
-        if (targetPattern.current.imageData.width !== helperCanvas2.canvas.width ||
-            targetPattern.current.imageData.height !== helperCanvas2.canvas.height) {
-            helperCanvas2.canvas.width = targetPattern.current.imageData.width;
-            helperCanvas2.canvas.height = targetPattern.current.imageData.height;
-        }
         const circleBrush = (ev) => {
             const {ctx, e, rotation} = ev;
 

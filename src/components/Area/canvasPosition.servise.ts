@@ -16,31 +16,38 @@ export class TextHelper {
     write;
     writeln;
     clear;
-    constructor(x, y) {
+    constructor(x, y, text?: string) {
         const elem = document.createElement('div');
+        const constantText = document.createElement('span');
+        const settableText = document.createElement('span');
+        elem.appendChild(settableText);
+        elem.appendChild(constantText);
+
+        constantText.innerText = text;
+
         document.body.appendChild(elem);
 
         elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
 
         this.setText = (...string) => {
-            elem.innerText = string.join(' ');
+            settableText.innerText = string.join(' ');
         };
         this.write = (...string) => {
-            elem.innerText = elem.innerText + ' ' + string.join(' ');
+            settableText.innerText = settableText.innerText + ' ' + string.join(' ');
         };
         this.writeln = (...string) => {
             try {
-                elem.innerText = elem.innerText + ' ' + string.join(' ') + '\n';
+                settableText.innerText = settableText.innerText + ' ' + string.join(' ') + '\n';
             } catch (e) {
 
             }
 
         };
         this.clear = () => {
-            elem.innerText = '';
+            settableText.innerText = '';
         };
         this.getText = () => {
-            return elem.innerText;
+            return settableText.innerText;
         };
         elem.addEventListener('mouseup', () => {
             this.setText('');
@@ -111,11 +118,11 @@ export const redHelper = new CursorHelper('#f00', 10);
 export const blueHelper = new CursorHelper('#00f', 10);
 export const greenHelper = new CursorHelper('#0f0', 10);
 
-export const coordHelper = new TextHelper(10, 30);
-export const coordHelper2 = new TextHelper(10, 50);
-export const coordHelper3 = new TextHelper(10, 70);
-export const coordHelper4 = new TextHelper(10, 90);
-export const coordHelper5 = new TextHelper(10, 100);
+export const coordHelper = new TextHelper(10, 30, '   1');
+export const coordHelper2 = new TextHelper(10, 50, '   2');
+export const coordHelper3 = new TextHelper(10, 70, '   3');
+export const coordHelper4 = new TextHelper(10, 90, '   4');
+export const coordHelper5 = new TextHelper(10, 110, '   5');
 
 export const imageDataDebug = new ImageDataHelper(10, 300);
 export const imageDebug = new ImageHelper(10, 400);

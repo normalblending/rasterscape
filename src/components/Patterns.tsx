@@ -8,7 +8,7 @@ import {
 } from "../store/patterns/actions";
 import {Pattern} from "./Pattern/";
 import {PatternConfig} from "../store/patterns/pattern/types";
-import {setMaskParams, updateMask} from "../store/patterns/mask/actions";
+import {setMaskParams} from "../store/patterns/mask/actions";
 import {updateSelection} from "../store/patterns/selection/actions";
 import {load, save} from "../store/patterns/import/actions";
 import {setHeight, setWidth} from "../store/patterns/pattern/actions";
@@ -30,8 +30,6 @@ export interface PatternsActionProps {
     addPattern(config?: PatternConfig)
 
     removePattern(id: string)
-
-    updateMask(id: string, imageData: ImageData)
 
     setMaskParams(id: string, params: MaskParams)
 
@@ -147,7 +145,6 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     updateSelection,
     setWidth,
     setHeight,
-    updateMask,
     save,
     load,
     setActivePattern,

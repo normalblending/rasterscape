@@ -1,73 +1,11 @@
-import {PixelsStack, set, StackType, StackTypeASMap} from "./capture/pixels";
+import {PixelsStack, set, StackType, StackTypeASMap} from "./_old/capture/pixels";
 import * as P5 from 'p5';
 
-import asVideoModule from './capture/as/build/index.wasm';
-import * as ASVideoModule from "./capture/as/build/types";
+import asVideoModule from './_old/capture/as/build/index.wasm';
+import {AsVideoModule} from "./_old/capture/as/AsVideoModule";
 import loader, {ASUtil} from "@assemblyscript/loader";
 import {coordHelper5, imageDataDebug} from "../../../components/Area/canvasPosition.servise";
-
-
-class WasmVideoModule {
-
-    exports: ASUtil & typeof ASVideoModule;
-
-    async instantiate() {
-        const {exports} = await loader.instantiate<typeof ASVideoModule>(
-            asVideoModule,
-            {
-                env: {
-                    memory: new WebAssembly.Memory({initial: 10}),
-                    abort: () => {
-                    }
-                }
-            }
-        );
-
-        this.exports = exports;
-    }
-
-
-    // exports.paraboloidCutFunction()
-    //
-
-    // exports.setArrayParam(__newString('sis'), __newString('a'), __newArray(Int32Array_ID, [1, 2, 3]));
-    // console.log('sis.a', __getArray(exports.getArrayParam(__newString('sis'), __newString('a'))));
-    // exports.setArrayParam(__newString('sas'), __newString('a'), __newArray(Int32Array_ID, [6, 6, 6]));
-    // console.log('sas.a', __getArray(exports.getArrayParam(__newString('sas'), __newString('a'))));
-    // exports.setArrayParam(__newString('sas'), __newString('b'), __newArray(Int32Array_ID, [66, 66, 66]));
-    // console.log('sas.b', __getArray(exports.getArrayParam(__newString('sas'), __newString('b'))));
-    // console.log('sas.a', __getArray(exports.getArrayParam(__newString('sas'), __newString('a'))));
-
-    init(width: number, height: number, depth: number, pushSide: number, edgeMode: number) {
-        this.exports.init(width, height, depth, pushSide, edgeMode);
-    }
-
-    paraboloidCutFunction(
-        imageData: Uint8ClampedArray,
-        width: number,
-        height: number,
-        direction: number,
-        mirror: number,
-        kx: number,
-        ky: number,
-        kz: number,
-        dz: number
-    ): Uint8ClampedArray {
-        const {paraboloidCutFunction, __newArray, __getArray} = this.exports
-        const resultPtr = paraboloidCutFunction(
-            __newArray(this.exports.Uint8ClampedArray_ID, imageData),
-            width,
-            height,
-            direction,
-            mirror,
-            kx,
-            ky,
-            kz,
-            dz
-        );
-        return new Uint8ClampedArray(__getArray(resultPtr));
-    }
-}
+import {EmccVideoModule} from "./_old/capture/emcc/EmccVideoModule";
 
 export interface ICaptures {
     [patternId: string]: Capture
@@ -157,7 +95,8 @@ export class Capture {
     onNewFrame: (pixels: Uint8ClampedArray, width, height) => any
     cutFunction
 
-    wasmVideoModule: WasmVideoModule = new WasmVideoModule();
+    // wasmVideoModule: AsVideoModule = new AsVideoModule();
+    wasmVideoModule: EmccVideoModule = new EmccVideoModule();
 
     constructor(options: CaptureOptions) {
         const {
@@ -201,7 +140,10 @@ export class Capture {
     async init() {
         await this.wasmVideoModule.instantiate();
 
-        this.wasmVideoModule.init(this.width, this.height, this.depth, StackTypeASMap[this.stackType], EdgeModeASMap[this.edgeMode]);
+        this.wasmVideoModule.init(
+            this.width, this.height, this.depth,
+            0,
+            EdgeModeASMap[this.edgeMode]);
 
         new P5(sketch => {
             this.sketch = sketch;
@@ -233,12 +175,12 @@ export class Capture {
                 this.canvas.hide();
                 this.capture.hide();
 
-                sketch.frameRate(25);
+                sketch.frameRate(15);
             };
 
             let i = 0;
             sketch.draw = () => {
-                coordHelper5.setText(i++);
+                // coordHelper5.setText(i++);
 
                 // let time = performance.now();
                 try {
@@ -249,24 +191,24 @@ export class Capture {
 
                     // this.canvas.scale(-1.0, 1.0);
 
-                    const newFrame = this.wasmVideoModule.paraboloidCutFunction(
-                        this.capture.pixels,
-                        this.width,
-                        this.height,
-                        SlitModeDirectionMap[this.slitMode],
-                        this.mirrorH ? 1 : 0,
-                        1.5,
-                        1.5,
-                        1,
-                        0
-                    );
+                    // console.log(this.capture.pixels);
+                    if (this.capture.pixels.length) {
+                        const newFrame = this.wasmVideoModule.paraboloidCutFunction(
+                            this.capture.pixels,
+                            this.width,
+                            this.height,
+                            0,
+                            this.mirrorH ? 1 : 0,
+                            1.5,
+                            1.5,
+                            1,
+                            0
+                        );
 
-                    // imageDataDebug.setImageData(new ImageData(newFrame, this.width, this.height));
-                    //
-                    // // this.stack.push(this.capture.pixels);
-                    //
-                    //
-                    this.onNewFrame(newFrame, this.width, this.height);
+                        imageDataDebug.setImageData(new ImageData(newFrame, this.width, this.height));
+
+                        // this.onNewFrame(newFrame, this.width, this.height);
+                    }
                     // return this.update();
                 } catch (e) {
 

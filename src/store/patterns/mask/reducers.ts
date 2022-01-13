@@ -14,7 +14,6 @@ export const maskReducers = {
             };
             return ({
                 ...pattern,
-                resultImage: patternValues.setValue(action.id, pattern.current.imageData, pattern.mask?.value.imageData, maskParams?.inverse),
                 mask: pattern.mask && {
                     ...pattern.mask,
                     params: maskParams
@@ -26,19 +25,17 @@ export const maskReducers = {
     [EMaskAction.UPDATE_MASK]: reducePattern<UpdatePatternMaskAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
-            mask: {
-                ...pattern.mask,
-                value: {
-                    ...pattern.mask.value,
-                    imageData: action.imageData
-                }
-            },
-            resultImage: patternValues.setValue(action.id, pattern.current.imageData, pattern.config.mask && action.imageData, pattern.mask?.params.inverse),
-            history: action.noHistory ? pattern.history : (
-                pattern.history && historyPush(pattern.history, {
-                    current: pattern.current,
-                    maskValue: pattern.mask.value
-                })
-            )
+            // mask: {
+            //     ...pattern.mask,
+            //     value: {
+            //         ...pattern.mask.value,
+            //     }
+            // },
+            // history: action.noHistory ? pattern.history : (
+            //     pattern.history && historyPush(pattern.history, {
+            //         current: pattern.current,
+            //         maskValue: pattern.mask.value
+            //     })
+            // )
         })),
 };

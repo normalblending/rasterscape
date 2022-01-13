@@ -1,5 +1,6 @@
 import {xyParaboloid, xySis2} from "./_helpers";
 import {coordHelper5} from "../../../components/Area/canvasPosition.servise";
+import {patternsService} from "../../index";
 
 export enum FxyType {
     Parab = 'parab',
@@ -36,7 +37,7 @@ export enum FxyArrayType {
 export interface FxyArrayCoordinateParams {
     drawWidth: number
     drawHeight: number
-    valuesArray: number[]
+    valuesArray: Int32Array
     from: number
     to: number
 }
@@ -83,16 +84,16 @@ export const fxyInitialParams: FxyParams = {
             type: FxyArrayType.X,
             typeParams: {
                 [FxyArrayType.X]: {
-                    drawWidth: 100,
-                    drawHeight: 100,
-                    valuesArray: new Array(1000).fill(0),
+                    drawWidth: 400,
+                    drawHeight: 400,
+                    valuesArray: new Int32Array(1000).fill(0),
                     from: 0,
                     to: 1,
                 },
                 [FxyArrayType.Y]: {
-                    drawWidth: 100,
-                    drawHeight: 100,
-                    valuesArray: new Array(1000).fill(0),
+                    drawWidth: 400,
+                    drawHeight: 400,
+                    valuesArray: new Int32Array(1000).fill(0),
                     from: 0,
                     to: 1,
                 },
@@ -109,7 +110,7 @@ const fxyArrayFunctionByType: {
 
         const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
 
-        const width = pattern.current.imageData.width;
+        const width = patternsService.pattern[pattern.id].canvasService.canvas.width;
 
         const i = Math.max(Math.min(
             Math.floor(position.x / width * drawWidth),
@@ -138,7 +139,7 @@ const fxyArrayFunctionByType: {
 
         const {valuesArray, from, to, drawWidth, drawHeight} = params as FxyArrayCoordinateParams;
 
-        const height = pattern.current.imageData.height;
+        const height = patternsService.pattern[pattern.id].canvasService.canvas.height;
 
         const i = Math.max(Math.min(
             Math.floor(position.y / height * drawWidth),
@@ -176,8 +177,8 @@ const fxyFunctionByType = {
 
         const f = xyParaboloid(1 / 2, 1 / 2, x, y);
 
-        const width = pattern.current.imageData.width;
-        const height = pattern.current.imageData.height;
+        const width = patternsService.pattern[pattern.id].canvasService.canvas.width;
+        const height = patternsService.pattern[pattern.id].canvasService.canvas.height;
 
         const xnorm = position.x / width;
         const ynorm = position.y / height;
@@ -199,8 +200,8 @@ const fxyFunctionByType = {
         const {end} = params;
         const f = xySis2(params);
 
-        const width = pattern.current.imageData.width;
-        const height = pattern.current.height;
+        const width = patternsService.pattern[pattern.id].canvasService.canvas.width;
+        const height = patternsService.pattern[pattern.id].canvasService.canvas.height;
 
         const xnorm = position.x / width;
         const ynorm = position.y / height;

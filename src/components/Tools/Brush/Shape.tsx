@@ -6,7 +6,6 @@ import {BrushShapeParams, EBrushType} from "../../../store/brush/types";
 import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {compositeOperationSelectItems} from "../../../store/compositeOperations";
-import {PatternsSelect} from "../../PatternsSelect";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {WithTranslation, withTranslation} from "react-i18next";
 

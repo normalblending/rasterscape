@@ -1,5 +1,7 @@
-import {BrushShapeParams, BrushPatternParams, BrushSelectParams, EBrushType} from "./types";
+import {BrushPatternParams, BrushSelectParams, BrushShapeParams, EBrushType} from "./types";
 import {Action} from "redux";
+import {patternsService} from "../index";
+import {EToolType} from "../tool/types";
 
 export enum EBrushAction {
     SET_TYPE = "brush/set-type",
@@ -29,5 +31,8 @@ export interface SetBrushTypeAction extends Action {
     brushType: EBrushType
 }
 
-export const setBrushType = (brushType: EBrushType): SetBrushTypeAction =>
-    ({type: EBrushAction.SET_TYPE, brushType});
+export const setBrushType = (brushType: EBrushType) => (dispatch) => {
+
+    patternsService.bindTool(EToolType.Brush, brushType);
+    dispatch({type: EBrushAction.SET_TYPE, brushType});
+}

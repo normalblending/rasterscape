@@ -9,23 +9,11 @@ export const getPatternsSelectItems = createSelector(
     [getPatternsState],
     patterns => {
         return Object.values(patterns).map((pattern) => {
-            const {current, id, resultImage} = pattern as PatternState;
+            const {id, width, height} = pattern as PatternState;
             return {
-                imageData: current.imageData,
-                image: resultImage,
-                id
-            }
-        })
-    });
-
-export const getPatternsImageData = createSelector(
-    [getPatternsState],
-    patterns => {
-        return Object.values(patterns).map((pattern) => {
-            const {current, id, resultImage} = pattern as PatternState;
-            return {
-                imageData: current.imageData,
-                image: resultImage,
+                width, height,
+                // imageData: current.imageData,
+                // image: resultImage,
                 id
             }
         })

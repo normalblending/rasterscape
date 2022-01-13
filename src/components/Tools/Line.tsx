@@ -3,7 +3,7 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {ButtonSelect} from 'bbuutoonnss';
 import {AppState} from "../../store";
 import {ELineType, LineParams} from "../../store/line/types";
-import {setLineParams} from "../../store/line/actions";
+import {setLineParams, setLineType} from "../../store/line/actions";
 import {createSelector} from "reselect";
 import {SelectButtons} from "../_shared/buttons/complex/SelectButtons";
 import {ButtonNumberCF} from "../_shared/buttons/hotkeyed/ButtonNumberCF";
@@ -24,11 +24,11 @@ export interface LineStateProps {
     }
     paramsConfig: ParamConfig[]
     paramsValue: LineParams
-    patternsSelectItems: any[]
 }
 
 export interface LineActionProps {
     setLineParams(params: LineParams)
+    setLineType(type: ELineType)
 }
 
 export interface LineOwnProps {
@@ -51,6 +51,11 @@ const typeSelectItems = arrayToSelectItems(Object.values(ELineType))
 
 class LineComponent extends React.PureComponent<LineProps> {
 
+    handleTypeChange = (data) => {
+        const {value} = data;
+        const {setLineType} = this.props;
+        setLineType(value);
+    };
     handleParamChange = (data) => {
         const {value, name} = data;
         const {setLineParams, paramsValue} = this.props;
@@ -94,7 +99,7 @@ class LineComponent extends React.PureComponent<LineProps> {
                     name={"type"}
                     getText={this.lineTypeText}
                     items={typeSelectItems}
-                    onChange={this.handleParamChange}/>
+                    onChange={this.handleTypeChange}/>
 
                 <div className='line-params'>
 
@@ -239,11 +244,11 @@ const mapStateToProps: MapStateToProps<LineStateProps, LineOwnProps, AppState> =
     paramsConfig: state.line.paramsConfig,
     paramsConfigMap: paramsConfigMapSelector(state),
     paramsValue: state.line.params,
-    patternsSelectItems: getPatternsSelectItems(state)
 });
 
 const mapDispatchToProps: MapDispatchToProps<LineActionProps, LineOwnProps> = {
-    setLineParams
+    setLineParams,
+    setLineType
 };
 
 export const Line = connect<LineStateProps, LineActionProps, LineOwnProps, AppState>(

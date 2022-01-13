@@ -9,7 +9,6 @@ import {Day9} from "./Day9/Day9";
 
 const App: React.FC = () => (
     <ReduxProvider store={store}>
-        <Day9/>
         <Main/>
     </ReduxProvider>
 );

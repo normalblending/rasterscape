@@ -28,7 +28,7 @@ export interface AreaOwnProps {
     width: number
     rotation?: RotationValue
 
-    imageValue: ImageData
+    // imageValue: ImageData
     selectionValue: Segments
     selectionParams: SelectionParams
 
@@ -43,6 +43,8 @@ export interface AreaOwnProps {
     onEnterDraw?(e?)
 
     onLeaveDraw?(e?)
+
+    onCanvasRef?(canvas: HTMLCanvasElement): void
 }
 
 export interface AreaProps extends AreaStateProps, AreaActionProps, AreaOwnProps {
@@ -113,7 +115,7 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             name,
             height,
             width,
-            imageValue,
+            // imageValue,
             selectionValue,
             selectionParams,
             onImageChange,
@@ -125,7 +127,8 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
             onDemonstrationUnload,
             children,
             onEnterDraw,
-            onLeaveDraw
+            onLeaveDraw,
+            onCanvasRef
         } = this.props;
 
         const isSelectionTool = selectionTools.indexOf(currentTool) !== -1;
@@ -144,12 +147,13 @@ class AreaComponent extends React.PureComponent<AreaProps, AreaState> {
                     mask={mask}
                     style={this.state.style}
                     rotation={rotation}
-                    value={imageValue}
+                    // value={imageValue}
                     width={width}
                     height={height}
                     onChange={onImageChange}
                     demonstration={demonstration}
                     onDemonstrationUnload={onDemonstrationUnload}
+                    onCanvasRef={onCanvasRef}
                 >
                     <Selection
                         // style={this.state.style}

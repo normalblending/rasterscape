@@ -46,3 +46,7 @@ export interface LineParams {
 export interface SetLineParamsAction extends Action {
     params: LineParams
 }
+
+export interface SetLineTypeAction extends Action {
+    lineType: ELineType
+}

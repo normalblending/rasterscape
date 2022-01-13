@@ -1,5 +1,13 @@
 import {handleActions} from "redux-actions";
-import {ELineCapType, ELineJoinType, ELineRandomType, ELineType, LineParams, SetLineParamsAction} from "./types";
+import {
+    ELineCapType,
+    ELineJoinType,
+    ELineRandomType,
+    ELineType,
+    LineParams,
+    SetLineParamsAction,
+    SetLineTypeAction
+} from "./types";
 import {ELineAction} from "./actions";
 import {getLineParamsConfig} from "./helpers";
 import {ECompositeOperation} from "../compositeOperations";
@@ -19,6 +27,16 @@ export const lineReducer = handleActions<LineState>({
         return {
             ...state,
             params
+        }
+    },
+    [ELineAction.SET_TYPE]: (state: LineState, action: SetLineTypeAction) => {
+
+        return {
+            ...state,
+            params: {
+                ...state.params,
+                type: action.lineType
+            }
         }
     }
 }, {

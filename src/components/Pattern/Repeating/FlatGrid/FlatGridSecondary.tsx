@@ -1,5 +1,5 @@
 import * as React from "react";
-import {BezierCurveRepeating, CrossSelectData} from "../BezierGrid/BezierGridRepeatsSVGUI";
+import {CrossSelectData} from "../BezierGrid/BezierGridRepeatsSVGUI";
 import {ERepeatsType, RepeatsBezierGridParams, RepeatsFlatGridParams} from "../../../../store/patterns/repeating/types";
 import './styles.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";

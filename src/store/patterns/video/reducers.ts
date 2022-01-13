@@ -1,7 +1,7 @@
 import {reducePattern} from "../pattern/helpers";
 import {PatternAction, PatternState} from "../pattern/types";
 import {
-    SetCFAction, SetCutOffsetAction,
+    SetCFAction, SetCutOffsetAction, SetDeviceAction,
     SetEdgeModeAction, SetMirrorModeAction,
     SetSlitModeAction, SetStackSizeAction,
     SetStackTypeAction,
@@ -11,6 +11,53 @@ import {act} from "react-dom/test-utils";
 import {EVideoAction} from "./consts";
 
 export const videoReducers = {
+
+    [EVideoAction.START_CAMERA]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    cameraOn: true,
+                }
+            }
+        })),
+    [EVideoAction.STOP_CAMERA]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    cameraOn: false,
+                }
+            }
+        })),
+    [EVideoAction.START_UPDATING]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    updatingOn: true,
+                }
+            }
+        })),
+    [EVideoAction.STOP_UPDATING]: reducePattern<PatternAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    updatingOn: false,
+                }
+            }
+        })),
+
+
     [EVideoAction.SET_VIDEO_PARAMS]: reducePattern<SetVideoParamsAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
@@ -22,49 +69,14 @@ export const videoReducers = {
                 }
             }
         })),
-    [EVideoAction.START]: reducePattern<PatternAction>(
+    [EVideoAction.SET_DEVICE]: reducePattern<SetDeviceAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
             video: {
                 ...pattern.video,
                 params: {
                     ...pattern.video.params,
-                    on: true,
-                    pause: false,
-                }
-            }
-        })),
-    [EVideoAction.STOP]: reducePattern<PatternAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            video: {
-                ...pattern.video,
-                params: {
-                    ...pattern.video.params,
-                    on: false,
-                    pause: false,
-                }
-            }
-        })),
-    [EVideoAction.PAUSE]: reducePattern<PatternAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            video: {
-                ...pattern.video,
-                params: {
-                    ...pattern.video.params,
-                    pause: true,
-                }
-            }
-        })),
-    [EVideoAction.PLAY]: reducePattern<PatternAction>(
-        (pattern: PatternState, action) => ({
-            ...pattern,
-            video: {
-                ...pattern.video,
-                params: {
-                    ...pattern.video.params,
-                    pause: false,
+                    device: action.device
                 }
             }
         })),

@@ -95,7 +95,11 @@ export const maskInverse = (maskImageData: ImageData): ImageData => {
     return maskInverse;
 };
 
-export const getMaskedImage = (imageData: ImageData, maskImageData?: ImageData, inverseMask?: boolean): HTMLCanvasElement => {
+export const createMaskedImageFromImageData = (
+    imageData: ImageData,
+    maskImageData?: ImageData,
+    inverseMask?: boolean
+): HTMLCanvasElement => {
 
     let {canvas, context} = createCanvas(imageData.width, imageData.height);
 

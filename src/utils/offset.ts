@@ -1,6 +1,4 @@
-export function getOffset(elem) {
-    if (!elem) return;
-
+export function getOffset(elem: HTMLElement) {
     if (elem.getBoundingClientRect) {
         // "правильный" вариант
         return getOffsetRect(elem)

@@ -1,5 +1,6 @@
 import {PatternsState} from "../types";
 import {PatternAction, PatternConfig, PatternParams, PatternState} from "./types";
+import {PatternService} from "../_service/PatternService";
 
 export type PatternReducer<T extends PatternAction> =
     (pattern: PatternState, action: T, state: PatternsState) => PatternState
@@ -20,33 +21,12 @@ export const reducePattern = <T extends PatternAction>(reducer: PatternReducer<T
         })()
     }) : state;
 
-export const getPatternConfig = (pattern: PatternState): PatternConfig => {
+export const getPatternConfig = (pattern: PatternState, patternService: PatternService): PatternConfig => {
     return {
         ...pattern.config,
-        startImage: pattern.current.imageData,
-        startMask: pattern.mask ? pattern.mask.value.imageData : null,
+        startImage: patternService.canvasService.getImageData(),
+        startMask: pattern.mask ? patternService.maskService.getImageData() : null,
     };
-    return {
-        startImage: pattern.current.imageData,
-        startMask: pattern.mask ? pattern.mask.value.imageData : null,
-
-        width: pattern.current.imageData.width,
-        height: pattern.current.imageData.height,
-
-        history: !!pattern.history,
-
-        store: !!pattern.store,
-
-        selection: !!pattern.selection,
-
-        mask: !!pattern.mask,
-
-        rotation: !!pattern.rotation,
-
-        repeating: !!pattern.repeating,
-
-        room: !!pattern.room
-    }
 };
 export const getPatternParams = (pattern: PatternState): PatternParams => {
     return {

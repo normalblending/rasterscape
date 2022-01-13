@@ -3,7 +3,6 @@ import {ECFType} from "./types";
 import {
     depthInitialParams,
     depthNumberChangeFunction,
-    depthParamsConfig,
     depthVideoChangeFunction
 } from "./functions/depth";
 import {waveChangeFunction, waveInitialParams, waveParamsConfig} from "./functions/wave";

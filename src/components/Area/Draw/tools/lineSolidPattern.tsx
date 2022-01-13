@@ -18,22 +18,22 @@ const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState
     patternStrokeStyle.setTransform(
         matrix
             .translateSelf(
-                patternMouseCentered ? (x - linePattern.current.imageData.width / 2) : 0,
-                patternMouseCentered ? (y - linePattern.current.imageData.height / 2) : 0,
+                patternMouseCentered ? (x - linePattern.width / 2) : 0,
+                patternMouseCentered ? (y - linePattern.height / 2) : 0,
             )
             .translateSelf(
                 rotation?.value?.offset?.xd || 0,
                 -rotation?.value?.offset?.yd || 0,
             )
             .translateSelf(
-                linePattern.current.imageData.width / 2 + (rotation?.value?.offset?.xc || 0),
-                linePattern.current.imageData.height / 2 - (rotation?.value?.offset?.yc || 0),
+                linePattern.width / 2 + (rotation?.value?.offset?.xc || 0),
+                linePattern.height / 2 - (rotation?.value?.offset?.yc || 0),
             )
             .rotateSelf(rotation?.value?.angle || 0)
             .scaleSelf(patternSize)
             .translateSelf(
-                -linePattern.current.imageData.width / 2 - (rotation?.value?.offset?.xc || 0),
-                -linePattern.current.imageData.height / 2 + (rotation?.value?.offset?.yc || 0),
+                -linePattern.width / 2 - (rotation?.value?.offset?.xc || 0),
+                -linePattern.height / 2 + (rotation?.value?.offset?.yc || 0),
             )
     );
     return patternStrokeStyle;
@@ -59,7 +59,7 @@ export const lineSolidPattern = function () {
         const linePattern = toolPattern;
         const {size, patternSize, opacity, compositeOperation, cap, join, patternMouseCentered} = toolParams as LineParams;
 
-        const {width, height} = pattern.current.imageData;
+        const {width, height} = pattern;
 
         return {
             draw: (ev) => {

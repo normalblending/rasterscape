@@ -3,6 +3,7 @@ import {Action} from "redux";
 import {getRepeatingCoords, RepeatingCoordinatesItem} from "../patterns/repeating/helpers";
 import {AppState} from "../index";
 import {ThunkResult} from "../../utils/actions/types";
+import {coordHelper5} from "../../components/Area/canvasPosition.servise";
 
 export enum EPositionAction {
     SET = "position/set",
@@ -13,7 +14,7 @@ export interface PositionState {
     patternId: string
     x: number
     y: number
-    coordinates: RepeatingCoordinatesItem[]
+    coordinates: RepeatingCoordinatesItem[][]
 }
 
 export const positionReducer = handleActions<PositionState>({
@@ -36,9 +37,9 @@ export const positionReducer = handleActions<PositionState>({
 
 export interface SetPositionAction extends Action {
     patternId: string
-    x: number
-    y: number
-    coordinates: RepeatingCoordinatesItem[]
+    x?: number
+    y?: number
+    coordinates: RepeatingCoordinatesItem[][]
 }
 
 export const setPosition = (patternId: string, x: number, y: number): ThunkResult<SetPositionAction, AppState> =>
@@ -51,8 +52,8 @@ export const setPosition = (patternId: string, x: number, y: number): ThunkResul
 
         const coordinates = getRepeatingCoords({
             repeatsParams: pattern.config.repeating ? pattern.repeating.params : null,
-            width: pattern.current.imageData.width,
-            height: pattern.current.imageData.height,
+            width: pattern.width,
+            height: pattern.height,
             x,
             y,
             tool: tool.current
@@ -63,6 +64,47 @@ export const setPosition = (patternId: string, x: number, y: number): ThunkResul
             patternId,
             x,
             y,
-            coordinates
+            coordinates: [coordinates]
+        })
+    };
+
+export const resetPosition = (patternId: string): ThunkResult<SetPositionAction, AppState> =>
+    (dispatch, getState) => {
+
+        if (!getState().patterns[patternId]) return;
+
+        return dispatch({
+            type: EPositionAction.SET,
+            patternId,
+            coordinates: []
+        })
+    };
+export const pushPosition = (patternId: string, x: number, y: number): ThunkResult<SetPositionAction, AppState> =>
+    (dispatch, getState) => {
+        const {patterns, tool, position} = getState();
+        const pattern = patterns[patternId];
+
+        if (!pattern) return;
+
+        const coordinates = getRepeatingCoords({
+            repeatsParams: pattern.config.repeating ? pattern.repeating.params : null,
+            width: pattern.width,
+            height: pattern.height,
+            x,
+            y,
+            tool: tool.current
+        });
+
+        const newCoordinates = position.coordinates;
+
+        newCoordinates.unshift(coordinates);
+        newCoordinates.length > 2 && newCoordinates.pop();
+
+        return dispatch({
+            type: EPositionAction.SET,
+            patternId,
+            x,
+            y,
+            coordinates: newCoordinates
         })
     };

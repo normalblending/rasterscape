@@ -32,16 +32,16 @@ export const brushSelect = function () {
         const brushPattern = targetPattern;
         const destinationPattern = targetPattern;
 
-        if (destinationPattern.current.imageData.width !== helperCanvas1.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas1.canvas.height) {
-            helperCanvas1.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas1.canvas.height = destinationPattern.current.imageData.height;
-        }
-
-        if (destinationPattern.current.imageData.width !== helperCanvas2.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas2.canvas.height) {
-            helperCanvas2.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas2.canvas.height = destinationPattern.current.imageData.height;
+        if (
+            targetPattern.width !== helperCanvas1.canvas.width ||
+            targetPattern.height !== helperCanvas1.canvas.height ||
+            targetPattern.width !== helperCanvas2.canvas.width ||
+            targetPattern.height !== helperCanvas2.canvas.height
+        ) {
+            helperCanvas1.canvas.width = targetPattern.width;
+            helperCanvas1.canvas.height = targetPattern.height;
+            helperCanvas2.canvas.width = targetPattern.width;
+            helperCanvas2.canvas.height = targetPattern.height;
         }
 
         const patternBrush = (ev) => {
@@ -70,8 +70,8 @@ export const brushSelect = function () {
             const height = patternSize * brushPatternImage.height;
 
 
-            offsetX = offsetX || (e.offsetX - destinationPattern.current.imageData.width / 2);
-            offsetY = offsetY || (e.offsetY - destinationPattern.current.imageData.height / 2);
+            offsetX = offsetX || (e.offsetX - destinationPattern.width / 2);
+            offsetY = offsetY || (e.offsetY - destinationPattern.height / 2);
 
             coordinates.forEach(({x, y}) => {
 

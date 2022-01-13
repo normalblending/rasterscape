@@ -16,6 +16,7 @@ import {DemonstrationParams, DemonstrationState} from "../demonstration/types";
 
 // PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN PATTERN
 
+// параметры патерна для копирования их в новый патерн
 export interface PatternParams {
     history?: HistoryParams
 
@@ -40,6 +41,7 @@ export interface PatternParams {
     demonstration?: DemonstrationParams
 }
 
+// конфиг создания нового патерна для ручного заполнения или для формирования на основе друго патерна
 export interface PatternConfig {
 
     startImage?: ImageData
@@ -71,9 +73,11 @@ export interface PatternConfig {
 export interface PatternState {
     error?: any
     id: string
-    resultImage: HTMLCanvasElement | boolean
+    width: number
+    height: number
+    // resultImage: HTMLCanvasElement | boolean
     config: PatternConfig
-    current: CanvasState
+    // current: CanvasState
     history?: HistoryState,
     store?: StoreState,
     selection?: SelectionState
@@ -90,6 +94,7 @@ export interface PatternState {
 // ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS ACTIONS
 
 export interface AddPatternAction extends Action {
+    id: string
     config?: PatternConfig
     params?: PatternParams
 }

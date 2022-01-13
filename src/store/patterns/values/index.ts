@@ -1,4 +1,4 @@
-import {getMaskedImage} from "../../../utils/canvas/helpers/imageData";
+import {createMaskedImageFromImageData} from "../../../utils/canvas/helpers/imageData";
 import {Segments} from "../selection/types";
 import {getMaskFromSegments} from "../selection/helpers";
 import {imageDataDebug, imageDebug} from "../../../components/Area/canvasPosition.servise";
@@ -15,7 +15,7 @@ export const patternValues = new (class PatternValues {
 
     setValue = (id: string, imageData: ImageData, mask: ImageData, inverse: boolean) => {
         this.values[id] = {
-            current: getMaskedImage(imageData, mask, inverse),
+            current: createMaskedImageFromImageData(imageData, mask, inverse),
             selected: this.values[id]?.selected,
         };
         return true;
@@ -23,7 +23,7 @@ export const patternValues = new (class PatternValues {
 
     setSelectedValue = (id: string, imageData?: ImageData, mask?: ImageData, bBox?: SVGRect) => {
         // let {canvas, context} = createCanvas(imageData.width, imageData.height).;
-        const selected = (imageData && mask) ? getMaskedImage(imageData, mask) : undefined;
+        const selected = (imageData && mask) ? createMaskedImageFromImageData(imageData, mask) : undefined;
 
         this.values[id] = {
             selected,

@@ -14,10 +14,10 @@ export interface CutShapeProps {
     name?: string
     width: number
     height: number
-    value: number[]
+    value: Int32Array
     valueWidth: number
     valueHeight: number
-    onChange: (name: string, value: number[]) => void
+    onChange: (name: string, value: Int32Array) => void
     center?: number
     drawAxis?: (ctx: CanvasRenderingContext2D) => void
     inverse?: boolean
@@ -111,7 +111,8 @@ export const CutShape: React.FC<CutShapeProps> = (props) => {
             ? e.offsetY
             : height - e.offsetY;
         // const newValue = [...value];
-        const newValue = [..._value];
+        // const newValue = [..._value];
+        const newValue = new Int32Array(value);
 
         const {x: xv, y: yv} = getValueCoordinates(x, y);
 
@@ -139,7 +140,7 @@ export const CutShape: React.FC<CutShapeProps> = (props) => {
                 : height - prevE.offsetY;
 
         // const newValue = [...value];
-        const newValue = [..._value];
+        const newValue = new Int32Array(value);
 
 
         const {x: xv, y: yv} = getValueCoordinates(x, y);

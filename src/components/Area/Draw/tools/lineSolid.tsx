@@ -30,7 +30,7 @@ export const lineSolid = () => {
 
         if (!pattern) return;
 
-        const {width, height} = pattern.current.imageData;
+        const {width, height} = pattern;
 
         return {
             draw: (ev: CanvasEvent) => {

@@ -1,14 +1,14 @@
 // VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO
-import {xyParaboloid, xySis2} from "../../../changeFunctions/functions/_helpers";
+import {xyParaboloid, xySis2} from "../../../../changeFunctions/functions/_helpers";
 import {
     FxyArrayCoordinateParams,
     FxyArrayParams,
     FxyArrayType,
     FxyParams,
     FxyType
-} from "../../../changeFunctions/functions/fxy";
+} from "../../../../changeFunctions/functions/fxy";
 import {set, StackType} from "./pixels";
-import {EdgeMode} from "../services";
+import {EdgeMode} from "../../services";
 
 export const xyArrayVideoFunctionByType: {
     [type: string]: ({x, y, width, height, params}) => number
@@ -43,7 +43,7 @@ export const xyArrayVideoFunctionByType: {
 
         const amplitude = Math.abs(to - from);
         const min = Math.min(from, to);
-        const inverse = to < from;
+        // const inverse = to < from;
 
         const znorm = min + amplitude * coordinateValue;
 

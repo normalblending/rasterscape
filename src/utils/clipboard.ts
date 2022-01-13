@@ -21,14 +21,14 @@ declare class ClipboardItem {
     constructor(data: { [mimeType: string]: Blob });
 }
 
-export async function copyToClipboard(pngBlob) {
+export async function copyToClipboard(pngBlob: Blob) {
     try {
         await navigator.clipboard['write']([
             new ClipboardItem({
                 [pngBlob.type]: pngBlob
             })
         ]);
-        console.log("Image copied");
+        // console.log("Image copied");
     } catch (error) {
         console.error(error);
     }

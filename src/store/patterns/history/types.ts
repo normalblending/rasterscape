@@ -4,8 +4,8 @@ import {CanvasState} from "../../../utils/canvas/types";
 import {FunctionState} from "../../../utils/patterns/function";
 
 export interface PatternHistoryItem {
-    current?: CanvasState
-    maskValue?: CanvasState
+    canvasImageData?: ImageData //ImageData и берется теперь из серввиса
+    maskImageData?: ImageData
 }
 
 export interface HistoryParams {
@@ -13,8 +13,9 @@ export interface HistoryParams {
 }
 
 export interface HistoryValue {
-    before: PatternHistoryItem[],
+    before: PatternHistoryItem[]
     after: PatternHistoryItem[]
+    current: PatternHistoryItem
 }
 
 export type HistoryState = FunctionState<HistoryValue, HistoryParams>;

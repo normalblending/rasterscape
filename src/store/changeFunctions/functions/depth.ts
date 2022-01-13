@@ -1,6 +1,20 @@
 import {ValueD} from "../../../components/_shared/buttons/complex/ButtonNumber";
 import {xyParaboloid} from "./_helpers";
 import {EParamType} from "../../../components/_shared/Params.types";
+import {AppState} from "../../index";
+import {updateVideo} from "../../patterns/video/actions";
+import {ECFType} from "../types";
+import {EChangeFunctionsAction} from "../actions";
+
+export interface CfDepthParams {
+    items: {
+        id: number
+        patternId: string,
+        zed: number,
+        zd: number,
+        component: number
+    }[]
+}
 
 export const depthInitialParams = {
     items: [],
@@ -45,6 +59,7 @@ export const depthNumberChangeFunction =
             //     startValue
             // );
         };
+
 export const depthVideoChangeFunction =
     (x, y, patternWidth, patternHeight, params, patterns) => {
 
@@ -74,23 +89,3 @@ export const depthVideoChangeFunction =
 
         return znorm;// * patternWidth;
     };
-
-
-export const depthParamsConfig = [{
-    name: "zd",
-    type: EParamType.Number,
-    props: {
-        valueD: ValueD.VerticalLinear(100),
-        range: [0, 1] as [number, number]
-    }
-}, {
-    name: "zed",
-    type: EParamType.Number,
-    props: {
-        valueD: ValueD.VerticalLinear(100),
-        range: [0, 1] as [number, number]
-    }
-}, {
-    name: "image",
-    type: EParamType.ImageData,
-}];

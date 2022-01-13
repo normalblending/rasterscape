@@ -6,22 +6,23 @@ import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../store";
 import {ChangeFunctionState, ECFType} from "../../../store/changeFunctions/types";
 import {
-    pause,
-    play,
+
     setChangeFunction,
-    setCutOffset,
+    setCutOffset, setDevice,
     setEdgeMode,
     setMirrorMode,
     setSlitMode,
     setStackSize,
     setStackType,
+    startCamera,
+    stopCamera,
     start,
     stop,
     updateVideo
 } from "../../../store/patterns/video/actions";
 import {getChangeFunctionsSelectItemsVideo} from "../../../store/changeFunctions/selectors";
 import {EdgeMode, MirrorMode, SlitMode} from "../../../store/patterns/video/services";
-import {StackType} from "../../../store/patterns/video/capture/pixels";
+import {StackType} from "../../../store/patterns/video/_old/capture/pixels";
 import './videoControls.scss';
 import {SelectItem} from "../../../utils/utils";
 import {setCFHighlights, setCFTypeHighlights} from "../../../store/changeFunctionsHighlights";
@@ -32,6 +33,7 @@ import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {LabelFormatter} from "../../../store/hotkeys/label-formatters";
 import {Translations} from "../../../store/language/helpers";
+import {SelectVideoDevice} from "./SelectVideoDevice";
 
 export interface VideoControlsStateProps {
 
@@ -43,15 +45,19 @@ export interface VideoControlsStateProps {
 }
 
 export interface VideoControlsActionProps {
-    start
-    stop
+    start(id: string)
 
-    pause
-    play
+    stop(id: string)
+
+    startCamera(id: string)
+
+    stopCamera(id: string)
 
     setCFHighlights(cfName?: string)
 
     setCFTypeHighlights(cfType?: ECFType[])
+
+    setDevice(id: string, value: MediaDeviceInfo)
 
     setSlitMode(id: string, value: SlitMode)
 
@@ -108,25 +114,26 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     componentDidUpdate(prevProps: Readonly<VideoControlsProps>, prevState: Readonly<VideoControlsState>, snapshot?: any): void {
 
-        const {changeFunctionParams, updateVideo, patternId} = this.props;
-
-        if (changeFunctionParams !== prevProps.changeFunctionParams) {
-            updateVideo(patternId);
-        }
+        // const {changeFunctionParams, updateVideo, patternId} = this.props;
+        //
+        // if (changeFunctionParams !== prevProps.changeFunctionParams) {
+        //     updateVideo(patternId);
+        // }
+        // это теперь в экшенах
     }
 
-    handleChangeOnParam = (data) => {
+    handleChangeCameraOnParam = (data) => {
         const {videoParams, patternId} = this.props;
-        videoParams.on
-            ? this.props.stop(patternId)
-            : this.props.start(patternId);
+        videoParams.cameraOn
+            ? this.props.stopCamera(patternId)
+            : this.props.startCamera(patternId);
     };
 
-    handlePause = () => {
+    handleChangeUpdatingOnParam = (data) => {
         const {videoParams, patternId} = this.props;
-        videoParams.pause
-            ? this.props.play(patternId)
-            : this.props.pause(patternId);
+        videoParams.updatingOn
+            ? this.props.stop(patternId)
+            : this.props.start(patternId);
     };
 
     handleChangeSlitModeParam = (data) => {
@@ -256,41 +263,54 @@ export class VideoControlsComponent extends React.PureComponent<VideoControlsPro
 
     cfGetValue = (item: ChangeFunctionState) => item.id;
     cfGetText = (item: ChangeFunctionState) => {
-         const {t} = this.props;
-         return Translations.cfName(t)(item);
-     }
+        const {t} = this.props;
+        return Translations.cfName(t)(item);
+    }
+
+    handleDeviceSelect = (device: MediaDeviceInfo) => {
+        this.props.setDevice(this.props.patternId, device);
+
+    };
 
     render() {
         const {changeFunctionsSelectItems, videoParams: params, patternId, videoDisabled, t} = this.props;
-        const {on, pause} = params;
+        const {cameraOn, updatingOn} = params;
 
         return (
             <div className={"video-controls"}>
 
-
+                <SelectVideoDevice
+                    value={params.device?.deviceId}
+                    onSelect={this.handleDeviceSelect}
+                />
                 <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.video.on'}
+                    hkLabel={'pattern.hotkeysDescription.video.cameraOn'}
                     hkData1={patternId}
-                    path={`pattern.${patternId}.video.on`}
+                    path={`pattern.${patternId}.video.cameraOn`}
                     className={'on-off'}
-                    selected={on}
-                    name={'on'}
+                    selected={cameraOn}
+                    name={'cameraOn'}
                     disabled={videoDisabled}
-                    onClick={this.handleChangeOnParam}
+                    onClick={this.handleChangeCameraOnParam}
                 >
-                    {on ? t("pattern.video.stop") : t("pattern.video.start")}
+                    {cameraOn ? t("pattern.video.stop") : t("pattern.video.start")}
                 </ButtonHK>
 
+                <br/>
                 <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.video.pause'}
+                    hkLabel={'pattern.hotkeysDescription.video.updatingOn'}
                     hkData1={patternId}
-                    path={`pattern.${patternId}.video.pause`}
-                    className={'pause-play'}
-                    disabled={!on}
-                    selected={pause && on}
-                    name={'pause'}
-                    onClick={this.handlePause}
-                >{pause ? t("pattern.video.play") : t("pattern.video.pause")}</ButtonHK>
+                    path={`pattern.${patternId}.video.updatingOn`}
+                    className={'on-off'}
+                    selected={updatingOn}
+                    name={'updatingOn'}
+                    disabled={videoDisabled}
+                    onClick={this.handleChangeUpdatingOnParam}
+                >
+                    {updatingOn ? t("pattern.video.stop") : t("pattern.video.start")}
+                </ButtonHK>
+
+
                 <ButtonHK
                     hkLabel={'pattern.hotkeysDescription.video.mirror'}
                     hkData1={patternId}
@@ -408,9 +428,10 @@ const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwn
 const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoControlsOwnProps> = {
     start,
     stop,
-    pause,
-    play,
+    startCamera,
+    stopCamera,
 
+    setDevice,
     setSlitMode,
     setEdgeMode,
     setMirrorMode,
