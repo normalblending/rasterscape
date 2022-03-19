@@ -33,10 +33,6 @@ export class EmccVideoModule {
 
     freePointer: (pointer: number) => void;
 
-    cutFunction = () => {
-
-    };
-
     defaultCutFunction: (
         imageData: Uint8ClampedArray | null,
         width: number,

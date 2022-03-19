@@ -21,8 +21,8 @@ import {
     updateVideo
 } from "../../../store/patterns/video/actions";
 import {getChangeFunctionsSelectItemsVideo} from "../../../store/changeFunctions/selectors";
-import {EdgeMode, MirrorMode, SlitMode} from "../../../store/patterns/video/services";
-import {StackType} from "../../../store/patterns/video/_old/capture/pixels";
+import {EdgeMode, MirrorMode, SlitMode} from "../../../store/patterns/video/services_DEPREC";
+import {StackType} from "../../../store/patterns/video/_old/capture/pixelStack";
 import './videoControls.scss';
 import {SelectItem} from "../../../utils/utils";
 import {setCFHighlights, setCFTypeHighlights} from "../../../store/changeFunctionsHighlights";

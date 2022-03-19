@@ -3,7 +3,7 @@ import {VideoParams} from "./types";
 import {AppState, patternsService} from "../../index";
 import 'p5/lib/addons/p5.dom';
 import {updateImage} from "../pattern/actions";
-import {Captures, EdgeMode, MirrorMode, SlitMode} from "./services";
+import {Captures, EdgeMode, MirrorMode, SlitMode} from "./services_DEPREC";
 import {ThunkAction} from "redux-thunk";
 import {EVideoAction} from "./consts";
 import {StackType} from "../_service/patternServices/PatternVideoService";
@@ -236,15 +236,15 @@ export const setCutOffset = (id: string, value: number): ThunkAction<any, any, a
 };
 
 export const setSize = (id: string, width?: number, height?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setSize(width, height);
+    // Captures.captures[id]?.setSize(width, height);
 };
 
 export const setVideoWidth = (id: string, width?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setWidth(width);
+    // Captures.captures[id]?.setWidth(width);
 };
 
 export const setVideoHeight = (id: string, height?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setHeight(height);
+    // Captures.captures[id]?.setHeight(height);
 };
 
 export const updateVideo = (id: string) => (dispatch, getState: () => AppState) => {

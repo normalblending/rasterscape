@@ -1,4 +1,4 @@
-import {PixelsStack, set, StackType, StackTypeASMap} from "./_old/capture/pixels";
+import {PixelsStack, set, StackType, StackTypeASMap} from "./_old/capture/pixelStack";
 import * as P5 from 'p5';
 
 import asVideoModule from './_old/capture/as/build/index.wasm';
@@ -6,7 +6,7 @@ import {AsVideoModule} from "./_old/capture/as/AsVideoModule";
 import loader, {ASUtil} from "@assemblyscript/loader";
 import {coordHelper5, imageDataDebug} from "../../../components/Area/canvasPosition.servise";
 import {EmccVideoModule} from "./_old/capture/emcc/EmccVideoModule";
-
+// DEPRECATEED// DEPRECATEED// DEPRECATEED// DEPRECATEED// DEPRECATEED
 export interface ICaptures {
     [patternId: string]: Capture
 }
@@ -434,5 +434,5 @@ export class CaptureService {
     };
 
 }
-
+// DEPRECATEED
 export const Captures = new CaptureService();

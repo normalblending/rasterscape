@@ -9,11 +9,17 @@ import {
     ParabParams,
     Sis2Params
 } from "../../../../changeFunctions/functions/fxy";
-import {coordHelper2, coordHelper3, coordHelper4} from "../../../../../components/Area/canvasPosition.servise";
+import {
+    coordHelper2,
+    coordHelper3,
+    coordHelper4,
+    imageDataDebug
+} from "../../../../../components/Area/canvasPosition.servise";
 import {xyArrayVideoFunctionByType} from "../../../video/_old/capture/cutFunctions";
 import {CfDepthParams} from "../../../../changeFunctions/functions/depth";
 import {patternsService} from "../../../../index";
 import {CameraService, CameraServiceInitParams} from "./CameraService";
+import {ShaderVideoModule} from "./ShaderVideoModule";
 
 export enum EdgeMode {
     NO = 'no',
@@ -99,7 +105,7 @@ export class PatternVideoService {
 
     requestFrameID: number;
 
-    wasmVideoModule: EmccVideoModule;
+    wasmVideoModule: ShaderVideoModule;
 
     stackType: StackType = StackType.Right;
     edgeMode: EdgeMode = EdgeMode.ALL;
@@ -114,7 +120,7 @@ export class PatternVideoService {
         this.patternService = patternService;
 
 
-        this.wasmVideoModule = new EmccVideoModule();
+        this.wasmVideoModule = new ShaderVideoModule();
 
     }
 
@@ -217,12 +223,12 @@ export class PatternVideoService {
             const cfState = state.changeFunctions.functions[this.changeFunctionId];
 
             if (cfState) {
-                const cfType = cfState.type;
-                const cfParams = cfState.params;
+                // const cfType = cfState.type;
+                // const cfParams = cfState.params;
 
-                const f = this.changeFunction[cfType];
-
-                newFrameData = f(imageDataData, cfParams);
+                // const f = this.changeFunction[cfType];
+                // newFrameData = f(imageDataData, cfParams);
+                newFrameData = this.defaultChangeFunction(imageDataData);
             } else {
                 newFrameData = this.defaultChangeFunction(imageDataData);
             }
@@ -231,7 +237,7 @@ export class PatternVideoService {
             newFrameData = this.defaultChangeFunction(imageDataData);
         }
 
-        // imageDataDebug.setImageData(new ImageData(newFrame, this.width, this.height));
+        // imageDataDebug.setImageData(new ImageData(newFrameData, this.width, this.height));
 
         newFrameData && this.patternService.canvasService.context.putImageData(new ImageData(newFrameData, this.width, this.height), 0, 0);
         this.patternService.valuesService.update();
@@ -279,7 +285,7 @@ export class PatternVideoService {
     setDepth = (depth: number): PatternVideoService => {
         this.depth = Math.ceil(depth * this.width);
 
-        this.wasmVideoModule.setDepth?.(this.depth);
+        // this.wasmVideoModule.setDepth?.(this.depth);
 
         if (this.isOn && this.isPause) {
             this.update();
@@ -316,124 +322,124 @@ export class PatternVideoService {
         );
     };
 
-    xyChangeFunction = {
-        [FxyType.Parab]: (imageDataData: Uint8ClampedArray | null, params: ParabParams): Uint8ClampedArray => {
-            return this.wasmVideoModule.paraboloidCutFunction(
-                imageDataData,
-                this.width,
-                this.height,
-                SlitModeDirectionMap[this.slitMode],
-                this.mirrorH ? 1 : 0,
-                this.cutOffset,
-                params?.x,
-                params?.y,
-                params?.end,
-                params?.zd,
-            );
-        },
-        [FxyType.Sis2]: (imageDataData: Uint8ClampedArray | null, params: Sis2Params): Uint8ClampedArray => {
-            return this.wasmVideoModule.sis2CutFunction(
-                imageDataData,
-                this.width,
-                this.height,
-                SlitModeDirectionMap[this.slitMode],
-                this.mirrorH ? 1 : 0,
-                this.cutOffset,
-                params.cosA,
-                params.h,
-                params.xN,
-                params.yN,
-                params.xD,
-                params.yD,
-                params.XA,
-                params.xdd,
-                params.ydd,
-            );
-        },
-        [FxyType.Array]: (imageDataData: Uint8ClampedArray | null, arrayParams: FxyArrayParams): Uint8ClampedArray => {
-            const {type, typeParams} = arrayParams;
-            const params = typeParams[type];
-
-            if (type === FxyArrayType.X) {
-                return this.wasmVideoModule.arrayXCutFunction(
-                    imageDataData,
-                    this.width,
-                    this.height,
-                    SlitModeDirectionMap[this.slitMode],
-                    this.mirrorH ? 1 : 0,
-                    this.cutOffset,
-                    params.valuesArray,
-                    params.from,
-                    params.to,
-                    params.drawWidth,
-                    params.drawHeight,
-                );
-            } else {
-                return this.wasmVideoModule.arrayYCutFunction(
-                    imageDataData,
-                    this.width,
-                    this.height,
-                    SlitModeDirectionMap[this.slitMode],
-                    this.mirrorH ? 1 : 0,
-                    this.cutOffset,
-                    params.valuesArray,
-                    params.from,
-                    params.to,
-                    params.drawWidth,
-                    params.drawHeight,
-                );
-            }
-        }
-    };
-
-    changeFunction = {
-        [ECFType.FXY]: (imageDataData: Uint8ClampedArray | null, params: FxyParams) => {
-            const cfSubType = params.type;
-            const cfSubTypeParams = params.typeParams[cfSubType];
-
-            return this.xyChangeFunction[cfSubType](imageDataData, cfSubTypeParams as any);
-        },
-        [ECFType.DEPTH]: (imageDataData: Uint8ClampedArray | null, params: CfDepthParams) => {
-            const item1 = params.items[0];
-            const item2 = params.items[1];
-            const item3 = params.items[2];
-            const item4 = params.items[3];
-            const depth1ImageData = patternsService.pattern[item1?.patternId]?.canvasService.getImageData();
-            const depth2ImageData = patternsService.pattern[item2?.patternId]?.canvasService.getImageData();
-            const depth3ImageData = patternsService.pattern[item3?.patternId]?.canvasService.getImageData();
-            const depth4ImageData = patternsService.pattern[item4?.patternId]?.canvasService.getImageData();
-            return this.wasmVideoModule.channelsCutFunction(
-                imageDataData,
-                this.width,
-                this.height,
-                SlitModeDirectionMap[this.slitMode],
-                this.mirrorH ? 1 : 0,
-                this.cutOffset,
-                depth1ImageData?.data,
-                depth1ImageData?.width,
-                depth1ImageData?.height,
-                item1?.zed,
-                item1?.zd,
-                item1?.component,
-                depth2ImageData?.data,
-                depth2ImageData?.width,
-                depth2ImageData?.height,
-                item2?.zed,
-                item2?.zd,
-                item2?.component,
-                depth3ImageData?.data,
-                depth3ImageData?.width,
-                depth3ImageData?.height,
-                item3?.zed,
-                item3?.zd,
-                item3?.component,
-                depth4ImageData?.data,
-                depth4ImageData?.width,
-                depth4ImageData?.height,
-                item4?.zed,
-                item4?.zd,
-                item4?.component,
-            );
-        }
-    };
+    // xyChangeFunction = {
+    //     [FxyType.Parab]: (imageDataData: Uint8ClampedArray | null, params: ParabParams): Uint8ClampedArray => {
+    //         return this.wasmVideoModule.paraboloidCutFunction(
+    //             imageDataData,
+    //             this.width,
+    //             this.height,
+    //             SlitModeDirectionMap[this.slitMode],
+    //             this.mirrorH ? 1 : 0,
+    //             this.cutOffset,
+    //             params?.x,
+    //             params?.y,
+    //             params?.end,
+    //             params?.zd,
+    //         );
+    //     },
+    //     [FxyType.Sis2]: (imageDataData: Uint8ClampedArray | null, params: Sis2Params): Uint8ClampedArray => {
+    //         return this.wasmVideoModule.sis2CutFunction(
+    //             imageDataData,
+    //             this.width,
+    //             this.height,
+    //             SlitModeDirectionMap[this.slitMode],
+    //             this.mirrorH ? 1 : 0,
+    //             this.cutOffset,
+    //             params.cosA,
+    //             params.h,
+    //             params.xN,
+    //             params.yN,
+    //             params.xD,
+    //             params.yD,
+    //             params.XA,
+    //             params.xdd,
+    //             params.ydd,
+    //         );
+    //     },
+    //     [FxyType.Array]: (imageDataData: Uint8ClampedArray | null, arrayParams: FxyArrayParams): Uint8ClampedArray => {
+    //         const {type, typeParams} = arrayParams;
+    //         const params = typeParams[type];
+    //
+    //         if (type === FxyArrayType.X) {
+    //             return this.wasmVideoModule.arrayXCutFunction(
+    //                 imageDataData,
+    //                 this.width,
+    //                 this.height,
+    //                 SlitModeDirectionMap[this.slitMode],
+    //                 this.mirrorH ? 1 : 0,
+    //                 this.cutOffset,
+    //                 params.valuesArray,
+    //                 params.from,
+    //                 params.to,
+    //                 params.drawWidth,
+    //                 params.drawHeight,
+    //             );
+    //         } else {
+    //             return this.wasmVideoModule.arrayYCutFunction(
+    //                 imageDataData,
+    //                 this.width,
+    //                 this.height,
+    //                 SlitModeDirectionMap[this.slitMode],
+    //                 this.mirrorH ? 1 : 0,
+    //                 this.cutOffset,
+    //                 params.valuesArray,
+    //                 params.from,
+    //                 params.to,
+    //                 params.drawWidth,
+    //                 params.drawHeight,
+    //             );
+    //         }
+    //     }
+    // };
+    //
+    // changeFunction = {
+    //     [ECFType.FXY]: (imageDataData: Uint8ClampedArray | null, params: FxyParams) => {
+    //         const cfSubType = params.type;
+    //         const cfSubTypeParams = params.typeParams[cfSubType];
+    //
+    //         return this.xyChangeFunction[cfSubType](imageDataData, cfSubTypeParams as any);
+    //     },
+    //     [ECFType.DEPTH]: (imageDataData: Uint8ClampedArray | null, params: CfDepthParams) => {
+    //         const item1 = params.items[0];
+    //         const item2 = params.items[1];
+    //         const item3 = params.items[2];
+    //         const item4 = params.items[3];
+    //         const depth1ImageData = patternsService.pattern[item1?.patternId]?.canvasService.getImageData();
+    //         const depth2ImageData = patternsService.pattern[item2?.patternId]?.canvasService.getImageData();
+    //         const depth3ImageData = patternsService.pattern[item3?.patternId]?.canvasService.getImageData();
+    //         const depth4ImageData = patternsService.pattern[item4?.patternId]?.canvasService.getImageData();
+    //         return this.wasmVideoModule.channelsCutFunction(
+    //             imageDataData,
+    //             this.width,
+    //             this.height,
+    //             SlitModeDirectionMap[this.slitMode],
+    //             this.mirrorH ? 1 : 0,
+    //             this.cutOffset,
+    //             depth1ImageData?.data,
+    //             depth1ImageData?.width,
+    //             depth1ImageData?.height,
+    //             item1?.zed,
+    //             item1?.zd,
+    //             item1?.component,
+    //             depth2ImageData?.data,
+    //             depth2ImageData?.width,
+    //             depth2ImageData?.height,
+    //             item2?.zed,
+    //             item2?.zd,
+    //             item2?.component,
+    //             depth3ImageData?.data,
+    //             depth3ImageData?.width,
+    //             depth3ImageData?.height,
+    //             item3?.zed,
+    //             item3?.zd,
+    //             item3?.component,
+    //             depth4ImageData?.data,
+    //             depth4ImageData?.width,
+    //             depth4ImageData?.height,
+    //             item4?.zed,
+    //             item4?.zd,
+    //             item4?.component,
+    //         );
+    //     }
+    // };
 }
