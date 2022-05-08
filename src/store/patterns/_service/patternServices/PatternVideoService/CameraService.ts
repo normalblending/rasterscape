@@ -1,10 +1,22 @@
-import {EdgeMode, EdgeModeASMap, MirrorMode, SlitMode, StackType} from "./index";
+/**
+ *  const cameraService = new CameraService();
+ *
+ *     getVideoDevices().then(async (devices) => {
+ *         cameraService.init({
+ *             width: _width,
+ *             height: _height,
+ *             device: null,
+ *         });
+ *         await cameraService.setDevice(devices[0])
+ *         await cameraService.start();
+ *     })
+ *
+ *     */
 
 export interface CameraServiceInitParams {
-
     width: number;
     height: number;
-    device: MediaDeviceInfo;
+    device: MediaDeviceInfo | null;
 }
 
 export class CameraService {
@@ -15,12 +27,12 @@ export class CameraService {
     width: number;
     height: number;
 
-    stream: MediaStream;
+    stream: MediaStream | null;
 
     videoElement: HTMLVideoElement;
     canvasElement: HTMLCanvasElement;
-    canvasContext: CanvasRenderingContext2D;
-    device: MediaDeviceInfo;
+    canvasContext: CanvasRenderingContext2D | null;
+    device: MediaDeviceInfo | null;
 
     init(params: CameraServiceInitParams) {
         this.width = params.width;
@@ -39,6 +51,9 @@ export class CameraService {
     }
 
     async start() {
+        if (!this.device)
+            return;
+
         this.isOn = true;
 
         this.stream = await this.getMediaStreamToVideoElement(this.device, this.videoElement);
@@ -60,12 +75,30 @@ export class CameraService {
 
     }
 
-    receiveImageDataData = (): Uint8ClampedArray | null => {
+    receiveImageDataData = (): Uint8ClampedArray | undefined => {
         if (this.isOn) {
-            this.canvasContext.drawImage(this.videoElement, 0, 0);
-            return this.canvasContext.getImageData(0, 0, this.width, this.height).data;
+            this.canvasContext?.drawImage(this.videoElement, 0, 0, this.width, this.height);
+            return this.canvasContext?.getImageData(0, 0, this.width, this.height).data;
         } else {
-            return null;
+            return undefined;
+        }
+    };
+
+    receiveImageData = (): ImageData | undefined => {
+        if (this.isOn) {
+            this.canvasContext?.drawImage(this.videoElement, 0, 0, this.width, this.height);
+            return this.canvasContext?.getImageData(0, 0, this.width, this.height);
+        } else {
+            return undefined;
+        }
+    };
+
+    receiveImage = (): HTMLCanvasElement | undefined => {
+        if (this.isOn) {
+            this.canvasContext?.drawImage(this.videoElement, 0, 0, this.width, this.height);
+            return this.canvasElement;
+        } else {
+            return undefined;
         }
     };
 
@@ -79,7 +112,7 @@ export class CameraService {
     }
 
 
-    async getMediaStreamToVideoElement(device?: MediaDeviceInfo, element?: HTMLVideoElement | null): Promise<MediaStream> {
+    async getMediaStreamToVideoElement(device?: MediaDeviceInfo, element?: HTMLVideoElement | null): Promise<MediaStream | null> {
         if (device) {
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: device ? {
@@ -99,12 +132,12 @@ export class CameraService {
         }
     }
 
-    stopMediaStreamVideo(stream: MediaStream, element?: HTMLVideoElement | null) {
+    stopMediaStreamVideo(stream: MediaStream | null, element?: HTMLVideoElement | null) {
         if (element) {
             element.pause();
             element.srcObject = null;
         }
-        stream.getTracks().forEach(track => track.stop());
+        stream?.getTracks().forEach(track => track.stop());
 
         return null;
     }

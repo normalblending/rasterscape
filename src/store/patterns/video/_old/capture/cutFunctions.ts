@@ -1,4 +1,5 @@
 // VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO VIDEO
+
 import {xyParaboloid, xySis2} from "../../../../changeFunctions/functions/_helpers";
 import {
     FxyArrayCoordinateParams,
@@ -7,7 +8,9 @@ import {
     FxyParams,
     FxyType
 } from "../../../../changeFunctions/functions/fxy";
+// @ts-ignore
 import {set, StackType} from "./pixels";
+// @ts-ignore
 import {EdgeMode} from "../../services";
 
 export const xyArrayVideoFunctionByType: {

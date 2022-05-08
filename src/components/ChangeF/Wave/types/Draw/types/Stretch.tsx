@@ -141,7 +141,7 @@ export const StretchDrawWave: DrawTypeComponentType<DrawStretchParams> = withTra
         onChange,
     } = props;
 
-    const handleChangeCutShape = React.useCallback((_, value: number[]) => {
+    const handleChangeCutShape = React.useCallback((_, value: Int32Array) => {
         onChange({...params, valuesArray: value}, functionParams)
     }, [params, functionParams]);
 

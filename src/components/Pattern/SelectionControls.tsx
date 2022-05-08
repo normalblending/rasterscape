@@ -78,7 +78,7 @@ export class SelectionControlsComponent extends React.PureComponent<SelectionCon
 
 const mapStateToProps: MapStateToProps<SelectionControlsStateProps, SelectionControlsOwnProps, AppState> = (state, {patternId}) => ({
     selectionValue: state.patterns[patternId]?.selection.value,
-    isVideoPlaying: state.patterns[patternId]?.video?.params.on && !state.patterns[patternId]?.video?.params.pause,
+    isVideoPlaying: state.patterns[patternId]?.video?.params.updatingOn,// && !state.patterns[patternId]?.video?.params.pause,
     meDrawer: isMeDrawer(state.patterns[patternId].room?.value)
 });
 

@@ -57,7 +57,7 @@ export interface ButtonImperativeHandlers {
     click(e)
 }
 
-export const Button: React.FC<ButtonProps> = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
+export const Button = React.forwardRef<ButtonImperativeHandlers, ButtonProps>((props, ref) => {
 
     const {
         children,

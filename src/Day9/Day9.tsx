@@ -3,7 +3,6 @@ import './styles.css';
 import asModule from './as/build/index.wasm';
 import * as ASModule from "./as/build/types";
 import loader from "@assemblyscript/loader";
-import {Int32Array_ID} from "./as/index.as";
 
 export interface Day9Props {
 

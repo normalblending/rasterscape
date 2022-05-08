@@ -5,7 +5,6 @@ import {ChangeFunctionState} from "../../../../../store/changeFunctions/types";
 import {AnyDrawWaveParams, DrawParams, DrawType} from "../../../../../store/changeFunctions/functions/wave";
 import {SelectDrop} from "../../../../_shared/buttons/complex/SelectDrop";
 import {WithTranslation, withTranslation} from "react-i18next";
-import {CropDrawWave} from "./types/Crop";
 import {CenterDrawWave} from "./types/Center";
 import {StretchDrawWave} from "./types/Stretch";
 import {DrawTypeComponentType} from "./types/types";

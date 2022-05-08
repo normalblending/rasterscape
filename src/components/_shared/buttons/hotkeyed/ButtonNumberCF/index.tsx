@@ -127,7 +127,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const [_redOpen, setRedOpen] = React.useState(false);
     const [_menuOpen, setMenuOpen] = React.useState(false);
 
-    const [active, setActive] = React.useState();
+    const [active, setActive] = React.useState<boolean>();
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
 

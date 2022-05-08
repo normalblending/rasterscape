@@ -4,7 +4,7 @@ import {AppState} from "../store";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
-import {ButtonHK, ButtonHKimperativeHandlers} from "./_shared/buttons/hotkeyed/ButtonHK";
+import {ButtonHK, ButtonHKImperativeHandlers} from "./_shared/buttons/hotkeyed/ButtonHK";
 import {KeyTrigger} from "./Hotkeys/simple/KeyTrigger";
 import {bindPreview, unbindPreview} from "../store/patterns/pattern/actions";
 import {FC, useEffect} from "react";
@@ -115,7 +115,7 @@ export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
 
     const previewId = id + ' ' + name + ' ' + index;
 
-    const buttonRef = React.useRef<ButtonHKimperativeHandlers>(null);
+    const buttonRef = React.useRef<ButtonHKImperativeHandlers>(null);
 
     const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
 

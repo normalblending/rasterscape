@@ -1,15 +1,8 @@
 import {PatternService} from "../PatternService";
-import {CanvasEvent} from "../../../../components/_shared/Canvas";
-import {canvasToImageData} from "../../../../utils/canvas/helpers/imageData";
-import {getOffset} from "../../../../utils/offset";
-import {rotate} from "../../../../utils/draw";
-import {coordHelper} from "../../../../components/Area/canvasPosition.servise";
-import {DrawToolProps} from "../../../../components/Area/Draw/tools/types";
 import {EToolType} from "../../../tool/types";
 import {EBrushType} from "../../../brush/types";
 import {ELineType} from "../../../line/types";
-import {RotationValue} from "../../rotating/types";
-import {ToolHandlers, ToolService} from "./CanvasEventsService/types";
+import {ToolService} from "./CanvasEventsService/types";
 import {CanvasEventHandlers, CanvasEventsService} from "./CanvasEventsService";
 import {BrushShape} from "./CanvasEventsService/ToolsServices/brushForm";
 import {BrushPattern} from "./CanvasEventsService/ToolsServices/brushPattern";

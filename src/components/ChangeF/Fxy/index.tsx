@@ -124,7 +124,7 @@ export class FxyCFComponent extends React.PureComponent<FxyCFProps, FxyCFState> 
 }
 
 const mapStateToProps: MapStateToProps<FxyCFStateProps, FxyCFOwnProps, AppState> = (state, {name}) => ({
-    params: state.changeFunctions.functions[name].params,
+    params: state.changeFunctions.functions[name].params as unknown as FxyParams,
     tutorial: state.tutorial.on,
     functionParams: state.changeFunctions.functions[name]
 });

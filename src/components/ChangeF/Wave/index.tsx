@@ -102,7 +102,7 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
 }
 
 const mapStateToProps: MapStateToProps<WaveCFStateProps, WaveCFOwnProps, AppState> = (state, {name}) => ({
-    params: state.changeFunctions.functions[name].params,
+    params: state.changeFunctions.functions[name].params as unknown as WaveParams,
     functionParams: state.changeFunctions.functions[name]
 });
 

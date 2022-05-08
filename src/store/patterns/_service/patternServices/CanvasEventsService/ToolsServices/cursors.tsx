@@ -1,6 +1,5 @@
 import * as React from "react";
 import {CSSProperties} from "react";
-import {coordHelper4} from "../../canvasPosition.servise";
 
 const cursorStyle: CSSProperties = {mixBlendMode: 'difference'};
 

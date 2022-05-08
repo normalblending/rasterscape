@@ -80,7 +80,7 @@ export const KeyInput: React.FC<KeyInputProps> = (props) => {
     } = props;
 
     const [inputValue, setInputValue] = useState(value);
-    const [binded, setBinded] = useState();
+    const [binded, setBinded] = useState<boolean>();
 
     const dispatchChange = useCallback((newKey, newCode) => {
         onChange?.(name, newKey, newCode);

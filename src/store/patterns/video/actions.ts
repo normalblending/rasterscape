@@ -3,10 +3,10 @@ import {VideoParams} from "./types";
 import {AppState, patternsService} from "../../index";
 import 'p5/lib/addons/p5.dom';
 import {updateImage} from "../pattern/actions";
-import {Captures, EdgeMode, MirrorMode, SlitMode} from "./services_DEPREC";
+// import {EdgeMode, MirrorMode, SlitMode} from "./services_DEPREC";
 import {ThunkAction} from "redux-thunk";
 import {EVideoAction} from "./consts";
-import {StackType} from "../_service/patternServices/PatternVideoService";
+import {EdgeMode, StackType, MirrorMode, SlitMode} from "../_service/patternServices/PatternVideoService";
 import {addCfToPatternDependency, removeCfToPatternDependency} from "../../dependencies";
 
 export interface SetVideoParamsAction extends PatternAction {

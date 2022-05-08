@@ -106,7 +106,7 @@ export const FxyArrayCoordinates = (coordinate: 'x' | 'y'): FxyArrayTypeComponen
             onChange,
         } = props;
 
-        const handleChangeCutShape = useCallback((_, value: number[]) => {
+        const handleChangeCutShape = useCallback((_, value: Int32Array) => {
             onChange({...params, valuesArray: value}, functionParams)
         }, [params, functionParams]);
 

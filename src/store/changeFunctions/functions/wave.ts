@@ -34,7 +34,7 @@ export enum DrawType {
 export interface DrawCenterParams {
     drawWidth: number
     drawHeight: number
-    valuesArray: number[]
+    valuesArray: Int32Array
     period: number
 
     offset: number
@@ -46,7 +46,7 @@ export interface DrawCenterParams {
 export interface DrawStretchParams {
     drawWidth: number
     drawHeight: number
-    valuesArray: number[]
+    valuesArray: Int32Array
     period: number
 
     from: number
@@ -98,7 +98,7 @@ export const waveInitialParams: WaveParams = {
                 [DrawType.Center]: {
                     drawWidth: 100,
                     drawHeight: 100,
-                    valuesArray: new Array(1000).fill(0),
+                    valuesArray: new Int32Array(1000).fill(0),
                     period: 3000,
 
                     offset: 0,
@@ -109,7 +109,7 @@ export const waveInitialParams: WaveParams = {
                 [DrawType.Stretch]: {
                     drawWidth: 100,
                     drawHeight: 100,
-                    valuesArray: new Array(1000).fill(0),
+                    valuesArray: new Int32Array(1000).fill(0),
                     period: 3000,
 
                     from: 0,

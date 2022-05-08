@@ -21,11 +21,11 @@ export interface ButtonSelectProps extends ButtonProps {
     onMouseLeave?(data?: ButtonSelectEventData)
 }
 
-export interface ButtonSelectimperativeHandlers extends ButtonImperativeHandlers {
+export interface ButtonSelectImperativeHandlers extends ButtonImperativeHandlers {
 
 }
 
-export const  ButtonSelect = React.forwardRef<ButtonSelectimperativeHandlers, ButtonSelectProps>((_props, ref) => {
+export const  ButtonSelect = React.forwardRef<ButtonSelectImperativeHandlers, ButtonSelectProps>((_props, ref) => {
 
     const {
         className,

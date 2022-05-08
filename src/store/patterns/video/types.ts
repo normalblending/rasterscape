@@ -2,9 +2,8 @@
 
 import {FunctionState} from "../../../utils/patterns/function";
 import {ECFType} from "../../changeFunctions/types";
-import {EdgeMode, MirrorMode, SlitMode} from "./services_DEPREC";
-import {StackType} from "./_old/capture/pixels";
 import {ECompositeOperation} from "../../compositeOperations";
+import {EdgeMode, MirrorMode, SlitMode, StackType} from "../_service/patternServices/PatternVideoService";
 
 export interface VideoParams {
     cameraOn: boolean

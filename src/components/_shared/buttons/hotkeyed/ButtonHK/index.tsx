@@ -1,12 +1,12 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../../../../store";
-import {WithTranslation, withTranslation} from "react-i18next";
+import {useTranslation, WithTranslation, withTranslation} from "react-i18next";
 import {highlightHotkey} from "../../../../../store/hotkeys/actions";
 import {
     ButtonSelect,
     ButtonSelectEventData,
-    ButtonSelectimperativeHandlers,
+    ButtonSelectImperativeHandlers,
     ButtonSelectProps
 } from "../../simple/ButtonSelect";
 import * as classNames from 'classnames';
@@ -48,17 +48,18 @@ export interface ButtonHKOwnProps extends ButtonSelectProps, HKLabelProps {
     onMouseLeave?(data?: ButtonSelectEventData)
 }
 
-export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, WithTranslation {
+export interface ButtonHKProps extends ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps {
 
 }
-export interface ButtonHKimperativeHandlers extends ButtonSelectimperativeHandlers {
+export interface ButtonHKImperativeHandlers extends ButtonSelectImperativeHandlers {
 
 }
 
-const ButtonHKComponent = React.forwardRef<ButtonSelectimperativeHandlers, ButtonHKProps>((props, ref) => {
+const ButtonHKComponent = React.forwardRef<ButtonHKImperativeHandlers, ButtonHKProps>((props, ref) => {
 
+    const {t} = useTranslation();
     const {
-        t,
+        // t,
         isHotkeyed,
         highlightHotkey,
         path,
@@ -91,7 +92,7 @@ const ButtonHKComponent = React.forwardRef<ButtonSelectimperativeHandlers, Butto
 
     const [pressed, setPressed] = React.useState(false);
 
-    const buttonRef = useRef<ButtonSelectimperativeHandlers>(null);
+    const buttonRef = useRef<ButtonSelectImperativeHandlers>(null);
 
     React.useImperativeHandle(ref, () => (buttonRef.current), [buttonRef]);
 
@@ -186,5 +187,9 @@ const mapDispatchToProps: MapDispatchToProps<ButtonHKActionProps, ButtonHKOwnPro
 
 export const ButtonHK = connect<ButtonHKStateProps, ButtonHKActionProps, ButtonHKOwnProps, AppState>(
     mapStateToProps,
-    mapDispatchToProps
-)(withTranslation('common')(ButtonHKComponent));
+    mapDispatchToProps,
+    null,
+    {
+        forwardRef: true
+    }
+)(ButtonHKComponent);

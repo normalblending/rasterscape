@@ -17,9 +17,9 @@ export const getImageFromClipboard = (event, callback) => {
 }
 
 
-declare class ClipboardItem {
-    constructor(data: { [mimeType: string]: Blob });
-}
+// declare class ClipboardItem {
+//     constructor(data: { [mimeType: string]: Blob });
+// }
 
 export async function copyToClipboard(pngBlob: Blob) {
     try {

@@ -33,7 +33,7 @@ import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {LabelFormatter} from "../../../store/hotkeys/label-formatters";
 import {Translations} from "../../../store/language/helpers";
-import {SelectVideoDevice} from "./SelectVideoDevice";
+import {SelectVideoDevice} from "bbuutoonnss";
 
 export interface VideoControlsStateProps {
 

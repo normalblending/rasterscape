@@ -36,10 +36,15 @@ export interface GlobalHotkeysActionProps {
     toggleDemonstration: typeof toggleDemonstration
     onOptimization: typeof onOptimization
     offOptimization: typeof offOptimization
+
     cutPatternSelection(id)
+
     addPattern(config?: PatternConfig)
+
     cutPatternSelectionToClipboard(id)
+
     selectAll(id)
+
     updateSelection: (id: string, value: Segments, bBox: SVGRect) => any
     load: typeof load
     save: typeof save
@@ -284,7 +289,10 @@ const mapDispatchToProps: MapDispatchToProps<GlobalHotkeysActionProps, GlobalHot
     doublePattern,
 };
 
-export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps, GlobalHotkeysActionProps, GlobalHotkeysOwnProps, AppState>(
+export const GlobalHotkeysTriggers = connect<GlobalHotkeysStateProps,
+    GlobalHotkeysActionProps,
+    GlobalHotkeysOwnProps,
+    AppState>(
     mapStateToProps,
     mapDispatchToProps
 )(GlobalHotkeysComponent);

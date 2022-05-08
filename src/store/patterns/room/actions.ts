@@ -2,7 +2,7 @@ import {PatternAction} from "../pattern/types";
 import {createRoomSocket, roomSockets} from "./service";
 import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helpers/imageData";
 import {ThunkResult} from "../../../utils/actions/types";
-import {AppState} from "../../index";
+import {AppState, patternsService} from "../../index";
 import {updateImage} from "../pattern/actions";
 import {stop} from "../video/actions";
 import _throttle from 'lodash/throttle';
@@ -116,7 +116,8 @@ export const sendMessage = (id: string, message: string): ThunkResult<SendMessag
 
         const state = getState();
         const roomSocket = roomSockets.get(id);
-        const resultImageData = state.patterns[id]?.current?.imageData;
+        // const resultImageData = state.patterns[id]?.current?.imageData;
+        const resultImageData = patternsService.pattern[id].canvasService.getImageData();
 
         const {left, right, leftPersistent, leftParts} = parseMessage(message);
 
