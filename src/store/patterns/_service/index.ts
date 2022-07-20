@@ -29,7 +29,7 @@ export class PatternsService {
     };
 
     bindTool = (tool: EToolType, toolType: EBrushType | ELineType) => {
-        coordHelper4.setText('set bind tool');
+        // coordHelper4.setText('set bind tool');
         Object.values(this.pattern).forEach(pattern => pattern.patternToolService.bindTool(tool, toolType));
     }
 }

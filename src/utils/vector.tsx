@@ -15,6 +15,17 @@ export const vectorAdd = (v1: Vector, v2: Vector | number) => {
         v1?.y + (v2 as number),
     )
 };
+export const vectorsAdd = (...vs: (Vector | number)[]) => {
+    return vs.reduce<Vector>((res, v) => {
+        return typeof v === 'object' ? createVector(
+            (res as Vector)?.x + (v as Vector)?.x,
+            (res as Vector)?.y + (v as Vector)?.y,
+        ) : createVector(
+            (res as Vector)?.x + (v as number),
+            (res as Vector)?.y + (v as number),
+        )
+    }, createVector(0,0))
+};
 export const vectorMul = (v1: Vector, c: number) => {
     return createVector(
         v1?.x * c,

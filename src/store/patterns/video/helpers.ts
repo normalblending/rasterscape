@@ -1,7 +1,7 @@
-import {VideoParams, VideoValue} from "./types";
-import {getFunctionState} from "../../../utils/patterns/function";
-import {EdgeMode, MirrorMode, SlitMode} from "./services_DEPREC";
-import {StackType} from "./_old/capture/pixelStack";
+import {VideoParams, VideoValue} from './types'
+import {getFunctionState} from '../../../utils/patterns/function'
+import {StackType} from './_old/capture/pixelStack'
+import {CameraAxis, EdgeMode, MirrorMode} from "../_service/patternServices/PatternVideoService/ShaderVideoModule";
 
 export const getVideoState = getFunctionState<VideoValue, VideoParams>(
     {}, {
@@ -10,11 +10,18 @@ export const getVideoState = getFunctionState<VideoValue, VideoParams>(
         // on: false,
         // pause: false,
         changeFunctionId: null,
-        slitMode: SlitMode.FRONT,
-        cutOffset: 0,
+        cameraAxis: CameraAxis.T,
         edgeMode: EdgeMode.ALL,
         stackType: StackType.Right,
         mirrorMode: MirrorMode.NO,
-        stackSize: 1,
-        device: null
-    });
+        stackSize: 20,
+        device: null,
+        offset: {
+            x0: 0.0,//.25,
+            x1: 1.0,//.75,
+            y0: 0.0,//.25,
+            y1: 1.0,//.75,
+            z0: 0.0,//.25,
+            z1: 1.0,//.75,
+        },
+    })

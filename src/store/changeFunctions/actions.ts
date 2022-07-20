@@ -2,7 +2,6 @@ import {AddCFAction, ECFType} from "./types";
 import {AppState} from "../index";
 import {setChangingMode} from "../changing/actions";
 import {ChangingMode} from "../changing/types";
-import {updateVideo} from "../patterns/video/actions";
 import {addPatternToCfDependency, removePatternToCfDependency} from "../dependencies";
 import {CfDepthParams} from "./functions/depth";
 
@@ -29,13 +28,8 @@ export const removeCF = (name: string) => (dispatch, getState: () => AppState) =
 }
 
 export const changeCFParams = (id: string, params: any) => (dispatch, getState: () => AppState) => {
-    const state = getState();
 
     dispatch({type: EChangeFunctionsAction.CHANGE_PARAMS, params, id});
-
-    state.dependencies.changeFunctionToPattern[id]?.forEach(patternId => {
-        dispatch(updateVideo(patternId));
-    });
 
 };
 

@@ -139,8 +139,7 @@ export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
             buttonRef.current?.blur();
     }, [blurOnClick, onSelect]);
 
-    const handlePress = React.useCallback((e, hotkey, data) => {
-        const id = data;
+    const handlePress = React.useCallback((e, id) => {
         onSelect(id);
     }, [onSelect]);
     return (

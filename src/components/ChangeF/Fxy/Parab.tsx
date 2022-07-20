@@ -64,7 +64,7 @@ export class ParabCF extends React.PureComponent<FxyTypeComponentProps<ParabPara
                         hkData1={functionParams.number}
                         value={params.x}
                         name={`changeFunctions.${name}.x`}
-                        range={[-20, 20]}
+                        range={[-40, 40]}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF
@@ -75,7 +75,7 @@ export class ParabCF extends React.PureComponent<FxyTypeComponentProps<ParabPara
                         hkData1={functionParams.number}
                         value={params.y}
                         name={`changeFunctions.${name}.y`}
-                        range={[-20, 20]}
+                        range={[-40, 40]}
                         onChange={this.handleParamChange}
                     />
                     <ButtonNumberCF

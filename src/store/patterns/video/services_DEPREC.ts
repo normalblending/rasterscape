@@ -205,7 +205,7 @@ export class Capture {
                             0
                         );
 
-                        imageDataDebug.setImageData(new ImageData(newFrame, this.width, this.height));
+                        // imageDataDebug.setImageData(new ImageData(newFrame, this.width, this.height));
 
                         // this.onNewFrame(newFrame, this.width, this.height);
                     }

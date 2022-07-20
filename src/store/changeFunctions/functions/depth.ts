@@ -1,10 +1,4 @@
-import {ValueD} from "../../../components/_shared/buttons/complex/ButtonNumber";
-import {xyParaboloid} from "./_helpers";
-import {EParamType} from "../../../components/_shared/Params.types";
-import {AppState} from "../../index";
-import {updateVideo} from "../../patterns/video/actions";
-import {ECFType} from "../types";
-import {EChangeFunctionsAction} from "../actions";
+
 
 export interface CfDepthParams {
     items: {

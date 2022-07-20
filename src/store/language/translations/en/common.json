@@ -389,13 +389,10 @@
         "bottom": "bottom",
         "all": "all"
       },
-      "slitMode": {
-        "front": "front",
-        "back": "back",
-        "top": "top",
-        "bottom": "bottom",
-        "left": "left",
-        "right": "right"
+      "cameraAxis": {
+        "t": "t",
+        "y": "y",
+        "x": "x"
       }
     },
     "hotkeysDescription": {
@@ -455,13 +452,10 @@
         "edgeMode": "pattern{{data1}} | camera | edge mode",
         "stackSize": "pattern{{data1}} | camera | stack size",
         "cutOffset": "pattern{{data1}} | camera | cut offset",
-        "slitMode": {
-          "front": "pattern{{data1}} | camera | point of view | front",
-          "back": "pattern{{data1}} | camera | point of view | back",
-          "top": "pattern{{data1}} | camera | point of view | top",
-          "bottom": "pattern{{data1}} | camera | point of view | bottom",
-          "left": "pattern{{data1}} | camera | point of view | left",
-          "right": "pattern{{data1}} | camera | point of view | right"
+        "cameraAxis": {
+          "t": "pattern{{data1}} | camera | axis | t",
+          "y": "pattern{{data1}} | camera | axis | y",
+          "x": "pattern{{data1}} | camera | axis | x"
         },
         "stackType": "pattern{{data1}} | camera | stack type",
         "cutFunction": "pattern{{data1}} | camera | cut function"

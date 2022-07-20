@@ -4,12 +4,10 @@
   "version": "20.4.0",
   "private": true,
   "scripts": {
-    "start:wp": "webpack serve",
-    "build:wp": "webpack",
+    "start": "webpack serve",
+    "build": "webpack",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "start": "craco start",
-    "build": "GENERATE_SOURCEMAP=false craco build",
     "test": "craco test"
   },
   "dependencies": {

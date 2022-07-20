@@ -1,0 +1,59 @@
+.video-offset  {
+  position: relative;
+}
+
+.video-offset_axis-handler {
+  position: absolute;
+  top: 0;
+  width: 70px;
+  height: 20px;
+}
+
+.video-offset_x-handler {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 35px;
+  height: 40px;
+
+}
+.video-offset_x-handler > .hover-hideable-hidden-part {
+
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-offset_y-handler {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 35px;
+  height: 20px;
+}
+
+.video-offset_y-handler > .hover-hideable-hidden-part {
+
+  position: absolute;
+  right: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-offset_z-handler {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 35px;
+  height: 20px;
+}
+.video-offset_z-handler > .hover-hideable-hidden-part {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}

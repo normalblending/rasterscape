@@ -1,57 +1,18 @@
-import {PatternService} from "../../PatternService";
-import {EmccVideoModule} from "./emcc/EmccVideoModule";
-import {ECFType} from "../../../../changeFunctions/types";
-import {
-    FxyArrayParams,
-    FxyArrayType,
-    FxyParams,
-    FxyType,
-    ParabParams,
-    Sis2Params
-} from "../../../../changeFunctions/functions/fxy";
-import {
-    coordHelper2,
-    coordHelper3,
-    coordHelper4,
-    imageDataDebug
-} from "../../../../../components/Area/canvasPosition.servise";
-import {xyArrayVideoFunctionByType} from "../../../video/_old/capture/cutFunctions";
-import {CfDepthParams} from "../../../../changeFunctions/functions/depth";
-import {patternsService} from "../../../../index";
-import {CameraService, CameraServiceInitParams} from "./CameraService";
-import {ShaderVideoModule} from "./ShaderVideoModule";
-
-export enum EdgeMode {
-    NO = 'no',
-    TOP = 'top',
-    BOT = 'bottom',
-    ALL = 'all',
-}
-
-export enum MirrorMode {
-    NO = '◢|◺',
-    VERTICAL = 'vertical',
-    HORIZONTAL = '◿|◣',
-    BOTH = 'both',
-}
-
-export enum SlitMode {
-    FRONT = 'front',
-    BACK = 'back',
-    TOP = 'top',
-    BOTTOM = 'bottom',
-    LEFT = 'left',
-    RIGHT = 'right',
-}
+import { PatternService } from '../../PatternService'
+import { CameraService, CameraServiceInitParams } from 'bbuutoonnss'
+import { EdgeMode, MirrorMode, ShaderVideoModule, CameraAxis, StackType } from './ShaderVideoModule'
+import { FxyParams } from '../../../../changeFunctions/functions/fxy'
+import { getFxyFunctionType } from './utils'
+import { setStackSize } from '../../../video/actions'
+import { VideoOffset } from './ShaderVideoModule/types'
+import { ECFType } from '../../../../changeFunctions/types'
+import { CfDepthParams } from '../../../../changeFunctions/functions/depth'
 
 
-export const SlitModeDirectionMap = {
-    [SlitMode.FRONT]: 0,
-    [SlitMode.BACK]: 1,
-    [SlitMode.TOP]: 2,
-    [SlitMode.BOTTOM]: 3,
-    [SlitMode.LEFT]: 4,
-    [SlitMode.RIGHT]: 5,
+export const CameraAxisDirectionMap = {
+    [CameraAxis.T]: 0,
+    [CameraAxis.Y]: 1,
+    [CameraAxis.X]: 2,
 }
 
 export const EdgeModeASMap = {
@@ -61,13 +22,6 @@ export const EdgeModeASMap = {
     [EdgeMode.ALL]: 3,
 }
 
-
-export enum StackType {
-    Right = ">",
-    Left = "<",
-    FromCenter = "<>",
-    ToCenter = "><",
-}
 
 export const StackTypeASMap = {
     [StackType.Right]: 0,
@@ -80,366 +34,227 @@ export const StackTypeASMap = {
 export interface VideoServiceInitParams {
     width: number;
     height: number;
-    depth: number,
+    stackSize: number,
+    offset: VideoOffset
+
     edgeMode: EdgeMode,
-    slitMode: SlitMode,
+    cameraAxis: CameraAxis,
     stackType: StackType,
     mirrorMode: MirrorMode
-    cutOffset: number
 }
 
 export class PatternVideoService {
-    patternService: PatternService;
+    patternService: PatternService
 
-    isCameraOn: boolean = false;
-    isUpdatingOn: boolean = false;
-    isOn: boolean = false;
-    isPause: boolean = false;
+    // isCameraOn: boolean = false
+    // isUpdatingOn: boolean = false
 
-    width: number;
-    height: number;
-    depth: number;
+    isOn: boolean = false
+    // isPause: boolean = false
 
-    cameraService: CameraService = new CameraService();
-    device: MediaDeviceInfo;
+    width: number
+    height: number
+    stackSize: number
+    stackType: StackType = StackType.Right
+    edgeMode: EdgeMode = EdgeMode.ALL
+    cameraAxis: CameraAxis = CameraAxis.T
+    mirrorMode: MirrorMode = MirrorMode.NO
 
-    requestFrameID: number;
+    offset: VideoOffset
 
-    wasmVideoModule: ShaderVideoModule;
 
-    stackType: StackType = StackType.Right;
-    edgeMode: EdgeMode = EdgeMode.ALL;
-    slitMode: SlitMode = SlitMode.FRONT;
-    mirrorMode: MirrorMode = MirrorMode.NO;
-    mirrorH: boolean = false
-    mirrorV: boolean = false
-    cutOffset: number;
-    changeFunctionId: string;
+    cutOffset: number
+    depth: number
+
+    changeFunctionId: string
+
+    device: MediaDeviceInfo
+    cameraService: CameraService = new CameraService()
+
+    requestFrameID: number
+
+    shaderVideoModule: ShaderVideoModule
 
     constructor(patternService: PatternService) {
-        this.patternService = patternService;
+        this.patternService = patternService
 
 
-        this.wasmVideoModule = new ShaderVideoModule();
+        this.shaderVideoModule = new ShaderVideoModule()
 
     }
 
     initCamera(params: CameraServiceInitParams): PatternVideoService {
-        this.cameraService.init(params);
-        return this;
+        this.cameraService.init(params)
+        return this
     }
 
     async startCamera() {
-        await this.cameraService.start();
-        return this;
+        await this.cameraService.start()
+        return this
     }
 
     stopCamera() {
-        this.cameraService.stop();
-        return this;
+        this.cameraService.stop()
+        return this
     }
 
     setDevice = async (device: MediaDeviceInfo): Promise<PatternVideoService> => {
-        this.device = device;
+        this.device = device
 
-        await this.cameraService.setDevice(device);
+        await this.cameraService.setDevice(device)
 
-        return this;
-    };
-
+        return this
+    }
 
 
     async init(params: VideoServiceInitParams): Promise<PatternVideoService> {
 
-        this.width = this.patternService.canvasService.canvas.width;
-        this.height = this.patternService.canvasService.canvas.height;
-        this.depth = Math.ceil(params.depth * this.width) || 1;
+        this.width = params.width
+        this.height = params.height
+        this.stackSize = params.stackSize
 
-        this.edgeMode = params.edgeMode;
-        this.slitMode = params.slitMode;
-        this.stackType = params.stackType;
-        this.mirrorMode = params.mirrorMode;
-        this.cutOffset = params.cutOffset;
+        this.edgeMode = params.edgeMode
+        this.cameraAxis = params.cameraAxis
+        this.stackType = params.stackType
+        this.mirrorMode = params.mirrorMode
+        this.offset = params.offset;
 
-        (await this.wasmVideoModule
-            .instantiate())
-            .init(
-                this.width, this.height, this.depth,
-                0,
-                EdgeModeASMap[this.edgeMode]
-            );
+        (
+            await this.shaderVideoModule.instantiate()
+        ).init(
+            params,
+        )
 
-        return this;
+        return this
 
     }
 
+    prevTime = 0
+    minTime = 1000
+    maxTime = 0
+    times = new Array(50)
     start = () => {
-        // if (this.requestFrameID) return;
 
-        let prevTime = 0;
-        let minTime = 1000;
-        let maxTime = 0;
-        const times = new Array(50);
-        const changing = (time) => {
-
-
-            // DRAW SPEED
-            const interval = time - prevTime;
-            times.push(interval);
-            times.shift();
-
-            minTime = Math.min(minTime, interval);
-
-            if (prevTime) maxTime = Math.max(maxTime, interval)
-            coordHelper2.setText(interval);
-            coordHelper3.setText(minTime);
-            coordHelper4.setText(maxTime);
-            prevTime = time;
-
-            this.onFrame();
-
-            this.requestFrameID = requestAnimationFrame(changing);
-        };
-        this.requestFrameID = requestAnimationFrame(changing);
-    };
+        this.requestFrameID = requestAnimationFrame(this.frameHandler)
+    }
     stop = () => {
 
-        this.requestFrameID && cancelAnimationFrame(this.requestFrameID);
-        this.requestFrameID = null;
-    };
+        this.requestFrameID && cancelAnimationFrame(this.requestFrameID)
+        this.requestFrameID = null
+    }
+
+    frameHandler = (time) => {
+
+        // coordHelper5.setText('CHANG', time);
+        // DRAW SPEED
+        const interval = time - this.prevTime
+        this.times.push(interval)
+        this.times.shift()
+
+        this.minTime = Math.min(this.minTime, interval)
+
+        if (this.prevTime) this.maxTime = Math.max(this.maxTime, interval)
+        // coordHelper2.setText(interval)
+        // coordHelper3.setText(this.minTime)
+        // coordHelper4.setText(this.maxTime)
+        this.prevTime = time
+
+        this.onFrame()
+
+        this.requestFrameID = requestAnimationFrame(this.frameHandler)
+    }
 
     onFrame = () => {
 
-        const newCameraFrameData = this.cameraService.receiveImageDataData();
+        const newCameraFrameData = this.cameraService.receiveImageData()?.data
 
-        this.update(newCameraFrameData);
-    };
+        if (newCameraFrameData) {
+            this.shaderVideoModule.pushNewFrame(newCameraFrameData)
+        }
+        const state = this.patternService.storeService.getState()
 
-    update = (imageDataData?: Uint8ClampedArray | null): PatternVideoService => {
-        let newFrameData: Uint8ClampedArray;
         if (this.changeFunctionId) {
-            const state = this.patternService.storeService.getState();
 
-            const cfState = state.changeFunctions.functions[this.changeFunctionId];
+            const changeFunctionState = state.changeFunctions.functions[this.changeFunctionId]
 
-            if (cfState) {
-                // const cfType = cfState.type;
-                // const cfParams = cfState.params;
+            if (changeFunctionState.type === ECFType.FXY) {
+                const changeFunctionParams = changeFunctionState.params as FxyParams
+                const changeFunctionTypeParams = changeFunctionParams.typeParams[changeFunctionParams.type]
 
-                // const f = this.changeFunction[cfType];
-                // newFrameData = f(imageDataData, cfParams);
-                newFrameData = this.defaultChangeFunction(imageDataData);
-            } else {
-                newFrameData = this.defaultChangeFunction(imageDataData);
+                this.shaderVideoModule.updateFuncParams(changeFunctionParams.type, changeFunctionTypeParams, state)
             }
-        } else {
+            if (changeFunctionState.type === ECFType.DEPTH) {
+                const changeFunctionParams = changeFunctionState.params as CfDepthParams
 
-            newFrameData = this.defaultChangeFunction(imageDataData);
+                this.shaderVideoModule.updateFuncParams(changeFunctionState.type, changeFunctionParams, state)
+            }
+
         }
 
-        // imageDataDebug.setImageData(new ImageData(newFrameData, this.width, this.height));
+        const patternVideoOffset = state.patterns[this.patternService.patternId].video.params.offset
+        this.shaderVideoModule.updateOffsets(patternVideoOffset)
 
-        newFrameData && this.patternService.canvasService.context.putImageData(new ImageData(newFrameData, this.width, this.height), 0, 0);
-        this.patternService.valuesService.update();
+        const newFrameCanvas: HTMLCanvasElement = this.shaderVideoModule.updateImage()
 
-        return this;
+        newFrameCanvas && this.patternService.canvasService.context.drawImage(newFrameCanvas, 0, 0) // можно заменять сразу все изображение?
+
+        this.patternService.valuesService.update()
     }
 
     setStackType = (type: StackType): PatternVideoService => {
-        this.stackType = type;
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
+        this.stackType = type
+        this.shaderVideoModule.updateStackType(type)
+
+        return this
     }
 
     setEdgeMode = (mode: EdgeMode): PatternVideoService => {
-        this.edgeMode = mode;
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
+        this.edgeMode = mode
+        this.shaderVideoModule.updateEdgeMode(mode)
+
+        return this
     }
 
-    setSlitMode = (slitMode: SlitMode): PatternVideoService => {
-        this.slitMode = slitMode;
+    setCameraAxis = (cameraAxis: CameraAxis): PatternVideoService => {
+        this.cameraAxis = cameraAxis
+        this.shaderVideoModule.updateCameraAxis(cameraAxis)
 
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
-    };
+        return this
+    }
 
 
     setMirrorMode = (mirrorMode: MirrorMode): PatternVideoService => {
-        this.mirrorMode = mirrorMode;
-        this.mirrorH = mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.HORIZONTAL;
-        this.mirrorV = mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.VERTICAL;
+        this.mirrorMode = mirrorMode
+        this.shaderVideoModule.updateMirror(
+            mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.HORIZONTAL,
+            mirrorMode === MirrorMode.BOTH || mirrorMode === MirrorMode.VERTICAL,
+        )
 
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
-    };
-
-    setDepth = (depth: number): PatternVideoService => {
-        this.depth = Math.ceil(depth * this.width);
-
-        // this.wasmVideoModule.setDepth?.(this.depth);
-
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
+        return this
     }
 
-    setCutOffset = (cutOffset: number): PatternVideoService => {
-        this.cutOffset = cutOffset; //??
+    setStackSize = (value: number): PatternVideoService => {
+        this.stackSize = value
+        this.shaderVideoModule.updateStackSize(this.stackSize)
 
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
+        return this
     }
 
     setChangeFunction = (changeFunctionId: string): PatternVideoService => {
-        this.changeFunctionId = changeFunctionId;
+        this.changeFunctionId = changeFunctionId
 
-        if (this.isOn && this.isPause) {
-            this.update();
-        }
-        return this;
+        this.shaderVideoModule.updateCutFunctionType(
+            getFxyFunctionType(this.changeFunctionId, this.patternService.storeService.getState()),
+        )
+
+        return this
     }
 
-    defaultChangeFunction = (imageDataData: Uint8ClampedArray | null) => {
-        return this.wasmVideoModule.defaultCutFunction(
-            imageDataData,
-            this.width,
-            this.height,
-            SlitModeDirectionMap[this.slitMode],
-            this.mirrorH ? 1 : 0,
-            this.cutOffset
-        );
-    };
+    setOffset = (param: string, value: any): PatternVideoService => {
+        this.offset = { ...this.offset, [param]: value }
 
-    // xyChangeFunction = {
-    //     [FxyType.Parab]: (imageDataData: Uint8ClampedArray | null, params: ParabParams): Uint8ClampedArray => {
-    //         return this.wasmVideoModule.paraboloidCutFunction(
-    //             imageDataData,
-    //             this.width,
-    //             this.height,
-    //             SlitModeDirectionMap[this.slitMode],
-    //             this.mirrorH ? 1 : 0,
-    //             this.cutOffset,
-    //             params?.x,
-    //             params?.y,
-    //             params?.end,
-    //             params?.zd,
-    //         );
-    //     },
-    //     [FxyType.Sis2]: (imageDataData: Uint8ClampedArray | null, params: Sis2Params): Uint8ClampedArray => {
-    //         return this.wasmVideoModule.sis2CutFunction(
-    //             imageDataData,
-    //             this.width,
-    //             this.height,
-    //             SlitModeDirectionMap[this.slitMode],
-    //             this.mirrorH ? 1 : 0,
-    //             this.cutOffset,
-    //             params.cosA,
-    //             params.h,
-    //             params.xN,
-    //             params.yN,
-    //             params.xD,
-    //             params.yD,
-    //             params.XA,
-    //             params.xdd,
-    //             params.ydd,
-    //         );
-    //     },
-    //     [FxyType.Array]: (imageDataData: Uint8ClampedArray | null, arrayParams: FxyArrayParams): Uint8ClampedArray => {
-    //         const {type, typeParams} = arrayParams;
-    //         const params = typeParams[type];
-    //
-    //         if (type === FxyArrayType.X) {
-    //             return this.wasmVideoModule.arrayXCutFunction(
-    //                 imageDataData,
-    //                 this.width,
-    //                 this.height,
-    //                 SlitModeDirectionMap[this.slitMode],
-    //                 this.mirrorH ? 1 : 0,
-    //                 this.cutOffset,
-    //                 params.valuesArray,
-    //                 params.from,
-    //                 params.to,
-    //                 params.drawWidth,
-    //                 params.drawHeight,
-    //             );
-    //         } else {
-    //             return this.wasmVideoModule.arrayYCutFunction(
-    //                 imageDataData,
-    //                 this.width,
-    //                 this.height,
-    //                 SlitModeDirectionMap[this.slitMode],
-    //                 this.mirrorH ? 1 : 0,
-    //                 this.cutOffset,
-    //                 params.valuesArray,
-    //                 params.from,
-    //                 params.to,
-    //                 params.drawWidth,
-    //                 params.drawHeight,
-    //             );
-    //         }
-    //     }
-    // };
-    //
-    // changeFunction = {
-    //     [ECFType.FXY]: (imageDataData: Uint8ClampedArray | null, params: FxyParams) => {
-    //         const cfSubType = params.type;
-    //         const cfSubTypeParams = params.typeParams[cfSubType];
-    //
-    //         return this.xyChangeFunction[cfSubType](imageDataData, cfSubTypeParams as any);
-    //     },
-    //     [ECFType.DEPTH]: (imageDataData: Uint8ClampedArray | null, params: CfDepthParams) => {
-    //         const item1 = params.items[0];
-    //         const item2 = params.items[1];
-    //         const item3 = params.items[2];
-    //         const item4 = params.items[3];
-    //         const depth1ImageData = patternsService.pattern[item1?.patternId]?.canvasService.getImageData();
-    //         const depth2ImageData = patternsService.pattern[item2?.patternId]?.canvasService.getImageData();
-    //         const depth3ImageData = patternsService.pattern[item3?.patternId]?.canvasService.getImageData();
-    //         const depth4ImageData = patternsService.pattern[item4?.patternId]?.canvasService.getImageData();
-    //         return this.wasmVideoModule.channelsCutFunction(
-    //             imageDataData,
-    //             this.width,
-    //             this.height,
-    //             SlitModeDirectionMap[this.slitMode],
-    //             this.mirrorH ? 1 : 0,
-    //             this.cutOffset,
-    //             depth1ImageData?.data,
-    //             depth1ImageData?.width,
-    //             depth1ImageData?.height,
-    //             item1?.zed,
-    //             item1?.zd,
-    //             item1?.component,
-    //             depth2ImageData?.data,
-    //             depth2ImageData?.width,
-    //             depth2ImageData?.height,
-    //             item2?.zed,
-    //             item2?.zd,
-    //             item2?.component,
-    //             depth3ImageData?.data,
-    //             depth3ImageData?.width,
-    //             depth3ImageData?.height,
-    //             item3?.zed,
-    //             item3?.zd,
-    //             item3?.component,
-    //             depth4ImageData?.data,
-    //             depth4ImageData?.width,
-    //             depth4ImageData?.height,
-    //             item4?.zed,
-    //             item4?.zd,
-    //             item4?.component,
-    //         );
-    //     }
-    // };
+        this.shaderVideoModule.updateOffset(param, value)
+
+        return this
+    }
 }

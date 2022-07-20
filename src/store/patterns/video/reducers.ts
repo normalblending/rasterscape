@@ -1,12 +1,12 @@
 import {reducePattern} from "../pattern/helpers";
 import {PatternAction, PatternState} from "../pattern/types";
 import {
-    SetCFAction, SetCutOffsetAction, SetDeviceAction,
+    SetCFAction, SetCutOffsetAction, SetDepthAction, SetDeviceAction,
     SetEdgeModeAction, SetMirrorModeAction,
     SetSlitModeAction, SetStackSizeAction,
-    SetStackTypeAction,
-    SetVideoParamsAction
-} from "./actions";
+    SetStackTypeAction, SetVideoParamAction,
+    SetVideoParamsAction,
+} from './actions'
 import {act} from "react-dom/test-utils";
 import {EVideoAction} from "./consts";
 
@@ -69,6 +69,21 @@ export const videoReducers = {
                 }
             }
         })),
+    [EVideoAction.SET_VIDEO_OFFSET]: reducePattern<SetVideoParamAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    offset: {
+                        ...pattern.video.params.offset,
+                        [action.paramName]: action.value
+                    }
+
+                }
+            }
+        })),
     [EVideoAction.SET_DEVICE]: reducePattern<SetDeviceAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
@@ -102,14 +117,14 @@ export const videoReducers = {
                 }
             }
         })),
-    [EVideoAction.SET_SLIT_MODE]: reducePattern<SetSlitModeAction>(
+    [EVideoAction.SET_CAMERA_AXIS]: reducePattern<SetSlitModeAction>(
         (pattern: PatternState, action) => ({
             ...pattern,
             video: {
                 ...pattern.video,
                 params: {
                     ...pattern.video.params,
-                    slitMode: action.value
+                    cameraAxis: action.value
                 }
             }
         })),
@@ -143,6 +158,17 @@ export const videoReducers = {
                 params: {
                     ...pattern.video.params,
                     stackSize: action.value
+                }
+            }
+        })),
+    [EVideoAction.SET_DEPTH]: reducePattern<SetDepthAction>(
+        (pattern: PatternState, action) => ({
+            ...pattern,
+            video: {
+                ...pattern.video,
+                params: {
+                    ...pattern.video.params,
+                    depth: action.value
                 }
             }
         })),

@@ -8,7 +8,6 @@ import {PatternService} from "../../../PatternService";
 import {BrushShapeParams, EBrushType} from "../../../../../brush/types";
 import {getRandomColor} from "../../../../../../utils/utils";
 import {circle} from "../../../../../../utils/canvas/helpers/geometry";
-import {coordHelper5} from "../../../../../../components/Area/canvasPosition.servise";
 
 export class BrushShape implements ToolService {
     patternService: PatternService;
@@ -64,7 +63,12 @@ export class BrushShape implements ToolService {
         const selectionMask = this.patternService.selectionService.mask;
 
 
+        context.globalCompositeOperation = compositeOperation;
+        context.globalAlpha = opacity;
+
+
         coordinates[0]?.forEach(({x, y}) => {
+
             drawWithRotation(
                 -angle,
                 x, y,
@@ -90,8 +94,6 @@ export class BrushShape implements ToolService {
             : this.helperCanvas1;
 
 
-        context.globalCompositeOperation = compositeOperation;
-        context.globalAlpha = opacity;
         context.drawImage(resultCanvas.canvas, 0, 0);
         resultCanvas.clear();
     };

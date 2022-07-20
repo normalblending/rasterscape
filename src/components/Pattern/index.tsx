@@ -357,7 +357,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         <div className="flex-row">
 
                             <DeleteButton
-                                title={`${index + 1} ${t('utils.p')}${id}`}
+                                title={`${t('utils.p')}${id} (${index + 1})`}
                                 deleteText={t('utils.delete')}
                                 onDoubleClick={this.handleRemove}
                             />
