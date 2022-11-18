@@ -11,6 +11,7 @@ import {SVG} from "../../../../../_shared/SVG";
 import {createVector} from "../../../../../../utils/vector";
 import {lineSVG} from "../../../../../_shared/SVG/_utils";
 import {ButtonHK} from "../../../../../_shared/buttons/hotkeyed/ButtonHK";
+import {ButtonSelectEventData} from "../../../../../_shared/buttons/simple/ButtonSelect";
 
 const width = 208;
 const height = 138;
@@ -223,7 +224,7 @@ export const CenterDrawWave: DrawTypeComponentType<DrawCenterParams> = withTrans
     const handleParamChange = useCallback(({value, name}) => {
         onChange({...params, [name.split('.').reverse()[0]]: value}, functionParams)
     }, [onChange, params, functionParams]);
-    const handleBoolParamChange = useCallback(({selected, name}) => {
+    const handleBoolParamChange = useCallback(({selected, name}: ButtonSelectEventData) => {
         console.log(params, name, name.split('.').reverse()[0], selected);
         onChange({...params, [name.split('.').reverse()[0]]: !selected}, functionParams)
     }, [onChange, params, functionParams]);

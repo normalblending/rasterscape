@@ -14,8 +14,7 @@ module.exports = env => ({
             "store": resolve('./src/store'),
             "utils": resolve('./src/utils'),
             "components": resolve('./src/components'),
-        },
-
+        }
     },
     output: {
         filename: 'main.js',
@@ -39,7 +38,7 @@ module.exports = env => ({
                 "css-loader",
                 // Compiles Sass to CSS
                 "sass-loader",
-            ],
+            ]
         }, {
             test: /\.css$/,
             use: ['style-loader', 'css-loader']
@@ -55,7 +54,7 @@ module.exports = env => ({
                         useRelativePath: true
                     },
                 },
-            ],
+            ]
         }, {
             test: /\.stl$/,
             loader: 'url-loader'
@@ -72,6 +71,6 @@ module.exports = env => ({
             template: __dirname + '/src/index.html',
             filename: 'index.html',
             inject: 'body'
-        }),
-    ],
+        })
+    ]
 });

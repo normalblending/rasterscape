@@ -2,6 +2,8 @@
 precision highp float;
 precision highp int;
 precision highp sampler3D;
+precision highp sampler2D;
+
 
 uniform sampler3D u_Sampler;
 uniform float u_QueueOffset;
@@ -136,7 +138,7 @@ void main() {
         break;
         case 4:
 
-        tex_z = texture(u_CFParamTexture, vec2(tex_x, tex_y)).r / 255.0;
+        tex_z = texture(u_CFParamTexture, vec2(tex_x, tex_y)).r;
 
         break;
         default :
@@ -180,10 +182,12 @@ void main() {
 
     // QUEUE OFFSET
     z = fract(1.0 + u_TexQueueOffset - z * ((float(u_StackSize) - float(u_Error)) / float(u_StackSize)));
+    outputColor = texture(u_Sampler, vec3(x, 1.0 - y, z));
 
-    outputColor = texture(
-    u_Sampler,
-    vec3(x, 1.0 - y, z)
-    );
-//    outputColor = texture(u_CFParamTexture, vec2(0.0,0.0));
+//    if (x > 0.5) {
+//        outputColor = texture(u_CFParamTexture, vec2(x, 1.0 - y));
+//    } else {
+//        outputColor = texture(u_Sampler, vec3(x, 1.0 - y, z));
+//    }
+
 }

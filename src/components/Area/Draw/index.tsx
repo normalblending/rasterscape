@@ -118,7 +118,7 @@ const CanvasDrawComponent: React.FC<CanvasDrawProps> = (props) => {
         setStateMoving(false);
     }, [onLeave]);
 
-    const upHandler = React.useCallback(({e}) => {
+    const upHandler = React.useCallback((e: MouseEvent) => {
 
         setStateChanging(false);
         stopChanging();

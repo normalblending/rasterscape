@@ -128,9 +128,11 @@ export class ShaderVideoModule {
         const stackSizeWithError = this.stackSizeWithError
         const gl = this.gl
 
-        coordHelper4.writeln('stackSize', stackSizeWithError, '-')
+        // coordHelper4.writeln('stackSize', stackSizeWithError, '-')
         const pixels = new Uint8Array(width * height * 4 * stackSizeWithError)
         this.cubeTexture = this.cubeTexture || gl.createTexture()
+        this.paramTexture = this.paramTexture || gl.createTexture()
+
         const u_Sampler = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_Sampler')
         const u_QueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_QueueOffset')
         const u_TexQueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexQueueOffset')
@@ -141,6 +143,8 @@ export class ShaderVideoModule {
         const u_Mirror = gl.getUniformLocation(gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Mirror')
         const u_Direction = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Direction')
         const u_Error = this.gl.getUniformLocation(this.gl.getParameter(this.gl.CURRENT_PROGRAM), 'u_Error')
+
+        const u_CFParamTexture = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_CFParamTexture')
 
 
         Object.keys(this.offset).forEach(key => {
@@ -169,12 +173,36 @@ export class ShaderVideoModule {
             pixels,
         )
         gl.uniform1i(u_Sampler, 0)
+
+
+        // this.initParamTexture(pixels, width, height)
+        // gl.activeTexture(gl.TEXTURE1)
+        // gl.bindTexture(gl.TEXTURE_2D, this.paramTexture)
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        // gl.texImage2D(
+        //     gl.TEXTURE_2D,
+        //     0,
+        //     gl.RGBA,
+        //     width,
+        //     height,
+        //     0,
+        //     gl.RGBA,
+        //     gl.UNSIGNED_BYTE,
+        //     pixels,
+        // )
+        // gl.uniform1i(u_CFParamTexture, 1)
+
         gl.uniform1i(u_Width, width)
         gl.uniform1i(u_Height, height)
         gl.uniform1i(u_StackSize, stackSizeWithError)
         gl.uniform1i(u_Mirror, this.mirrorH ? 1 : 0)
         gl.uniform1i(u_Direction, CameraAxisToNumber[this.cameraAxis])
         gl.uniform1i(u_Error, this.error)
+
+
 
         this.queueOffset = 0
 
@@ -186,6 +214,8 @@ export class ShaderVideoModule {
         const gl = this.gl
         const u_TexQueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_TexQueueOffset')
         const u_QueueOffset = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_QueueOffset')
+
+
 
         gl.activeTexture(gl.TEXTURE0)
         gl.bindTexture(gl.TEXTURE_3D, this.cubeTexture)
@@ -200,6 +230,20 @@ export class ShaderVideoModule {
         )
         gl.uniform1f(u_TexQueueOffset, this.queueOffset / (this.stackSizeWithError))
         gl.uniform1f(u_QueueOffset, this.queueOffset)
+
+        // this.updateParamTexture(newPixels)
+        // gl.activeTexture(gl.TEXTURE1)
+        // gl.bindTexture(gl.TEXTURE_2D, this.paramTexture)
+        // gl.texImage2D(
+        //     gl.TEXTURE_2D,
+        //     0,
+        //     gl.RGBA,
+        //     this.width, this.height,
+        //     0,
+        //     gl.RGBA,
+        //     gl.UNSIGNED_BYTE,
+        //     newPixels,
+        // )
 
         this.queueOffset = (this.queueOffset + 1) % (this.stackSizeWithError)
     }
@@ -421,7 +465,9 @@ export class ShaderVideoModule {
 
             // coordHelper4.writeln('ECFType.DEPTH update', patternId, imageData.data.length, canvas.width,canvas.height)
 
-            imageDataDebug.setImageData(imageData)
+            // imageDataDebug.setImageData(imageData)
+
+            // --------
             if (!this.paramTexture) {
                 this.initParamTexture(imageData.data, canvas.width, canvas.height)
             } else {
@@ -463,20 +509,20 @@ export class ShaderVideoModule {
 
     paramTexture
     initParamTexture = (pixels, width, height) => {
-        const gl = this.gl
+        // coordHelper5.setText('----0', this.i++)
 
-        this.paramTexture = gl.createTexture()
+        const gl = this.gl
+        this.paramTexture = this.paramTexture || gl.createTexture()
         const u_CFParamTexture = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_CFParamTexture')
 
 
 
         gl.activeTexture(gl.TEXTURE1)
         gl.bindTexture(gl.TEXTURE_2D, this.paramTexture)
-        gl.uniform1i(u_CFParamTexture, 1)
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-        // gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
         gl.texImage2D(
             gl.TEXTURE_2D,
             0,
@@ -488,15 +534,17 @@ export class ShaderVideoModule {
             gl.UNSIGNED_BYTE,
             pixels,
         )
+        gl.uniform1i(u_CFParamTexture, 1)
     }
-
+    // i = 0;
     updateParamTexture = (newPixels: Uint8Array) => { //??
+        // coordHelper5.writeln('----', this.i++)
+        imageDataDebug.setImageData(new ImageData(Uint8ClampedArray.from(newPixels), 400, 400))
+
         const gl = this.gl
-        const u_CFParamTexture = gl.getUniformLocation(gl.getParameter(gl.CURRENT_PROGRAM), 'u_CFParamTexture')
 
         gl.activeTexture(gl.TEXTURE1)
         gl.bindTexture(gl.TEXTURE_2D, this.paramTexture)
-        gl.uniform1i(u_CFParamTexture, 1)
         gl.texSubImage2D(
             gl.TEXTURE_2D,
             0,

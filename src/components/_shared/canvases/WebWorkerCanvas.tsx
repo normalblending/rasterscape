@@ -3,7 +3,7 @@ import {useRef, useEffect, useMemo} from "react";
 import {imageDataToCanvas} from "utils/canvas/helpers/imageData";
 import '../../../styles/canvasImageData.scss';
 import _throttle from 'lodash/throttle';
-import {Omit, WithTranslation, withTranslation, WithTranslationProps} from "react-i18next";
+import {WithTranslation, withTranslation, WithTranslationProps} from "react-i18next";
 
 export interface WebWorkerCanvasProps  {
     throttled?: boolean

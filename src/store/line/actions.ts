@@ -16,7 +16,7 @@ export const setLineParams = (params: LineParams) => (dispatch) => {
 
 export const setLineType = (lineType: ELineType) => (dispatch, getState: () => AppState) => {
 
-    coordHelper5.setText('set bind tool');
+    // coordHelper5.setText('set bind tool');
 
 
     patternsService.bindTool(EToolType.Line, lineType);// надо вынести в отдельный экшен

@@ -1,6 +1,6 @@
 import * as React from "react";
-import {connect, MapDispatchToProps, MapStateToProps, useDispatch} from "react-redux";
-import {AppState} from "../store";
+import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
+import {AppState, useDispatch} from "../store";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";

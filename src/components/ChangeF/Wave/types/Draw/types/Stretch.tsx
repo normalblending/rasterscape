@@ -12,6 +12,7 @@ import {
 import {SVG} from "../../../../../_shared/SVG";
 import {ButtonHK} from "../../../../../_shared/buttons/hotkeyed/ButtonHK";
 import './Stretch.scss'
+import {ButtonSelectEventData} from "../../../../../_shared/buttons/simple/ButtonSelect";
 
 const width = 208;
 const height = 138;
@@ -148,7 +149,7 @@ export const StretchDrawWave: DrawTypeComponentType<DrawStretchParams> = withTra
     const handleParamChange = useCallback(({value, name}) => {
         onChange({...params, [name.split('.').reverse()[0]]: value}, functionParams)
     }, [onChange, params, functionParams]);
-    const handleBoolParamChange = useCallback(({selected, name}) => {
+    const handleBoolParamChange = useCallback(({selected, name}: ButtonSelectEventData) => {
         onChange({...params, [name.split('.').reverse()[0]]: !selected}, functionParams)
     }, [onChange, params, functionParams]);
 

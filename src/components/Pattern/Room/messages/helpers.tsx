@@ -1,5 +1,5 @@
 import {MessageData} from "../../../../store/patterns/room/types";
-import {Omit, withTranslation, WithTranslation, WithTranslationProps} from "react-i18next";
+import {withTranslation, WithTranslation, WithTranslationProps} from "react-i18next";
 import * as React from "react";
 import {BaseMessage} from "./BaseMessage";
 
@@ -11,10 +11,10 @@ export interface MessageOwnProps {
 export interface MessageProps extends MessageOwnProps, WithTranslation {
 }
 
-export const withT = (component: React.ComponentType<MessageProps>): React.ComponentType<Omit<MessageProps, keyof WithTranslation> & WithTranslationProps> => withTranslation('chat')<MessageProps>(component);
-
-
 export type MessageComponentType = React.ComponentType<Omit<MessageProps, keyof WithTranslation> & WithTranslationProps>;
+
+
+export const withT = (component: React.ComponentType<MessageProps>): React.ComponentType<Omit<MessageProps, keyof WithTranslation> & WithTranslationProps> => withTranslation('chat')<MessageComponentType>(component);
 
 export const translatedMessageWithClass = (className) => {
     return withT(({data, unreaded, t}) => {
