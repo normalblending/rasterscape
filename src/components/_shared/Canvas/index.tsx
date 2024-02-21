@@ -8,7 +8,7 @@ import {rotate} from "../../../utils/draw";
 import {RotationValue} from "../../../store/patterns/rotating/types";
 import {DemonstrationSubApp} from "./Demonstration";
 import _throttle from 'lodash/throttle';
-import {coordHelper} from "../../Area/canvasPosition.servise";
+import {coordHelper, coordHelper3, coordHelper4, coordHelper5} from "../../Area/canvasPosition.servise";
 
 export interface CanvasEvent {
     e: MouseEvent
@@ -78,9 +78,12 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     canvasRef;
     videoRef;
     ctx;
+
     e;
-    canvasE;
     pre;
+    canvasE;
+    canvasPrE;
+
     requestID;
 
     modalWindow;
@@ -99,6 +102,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         this.videoRef = React.createRef();
         this.ctx = null;
         this.pre = null;
+        this.canvasPrE = null;
     }
 
     openModal = () => {
@@ -181,7 +185,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     }
 
     componentDidUpdate(prevProps: CanvasProps) {
-        // console.log(Object.keys(this.props).reduce((res, key) => ({
+        // console.log(Object.buttons(this.props).reduce((res, key) => ({
         //     ...res,
         //     [key]: prevProps[key] !== this.props[key]
         // }), {}));
@@ -249,13 +253,13 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         this.start();
 
-        // const {onClick} = this.props;
-        // setTimeout(() => {
-        //
-        //
-        //     // coordHelper2.writeln('click', event.e.offsetX, event.e.offsetY);
-        //     !this.state.drawing && onClick && onClick(event);
-        // }, 10)
+        const {onClick} = this.props;
+        setTimeout(() => {
+
+
+            // coordHelper2.writeln('click', event.e.offsetX, event.e.offsetY);
+            !this.state.drawing && onClick && onClick(event);
+        }, 10)
 
     };
 
@@ -267,12 +271,13 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
     draw = () => {
         const e = this.canvasE;
+        const pre = this.canvasPrE;
         // coordHelper2.writeln('draw', e?.offsetX, e?.offsetY);
 
         const {onDraw} = this.props;
         onDraw && onDraw({
             e,
-            pre: this.pre,
+            pre,
             ctx: this.ctx,
             canvas: this.canvasRef.current,
             drawing: true,
@@ -281,13 +286,14 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     };
 
     move = (canvas?: boolean) => {
+        // для draw и move
         const e = canvas ? this.canvasE : this.e;
-        // canvas && coordHelper2.writeln('move', e.offsetX, e.offsetY);
+        const pre = canvas ? this.canvasPrE : this.pre;
 
         const {onMove} = this.props;
         onMove && onMove({
             e,
-            pre: this.pre,
+            pre,
             ctx: this.ctx,
             canvas: this.canvasRef.current,
             drawing: this.state.drawing,
@@ -301,7 +307,7 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
     onFrame = () => {
         // coordHelper2.writeln('frame');
 
-        const prevCanvasE = this.canvasE;
+        const canvasPrE = this.canvasPrE;
         const canvasE = this.canvasE = this.getCanvasRelatedEvent(this.e);
 
         // this.state.drawing && - не нужно но по сути так
@@ -310,10 +316,11 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
         const {drawOnMove} = this.props;
         if (
             !drawOnMove
-            || (!this.equalEvents(prevCanvasE, canvasE))
+            || (!this.equalEvents(canvasPrE, canvasE))
         ) {
             this.draw();
         }
+        this.canvasPrE = this.canvasE;
 
     };
 
@@ -327,7 +334,14 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             x: left + box.width / 2,
             y: top + box.height / 2
         };
-        const rotatedE = rotate(canvasCenter.x, canvasCenter.y, e.pageX, e.pageY, this.props.rotation?.rotateDrawAreaElement ? this.props.rotation.angle : 0);
+        const rotatedE = rotate(
+            canvasCenter.x, canvasCenter.y,
+            e.pageX, e.pageY,
+            this.props.rotation?.rotateDrawAreaElement
+                ? this.props.rotation.angle
+                : 0
+        );
+
         return {
             ...e,
             offsetX: rotatedE.x - canvasCenter.x + this.props.width / 2,
@@ -417,12 +431,23 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
 
         if (this.props.pointerLock) {
             document.exitPointerLock();
+
+            const {onMove} = this.props;
+            onMove?.({
+                e: this.state.startEvent,
+                pre: e,
+                ctx: this.ctx,
+                canvas: this.canvasRef.current,
+                drawing: this.state.drawing,
+            });
         }
 
         this.stop();
         if (this.state.drawing) {
             this.setState({drawing: false, startEvent: e});
 
+            this.canvasPrE = null;
+            // this.canvasE = null;
             this.pre = null;
             this.e = null;
             const {onChange} = this.props;
@@ -498,6 +523,15 @@ export class Canvas extends React.PureComponent<CanvasProps, CanvasState> {
             onLeaveDraw?.(e);
         }
     };
+
+    getImageData = (): ImageData => {
+        return this.ctx.getImageData(0, 0, this.props.width, this.props.height);
+    };
+
+    setImageData = (value: ImageData) => {
+        return this.ctx.putImageData(value, 0, 0);
+    };
+
 
     render() {
         const {value, width, height, className, style, children, disabled} = this.props;

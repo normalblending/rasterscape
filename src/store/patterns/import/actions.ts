@@ -1,7 +1,7 @@
 import {PatternAction} from "../pattern/types";
 import {ImportParams} from "./types";
 import {imageToImageData} from "../../../utils/canvas/helpers/imageData";
-import {AppState} from "../../index";
+import {AppState, patternsService} from "../../index";
 import {dateZs} from "../../../utils/utils";
 import {updateImage} from "../pattern/actions";
 
@@ -29,6 +29,7 @@ export const load = (id: string, image: HTMLImageElement) => (dispatch, getState
 
     const state: AppState = getState();
     const pattern = state.patterns[id];
+    const patternService = patternsService.pattern[id];
 
     if (!pattern) {
         return
@@ -50,8 +51,8 @@ export const load = (id: string, image: HTMLImageElement) => (dispatch, getState
         }
 
 
-        const oldWidth = state.patterns[id].current.imageData.width;
-        const oldHeight = state.patterns[id].current.imageData.height;
+        const oldWidth = state.patterns[id].width;
+        const oldHeight = state.patterns[id].height;
 
         canvas.width = oldWidth;
         canvas.height = oldHeight;
@@ -60,40 +61,31 @@ export const load = (id: string, image: HTMLImageElement) => (dispatch, getState
 
 
         const imageData2 = ctx.getImageData(0, 0, oldWidth, oldHeight);
-        dispatch(updateImage({id, imageData: imageData2}));
+
+        patternService.setCanvasImageData(imageData2);
+
+        dispatch(updateImage({id}));
 
     } else {
 
-        dispatch(updateImage({id, imageData}));
+        patternService.setCanvasImageData(imageData);
+        dispatch(updateImage({id}));
     }
 
 
-    dispatch({type: EImportAction.LOAD, id, imageData});
+    // dispatch({type: EImportAction.LOAD, id, imageData});  // редьюсера нету
 };
 export const save = (id: string) => (dispatch, getState) => {
     const state: AppState = getState();
 
     const pattern = state.patterns[id];
+    const patternService = patternsService.pattern[id];
 
     if (!pattern) {
         return null;
     }
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-
-    if (!ctx) {
-        return null;
-    }
-
-
-    canvas.width = pattern.current.imageData.width;
-    canvas.height = pattern.current.imageData.height;
-
-    ctx.putImageData(state.patterns[id].current.imageData, 0, 0);
-
-
-    var dataURL = canvas.toDataURL("image/png");
+    var dataURL = patternService.canvasService.canvas.toDataURL("image/png");
     var link = document.createElement("a");
     document.body.appendChild(link); // Firefox requires the link to be in the body :(
     link.href = dataURL;

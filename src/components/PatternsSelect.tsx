@@ -1,12 +1,13 @@
 import * as React from "react";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../store";
-import {ButtonSelect} from "./_shared/buttons/simple/ButtonSelect";
+import {AppState, useDispatch} from "../store";
 import {getPatternsSelectItems} from "../store/patterns/selectors";
 import '../styles/patternSelect.scss';
 import {ChannelImageData} from "./_shared/canvases/WebWorkerCanvas";
-import {ButtonHK} from "./_shared/buttons/hotkeyed/ButtonHK";
-import {UserHotkeyTrigger} from "./Hotkeys/UserHotkeyTrigger";
+import {ButtonHK, ButtonHKImperativeHandlers} from "./_shared/buttons/hotkeyed/ButtonHK";
+import {KeyTrigger} from "./Hotkeys/simple/KeyTrigger";
+import {bindPreview, unbindPreview} from "../store/patterns/pattern/actions";
+import {FC, useEffect} from "react";
 
 export interface PatternsSelectStateProps {
     patternsSelectItems: any[]
@@ -46,9 +47,8 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         blurOnClick,
     } = props;
 
-    const buttonRef = React.useRef(null);
-
-    const action = React.useCallback((id, selected) => {
+    const action = React.useCallback((id) => {
+        const selected = Array.isArray(value) ? value?.includes(id) : (id === value);
         if (Array.isArray(value)) {
 
             if (selected) {
@@ -72,59 +72,108 @@ const PatternsSelectComponent: React.FC<PatternsSelectProps> = (props) => {
         }
     }, [onChange, value, nullable]);
 
-    const handleClick = React.useCallback((data) => {
-        const {selected, value: id} = data;
-        action(id, selected);
-
-        if (blurOnClick)
-            buttonRef.current?.blur();
-    }, [action, blurOnClick]);
-
-    const handlePress = React.useCallback((e, hotkey, data) => {
-        const id = data;
-        const selected = Array.isArray(value) ? value?.includes(id) : (id === value);
-        action(id, selected);
-    }, [action]);
-
-    // const ButtonComponent = HK ? ButtonHK : ButtonSelect;
-
     return (
         <div className={'pattern-select'}>
-            {patternsSelectItems.map(({imageData, id}, i) => {
-                const w = imageData.width;
-                const h = imageData.height;
-                // const coef  = w/h > 1 ?
+            {patternsSelectItems.map(({width, height, id}, i) => {
                 return (
-                    <>
-                        <ButtonHK
-                            ref={buttonRef}
-                            path={HK ? `patternSelect.${name}.${id}` : null}
-                            hkLabel={hkLabel}
-                            hkData1={id}
-                            className={'pattern-select-button'}
-                            width={42} height={42}
-                            value={id}
-                            onClick={handleClick}
-                            selected={Array.isArray(value) ? value?.includes(id) : (id === value)}>
-                            <ChannelImageData
-                                width={40 * (w / h <= 1 ? w / h : 1)}
-                                height={40 * (w / h > 1 ? h / w : 1)}
-                                imageData={imageData}
-                            />
-                            {HK && (
-                                <UserHotkeyTrigger
-                                    keys={(i + 1).toString()}
-                                    data={id}
-                                    onPress={handlePress}
-                                />
-                            )}
-                        </ButtonHK>
-                        {!((i + 1) % 5) ? <br/> : null}
-                    </>
-                )
+                    <PatternSelectItem
+                        index={i}
+                        name={name}
+                        id={id}
+                        HK={HK}
+                        hkLabel={hkLabel}
+                        width={width}
+                        height={height}
+                        selected={Array.isArray(value) ? value?.includes(id) : (id === value)}
+                        blurOnClick={blurOnClick}
+                        onSelect={action}
+                    />
+                );
             })}
         </div>
     );
+};
+
+export interface PatternSelectItemProps {
+    id: string
+    name: string
+    HK?: boolean
+    path?: string
+    hkLabel?: string
+
+    blurOnClick?: boolean
+
+    width: number,
+    height: number
+    index: number
+    selected: boolean
+    onSelect(id: string): void
+}
+
+export const PatternSelectItem: FC<PatternSelectItemProps> = (props) => {
+    const {id, HK, name, hkLabel, width, height, selected, index, onSelect, blurOnClick} = props;
+
+    const previewId = id + ' ' + name + ' ' + index;
+
+    const buttonRef = React.useRef<ButtonHKImperativeHandlers>(null);
+
+    const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+
+
+    const dispatch = useDispatch();
+
+    const handleCanvasRef = React.useCallback((canvas: HTMLCanvasElement) => {
+        canvasRef.current = canvas;
+        if (canvas) dispatch(bindPreview(id, previewId, canvas));
+    }, [previewId]);
+
+    useEffect(() => () => {
+        dispatch(unbindPreview(id, previewId));
+    }, [previewId])
+
+    const handleClick = React.useCallback((data) => {
+        const {value: id} = data;
+        onSelect(id);
+
+        if (blurOnClick)
+            buttonRef.current?.blur();
+    }, [blurOnClick, onSelect]);
+
+    const handlePress = React.useCallback((e, id) => {
+        onSelect(id);
+    }, [onSelect]);
+    return (
+        <>
+            <ButtonHK
+                key={id}
+                ref={buttonRef}
+                path={HK ? `patternSelect.${name}.${id}` : null}
+                hkLabel={hkLabel}
+                hkData1={id}
+                className={'pattern-select-button'}
+                width={42} height={42}
+                value={id}
+                onClick={handleClick}
+                maxKeysCount={2}
+                selected={selected}
+            >
+                <canvas
+                    width={40}
+                    height={40}
+                    ref={handleCanvasRef}/>
+                {HK && (
+                    <KeyTrigger
+                        debug
+                        keyValue={(index + 1).toString()}
+                        codeValue={(index + 1).toString()}
+                        name={id}
+                        onPress={handlePress}
+                    />
+                )}
+            </ButtonHK>
+            {!((index + 1) % 5) ? <br/> : null}
+        </>
+    )
 };
 
 const mapStateToProps: MapStateToProps<PatternsSelectStateProps, PatternsSelectOwnProps, AppState> = state => ({

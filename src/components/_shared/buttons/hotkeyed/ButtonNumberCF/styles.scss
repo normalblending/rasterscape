@@ -9,16 +9,9 @@
     }
   }
 
-  .hotkey-key {
-    z-index: 1;
-    max-height: 7px;
-    line-height: 7px;
-    //margin-top: 13px;
-    position: absolute;
+  .button-hotkey-keys {
     bottom: 1px;
-    left: 1px;
-    font-size: 10px;
-    background: white;
+    top: auto;
   }
 
 

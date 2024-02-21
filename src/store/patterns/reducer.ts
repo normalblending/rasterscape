@@ -1,6 +1,5 @@
 import {handleActions} from "redux-actions";
-import {EPatternsAction} from "./actions";
-import {createPatternInitialState, patternId, removePattern} from "./helpers";
+import {createPatternInitialState} from "./helpers";
 import {AddPatternAction, RemovePatternAction,} from "./pattern/types";
 import {PatternsState} from "./types";
 import {patternReducers} from "./pattern/reducers";
@@ -15,17 +14,18 @@ import {videoReducers} from "./video/reducers";
 import {roomReducers} from "./room/reducers";
 import {blurReducers} from "./blur/reducers";
 import {demonstrationReducers} from "./demonstration/reducers";
+import {EPatternsAction} from "./consts";
+import {omit} from "lodash";
 
 export const patternsReducer = handleActions<PatternsState>({
     [EPatternsAction.ADD_PATTERN]: (state: PatternsState, action: AddPatternAction) => {
-        const id = patternId(state);
         return {
             ...state,
-            [id]: createPatternInitialState(id, action.config, action.params)
+            [action.id]: createPatternInitialState(action.id, action.config, action.params)
         }
     },
     [EPatternsAction.REMOVE_PATTERN]: (state: PatternsState, action: RemovePatternAction) =>
-        removePattern(state, action.id),
+        omit(state, action.id),
 
     ...patternReducers,
     ...demonstrationReducers,

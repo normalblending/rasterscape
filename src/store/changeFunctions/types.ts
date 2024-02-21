@@ -1,5 +1,8 @@
 import {Action} from "redux";
-import {ParamConfig} from "../../components/_shared/Params";
+import {ParamConfig} from "../../components/_shared/Params.types";
+import {FxyParams} from "./functions/fxy";
+import {CfDepthParams} from "./functions/depth";
+import {DrawParams} from "./functions/wave";
 
 
 export enum ECFType {
@@ -12,7 +15,7 @@ export interface ChangeFunctionState {
     id: string
     number: number
     type: ECFType
-    params: any
+    params: FxyParams | CfDepthParams | DrawParams
     paramsConfig: ParamConfig[]
 }
 
@@ -33,6 +36,9 @@ export interface ChangeCFParamsAction extends Action {
     id: string
     params: any
 }
+
+export type CfDepthAddPatternAction = Action & { id: string, patternId: string };
+export type CfDepthRemovePatternAction = Action & { id: string, index: number };
 
 export interface ChangeFunctionResult {
     value

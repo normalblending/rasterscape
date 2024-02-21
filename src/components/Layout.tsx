@@ -8,8 +8,6 @@ import {setFullScreen} from "../store/fullscreen";
 import {AppState} from "../store";
 import {FullScreen, useFullScreenHandle} from "react-full-screen";
 import {AppControls} from "./AppControls";
-import {Test} from "./Test";
-import _throttle from 'lodash/throttle';
 
 export interface LayoutStateProps {
     full: boolean

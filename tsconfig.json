@@ -10,12 +10,12 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
+    "module": "es2020",
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "noEmit": true,
+    "noEmit": false,
     "jsx": "react",
     "noImplicitAny": false,
     "noImplicitThis": false,
@@ -24,7 +24,11 @@
     "baseUrl": "src",
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src"
-  ]
+  "exclude": [
+    "node_modules",
+    "**/*.as.ts"
+  ],
+  "paths": {
+    "store": ["store"]
+  }
 }

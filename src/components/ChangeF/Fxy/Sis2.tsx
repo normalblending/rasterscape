@@ -3,11 +3,13 @@ import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
 import "../../../styles/sis2ChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
-import {FxyType} from "../../../store/changeFunctions/functions/fxy";
+import {FxyType, Sis2Params} from "../../../store/changeFunctions/functions/fxy";
 import {Sis2} from "../../_shared/canvases/WebWorkerCanvas";
 import {xySis2} from "../../../store/changeFunctions/functions/_helpers";
 import {SinHelp} from "../../tutorial/tooltips/SinHelp";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
+import {FxyArrayTypeComponentPropsWithTranslation} from "./Array/types/types";
+import {FxyTypeComponentProps, FxyTypeComponentPropsWithTranslation} from "./types";
 
 export interface Sis2CFProps {
     params: any
@@ -60,7 +62,7 @@ const valueD = {
     ydd: 0.5,
 };
 
-export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
+export class Sis2CF extends React.PureComponent<FxyTypeComponentProps<Sis2Params>, Sis2CFState> {
 
     handleParamChange = ({value, name}) => {
 
@@ -68,8 +70,9 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
             ...this.props.params,
             [name.split('.').reverse()[0]]: value,
         };
-        let map = [];
 
+        // это чо за мап?
+        let map = [];
         const f = xySis2(params);
         for (let y = 0; y < 300; y++) {
             map[y] = [];
@@ -77,8 +80,8 @@ export class Sis2CF extends React.PureComponent<Sis2CFProps, Sis2CFState> {
                 map[y][x] = f(x, y) / 300;
             }
         }
-
-        params.map = map;
+        (params as any).map = map;
+        // это чо за мап?
 
         this.props.onChange(params, this.props.name)
     };

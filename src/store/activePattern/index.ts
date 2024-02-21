@@ -1,6 +1,5 @@
 import {handleActions} from "redux-actions";
 import {Action} from "redux";
-import {act} from "react-dom/test-utils";
 
 export enum EActivePatternAction {
     SET = "active-pattern/set",

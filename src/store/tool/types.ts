@@ -1,5 +1,5 @@
 import {Action} from "redux";
-import {BrushParams, EBrushType} from "../brush/types";
+import {BrushParams, BrushPatternParams, BrushSelectParams, BrushShapeParams, EBrushType} from "../brush/types";
 import {ELineType, LineParams} from "../line/types";
 
 export enum EToolType {
@@ -16,4 +16,4 @@ export const selectionTools = [EToolType.Select];
 
 export type DrawToolType = EBrushType | ELineType;
 
-export type DrawToolParams = BrushParams | LineParams;
+export type DrawToolParams = BrushShapeParams | BrushSelectParams | BrushPatternParams | LineParams;

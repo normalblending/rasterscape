@@ -17,8 +17,8 @@ import {withTranslation, WithTranslation} from "react-i18next";
 import {File} from "../_shared/File/File";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
-import {updateMask} from "../../store/patterns/mask/actions";
-import {doublePattern, editConfig, updateImage} from "../../store/patterns/pattern/actions";
+import {bindMaskCanvas, updateMask} from "../../store/patterns/mask/actions";
+import {bindCanvas, doublePattern, editConfig, updateImage} from "../../store/patterns/pattern/actions";
 import {setImportParams} from "../../store/patterns/import/actions";
 import {RoomControls} from "./Room/RoomControls";
 import {BlurControls} from "./Blur/BlurControls";
@@ -38,8 +38,6 @@ export interface PatternComponentStateProps {
     config: PatternConfig
     selection: SelectionState
 
-    imageValue: ImageData
-    maskValue?: ImageData
     maskParams?: MaskParams
     rotation?: RotationValue
     importParams: ImportParams
@@ -77,6 +75,9 @@ export interface PatternComponentActionProps {
 
     setDrawer(patternId: string, persist?: boolean)
 
+    bindCanvas(patternId: string, canvas: HTMLCanvasElement)
+
+    bindMaskCanvas(patternId: string, canvas: HTMLCanvasElement)
 }
 
 export interface PatternComponentOwnProps {
@@ -108,7 +109,7 @@ export interface PatternComponentState {
     error?
 }
 
-const inputNumberProps = {min: 0, max:null, step: 1, delay: 1000, notZero: true};
+const inputNumberProps = {min: 0, max: null, step: 1, delay: 1000, notZero: true};
 
 export class PatternComponent extends React.PureComponent<PatternComponentProps, PatternComponentState> {
 
@@ -131,7 +132,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
     handleSetWidth = newWidth => {
         const {onSetWidth, width, id} = this.props;
         if (width !== newWidth) {
-            onSetWidth(id, newWidth)
+            if (newWidth)
+                onSetWidth(id, newWidth)
+            else
+                onSetWidth(id, width)
         }
     };
 
@@ -207,10 +211,21 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
         !persistDrawer && setDrawer(id);
     };
 
+
+    handleCanvasRef = (canvas: HTMLCanvasElement) => {
+        const {bindCanvas, id} = this.props;
+        if (canvas)
+            bindCanvas(id, canvas);
+    };
+    handleMaskCanvasRef = (canvas: HTMLCanvasElement) => {
+        const {bindMaskCanvas, id} = this.props;
+        if (canvas)
+            bindMaskCanvas(id, canvas);
+    };
+
     render() {
         if (this.state?.error || this.props.error) return 'error';
         const {
-            imageValue, maskValue,
             height, width,
             id, index,
             config, selection, rotation,
@@ -342,7 +357,7 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                         <div className="flex-row">
 
                             <DeleteButton
-                                title={`${index + 1} ${t('utils.p')}${id}`}
+                                title={`${t('utils.p')}${id} (${index + 1})`}
                                 deleteText={t('utils.delete')}
                                 onDoubleClick={this.handleRemove}
                             />
@@ -373,12 +388,10 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
                                 disabled={!meDrawer}
 
                                 name={id}
-                                width={width}
-                                height={height}
-
                                 rotation={rotation}
 
-                                imageValue={imageValue}
+                                width={width}
+                                height={height}
 
                                 selectionValue={selection.value.segments}
                                 selectionParams={selection.params}
@@ -388,24 +401,28 @@ export class PatternComponent extends React.PureComponent<PatternComponentProps,
 
                                 demonstration={demonstration}
                                 onDemonstrationUnload={this.handleDemonstrationUnload}
+
+                                onCanvasRef={this.handleCanvasRef}
                             />
                             {config.mask && (
                                 <Area
 
                                     mask
+
                                     name={id}
                                     rotation={rotation}
-                                    imageValue={maskValue}
+
+                                    width={width}
+                                    height={height}
 
                                     selectionValue={selection.value.segments}
                                     selectionParams={selection.params}
 
-                                    width={width}
-                                    height={height}
-                                    onSelectionChange={this.handleSelectionChange}
                                     onImageChange={this.handleMaskChange}
-                                >
+                                    onSelectionChange={this.handleSelectionChange}
 
+                                    onCanvasRef={this.handleMaskCanvasRef}
+                                >
                                     <MaskControls
                                         patternId={id}
                                     />
@@ -428,12 +445,10 @@ const mapStateToProps: MapStateToProps<PatternComponentStateProps, PatternCompon
         importParams: pattern.import.params,
         meDrawer: !pattern.room?.value?.connected || pattern.room?.value?.meDrawer,
         config: pattern.config,
-        width: pattern.current.imageData.width,
-        height: pattern.current.imageData.height,
+        width: pattern.width,
+        height: pattern.height,
         selection: pattern?.selection,
         rotation: pattern.config.rotation ? pattern?.rotation?.value : null,
-        imageValue: pattern?.current?.imageData || null,
-        maskValue: pattern?.mask?.value?.imageData || null,
         demonstration: pattern?.demonstration?.value?.enabled,
         persistDrawer: pattern?.room?.value?.persistMeDrawer,
         autofocus: state.hotkeys.autofocus,
@@ -450,7 +465,9 @@ const mapDispatchToProps: MapDispatchToProps<PatternComponentActionProps, Patter
     createPatternFromSelection,
     cutPatternBySelection,
     setDemonstrationEnabled,
-    setDrawer
+    setDrawer,
+    bindCanvas,
+    bindMaskCanvas,
 };
 
 export const Pattern = connect<PatternComponentStateProps, PatternComponentActionProps, PatternComponentOwnProps, AppState>(

@@ -2,12 +2,11 @@
   display: flex;
   position: relative;
 
-  border: 1px dotted red;
+  //border: 1px dashed black;
   //border-bottom: none;
-  margin-bottom: -1px;
+  //margin-bottom: -1px;
 
-  &:hover {
-    z-index: 1;
-
-  }
+  //&:hover {
+  //  z-index: 1;
+  //}
 }

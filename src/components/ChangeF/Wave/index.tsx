@@ -1,24 +1,23 @@
 import * as React from "react";
-import "../../../styles/waveChangeFunction.scss";
+import "./waveChangeFunction.scss";
 import {ValueD} from "../../_shared/buttons/complex/ButtonNumber";
 import {HelpTooltip} from "../../tutorial/HelpTooltip";
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {changeCFParams} from "../../../store/changeFunctions/actions";
 import {AppState} from "../../../store";
 import {AnyWaveParams, WaveParams, WaveType} from "../../../store/changeFunctions/functions/wave";
-import {SinCF} from "./Sin";
+import {SinCF} from "./types/Sin";
 import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
 import {arrayToSelectItems} from "../../../utils/utils";
-import {SawCF} from "./Saw";
-import {NoiseCF} from "./Noise";
+import {SawCF} from "./types/Saw";
+import {NoiseCF} from "./types/Noise";
 import {withTranslation, WithTranslation} from "react-i18next";
 import {ChangeFunctionState} from "../../../store/changeFunctions/types";
+import {Draw2dCF} from "./types/Draw";
 
 // import {WaveHelp} from "../tutorial/tooltips/WaveHelp";
 
 export interface WaveCFStateProps {
-
-    tutorial: boolean
     params: WaveParams
     functionParams: ChangeFunctionState
 }
@@ -39,16 +38,6 @@ export interface WaveCFProps extends WaveCFStateProps, WaveCFActionProps, WaveCF
 export interface WaveCFState {
 
 }
-
-const aRange = [0, 1] as [number, number];
-const aVD = ValueD.VerticalLinear(100);
-
-const tRange = [0, 40000] as [number, number];
-
-const oRange = [0, 1] as [number, number];
-const oVD = ValueD.VerticalLinear(100);
-
-const valueText2 = value => value.toFixed(2);
 
 export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFState> {
 
@@ -71,28 +60,18 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
         });
     };
 
-    buttonWrapper = (message) => {
-        const {name, tutorial} = this.props;
-        return tutorial ? ({button}) => (
-            <HelpTooltip
-                // componentProps={{name}}
-                // getY={() => 27}
-                // offsetX={25}
-                message={message}
-            >{button}</HelpTooltip>) : null
-    };
-
     waveComponentsByType = {
         [WaveType.Sin]: SinCF,
         [WaveType.Saw]: SawCF,
         [WaveType.Noise]: NoiseCF,
+        [WaveType.Draw]: Draw2dCF,
     };
-    selectItems = arrayToSelectItems([WaveType.Sin, WaveType.Saw, WaveType.Noise]);
+    selectItems = arrayToSelectItems([WaveType.Sin, WaveType.Saw, WaveType.Noise, WaveType.Draw]);
 
     typeText = ({value}) => this.props.t('cf.wave.type.' + value);
 
     render() {
-        const {params, name, tutorial, functionParams} = this.props;
+        const {params, name, functionParams} = this.props;
 
         const WaveComponent = this.waveComponentsByType[params.type];
 
@@ -114,8 +93,7 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
                 <WaveComponent
                     name={name}
                     functionParams={functionParams}
-                    tutorial={tutorial}
-                    params={params.typeParams[params.type]}
+                    params={params.typeParams[params.type] as any}
                     onChange={this.handleParamChange}
                 />}
             </div>
@@ -124,8 +102,7 @@ export class WaveCFComponent extends React.PureComponent<WaveCFProps, WaveCFStat
 }
 
 const mapStateToProps: MapStateToProps<WaveCFStateProps, WaveCFOwnProps, AppState> = (state, {name}) => ({
-    params: state.changeFunctions.functions[name].params,
-    tutorial: state.tutorial.on,
+    params: state.changeFunctions.functions[name].params as unknown as WaveParams,
     functionParams: state.changeFunctions.functions[name]
 });
 

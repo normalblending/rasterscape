@@ -3,11 +3,10 @@ import {ECFType} from "./types";
 import {
     depthInitialParams,
     depthNumberChangeFunction,
-    depthParamsConfig,
     depthVideoChangeFunction
 } from "./functions/depth";
 import {waveChangeFunction, waveInitialParams, waveParamsConfig} from "./functions/wave";
-import {fxyChangeFunction, fxyInitialParams, fxyParamsConfig, fxyVideoChangeFunction} from "./functions/fxy";
+import {fxyChangeFunction, fxyInitialParams, fxyVideoChangeFunction} from "./functions/fxy";
 
 const getId = (key: string, type: ECFType) => +key.slice(type.toString().length);
 
@@ -32,12 +31,6 @@ const chInitialParams = {
     [ECFType.DEPTH]: depthInitialParams,
 };
 
-const chParamsConfig = {
-    [ECFType.WAVE]: waveParamsConfig,
-    [ECFType.FXY]: fxyParamsConfig,
-    [ECFType.DEPTH]: depthParamsConfig,
-};
-
 export const createCFInitialState = (id: string, type: ECFType, number: number) => {
 
     return {
@@ -45,7 +38,6 @@ export const createCFInitialState = (id: string, type: ECFType, number: number) 
         type,
         number,
         params: chInitialParams[type],
-        paramsConfig: chParamsConfig[type] // ???
     }
 };
 

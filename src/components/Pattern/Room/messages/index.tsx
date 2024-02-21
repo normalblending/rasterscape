@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {MessageData, MessageType} from "../../../../store/patterns/room/types";
 import {BaseMessage} from "./BaseMessage";
-import {Omit, WithTranslation, withTranslation, WithTranslationProps} from "react-i18next";
 import * as cn from 'classnames';
 import {MessageComponentType, translatedMessageWithClass, withT} from "./helpers";
 import {ChannelPublicData} from "./ChannelPublicData";
@@ -29,10 +28,10 @@ export const getMessageComponent = (data: MessageData): React.ComponentType<any>
 export const MessageComponentByType: {
     [type: string]: MessageComponentType
 } = {
-    //  нахуя это STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING
+    //  зачем это STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING STRING
 
     [MessageType._StringDefault]: ({data, unreaded}) => (
-        <BaseMessage unreaded={unreaded}>{data}</BaseMessage>
+        <BaseMessage unreaded={unreaded}>{data.text}</BaseMessage>
     ),
 
     // USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE USER MESSAGE

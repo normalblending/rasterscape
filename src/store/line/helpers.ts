@@ -1,9 +1,8 @@
-
-import {EParamType, ParamConfig} from "../../components/_shared/Params";
 import {ValueD} from "../../components/_shared/buttons/complex/ButtonNumber";
 import {arrayToSelectItems, enumToSelectItems} from "../../utils/utils";
 import {ELineCapType, ELineJoinType, ELineRandomType, ELineType, LineParams} from "./types";
 import {compositeOperationSelectItems} from "../compositeOperations";
+import {EParamType, ParamConfig} from "../../components/_shared/Params.types";
 
 const typeSelectItems = arrayToSelectItems(Object.values(ELineType));
 const sizeRange = [1, 200] as [number, number];

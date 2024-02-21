@@ -14,24 +14,24 @@ import {
 import {toStartValue} from "store/change/actions";
 import "./styles.scss";
 import {HoverHideable} from "../../../HoverHideable/HoverHideable";
-import {UserHotkeyInput} from "../../../../Hotkeys/UserHotkeyInput";
+import {ButtonHotkeyInputs} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyInputs";
 import {getChangeFunctionsSelectItemsNumber} from "../../../../../store/changeFunctions/selectors";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
-import {addHotkey, HotkeyControlType, HotkeyValue} from "../../../../../store/hotkeys";
 import {ChangingValue} from "../../../../../store/changingValues/types";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {SelectButtonsEventData} from "../../complex/SelectButtons";
 import {setCFHighlights, setCFTypeHighlights} from "../../../../../store/changeFunctionsHighlights";
 import {LabelFormatter} from "../../../../../store/hotkeys/label-formatters";
 import {Translations} from "../../../../../store/language/helpers";
-import {HKLabelTypes} from "../types";
-import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
+import {HKLabelProps} from "../types";
+import {ButtonHotkeyTrigger} from "../../../../Hotkeys/ButtonHotkeyInputs/ButtonHotkeyTrigger";
+import {HotkeyControlType} from "../../../../../store/hotkeys/types";
 
 export interface ButtonNumberCFStateProps {
     changeFunctionsSelectItems: ChangeFunctionState[]
     changeFunction?: ChangeFunctionState
     changingValue: ChangingValue
-    hotkey: HotkeyValue
+    isHotkeyed: boolean
     settingMode: boolean
     highlightedPath: string
 }
@@ -51,14 +51,12 @@ export interface ButtonNumberCFActionProps {
 
     setStartValue(path: string, startValue: number)
 
-    addHotkey: typeof addHotkey
-
     setCFHighlights(cfName?: string)
 
     setCFTypeHighlights(cfType?: ECFType[])
 }
 
-export interface ButtonNumberCFOwnProps extends ButtonNumberProps, HKLabelTypes {
+export interface ButtonNumberCFOwnProps extends ButtonNumberProps, HKLabelProps {
     path: string
     buttonWrapper?
     withoutCF?: boolean
@@ -74,10 +72,9 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
 
     const {
         onChange,
-        setStartValue, path, value,
+        setStartValue, path, isHotkeyed, value,
         deactivateValueChanging,
         activateValueChanging,
-        addHotkey,
         setValueInChangingList,
         range,
         from, to,
@@ -88,9 +85,11 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         hkLabelFormatter,
         hkData0, hkData1, hkData2, hkData3,
         highlightedPath,
+        autoblur,
+        autofocus
     } = props;
 
-    const hkLabelProps = {
+    const hkLabelProps: HKLabelProps = {
         hkLabel,
         hkLabelFormatter,
         hkData0,
@@ -103,9 +102,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         changeFunction,
         changeFunctionsSelectItems,
         changingValue,
-        // path,
         className,
-        hotkey,
         buttonWrapper: ButtonWrapper,
         withoutCF,
         ...buttonNumberProps
@@ -130,7 +127,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const [_redOpen, setRedOpen] = React.useState(false);
     const [_menuOpen, setMenuOpen] = React.useState(false);
 
-    const [active, setActive] = React.useState();
+    const [active, setActive] = React.useState<boolean>();
 
     const handleCFChange = React.useCallback(({value: changeFunctionId}) => {
 
@@ -168,20 +165,6 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
         setActive(false);
         onRelease?.(e);
     }, [activateValueChanging, path, onRelease]);
-    //
-    // const handleShortcutChange = React.useCallback((shortcut) => {
-    //     if (shortcut === null || shortcut.length === 1) {
-    //         addHotkey({
-    //             path,
-    //             key: shortcut,
-    //             controlType: HotkeyControlType.Number,
-    //             label: hkLabel || path,
-    //             labelFormatter: hkLabelFormatter,
-    //             labelData: [hkData0, hkData1, hkData2, hkData3]
-    //         });
-    //     }
-    // }, [addHotkey, path, hkLabel, hkLabelFormatter, hkData0, hkData1, hkData2, hkData3, path]);
-
 
     const handleCFMouseEnter = React.useCallback((data: SelectButtonsEventData) => {
         setCFHighlights(data?.value?.id);
@@ -216,11 +199,11 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const buttonNumberRef = React.useRef(null);
 
     const handlePressHotkey = React.useCallback((...args) => {
-        buttonNumberRef.current.handlePress(...args);
+        buttonNumberRef.current?.handlePress(...args);
     }, [buttonNumberRef]);
 
     const handleReleaseHotkey = React.useCallback((...args) => {
-        buttonNumberRef.current.handleRelease(...args);
+        buttonNumberRef.current?.handleRelease(...args);
     }, [buttonNumberRef]);
 
     const button = (
@@ -229,7 +212,6 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                 ref={buttonNumberRef}
                 {...othersButtonNumberProps}
 
-                shortcut={hotkey?.code}
                 hotkeyDisabled={settingMode}
 
                 className={buttonClassName}
@@ -247,31 +229,30 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                 onPress={handlePress}
                 onRelease={handleRelease}
             />
-            {settingMode && (
-                <UserHotkeyInput
-                    path={path}
-                    type={HotkeyControlType.Number}
-                    autoblur={othersButtonNumberProps.autoblur}
-                    autofocus={othersButtonNumberProps.autofocus}
-                    {...hkLabelProps}
-                />
-            )}
-            {path &&
-            <UserHotkeyTrigger
-                path={path}
-                onPress={handlePressHotkey}
-                onRelease={handleReleaseHotkey}/>
-            }
-            {!settingMode && hotkey?.key && (
-                <div className={'hotkey-key'}>{hotkey?.key}</div>
+            {path && (
+                <>
+                    <ButtonHotkeyInputs
+                        path={path}
+                        type={HotkeyControlType.Number}
+                        autoblur={autoblur}
+                        autofocus={autofocus}
+                        {...hkLabelProps}
+                    />
+                    {isHotkeyed && (
+                        <ButtonHotkeyTrigger
+                            path={path}
+                            onPress={handlePressHotkey}
+                            onRelease={handleReleaseHotkey}/>
+                    )}
+                </>
             )}
         </>
     );
 
     const buttonElement = React.useMemo(() =>
-        ButtonWrapper
-            ? <ButtonWrapper button={button}/>
-            : button,
+            ButtonWrapper
+                ? <ButtonWrapper button={button}/>
+                : button,
         [ButtonWrapper, button]
     );
 
@@ -282,7 +263,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             setMenuOpen(true);
 
             //это можно коментить чтобы не открывалось автоматм
-            setTimeout(selectDropRef.current.focus, 0);
+            setTimeout(selectDropRef.current?.focus, 0);
         }
     }, []);
 
@@ -293,10 +274,10 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     const handleCFSelectDropBlur = React.useCallback(() => {
         // console.log('SELECT DROP BLUR')
         setTimeout(() => {
-             setRedOpen(false);
-             setMenuOpen(false);
+            setRedOpen(false);
+            setMenuOpen(false);
         }, 150)
-        buttonNumberRef.current.focus();
+        buttonNumberRef.current?.focus();
     }, [setRedOpen, setMenuOpen]);
     //
     //
@@ -314,7 +295,6 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
     // }, [setRedOpen, setMenuOpen]);
 
 
-
     const cfGetText = React.useMemo(() => (item: ChangeFunctionState) => {
         return Translations.cfName(t)(item);
     }, [t]);
@@ -328,7 +308,7 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
             open={_redOpen}
             onKeyPress={handleKeyPress}
             className={classNames("button-number-cf", {
-                ['hotkey-highlighted']: highlightedPath === hotkey?.path
+                // ['hotkey-highlighted']: highlightedPath === path
             }, className)}
             button={buttonElement}>
             {!active && (
@@ -353,8 +333,8 @@ const ButtonNumberCFComponent: React.FunctionComponent<ButtonNumberCFProps> = Re
                         hkData2={hkData2}
                         hkData3={hkData3}
 
-                    //     hkLabel,
-                    // hkData1, hkData2, hkData3,
+                        //     hkLabel,
+                        // hkData1, hkData2, hkData3,
                         onValueMouseEnter={handleCFValueMouseEnter}
                         onValueMouseLeave={handleCFValueMouseLeave}
                         className={"button-number-cf-select"}
@@ -377,7 +357,7 @@ const mapStateToProps: MapStateToProps<ButtonNumberCFStateProps, ButtonNumberCFO
     changeFunctionsSelectItems: getChangeFunctionsSelectItemsNumber(state),
     changeFunction: state.changeFunctions.functions[state.changingValues[path]?.changeFunctionId],
     changingValue: state.changingValues[path],
-    hotkey: state.hotkeys.keys[path],
+    isHotkeyed: !!state.hotkeys.buttons[path],
     settingMode: state.hotkeys.setting,
     highlightedPath: state.hotkeys.highlightedPath,
     autofocus: state.hotkeys.autofocus,
@@ -390,7 +370,6 @@ const mapDispatchToProps: MapDispatchToProps<ButtonNumberCFActionProps, ButtonNu
     activateValueChanging,
     toStartValue,
     setStartValue,
-    addHotkey,
     setCFHighlights,
     setCFTypeHighlights,
 };

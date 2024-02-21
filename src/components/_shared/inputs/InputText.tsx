@@ -21,12 +21,13 @@ export interface InputTextProps {
     [other: string]: any
 }
 
-export interface CInputTextImperativeHandlers {
+export interface InputTextImperativeHandlers {
     blur()
     focus()
+    ref: HTMLInputElement
 }
 
-export const InputText = React.forwardRef<CInputTextImperativeHandlers, InputTextProps>((props, ref) => {
+export const InputText = React.forwardRef<InputTextImperativeHandlers, InputTextProps>((props, ref) => {
 
     const {
         maxLength,
@@ -53,6 +54,7 @@ export const InputText = React.forwardRef<CInputTextImperativeHandlers, InputTex
         focus: () => {
             inputRef?.current?.focus();
         },
+        ref: inputRef.current
     }), [inputRef]);
 
     return (

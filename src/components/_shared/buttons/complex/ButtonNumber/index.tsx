@@ -1,9 +1,7 @@
 import * as React from "react";
 import * as classNames from "classnames";
 import {ButtonSelect, ButtonSelectProps, ButtonSelectEventData} from "../../simple/ButtonSelect";
-import {UserHotkeyTrigger} from "../../../../Hotkeys/UserHotkeyTrigger";
 import {ChangeFunctionState, ECFType} from "../../../../../store/changeFunctions/types";
-import {getOffset} from "../../../../../utils/offset";
 import {LoopAmplitude} from "./LoopAmplitude";
 import {ParaboloidAmplitude, Sis2Amplitude} from "./ParaboloidAmplitude";
 import {SinAmplitude} from "./SinAmplitude";
@@ -11,8 +9,8 @@ import './styles.scss';
 import {WaveType} from "../../../../../store/changeFunctions/functions/wave";
 import {FxyType} from "../../../../../store/changeFunctions/functions/fxy";
 import {NoiseAmplitude} from "./NoiseAmplitude";
-import {redPoint1} from "../../../RedPointHelper";
-import {ChangeFunctions} from "../../../../../store/changeFunctions/reducer";
+import {TimeDrawAmplitude} from "./TimeDrawAmplitude";
+import {FxyArrayAmplitude} from "./FxyArrayAmplitude";
 
 const DEFAULT_WIDTH = 70;
 
@@ -38,8 +36,10 @@ const amplitudeComponent = {
     [WaveType.Sin]: SinAmplitude,
     [WaveType.Saw]: LoopAmplitude,
     [WaveType.Noise]: NoiseAmplitude,
+    [WaveType.Draw]: TimeDrawAmplitude,
     [FxyType.Parab]: ParaboloidAmplitude,
     [FxyType.Sis2]: Sis2Amplitude,
+    [FxyType.Array]: FxyArrayAmplitude,
 };
 
 export interface ButtonNumberEventData extends ButtonSelectEventData {
@@ -61,8 +61,6 @@ export interface ButtonNumberProps extends ButtonSelectProps {
     range?: [number, number]
     from?: number
     to?: number
-
-    shortcut?: string
 
     disablePointerLock?: boolean
 
@@ -132,7 +130,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             || nextProps.changingStartValue !== this.props.changingStartValue
             || nextProps.changeFunctionParams !== this.props.changeFunctionParams
             || nextProps.changeFunctionId !== this.props.changeFunctionId
-            || nextProps.shortcut !== this.props.shortcut
             || nextProps.className !== this.props.className
             || nextProps.style !== this.props.style
             || nextProps.autoblur !== this.props.autoblur
@@ -417,7 +414,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         }
 
 
-        // keys up down
+        // buttons up down
         let i = 0;
         if (e.keyCode === 38) {
             e.preventDefault();
@@ -437,7 +434,7 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
         const value = oldValue + i * this.calculateOneStep();
         onChange?.({e, value, name, selected});
     };
-    // constrol keys up
+    // constrol buttons up
     handleKeyUp = (e) => {
         if (e.keyCode === this.controlKey) {
             e.preventDefault();
@@ -462,7 +459,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
             width = DEFAULT_WIDTH,
             className,
             text,
-            shortcut,
             // ----
             valueD,
             setValueInChangingList,
@@ -517,14 +513,6 @@ export class ButtonNumber extends React.Component<ButtonNumberProps, ButtonNumbe
                     changeFunctionId={changeFunctionId}
                     changeFunction={changeFunction}
                 />}
-
-                {/*{shortcut &&*/}
-                {/*<UserHotkeyTrigger*/}
-                {/*    path={path}*/}
-                {/*    name={otherProps.name}*/}
-                {/*    keys={shortcut}*/}
-                {/*    onPress={this.handlePress}*/}
-                {/*    onRelease={this.handleRelease}/>}*/}
                 <canvas
                     width={width}
                     height={20}

@@ -15,67 +15,57 @@ import {getBlurState} from "./blur/helpers";
 import {patternValues} from "./values";
 import {getDemonstrationState} from "./demonstration/helpers";
 
-export const patternId = (state: PatternsState) =>
-    (Object.keys(state).length
-        ? (Math.max(...Object.keys(state).map(key => +key))) + 1
+export const patternId = (idsArray: string[]): string =>
+    (idsArray.length
+        ? (Math.max(...idsArray.map(key => +key))) + 1
         : 1).toString();
 
 
 export const createPatternInitialState = (id: string, config?: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating, startImage, startMask, room} = config || {};
+    const {width, height, history, store, selection, mask, rotation, repeating, startImage, startMask, room} = config || {};
 
-    const width = startImage ? startImage.width : (config.width || 400);
-    const height = startImage ? startImage.height : (config.height || 400);
-
-    const current = startImage ? createCanvasStateFromImageData(startImage) : createCleanCanvasState(width, height);
-    const maskState = getMaskState(width, height, startMask)(mask, undefined, params?.mask);
-    const patternState = {
+    const patternState: PatternState = {
         id,
         config,
-        resultImage: patternValues.setValue(id, current.imageData, mask && startMask, maskState?.params.inverse),
-        current,
-        history: getHistoryState(true, undefined, params?.history),
-        store: getStoreState(store, undefined, params?.store),
-        selection: getSelectionState(true, undefined, params?.selection),
-        mask: maskState,
-        rotation: getRotationState(true, undefined, params?.rotation),
-        repeating: getRepeatingState(true, undefined, params?.repeating),
-        import: getImportState(true, undefined, params?.import),
-        video: getVideoState(true, undefined, params?.video),
-        room: getRoomState(true, undefined, params?.room),
-        blur: getBlurState(true, undefined, params?.blur),
-        demonstration: getDemonstrationState(true, undefined, params?.demonstration),
+        width, height,
+        history: getHistoryState(undefined, params?.history),
+        store: getStoreState(undefined, params?.store),
+        selection: getSelectionState(undefined, params?.selection),
+        mask: getMaskState(undefined, params?.mask),
+        rotation: getRotationState(undefined, params?.rotation),
+        repeating: getRepeatingState( undefined, params?.repeating),
+        import: getImportState( undefined, params?.import),
+        video: getVideoState( undefined, params?.video),
+        room: getRoomState( undefined, params?.room),
+        blur: getBlurState( undefined, params?.blur),
+        demonstration: getDemonstrationState( undefined, params?.demonstration),
     }
 
     return patternState;
 };
 
+// это нужно разнести по разным экшенам
 export const updatePatternState = (state: PatternState, config: PatternConfig, params?: PatternParams): PatternState => {
-    const {history, store, selection, mask, rotation, repeating, room} = config || {};
+    const {width, height, history, store, selection, mask, rotation, repeating, room} = config || {};
     params = params || {};
-    const maskState = getMaskState(state.current.imageData.width, state.current.imageData.height)(true, state.mask, params.mask);
+    // const maskState = getMaskState(state.current.imageData.width, state.current.imageData.height)(true, state.mask, params.mask);
     return {
         config,
         id: state.id,
-        current: state.current,
-        resultImage: patternValues.setValue(state.id, state.current.imageData, mask && maskState?.value.imageData, maskState?.params.inverse),
-        // resultImage: state.resultImage,
-        history: getHistoryState(history, state.history, params.history),
-        store: getStoreState(store, state.store, params.store),
-        selection: getSelectionState(selection, state.selection, params.selection),
-        mask: maskState,
-        rotation: getRotationState(true, state.rotation, params.rotation),
-        repeating: getRepeatingState(true, state.repeating, params.repeating),
-        import: getImportState(true, state.import, params.import),
-        video: getVideoState(true, state.video, params.video),
-        room: getRoomState(true, state.room, params.room),
-        blur: getBlurState(true, state.blur, params.blur),
-        demonstration: getDemonstrationState(true, state.demonstration, params.demonstration),
+        width: state.width,
+        height: state.height,
+        // current: state.current,
+        // resultImage: patternValues.setValue(state.id, state.current.imageData, mask && maskState?.value.imageData, maskState?.params.inverse),
+        history: getHistoryState(state.history, params.history),
+        store: getStoreState( state.store, params.store),
+        selection: getSelectionState( state.selection, params.selection),
+        mask: getMaskState(state.mask, params.mask), // почему true?
+        rotation: getRotationState(state.rotation, params.rotation),
+        repeating: getRepeatingState(state.repeating, params.repeating),
+        import: getImportState(state.import, params.import),
+        video: getVideoState(state.video, params.video),
+        room: getRoomState(state.room, params.room),
+        blur: getBlurState(state.blur, params.blur),
+        demonstration: getDemonstrationState(state.demonstration, params.demonstration),
     }
 };
-
-
-
-export const removePattern = (state: PatternsState, id: string) => omit(state, id);
-
-

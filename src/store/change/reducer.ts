@@ -10,9 +10,7 @@ export const changeReducer = handleActions<AppState>({
 
         const {changeFunctions: {functions: changeFunctions}, changingValues, patterns, position} = state;
 
-        let r;
-
-        r = Object.values(changingValues).reduce((res, changingValue) => {
+        return Object.values(changingValues).reduce((res, changingValue) => {
 
             let vPath, nextValue;
 
@@ -37,7 +35,6 @@ export const changeReducer = handleActions<AppState>({
                 // console.log(changeFunction(changeFunctionData.params, range, pattern)(startValue, action.time, action.position), changeFunctionData.params, range, pattern, startValue, action.time, action.position);
 
                 // let nextValue = changeFunction({
-                console.log(1, pattern);
                 nextValue = changeFunction({
                     params: changeFunctionData.params,
                     range,
@@ -55,10 +52,9 @@ export const changeReducer = handleActions<AppState>({
                 vPath = path
             // }
 
+
             return res.set(vPath, nextValue)
         }, immutable.wrap(state)).value();
-
-        return r;
     },
     [EChangeAction.TO_START_VALUE]: (state: AppState, action: ChangeToStartValueAction) => {
         const {path} = action;

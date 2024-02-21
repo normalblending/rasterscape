@@ -2,27 +2,14 @@ import {PatternAction} from "../pattern/types";
 import {createRoomSocket, roomSockets} from "./service";
 import {base64ToImageData, imageDataToBase64} from "../../../utils/canvas/helpers/imageData";
 import {ThunkResult} from "../../../utils/actions/types";
-import {AppState} from "../../index";
+import {AppState, patternsService} from "../../index";
 import {updateImage} from "../pattern/actions";
 import {stop} from "../video/actions";
 import _throttle from 'lodash/throttle';
-import {getSignedMessage, isMeDrawer, parseMessage} from "./helpers";
+import {isMeDrawer, parseMessage} from "./helpers";
 import {MessageData, MessageType} from "./types";
 import {base64Size} from "../../../utils/utils";
-
-export enum ERoomAction {
-    CREATE_ROOM = "pattern/create-room",
-    LEAVE_ROOM = "pattern/leave-room",
-    IMAGE_SENT = "pattern/room/image-sent",
-    MESSAGE_SENT = "pattern/room/message-sent",
-    RECEIVE_MESSAGE = "pattern/room/receive-message",
-    RESET_UNREADED = "pattern/room/reset-unreaded",
-    RECEIVE_DRAWER = "pattern/room/receive-drawer",
-    RECEIVE_MEMBERS = "pattern/room/receive-members",
-    RECEIVE_TOKEN = "pattern/room/receive-token",
-    SET_DRAWER = "pattern/room/set-drawer",
-    UPDATE_PROPS = "pattern/room/update-props",
-}
+import {ERoomAction} from "./consts";
 
 export interface CreateRoomAction extends PatternAction {
     roomName: string
@@ -129,7 +116,8 @@ export const sendMessage = (id: string, message: string): ThunkResult<SendMessag
 
         const state = getState();
         const roomSocket = roomSockets.get(id);
-        const resultImageData = state.patterns[id]?.current?.imageData;
+        // const resultImageData = state.patterns[id]?.current?.imageData;
+        const resultImageData = patternsService.pattern[id].canvasService.getImageData();
 
         const {left, right, leftPersistent, leftParts} = parseMessage(message);
 
@@ -226,6 +214,7 @@ export const receiveDrawer = (id: string, drawer: string) =>
         const meDrawer = socketId ? socketId === drawer : false;
 
         if (!meDrawer) {
+
             dispatch(stop(id));
         }
 

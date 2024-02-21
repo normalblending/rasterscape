@@ -3,7 +3,7 @@
 
   .hotkeys-list {
 
-    background: radial-gradient(#fff -16%,#c8c8c8);//circle,
+    background: radial-gradient(#fff -16%, #c8c8c8); //circle,
     z-index: 1;
     position: absolute;
     top: 20px;
@@ -45,12 +45,14 @@
         font-size: 14px;
         margin-top: 9px;
         margin-bottom: -9px;
-        color: rgba(0,0,0,.5);
+        color: rgba(0, 0, 0, .5);
       }
     }
+
     .global-hotkeys {
       margin-top: -12px;
     }
+
     .hotkeys-list-items .hotkeys-list-item {
       display: flex;
       align-items: flex-end;
@@ -69,31 +71,27 @@
           padding: 0;
         }
       }
-      .shortcut-input {
+
+      .shortcut-input-container {
+
         position: relative;
         margin-right: 14px;
         flex: 0 0 auto;
+        display: flex;
+        width: auto;
 
-        //top: 1px;
+        .shortcut-input {
 
-        &:focus {
-          color: red;
+          margin-right: 3px;
+          //top: 1px;
+
+          &:focus {
+            color: red;
+          }
         }
       }
 
-      .hotkey-name {
 
-        width: 100%;
-        border-bottom: 1px dotted #797979;
-        font-size: 14px;
-        font-weight: normal;
-        text-align: left;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        background: linear-gradient(0deg, #ececec4a, transparent);
-      }
     }
 
   }

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {BezierCurveRepeating, CrossSelectData} from "../BezierGrid/BezierGridRepeatsSVGUI";
+import {CrossSelectData} from "../BezierGrid/BezierGridRepeatsSVGUI";
 import {ERepeatsType, RepeatsBezierGridParams, RepeatsFlatGridParams} from "../../../../store/patterns/repeating/types";
 import './styles.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
@@ -66,10 +66,10 @@ export const FlatGridSecondaryComponent: React.FC<FlatGridSecondaryProps> = (pro
 
         setRepeatsParams(patternId, type, {
             ...params,
-            xn0: xn0 !== undefined ? xn0 : params.xn0,
-            yn0: yn0 !== undefined ? yn0 : params.yn0,
-            xn1: xn1 !== undefined ? xn1 : params.xn1,
-            yn1: yn1 !== undefined ? yn1 : params.yn1,
+            xn0: xn0 !== undefined ? xn0 : params['xn0'],
+            yn0: yn0 !== undefined ? yn0 : params['yn0'],
+            xn1: xn1 !== undefined ? xn1 : params['xn1'],
+            yn1: yn1 !== undefined ? yn1 : params['yn1'],
         });
 
         xn0 !== undefined && setStartValue(`${paramsPath}.xn1`, xn0);

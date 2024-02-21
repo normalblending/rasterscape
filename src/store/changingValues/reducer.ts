@@ -72,7 +72,12 @@ export const changingValuesReducer = handleActions<ChangingValuesState>({
     }),
     [EChangeFunctionsAction.REMOVE_CF]: (state: ChangingValuesState, action: RemoveCFAction) => {
         const toDelete = Object.values(state)
-            .filter(({changeFunctionId}) => changeFunctionId === action.name)
+            .filter(({changeFunctionId, path}) => {
+                return (
+                    changeFunctionId === action.name // удаляем изменение значений которые управляются этой функцией
+                    || (path.includes('changeFunctions.functions') && path.split('.')[2] === action.name) // удаляем изменения значений внутри этой функции
+                )
+            })
             .map(({path}) => path);
         return omit(state, ...toDelete);
     }

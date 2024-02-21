@@ -1,37 +1,42 @@
-import * as React from "react";
-import * as cn from 'classnames';
-import {VideoParams} from "../../../store/patterns/video/types";
-import {SelectDrop} from "../../_shared/buttons/complex/SelectDrop";
-import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
-import {AppState} from "../../../store";
-import {ChangeFunctionState, ECFType} from "../../../store/changeFunctions/types";
+import * as React from 'react'
+import * as cn from 'classnames'
+import {VideoParams} from '../../../store/patterns/video/types'
+import {SelectDrop} from '../../_shared/buttons/complex/SelectDrop'
+import {connect, MapDispatchToProps, MapStateToProps} from 'react-redux'
+import {AppState} from '../../../store'
+import {ChangeFunctionState, ECFType} from '../../../store/changeFunctions/types'
 import {
-    pause,
-    play,
+
     setChangeFunction,
-    setCutOffset,
+    setDevice,
     setEdgeMode,
     setMirrorMode,
-    setSlitMode,
+    setCameraAxis,
     setStackSize,
     setStackType,
+    startCamera,
+    stopCamera,
     start,
     stop,
-    updateVideo
-} from "../../../store/patterns/video/actions";
-import {getChangeFunctionsSelectItemsVideo} from "../../../store/changeFunctions/selectors";
-import {EdgeMode, MirrorMode, SlitMode} from "../../../store/patterns/video/services";
-import {StackType} from "../../../store/patterns/video/capture/pixels";
-import './videoControls.scss';
-import {SelectItem} from "../../../utils/utils";
-import {setCFHighlights, setCFTypeHighlights} from "../../../store/changeFunctionsHighlights";
-import {SelectButtonsEventData} from "../../_shared/buttons/complex/SelectButtons";
-import {CycledToggleHK} from "../../_shared/buttons/hotkeyed/CycledToggleHK";
-import {ButtonHK} from "../../_shared/buttons/hotkeyed/ButtonHK";
-import {ButtonNumberCF} from "../../_shared/buttons/hotkeyed/ButtonNumberCF";
-import {WithTranslation, withTranslation} from "react-i18next";
-import {LabelFormatter} from "../../../store/hotkeys/label-formatters";
-import {Translations} from "../../../store/language/helpers";
+    setVideoOffset,
+} from '../../../store/patterns/video/actions'
+import {getChangeFunctionsSelectItemsVideo} from '../../../store/changeFunctions/selectors'
+import {EdgeMode, MirrorMode, SlitMode} from '../../../store/patterns/video/services_DEPREC'
+import {StackType} from '../../../store/patterns/video/_old/capture/pixelStack'
+import './videoControls.scss'
+import {setCFHighlights, setCFTypeHighlights} from '../../../store/changeFunctionsHighlights'
+import {SelectButtonsEventData} from '../../_shared/buttons/complex/SelectButtons'
+import {CycledToggleHK} from '../../_shared/buttons/hotkeyed/CycledToggleHK'
+import {ButtonHK} from '../../_shared/buttons/hotkeyed/ButtonHK'
+import {ButtonNumberCF} from '../../_shared/buttons/hotkeyed/ButtonNumberCF'
+import {WithTranslation, withTranslation} from 'react-i18next'
+import {LabelFormatter} from '../../../store/hotkeys/label-formatters'
+import {Translations} from '../../../store/language/helpers'
+import {SelectVideoDevice} from 'bbuutoonnss'
+import {InputNumber} from '../../_shared/inputs/InputNumber'
+import {coordHelper4} from '../../Area/canvasPosition.servise'
+import {VideoOffsetForm} from './VideoOffsetForm'
+import {CameraAxis} from "../../../store/patterns/_service/patternServices/PatternVideoService/ShaderVideoModule";
 
 export interface VideoControlsStateProps {
 
@@ -40,20 +45,27 @@ export interface VideoControlsStateProps {
     changeFunctionsSelectItems: ChangeFunctionState[]
     videoDisabled: boolean
     changeFunctionParams: any
+
+    autoblur: boolean
+    autofocus: boolean
 }
 
 export interface VideoControlsActionProps {
-    start
-    stop
+    start(id: string)
 
-    pause
-    play
+    stop(id: string)
+
+    startCamera(id: string)
+
+    stopCamera(id: string)
 
     setCFHighlights(cfName?: string)
 
     setCFTypeHighlights(cfType?: ECFType[])
 
-    setSlitMode(id: string, value: SlitMode)
+    setDevice(id: string, value: MediaDeviceInfo)
+
+    setCameraAxis(id: string, value: CameraAxis)
 
     setEdgeMode(id: string, value: EdgeMode)
 
@@ -65,9 +77,7 @@ export interface VideoControlsActionProps {
 
     setStackSize(id: string, value: number)
 
-    setCutOffset(id: string, value: number)
-
-    updateVideo(id: string)
+    setVideoOffset(id: string, name: string, value: number)
 }
 
 export interface VideoControlsOwnProps {
@@ -82,319 +92,316 @@ export interface VideoControlsState {
     pause: boolean
 }
 
-const availableCFTypes = [ECFType.FXY, ECFType.DEPTH];
+const availableCFTypes = [ECFType.FXY, ECFType.DEPTH]
 
-const percentRange = [0, 1] as [number, number];
-const offsetRange = [-1, 0] as [number, number];
+const percentRange = [0, 1] as [number, number]
+const offsetRange = [-1, 0] as [number, number]
 const stackTypeClassNames = {
     [StackType.Right]: 'rightStack',
     [StackType.Left]: 'leftStack',
     [StackType.FromCenter]: 'toCenterStack',
     [StackType.ToCenter]: 'fromCenterStack',
-};
+}
 
-// todo нужно нормально сделать состояния в редаксе и экшены-свитчи
+const inputNumberProps = {min: 0, max: null, step: 1, delay: 1000, notZero: true}
+
 export class VideoControlsComponent extends React.PureComponent<VideoControlsProps, VideoControlsState> {
 
-    capture;
-    sketch;
-    stream;
+    capture
+    sketch
+    stream
 
     state = {
         pause: false,
         cutOffsetStyles: null,
-    };
+    }
 
 
     componentDidUpdate(prevProps: Readonly<VideoControlsProps>, prevState: Readonly<VideoControlsState>, snapshot?: any): void {
 
-        const {changeFunctionParams, updateVideo, patternId} = this.props;
-
-        if (changeFunctionParams !== prevProps.changeFunctionParams) {
-            updateVideo(patternId);
-        }
     }
 
-    handleChangeOnParam = (data) => {
-        const {videoParams, patternId} = this.props;
-        videoParams.on
+    handleChangeCameraOnParam = (data) => {
+        const {videoParams, patternId} = this.props
+        videoParams.cameraOn
+            ? this.props.stopCamera(patternId)
+            : this.props.startCamera(patternId)
+    }
+
+    handleChangeUpdatingOnParam = (data) => {
+        const {videoParams, patternId} = this.props
+        videoParams.updatingOn
             ? this.props.stop(patternId)
-            : this.props.start(patternId);
-    };
+            : this.props.start(patternId)
+    }
 
-    handlePause = () => {
-        const {videoParams, patternId} = this.props;
-        videoParams.pause
-            ? this.props.play(patternId)
-            : this.props.pause(patternId);
-    };
-
-    handleChangeSlitModeParam = (data) => {
-        const {setSlitMode, patternId} = this.props;
-        const {value} = data;
-        setSlitMode(patternId, value);
-    };
+    handleChangeSlitModeParam = (axis: CameraAxis) => {
+        const {setCameraAxis, patternId} = this.props
+        setCameraAxis(patternId, axis)
+    }
 
     handleChangeEdgeMode = (data) => {
-        const {setEdgeMode, patternId} = this.props;
-        const {value} = data;
-        setEdgeMode(patternId, value);
-    };
-
-    handleChangeMirrorMode = (data) => {
-        const {setMirrorMode, patternId} = this.props;
-        const {value} = data;
-        setMirrorMode(patternId, data.selected ? MirrorMode.NO : MirrorMode.HORIZONTAL);
-    };
-
-    handleChangeStackType = (data) => {
-        const {setStackType, patternId} = this.props;
-        const {value} = data;
-        setStackType(patternId, value);
-    };
-
-    handleChangeChangeFunction = (data) => {
-        const {setChangeFunction, patternId} = this.props;
-        const {value} = data;
-        setChangeFunction(patternId, value);
-    };
-
-    handleClearChangeFunction = () => {
-        const {setChangeFunction, patternId} = this.props;
-        setChangeFunction(patternId, null);
-    };
-
-    handleChangeStackSize = (data) => {
-        const {setStackSize, patternId} = this.props;
-        const {value} = data;
-        setStackSize(patternId, value);
-    };
-
-    handleChangeCutOffset = (data) => {
-        const {setCutOffset, patternId} = this.props;
-        const {value} = data;
-        setCutOffset(patternId, value);
-    };
-
-    componentWillUnmount(): void {
-        this.props.stop(this.props.patternId);
+        const {setEdgeMode, patternId} = this.props
+        const {value} = data
+        setEdgeMode(patternId, value)
     }
 
-    availableChangeTypes = [ECFType.FXY, ECFType.DEPTH];
+    handleChangeMirrorMode = (data) => {
+        const {setMirrorMode, patternId} = this.props
+        const {value} = data
+        setMirrorMode(patternId, data.selected ? MirrorMode.NO : MirrorMode.HORIZONTAL)
+    }
+
+    handleChangeStackType = (data) => {
+        const {setStackType, patternId} = this.props
+        const {value} = data
+        setStackType(patternId, value)
+    }
+
+    handleChangeChangeFunction = (data) => {
+        const {setChangeFunction, patternId} = this.props
+        const {value} = data
+        setChangeFunction(patternId, value)
+    }
+
+    handleClearChangeFunction = () => {
+        const {setChangeFunction, patternId} = this.props
+        setChangeFunction(patternId, null)
+    }
+
+    handleChangeStackSize = (value) => {
+        const {setStackSize, patternId} = this.props
+        setStackSize(patternId, value)
+    }
+
+    handleChangeOffset = (data) => {
+        const {setVideoOffset, patternId} = this.props
+        const {value, name} = data
+        setVideoOffset(patternId, name, value)
+    }
+    handleChangeOffsetForm = (name, value) => {
+        const {setVideoOffset, patternId} = this.props
+        setVideoOffset(patternId, name, value)
+    }
+
+    componentWillUnmount(): void {
+        // console.log('000000000')
+        // this.props.stop(this.props.patternId)
+    }
+
+    availableChangeTypes = [ECFType.FXY, ECFType.DEPTH]
 
     handleCFValueMouseEnter = () => {
-        const {setCFTypeHighlights, changeFunctionsSelectItems} = this.props;
+        const {setCFTypeHighlights, changeFunctionsSelectItems} = this.props
         if (!changeFunctionsSelectItems.length)
-            setCFTypeHighlights(availableCFTypes);
-    };
+            setCFTypeHighlights(availableCFTypes)
+    }
     handleCFValueMouseLeave = () => {
-        const {setCFTypeHighlights} = this.props;
-        setCFTypeHighlights(null);
-    };
+        const {setCFTypeHighlights} = this.props
+        setCFTypeHighlights(null)
+    }
 
     handleCFMouseEnter = (data: SelectButtonsEventData) => {
-        const {setCFHighlights} = this.props;
-        setCFHighlights(data?.value?.id);
-    };
+        const {setCFHighlights} = this.props
+        setCFHighlights(data?.value?.id)
+    }
     handleCFMouseLeave = () => {
-        const {setCFHighlights} = this.props;
-        setCFHighlights(null);
-    };
+        const {setCFHighlights} = this.props
+        setCFHighlights(null)
+    }
 
     stackSizeText = (value) => {
-        return value.toFixed(2) + 'w'
-    };
+        return value.toFixed(2) + 'D'
+    }
 
-    dynamicCutBG = (slitMode: SlitMode, stackType: StackType) => {
-        const {videoParams: {cutOffset}} = this.props;
-        if (slitMode === SlitMode.FRONT) {
-            switch (stackType) {
+    // dynamicCutBG = (slitMode: SlitMode, stackType: StackType) => {
+    //     const { videoParams: { cutOffset } } = this.props
+    //     if (slitMode === SlitMode.FRONT) {
+    //         switch (stackType) {
+    //
+    //             case StackType.Right:
+    //                 return { background: `rgba(255, 255, 255, ${(cutOffset + 1).toFixed(2)})` }
+    //             case StackType.Left:
+    //                 return { background: `rgba(255, 255, 255, ${(-cutOffset).toFixed(2)})` }
+    //             case StackType.FromCenter:
+    //                 return { background: `rgba(255, 255, 255, ${((-Math.abs(2 * cutOffset + 1) + 1)).toFixed(2)})` }
+    //             case StackType.ToCenter:
+    //                 return { background: `rgba(255, 255, 255, ${Math.abs(1 + 2 * cutOffset).toFixed(2)})` }
+    //
+    //
+    //         }
+    //     }
+    //     if (slitMode === SlitMode.BACK) {
+    //         switch (stackType) {
+    //
+    //             case StackType.Right:
+    //                 return { background: `rgba(255, 255, 255, ${(-cutOffset).toFixed(2)})` }
+    //             case StackType.Left:
+    //                 return { background: `rgba(255, 255, 255, ${(cutOffset + 1).toFixed(2)})` }
+    //             case StackType.FromCenter:
+    //                 return { background: `rgba(255, 255, 255, ${((-Math.abs(2 * cutOffset + 1) + 1)).toFixed(2)})` }
+    //             case StackType.ToCenter:
+    //                 return { background: `rgba(255, 255, 255, ${Math.abs(1 + 2 * cutOffset).toFixed(2)})` }
+    //
+    //
+    //         }
+    //     }
+    //     return null
+    // }
 
-                case StackType.Right:
-                    return {background: `rgba(255, 255, 255, ${(cutOffset + 1).toFixed(2)})`};
-                case StackType.Left:
-                    return {background: `rgba(255, 255, 255, ${(-cutOffset).toFixed(2)})`};
-                case StackType.FromCenter:
-                    return {background: `rgba(255, 255, 255, ${((-Math.abs(2 * cutOffset + 1) + 1)).toFixed(2)})`};
-                case StackType.ToCenter:
-                    return {background: `rgba(255, 255, 255, ${Math.abs(1 + 2 * cutOffset).toFixed(2)})`};
-
-
-            }
-        }
-        if (slitMode === SlitMode.BACK) {
-            switch (stackType) {
-
-                case StackType.Right:
-                    return {background: `rgba(255, 255, 255, ${(-cutOffset).toFixed(2)})`};
-                case StackType.Left:
-                    return {background: `rgba(255, 255, 255, ${(cutOffset + 1).toFixed(2)})`};
-                case StackType.FromCenter:
-                    return {background: `rgba(255, 255, 255, ${((-Math.abs(2 * cutOffset + 1) + 1)).toFixed(2)})`};
-                case StackType.ToCenter:
-                    return {background: `rgba(255, 255, 255, ${Math.abs(1 + 2 * cutOffset).toFixed(2)})`};
-
-
-            }
-        }
-        return null;
-    };
-
-    edgeModeGetValue = id => id;
+    edgeModeGetValue = id => id
     edgeModeGetText = (id) => {
-        const {t} = this.props;
-        return t('pattern.video.edgeMode.' + id);
-    };
+        const {t} = this.props
+        return t('pattern.video.edgeMode.' + id)
+    }
 
-    slitModeGetValue = id => id;
-    slitModeGetText = (id) => {
-        const {t} = this.props;
-        return t('pattern.video.slitMode.' + id);
-    };
+    cameraAxisGetValue = id => id
+    cameraAxisGetText = (id) => {
+        const {t} = this.props
+        return t('pattern.video.cameraAxis.' + id)
+    }
 
-    stackTypeGetValue = id => id;
+    stackTypeGetValue = id => id
 
-    cfGetValue = (item: ChangeFunctionState) => item.id;
+    cfGetValue = (item: ChangeFunctionState) => item.id
     cfGetText = (item: ChangeFunctionState) => {
-         const {t} = this.props;
-         return Translations.cfName(t)(item);
-     }
+        const {t} = this.props
+        return Translations.cfName(t)(item)
+    }
+
+    handleDeviceSelect = (device: MediaDeviceInfo) => {
+        this.props.setDevice(this.props.patternId, device)
+
+    }
 
     render() {
-        const {changeFunctionsSelectItems, videoParams: params, patternId, videoDisabled, t} = this.props;
-        const {on, pause} = params;
+        const {
+            changeFunctionsSelectItems,
+            videoParams: params,
+            patternId,
+            videoDisabled,
+            t,
+            autoblur,
+            autofocus,
+        } = this.props
+        const {cameraOn, updatingOn} = params
 
         return (
-            <div className={"video-controls"}>
+            <div className={'video-controls'}>
+
+                <div className={'video-controls-source'}>
+                    <SelectVideoDevice
+                        className={'select-device'}
+                        value={params.device?.deviceId}
+                        onSelect={this.handleDeviceSelect}
+                    />
+                    <ButtonHK
+                        hkLabel={'pattern.hotkeysDescription.video.cameraOn'}
+                        hkData1={patternId}
+                        path={`pattern.${patternId}.video.cameraOn`}
+                        className={'on-off'}
+                        selected={cameraOn}
+                        name={'cameraOn'}
+                        disabled={videoDisabled}
+                        onClick={this.handleChangeCameraOnParam}
+                    >
+                        {cameraOn ? t('pattern.video.stop') : t('pattern.video.start')}
+                    </ButtonHK>
+                </div>
+
+                <div className={'video-controls-cube-params'}>
 
 
-                <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.video.on'}
-                    hkData1={patternId}
-                    path={`pattern.${patternId}.video.on`}
-                    className={'on-off'}
-                    selected={on}
-                    name={'on'}
-                    disabled={videoDisabled}
-                    onClick={this.handleChangeOnParam}
-                >
-                    {on ? t("pattern.video.stop") : t("pattern.video.start")}
-                </ButtonHK>
+                    <InputNumber
+                        autoblur={autoblur}
+                        autofocus={autofocus}
+                        className={'size-input-number'}
+                        onChange={this.handleChangeStackSize}
+                        value={params.stackSize}
+                        {...inputNumberProps}/>
 
-                <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.video.pause'}
-                    hkData1={patternId}
-                    path={`pattern.${patternId}.video.pause`}
-                    className={'pause-play'}
-                    disabled={!on}
-                    selected={pause && on}
-                    name={'pause'}
-                    onClick={this.handlePause}
-                >{pause ? t("pattern.video.play") : t("pattern.video.pause")}</ButtonHK>
-                <ButtonHK
-                    hkLabel={'pattern.hotkeysDescription.video.mirror'}
-                    hkData1={patternId}
-                    path={`pattern.${patternId}.video.mirrorMode`}
-                    className={'mirror-mode'}
-                    name={"mirrorMode"}
-                    onClick={this.handleChangeMirrorMode}
-                    selected={params.mirrorMode === MirrorMode.HORIZONTAL}
-                ><span>{t('pattern.video.mirror')}</span></ButtonHK>
+                    <ButtonHK
+                        hkLabel={'pattern.hotkeysDescription.video.updatingOn'}
+                        hkData1={patternId}
+                        path={`pattern.${patternId}.video.updatingOn`}
+                        className={'on-off'}
+                        selected={updatingOn}
+                        name={'updatingOn'}
+                        disabled={videoDisabled}
+                        onClick={this.handleChangeUpdatingOnParam}
+                    >
+                        {updatingOn ? t('pattern.video.stop') : t('pattern.video.start')}
+                    </ButtonHK>
+                    <SelectDrop
 
-                <CycledToggleHK
-                    hkLabel={'pattern.hotkeysDescription.video.edgeMode'}
-                    hkData1={patternId}
-                    path={`pattern.${patternId}.video.edgeMode`}
-                    className={'edge-mode'}
-                    getValue={this.edgeModeGetValue}
-                    getText={this.edgeModeGetText}
-                    items={Object.values(EdgeMode)}
-                    value={params.edgeMode}
-                    name={"edgeMode"}
-                    onChange={this.handleChangeEdgeMode}/>
+                        hkByValue={false}
+                        hkLabel={'pattern.hotkeysDescription.video.cutFunction'}
+                        hkLabelFormatter={LabelFormatter.ChangeFunction}
+                        hkData1={patternId}
 
-                <ButtonNumberCF
-                    hkLabel={'pattern.hotkeysDescription.video.stackSize'}
-                    hkData1={patternId}
-                    withoutCF
-                    pres={2}
-                    className={cn('stack-size', {
-                        [params.edgeMode]: true,
-                        [stackTypeClassNames[params.stackType]]: true
-                    })}
-                    path={`patterns.${patternId}.video.params.stackSize`}
-                    name={"stackSize"}
-                    getText={this.stackSizeText}
-                    value={params.stackSize}
-                    range={percentRange}
-                    onChange={this.handleChangeStackSize}
-                />
+                        className={'cut-function'}
 
-                <ButtonNumberCF
-                    pres={2}
-                    path={`patterns.${patternId}.video.params.cutOffset`}
-                    hkLabel={'pattern.hotkeysDescription.video.cutOffset'}
-                    hkData1={patternId}
-                    name={"radius"}
-                    className={cn('cut-offset', {
-                        [stackTypeClassNames[params.stackType]]: true,
-                        [params.slitMode]: true,
-                    })}
-                    style={this.dynamicCutBG(params.slitMode, params.stackType)}
-                    value={params.cutOffset}
-                    range={offsetRange}
-                    onChange={this.handleChangeCutOffset}
-                />
+                        nullAble
+                        nullText={'-'}
+                        onValueMouseEnter={this.handleCFValueMouseEnter}
+                        onValueMouseLeave={this.handleCFValueMouseLeave}
+                        onItemMouseEnter={this.handleCFMouseEnter}
+                        onItemMouseLeave={this.handleCFMouseLeave}
+                        name={'changeFunctionId'}
+                        value={params.changeFunctionId}
+                        getText={this.cfGetText}
+                        getValue={this.cfGetValue}
+                        items={changeFunctionsSelectItems}
+                        onChange={this.handleChangeChangeFunction}
+                    />
+                </div>
+                {/*<ButtonHK*/}
+                {/*    hkLabel={'pattern.hotkeysDescription.video.mirror'}*/}
+                {/*    hkData1={patternId}*/}
+                {/*    path={`pattern.${patternId}.video.mirrorMode`}*/}
+                {/*    className={'mirror-mode'}*/}
+                {/*    name={'mirrorMode'}*/}
+                {/*    onClick={this.handleChangeMirrorMode}*/}
+                {/*    selected={params.mirrorMode === MirrorMode.HORIZONTAL}*/}
+                {/*>*/}
+                {/*    <span>{t('pattern.video.mirror')}</span>*/}
+                {/*</ButtonHK>*/}
+
+                {/*<CycledToggleHK*/}
+                {/*    hkLabel={'pattern.hotkeysDescription.video.edgeMode'}*/}
+                {/*    hkData1={patternId}*/}
+                {/*    path={`pattern.${patternId}.video.edgeMode`}*/}
+                {/*    className={'edge-mode'}*/}
+                {/*    getValue={this.edgeModeGetValue}*/}
+                {/*    getText={this.edgeModeGetText}*/}
+                {/*    items={Object.values(EdgeMode)}*/}
+                {/*    value={params.edgeMode}*/}
+                {/*    name={'edgeMode'}*/}
+                {/*    onChange={this.handleChangeEdgeMode}*/}
+                {/*/>*/}
 
 
-                <SelectDrop
-                    path={`pattern.${patternId}.video.slitMode`}
-                    className={'slit-mode'}
-                    hkLabel={'pattern.hotkeysDescription.video.slitMode'}
-                    hkData1={patternId}
-                    getValue={this.slitModeGetValue}
-                    getText={this.slitModeGetText}
-                    items={Object.values(SlitMode)}
-                    value={params.slitMode}
-                    name={"slitMode"}
-                    onChange={this.handleChangeSlitModeParam}
-                />
+                {/*<CycledToggleHK*/}
+                {/*    path={`pattern.${patternId}.video.stackType`}*/}
+                {/*    className={'stack-type'}*/}
+                {/*    hkLabel={'pattern.hotkeysDescription.video.stackType'}*/}
+                {/*    hkData1={patternId}*/}
+                {/*    getValue={this.stackTypeGetValue}*/}
+                {/*    getText={this.stackTypeGetValue}*/}
+                {/*    items={Object.values(StackType)}*/}
+                {/*    value={params.stackType}*/}
+                {/*    name={'stackType'}*/}
+                {/*    onChange={this.handleChangeStackType}*/}
+                {/*/>*/}
 
-
-                <CycledToggleHK
-                    path={`pattern.${patternId}.video.stackType`}
-                    className={'stack-type'}
-                    hkLabel={'pattern.hotkeysDescription.video.stackType'}
-                    hkData1={patternId}
-                    getValue={this.stackTypeGetValue}
-                    getText={this.stackTypeGetValue}
-                    items={Object.values(StackType)}
-                    value={params.stackType}
-                    name={"stackType"}
-                    onChange={this.handleChangeStackType}/>
-                <SelectDrop
-
-                    hkByValue={false}
-                    hkLabel={'pattern.hotkeysDescription.video.cutFunction'}
-                    hkLabelFormatter={LabelFormatter.ChangeFunction}
-                    hkData1={patternId}
-
-                    className={'cut-function'}
-
-                    nullAble
-                    nullText={'-'}
-                    onValueMouseEnter={this.handleCFValueMouseEnter}
-                    onValueMouseLeave={this.handleCFValueMouseLeave}
-                    onItemMouseEnter={this.handleCFMouseEnter}
-                    onItemMouseLeave={this.handleCFMouseLeave}
-                    name={"changeFunctionId"}
-                    value={params.changeFunctionId}
-                    getText={this.cfGetText}
-                    getValue={this.cfGetValue}
-                    items={changeFunctionsSelectItems}
-                    onChange={this.handleChangeChangeFunction}/>
+                <VideoOffsetForm
+                    patternId={patternId}
+                    cameraAxis={params.cameraAxis}
+                    onCameraAxisChange={this.handleChangeSlitModeParam}
+                    params={params}
+                    value={params.offset} onChange={this.handleChangeOffsetForm}/>
             </div>
-        );
+        )
     }
 }
 
@@ -403,28 +410,30 @@ const mapStateToProps: MapStateToProps<VideoControlsStateProps, VideoControlsOwn
     videoParams: state.patterns[patternId]?.video?.params || null,
     changeFunctionParams: state.changeFunctions.functions[state.patterns[patternId]?.video?.params?.changeFunctionId]?.params || null,
     videoDisabled: !!state.patterns[patternId]?.room?.value?.connected && !state.patterns[patternId]?.room?.value?.meDrawer,
-});
+    autoblur: state.hotkeys.autoblur,
+    autofocus: state.hotkeys.autofocus,
+})
 
 const mapDispatchToProps: MapDispatchToProps<VideoControlsActionProps, VideoControlsOwnProps> = {
     start,
     stop,
-    pause,
-    play,
+    startCamera,
+    stopCamera,
 
-    setSlitMode,
+    setDevice,
+    setCameraAxis,
     setEdgeMode,
     setMirrorMode,
     setStackType,
     setChangeFunction,
     setStackSize,
-    setCutOffset,
-    updateVideo,
+    setVideoOffset,
 
     setCFHighlights,
-    setCFTypeHighlights
-};
+    setCFTypeHighlights,
+}
 
 export const VideoControls = connect<VideoControlsStateProps, VideoControlsActionProps, VideoControlsOwnProps, AppState>(
     mapStateToProps,
-    mapDispatchToProps
-)(withTranslation('common')(VideoControlsComponent));
+    mapDispatchToProps,
+)(withTranslation('common')(VideoControlsComponent))

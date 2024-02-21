@@ -16,7 +16,7 @@ export const UCImageSent: MessageComponentType = (props) => {
                     {text}
                 </a>
             ) : (
-                {text}
+                text
             )}
         </BaseMessage>);
 };

@@ -1,7 +1,6 @@
 import {allToStartValue, change} from "../change/actions";
 import {ChangingMode} from "./types";
 import {AppState} from "../index";
-import {coordHelper, position} from "../../components/Area/canvasPosition.servise";
 
 // todo прикрутить сюда тайпскрипт
 
@@ -16,7 +15,7 @@ let requestID = null;
 export const startChanging = () => (dispatch, getState: () => AppState) => {
 
     if (!requestID) {
-        requestID && cancelAnimationFrame(requestID);
+        requestID && cancelAnimationFrame(requestID); //нахуя эта строчка? вроде лишняя
 
         const startTime = performance.now();
 

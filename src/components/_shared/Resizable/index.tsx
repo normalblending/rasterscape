@@ -54,7 +54,7 @@ export const Resizable: React.FC<ResizableProps> = (props) => {
         startEvent.current = e.pageY;
         document.addEventListener('mousemove', moveHandler);
         document.addEventListener('mouseup', upHandler);
-    }, [_height]);
+    }, [_height]); //?
 
     return (
         <div className={cn('resizable-wrapper', wrapperClassName)}>

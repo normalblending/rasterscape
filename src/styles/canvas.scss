@@ -1,8 +1,15 @@
 .canvas {
   display: flex;
   position: relative;
-  border: 1px solid red;
-  cursor: none;
+
+  border-width: 1px;
+  border-style: solid;
+  border-top-color: #a4a4a4;
+  border-bottom-color: #edecec;
+  border-right-color: #dfdede;
+  border-left-color: #b8b8b8;
+  background: #d3d3d3;
+  //cursor: none;
   &.disabled > canvas {
     pointer-events: none;
   }

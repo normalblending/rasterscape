@@ -1,0 +1,34 @@
+.draw {
+  position: relative;
+
+
+  border-width: 1px;
+  border-style: solid;
+  border-top-color: #a4a4a4;
+  border-bottom-color: #edecec;
+  border-right-color: #dfdede;
+  border-left-color: #b8b8b8;
+
+  background: #d3d3d3;
+
+  .draw-cursors {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+
+  &.disabled {
+    border-width: 1px;
+    border-style: solid;
+    border-top-color: #edecec;
+    border-bottom-color: #a4a4a4;
+    border-right-color: #b8b8b8;
+    border-left-color: #dfdede;
+  }
+
+  &.mask  {
+    background: transparent;
+    border: 1px solid black;
+  }
+}

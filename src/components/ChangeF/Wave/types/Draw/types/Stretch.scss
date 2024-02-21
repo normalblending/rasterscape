@@ -1,0 +1,15 @@
+.wave-draw-stretch-form {
+  .cut-shape-container {
+    position: relative;
+    .axis {
+      position: absolute;
+      border: 1px solid transparent;
+      //border: 1px solid red;
+      top: 0;
+      pointer-events: none;
+      mix-blend-mode: difference;
+
+    }
+  }
+
+}

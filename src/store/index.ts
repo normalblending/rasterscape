@@ -1,6 +1,8 @@
-import {createStore, combineReducers, applyMiddleware, compose} from "redux";
+import {createStore, combineReducers, applyMiddleware, compose, Store, AnyAction} from "redux";
 import logger from 'redux-logger';
-import thunk from 'redux-thunk';
+import thunk, {ThunkAction} from 'redux-thunk';
+import {TypedUseSelectorHook, useDispatch as useReduxDispatch, useSelector as useReduxSelector} from 'react-redux';
+import {configureStore} from '@reduxjs/toolkit'
 import reduceReducers from 'reduce-reducers';
 import persistState from 'redux-localstorage';
 
@@ -17,7 +19,6 @@ import {colorReducer, ColorState} from "./color/reducer";
 import {changeReducer} from "./change/reducer";
 import {fullscreenReducer, FullScreenState} from "./fullscreen";
 import {languageReducer, LanguageState} from "./language";
-import {hotkeysReducer, HotkeysState} from "./hotkeys";
 import {PatternsState} from "./patterns/types";
 import {ChangeFunctionState, ECFType} from "./changeFunctions/types";
 import {tutorialReducer, TutorialState} from "./tutorial";
@@ -25,6 +26,10 @@ import {changeFunctionHighlightsReducer, ChangeFunctionHighlightsState} from "./
 import {activePatternReducer, ActivePatternState} from "./activePattern";
 import {optimizationReducer, OptimizationState} from "./optimization";
 import {positionReducer, PositionState} from "./position";
+import {HotkeysState} from "./hotkeys/types";
+import {hotkeysReducer} from "./hotkeys/reducer";
+import {PatternsService} from "./patterns/_service";
+import {dependenciesReducer, DependenciesState} from "./dependencies";
 
 export interface AppState {
     fullScreen: FullScreenState
@@ -51,9 +56,10 @@ export interface AppState {
     changeFunctions: ChangeFunctionsState
     changingValues: ChangingValuesState
     changing: ChangingState
+    dependencies: DependenciesState
 }
 
-const rootReducer = reduceReducers(
+const rootReducer = reduceReducers<AppState>(
     combineReducers<AppState>({
         fullScreen: fullscreenReducer,
         optimization: optimizationReducer,
@@ -78,51 +84,15 @@ const rootReducer = reduceReducers(
 
         changeFunctions: changeFunctionsReducer,
         changingValues: changingValuesReducer,
-        changing: changingReducer
+        changing: changingReducer,
+        dependencies: dependenciesReducer,
     }),
     changeReducer
 );
 
 
-const configPersist = {
-    slicer: function myCustomSlicer(paths) {
-        return (state: AppState) => {
 
-            const hotkeys = state.hotkeys;
-
-            const changeFunctions = Object.keys(state.changeFunctions)
-                .reduce((res, cfId) => {
-                    const cf: ChangeFunctionState = state.changeFunctions[cfId];
-                    switch (cf.type) {
-                        case ECFType.DEPTH:
-                            console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', cf);
-                            res[cfId] = {
-                                ...cf,
-                                params: {
-                                    ...cf.params,
-                                    imageData: null
-                                }
-                            };
-                            break;
-                        default:
-                            res[cfId] = cf;
-                            break;
-                    }
-
-                    return res;
-                }, {})
-
-            let subset = {
-                //changeFunctions,
-                hotkeys
-            };
-            /*Custom logic goes here*/
-            return subset
-        }
-    }
-};
-
-export const store = createStore(
+export const store: Store<AppState, any> = createStore(
     rootReducer,
     compose(
         applyMiddleware(thunk, logger),
@@ -130,4 +100,65 @@ export const store = createStore(
         persistState(['hotkeys']), //, 'changeFunctions'
     )
 );
+//
+// export const store = configureStore({
+//     reducer: rootReducer,
+//     // middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(logger),//.concat(persistState(['hotkeys'])),
+// });
+
+
+export const patternsService = new PatternsService(store);
+
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch
+
+// Use throughout your app instead of plain `useDispatch` and `useSelector`
+export const useDispatch: () => AppDispatch = useReduxDispatch
+export const useSelector: TypedUseSelectorHook<RootState> = useReduxSelector
+
 // export const store = createStore(rootReducer, applyMiddleware(thunk));
+
+// export const useDispatch = () => useReduxDispatch<typeof store.dispatch>();
+// export const useSelector: TypedUseSelectorHook<AppState> = useReduxSelector;
+
+//
+// const configPersist = {
+//     slicer: function myCustomSlicer(paths) {
+//         return (state: AppState) => {
+//
+//             const hotkeys = state.hotkeys;
+//
+//             const changeFunctions = Object.keys(state.changeFunctions)
+//                 .reduce((res, cfId) => {
+//                     const cf: ChangeFunctionState = state.changeFunctions[cfId];
+//                     switch (cf.type) {
+//                         case ECFType.DEPTH:
+//                             console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', cf);
+//                             res[cfId] = {
+//                                 ...cf,
+//                                 params: {
+//                                     ...cf.params,
+//                                     imageData: null
+//                                 }
+//                             };
+//                             break;
+//                         default:
+//                             res[cfId] = cf;
+//                             break;
+//                     }
+//
+//                     return res;
+//                 }, {})
+//
+//             let subset = {
+//                 //changeFunctions,
+//                 hotkeys
+//             };
+//             /*Custom logic goes here*/
+//             return subset
+//         }
+//     }
+// };

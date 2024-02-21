@@ -4,11 +4,12 @@ import {
     ChangeCFParamsAction,
     ChangeFunctionState,
     ChangeFunctionConstants,
-    RemoveCFAction
+    RemoveCFAction, CfDepthAddPatternAction, CfDepthRemovePatternAction
 } from "./types";
 import {EChangeFunctionsAction} from "./actions";
 import {cfId, createCFInitialState} from "./helpers";
 import {omit} from "lodash";
+import {CfDepthParams} from "./functions/depth";
 
 export interface ChangeFunctions {
     [id: string]: ChangeFunctionState
@@ -64,7 +65,53 @@ export const changeFunctionsReducer = handleActions<ChangeFunctionsState>({
                 }
             }
         }
-    }
+    },
+    [EChangeFunctionsAction.CF_DEPTH_ADD_PATTERN]: (state: ChangeFunctionsState, action: CfDepthAddPatternAction) => {
+
+        const oldItems = (state.functions[action.id].params as CfDepthParams).items;
+        const id = Math.max(...oldItems.map(({id}) => id), 0) + 1;
+        const newItems = [
+            ...oldItems,
+            {
+                id,
+                patternId: action.patternId,
+                zd: 0,
+                zed: 1,
+                component: 0
+            }
+        ];
+        if (newItems.length > 4) {
+            newItems.shift();
+        }
+        return {
+            ...state,
+            functions: {
+                ...state.functions,
+                [action.id]: {
+                    ...state.functions[action.id],
+                    params: {
+                        items: newItems
+                    }
+                }
+            }
+        }
+    },
+    [EChangeFunctionsAction.CF_DEPTH_REMOVE_PATTERN]: (state: ChangeFunctionsState, action: CfDepthRemovePatternAction) => {
+        const newItems = (state.functions[action.id].params as CfDepthParams).items.filter((item, index) => index !== action.index);
+
+        return {
+            ...state,
+            functions: {
+                ...state.functions,
+                [action.id]: {
+                    ...state.functions[action.id],
+                    params: {
+                        items: newItems
+                    }
+                }
+            }
+        }
+    },
 }, {
     functions: {},
     namesList: [],

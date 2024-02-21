@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Button} from "../_shared/buttons/simple/Button";
-import {SelectionValue} from "../../store/patterns/selection/types";
+import {Segments, SelectionValue} from "../../store/patterns/selection/types";
 import '../../styles/selectionControls.scss';
 import {connect, MapDispatchToProps, MapStateToProps} from "react-redux";
 import {AppState} from "../../store";
@@ -22,7 +22,7 @@ export interface SelectionControlsStateProps {
 
 export interface SelectionControlsActionProps {
 
-    updateSelection: typeof updateSelection
+    updateSelection: (id: string, value: Segments, bBox: SVGRect) => void
     createPatternFromSelection(id),
     cutPatternBySelection(id),
 
@@ -78,7 +78,7 @@ export class SelectionControlsComponent extends React.PureComponent<SelectionCon
 
 const mapStateToProps: MapStateToProps<SelectionControlsStateProps, SelectionControlsOwnProps, AppState> = (state, {patternId}) => ({
     selectionValue: state.patterns[patternId]?.selection.value,
-    isVideoPlaying: state.patterns[patternId]?.video?.params.on && !state.patterns[patternId]?.video?.params.pause,
+    isVideoPlaying: state.patterns[patternId]?.video?.params.updatingOn,// && !state.patterns[patternId]?.video?.params.pause,
     meDrawer: isMeDrawer(state.patterns[patternId].room?.value)
 });
 

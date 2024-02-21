@@ -2,20 +2,26 @@
 
 import {FunctionState} from "../../../utils/patterns/function";
 import {ECFType} from "../../changeFunctions/types";
-import {EdgeMode, MirrorMode, SlitMode} from "./services";
-import {StackType} from "./capture/pixels";
 import {ECompositeOperation} from "../../compositeOperations";
+import {
+    EdgeMode,
+    MirrorMode,
+    CameraAxis,
+    StackType,
+} from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
+import { VideoOffset } from '../_service/patternServices/PatternVideoService/ShaderVideoModule/types'
 
 export interface VideoParams {
-    on: boolean
-    pause: boolean
+    cameraOn: boolean
+    updatingOn: boolean
     changeFunctionId: string
     stackSize: number
-    cutOffset: number
-    slitMode: SlitMode
+    offset: VideoOffset
+    cameraAxis: CameraAxis
     edgeMode: EdgeMode
     stackType: StackType
     mirrorMode: MirrorMode
+    device: MediaDeviceInfo
 }
 
 export interface VideoValue {

@@ -1,21 +1,3 @@
-export interface CanvasPosition {
-    x: number
-    y: number
-    patternId: string
-}
-
-export const position = {
-    x: 0,
-    y: 0,
-    patternId: null
-};
-
-export const setPosition = (x: number, y: number, patternId: string) => {
-    position.x = x;
-    position.y = y;
-    position.patternId = patternId;
-};
-
 export class CursorHelper {
     setPos;
     constructor(color, size) {
@@ -34,34 +16,100 @@ export class TextHelper {
     write;
     writeln;
     clear;
-    constructor(x, y) {
+    constructor(x, y, text?: string) {
         const elem = document.createElement('div');
+        const constantText = document.createElement('span');
+        const settableText = document.createElement('span');
+        elem.appendChild(settableText);
+        elem.appendChild(constantText);
+
+        constantText.innerText = text;
+
         document.body.appendChild(elem);
 
         elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
 
         this.setText = (...string) => {
-            elem.innerText = string.join(' ');
+            settableText.innerText = string.join(' ');
         };
         this.write = (...string) => {
-            elem.innerText = elem.innerText + ' ' + string.join(' ');
+            settableText.innerText = settableText.innerText + ' ' + string.join(' ');
         };
         this.writeln = (...string) => {
             try {
-                elem.innerText = elem.innerText + ' ' + string.join(' ') + '\n';
+                settableText.innerText = settableText.innerText + ' ' + string.join(' ') + '\n';
             } catch (e) {
 
             }
 
         };
         this.clear = () => {
-            elem.innerText = '';
+            settableText.innerText = '';
         };
         this.getText = () => {
-            return elem.innerText;
+            return settableText.innerText;
         };
         elem.addEventListener('mouseup', () => {
             this.setText('');
+        })
+    }
+}
+
+
+export class ImageDataHelper {
+    setImageData;
+
+    constructor(x, y) {
+        const elem: HTMLCanvasElement = document.createElement('canvas');
+        document.body.appendChild(elem);
+
+        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+
+        this.setImageData = (imageData: ImageData | null) => {
+            if (imageData) {
+                elem.width = imageData.width;
+                elem.height = imageData.height;
+                const ctx = elem.getContext('2d');
+                ctx.clearRect(0, 0, elem.width, elem.height);
+                ctx.putImageData(imageData, 0, 0);
+            } else {
+                elem.width = 1;
+                elem.height = 1;
+                const ctx = elem.getContext('2d');
+                ctx.clearRect(0, 0, elem.width, elem.height);
+            }
+        };
+        elem.addEventListener('mouseup', () => {
+            this.setImageData(null);
+        })
+    }
+}
+
+export class ImageHelper {
+    setImage;
+
+    constructor(x, y) {
+        const elem: HTMLCanvasElement = document.createElement('canvas');
+        document.body.appendChild(elem);
+
+        elem.style.cssText = `position:absolute;bottom:${y}px;right:${x}px;opacity:1;z-index:100;font-family: monospace;}`;
+
+        this.setImage = (image: HTMLCanvasElement | null) => {
+            if (image) {
+                elem.width = image.width;
+                elem.height = image.height;
+                const ctx = elem.getContext('2d');
+                ctx.clearRect(0, 0, elem.width, elem.height);
+                ctx.drawImage(image, 0, 0);
+            } else {
+                elem.width = 1;
+                elem.height = 1;
+                const ctx = elem.getContext('2d');
+                ctx.clearRect(0, 0, elem.width, elem.height);
+            }
+        };
+        elem.addEventListener('mouseup', () => {
+            this.setImage(null);
         })
     }
 }
@@ -70,12 +118,14 @@ export const redHelper = new CursorHelper('#f00', 10);
 export const blueHelper = new CursorHelper('#00f', 10);
 export const greenHelper = new CursorHelper('#0f0', 10);
 
-export const coordHelper = new TextHelper(10, 30);
-export const coordHelper2 = new TextHelper(10, 50);
-export const coordHelper3 = new TextHelper(10, 70);
-export const coordHelper4 = new TextHelper(10, 90);
-export const coordHelper5 = new TextHelper(10, 100);
+export const coordHelper = new TextHelper(10, 30, '   1');
+export const coordHelper2 = new TextHelper(10, 50, '   2');
+export const coordHelper3 = new TextHelper(10, 70, '   3');
+export const coordHelper4 = new TextHelper(10, 90, '   4');
+export const coordHelper5 = new TextHelper(10, 110, '   5');
 
+export const imageDataDebug = new ImageDataHelper(10, 300);
+export const imageDebug = new ImageHelper(10, 400);
 
 
 

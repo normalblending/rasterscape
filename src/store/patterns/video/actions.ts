@@ -1,54 +1,82 @@
 import {PatternAction} from "../pattern/types";
 import {VideoParams} from "./types";
-import {AppState} from "../../index";
-import {Formulas} from "./capture/formulas";
-import {get, PixelsStack, set, StackType} from "./capture/pixels";
+import {AppState, patternsService} from "../../index";
 import 'p5/lib/addons/p5.dom';
 import {updateImage} from "../pattern/actions";
-import {Captures, MirrorMode, SlitMode} from "./services";
-import {videoChangeFunctionByType} from "../../changeFunctions/helpers";
-import {coordHelper, redHelper} from "../../../components/Area/canvasPosition.servise";
-import {EdgeMode} from './services';
 import {ThunkAction} from "redux-thunk";
-
-export enum EVideoAction {
-    SET_VIDEO_PARAMS = 'pattern/video/set-video-param',
-    SET_EDGE_MODE = 'pattern/video/set-edge-mode',
-    SET_MIRROR_MODE = 'pattern/video/set-mirror-mode',
-    SET_SLIT_MODE = 'pattern/video/set-slit-mode',
-    SET_STACK_TYPE = 'pattern/video/set-stack-type',
-    SET_CHANGE_FUNCTION = 'pattern/video/set-change-function',
-    SET_STACK_SIZE = 'pattern/video/set-stack-size',
-    SET_CUT_OFFSET = 'pattern/video/set-cut-offset',
-    START = 'pattern/video/start',
-    STOP = 'pattern/video/stop',
-    PAUSE = 'pattern/video/pause',
-    PLAY = 'pattern/video/play',
-}
+import {EVideoAction} from "./consts";
+import {addCfToPatternDependency, removeCfToPatternDependency} from "../../dependencies";
+import {
+    EdgeMode,
+    MirrorMode,
+    CameraAxis,
+    StackType,
+} from '../_service/patternServices/PatternVideoService/ShaderVideoModule'
 
 export interface SetVideoParamsAction extends PatternAction {
     value: VideoParams
 }
+
+export interface SetVideoParamAction extends PatternAction {
+    paramName: string
+    value: any
+}
+
+export type SetDeviceAction = PatternAction & { device: MediaDeviceInfo };
 export type SetEdgeModeAction = PatternAction & { value: EdgeMode };
 export type SetMirrorModeAction = PatternAction & { value: MirrorMode };
-export type SetSlitModeAction = PatternAction & { value: SlitMode };
+export type SetSlitModeAction = PatternAction & { value: CameraAxis };
 export type SetStackTypeAction = PatternAction & { value: StackType };
 export type SetCFAction = PatternAction & { value: string };
 export type SetStackSizeAction = PatternAction & { value: number };
 export type SetCutOffsetAction = PatternAction & { value: number };
+export type SetDepthAction = PatternAction & { value: number };
 
-export const start = (patternId: string) => (dispatch, getState: () => AppState) => {
+export const setDevice = (id: string, device: MediaDeviceInfo) => (dispatch, getState: () => AppState) => {
+    dispatch({
+        type: EVideoAction.SET_DEVICE,
+        id,
+        device
+    });
+    patternsService.pattern[id].videoService.setDevice(device);
+};
+
+export const startCamera = (id: string) => (dispatch, getState: () => AppState) => {
+
+    dispatch({type: EVideoAction.START_CAMERA, id});
+
+    const pattern = getState().patterns[id];
+
+    patternsService.pattern[id].videoService
+        .initCamera({
+            width: pattern.width,
+            height: pattern.height,
+            device: pattern.video.params.device
+        })
+        .startCamera();
+};
+
+export const stopCamera = (id: string) => (dispatch, getState: () => AppState) => {
+
+    dispatch({type: EVideoAction.STOP_CAMERA, id});
+    patternsService.pattern[id].videoService.stopCamera();
+};
+
+export const start = (patternId: string) => async (dispatch, getState: () => AppState) => {
 
     const pattern = getState().patterns[patternId];
+    const patternService = patternsService.pattern[patternId];
 
     if (pattern.room?.value?.connected && !pattern.room?.value?.meDrawer)
         return;
 
     const {
         edgeMode,
-        slitMode,
+        cameraAxis,
         stackType,
-        mirrorMode
+        mirrorMode,
+        stackSize,
+        offset,
     } = pattern?.video?.params || {};
 
     dispatch(updateImage({
@@ -56,89 +84,36 @@ export const start = (patternId: string) => (dispatch, getState: () => AppState)
         noHistory: false,
         emit: false,
     }));
-    dispatch({type: EVideoAction.START, id: patternId});
-
-    const width = pattern.current.imageData.width;
-    const height = pattern.current.imageData.height;
-    const depth = pattern.current.imageData.width * pattern.video.params.stackSize;
-
-    Captures.start({
-        patternId,
-        width: width,
-        height: height,
-        depth: depth,
-        onNewFrame: (pixels, width, height) => {
-            // coordHelper.setText(pixels.length);
-            dispatch(updateImage({
-                id: patternId,
-                imageData: new ImageData(new Uint8ClampedArray(pixels), width, pixels.length / 4 / width),
-                emit: false,
-                blur: false,
-                noHistory: true,
-            }));
-        },
-        cutFunction: (x, y) => {
-            const state = getState();
+    dispatch({type: EVideoAction.START_UPDATING, id: patternId});
 
 
-            const cfId = state.patterns[patternId]?.video.params.changeFunctionId;
-            const cutOffset = -state.patterns[patternId]?.video.params.cutOffset;
-
-            const cf = state.changeFunctions.functions[cfId];
-
-            if (cf) {
-
-                return cutOffset + videoChangeFunctionByType[cf.type](
-                    x, y,
-                    state.patterns[patternId]?.current.imageData.width,
-                    state.patterns[patternId]?.current.imageData.height,
-                    cf.params, state.patterns) * (1 - cutOffset);
-            } else {
-                return cutOffset;//state.patterns[patternId]?.current.imageData.width;
-            }
-        },
-        edgeMode,
-        slitMode,
-        stackType,
-        mirrorMode,
-    });
-
-    const interval = setInterval(() => {
-        const pattern = getState().patterns[patternId];
-        const imageData = pattern.current.imageData;
-        if (imageData.data[imageData.data.length - 1] === 0) {
-            Captures.captures[patternId]?.setHeight(height)
-            clearInterval(interval);
-        }
-    }, 50);
+    (await patternService.videoService
+        .init({
+            width: pattern.width,
+            height: pattern.height,
+            stackSize,
+            edgeMode,
+            cameraAxis,
+            stackType,
+            mirrorMode,
+            offset
+        }))
+        .start();
 
 };
-export const pause = (patternId: string) => (dispatch, getState: () => AppState) => {
+
+export const stop = (id: string) => (dispatch, getState: () => AppState) => {
+    
     dispatch(updateImage({
-        id: patternId,
+        id,
         noHistory: true,
         emit: true,
     }));
-    dispatch({type: EVideoAction.PAUSE, id: patternId});
-    Captures.pause(patternId);
-};
-export const play = (patternId: string) => (dispatch, getState: () => AppState) => {
-    dispatch(updateImage({
-        id: patternId,
-        noHistory: false,
-        emit: false,
-    }));
-    dispatch({type: EVideoAction.PLAY, id: patternId});
-    Captures.play(patternId);
-};
-export const stop = (patternId: string) => (dispatch, getState: () => AppState) => {
-    dispatch(updateImage({
-        id: patternId,
-        noHistory: true,
-        emit: true,
-    }));
-    dispatch({type: EVideoAction.STOP, id: patternId});
-    Captures.stop(patternId);
+    
+    dispatch({type: EVideoAction.STOP_UPDATING, id});
+    
+    patternsService.pattern[id].videoService.stop();
+    
 };
 
 export const setEdgeMode = (id: string, value: EdgeMode) => (dispatch, getState: () => AppState) => {
@@ -147,7 +122,8 @@ export const setEdgeMode = (id: string, value: EdgeMode) => (dispatch, getState:
         id,
         value
     });
-    Captures.captures[id]?.setEdgeMode(value);
+    
+    patternsService.pattern[id].videoService.setEdgeMode(value);
 };
 
 export const setMirrorMode = (id: string, value: MirrorMode) => (dispatch, getState: () => AppState) => {
@@ -156,34 +132,41 @@ export const setMirrorMode = (id: string, value: MirrorMode) => (dispatch, getSt
         id,
         value
     });
-    Captures.captures[id]?.setMirrorMode(value);
+    
+    patternsService.pattern[id].videoService.setMirrorMode(value);
 };
 
-export const setSlitMode = (id: string, value: SlitMode) => (dispatch, getState: () => AppState) => {
+export const setCameraAxis = (id: string, value: CameraAxis) => (dispatch, getState: () => AppState) => {
     dispatch({
-        type: EVideoAction.SET_SLIT_MODE,
+        type: EVideoAction.SET_CAMERA_AXIS,
         id,
         value
     });
-    Captures.captures[id]?.setSlitMode(value);
-};
 
+    patternsService.pattern[id].videoService.setCameraAxis(value);
+};
 export const setStackType = (id: string, value: StackType) => (dispatch, getState: () => AppState) => {
     dispatch({
         type: EVideoAction.SET_STACK_TYPE,
         id,
         value
     });
-    Captures.captures[id]?.stack.setType(value);
+    
+    patternsService.pattern[id].videoService.setStackType(value);
 };
 
-export const setChangeFunction = (id: string, value: string) => (dispatch, getState: () => AppState) => {
+export const setChangeFunction = (id: string, changeFunctionId: string) => (dispatch, getState: () => AppState) => {
     dispatch({
         type: EVideoAction.SET_CHANGE_FUNCTION,
         id,
-        value
+        value: changeFunctionId
     });
-    Captures.captures[id]?.updateImage();
+
+    dispatch(removeCfToPatternDependency(patternsService.pattern[id].videoService.changeFunctionId, id));
+
+    patternsService.pattern[id].videoService.setChangeFunction(changeFunctionId);
+
+    changeFunctionId && dispatch(addCfToPatternDependency(changeFunctionId, id));
 };
 
 export const setStackSize = (id: string, value: number): ThunkAction<any, any, any, SetStackSizeAction> => (dispatch, getState: () => AppState) => {
@@ -192,35 +175,29 @@ export const setStackSize = (id: string, value: number): ThunkAction<any, any, a
         id,
         value
     });
-    const pattern = getState().patterns[id];
 
-    Captures.captures[id]?.setDepth(pattern.current.imageData.width * value);
-};
-
-export const setCutOffset = (id: string, value: number): ThunkAction<any, any, any, SetCutOffsetAction> => (dispatch, getState: () => AppState) => {
-    dispatch({
-        type: EVideoAction.SET_CUT_OFFSET,
-        id,
-        value
-    });
-    // const pattern = getState().patterns[id];
-
-    Captures.captures[id]?.updateImage();
+    patternsService.pattern[id].videoService.setStackSize(value);
 };
 
 export const setSize = (id: string, width?: number, height?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setSize(width, height);
+    // Captures.captures[id]?.setSize(width, height);
 };
 
 export const setVideoWidth = (id: string, width?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setWidth(width);
+    // Captures.captures[id]?.setWidth(width);
 };
 
 export const setVideoHeight = (id: string, height?: number): ThunkAction<any, any, any, any> => dispatch => {
-    Captures.captures[id]?.setHeight(height);
+    // Captures.captures[id]?.setHeight(height);
 };
 
+export const setVideoOffset = (id: string, paramName: string, value: any): ThunkAction<any, any, any, any> => dispatch => {
+    dispatch({
+        type: EVideoAction.SET_VIDEO_OFFSET,
+        id,
+        value,
+        paramName
+    });
 
-export const updateVideo = (id: string) => (dispatch, getState: () => AppState) => {
-    Captures.captures[id]?.updateImage();
+    patternsService.pattern[id].videoService.setOffset(paramName, value);
 };

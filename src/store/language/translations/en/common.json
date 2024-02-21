@@ -14,6 +14,8 @@
   "brushTypes": {
     "brushType": "brush type",
     "circle": "circle",
+    "shape": "shape",
+    "select": "select",
     "square": "square",
     "pattern": "pattern"
   },
@@ -181,6 +183,7 @@
     "points": "points"
   },
   "select": {
+    "autoReset": "auto reset",
     "curveType": {
       "curveBasis": "basis",
       "curveBundle": "bundle",
@@ -195,6 +198,7 @@
       "curveStepAfter": "step after"
     },
     "hotkeysDescription": {
+      "autoReset": "select | auto reset",
       "mode": {
         "Line": "select | line",
         "Rect": "select | rect",
@@ -236,11 +240,13 @@
       "time": {
         "sin": "sin",
         "saw": "saw",
-        "noise": "noise"
+        "noise": "noise",
+        "draw": "array"
       },
       "xy": {
         "parab": "hill",
-        "sis2": "waves"
+        "sis2": "waves",
+        "array": "array"
       },
       "rgba": {
         "channel": {
@@ -260,13 +266,33 @@
       "type": {
         "sin": "sin",
         "saw": "saw",
-        "noise": "noise"
+        "noise": "noise",
+        "draw": "array"
+      },
+      "draw": {
+        "type": {
+          "stretch": "from/to",
+          "center": "center"
+        },
+        "center": {
+          "loop": "loop"
+        },
+        "stretch": {
+          "loop": "loop"
+        }
       }
     },
     "xy": {
       "type": {
         "parab": "hill",
-        "sis2": "waves"
+        "sis2": "waves",
+        "array": "array"
+      },
+      "array": {
+        "type": {
+          "x": "x",
+          "y": "y"
+        }
       }
     },
     "hotkeysDescription": {
@@ -330,7 +356,7 @@
   "plugins": {
     "repeating": "repeating",
     "rotating": "rotating",
-    "video": "camera",
+    "video": "video",
     "mask": "mask",
     "room": "room",
     "blur": "blur"
@@ -363,13 +389,10 @@
         "bottom": "bottom",
         "all": "all"
       },
-      "slitMode": {
-        "front": "front",
-        "back": "back",
-        "top": "top",
-        "bottom": "bottom",
-        "left": "left",
-        "right": "right"
+      "cameraAxis": {
+        "t": "t",
+        "y": "y",
+        "x": "x"
       }
     },
     "hotkeysDescription": {
@@ -382,7 +405,7 @@
         "rotation": "pattern{{data1}} | rotation",
         "blur": "pattern{{data1}} | blur",
         "room": "pattern{{data1}} | room",
-        "video": "pattern{{data1}} | camera"
+        "video": "pattern{{data1}} | video"
       },
       "mask": {
         "inverse": "pattern{{data1}} | mask | inverse"
@@ -423,22 +446,19 @@
         "once": "pattern{{data1}} | blur | once"
       },
       "video": {
-        "on": "pattern{{data1}} | camera | start/stop",
-        "pause": "pattern{{data1}} | camera | pause/play",
-        "mirror": "pattern{{data1}} | camera | mirror",
-        "edgeMode": "pattern{{data1}} | camera | edge mode",
-        "stackSize": "pattern{{data1}} | camera | stack size",
-        "cutOffset": "pattern{{data1}} | camera | cut offset",
-        "slitMode": {
-          "front": "pattern{{data1}} | camera | point of view | front",
-          "back": "pattern{{data1}} | camera | point of view | back",
-          "top": "pattern{{data1}} | camera | point of view | top",
-          "bottom": "pattern{{data1}} | camera | point of view | bottom",
-          "left": "pattern{{data1}} | camera | point of view | left",
-          "right": "pattern{{data1}} | camera | point of view | right"
+        "on": "pattern{{data1}} | video | start/stop",
+        "pause": "pattern{{data1}} | video | pause/play",
+        "mirror": "pattern{{data1}} | video | mirror",
+        "edgeMode": "pattern{{data1}} | video | edge mode",
+        "stackSize": "pattern{{data1}} | video | stack size",
+        "cutOffset": "pattern{{data1}} | video | cut offset",
+        "cameraAxis": {
+          "t": "pattern{{data1}} | video | axis | t",
+          "y": "pattern{{data1}} | video | axis | y",
+          "x": "pattern{{data1}} | video | axis | x"
         },
-        "stackType": "pattern{{data1}} | camera | stack type",
-        "cutFunction": "pattern{{data1}} | camera | cut function"
+        "stackType": "pattern{{data1}} | video | stack type",
+        "cutFunction": "pattern{{data1}} | video | cut function"
       }
     }
   },
@@ -463,6 +483,7 @@
     "enter": "enter",
     "draw": "draw",
     "chat": "chat",
+    "connecting": "connecting",
     "hotkeysDescription": {
       "draw": "pattern{{data1}} | room | draw"
     }
@@ -484,7 +505,9 @@
     "pattern": "pattern",
     "clear": "clear",
     "autofocus": "autofocus",
-    "autoblur": "autoblur"
+    "autoblur": "autoblur",
+    "sec": "s",
+    "milliSec": "ms"
   },
   "add": "add",
   "globalHotkeys": {
@@ -493,6 +516,7 @@
     "patternGoTo": "go to pattern",
     "fullscreen": "fullscreen",
     "hotkeys": "show/hide control settings",
+    "hotkeyInvert": "switch onPress/onRelease hotkey mode",
     "patternWindow": "open pattern view in new window",
     "selectAll": "select all",
     "selectClear": "clear selection",

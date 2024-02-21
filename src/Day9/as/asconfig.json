@@ -1,0 +1,23 @@
+{
+  "entries": [
+    "./index.as.ts"
+  ],
+  "options": {
+    "exportRuntime": true,
+    "tsdFile": "./build/types.d.ts"
+  },
+  "targets": {
+    "debug": {
+      "binaryFile": "./build/index.wasm",
+      "textFile": "./build/index.wat",
+      "sourceMap": true,
+      "debug": true
+    },
+    "release": {
+      "binaryFile": "./build/index.wasm",
+      "textFile": "./build/index.wat",
+      "sourceMap": true,
+      "optimize": false
+    }
+  }
+}

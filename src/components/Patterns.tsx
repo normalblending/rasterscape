@@ -8,20 +8,15 @@ import {
 } from "../store/patterns/actions";
 import {Pattern} from "./Pattern/";
 import {PatternConfig} from "../store/patterns/pattern/types";
-import {setMaskParams, updateMask} from "../store/patterns/mask/actions";
-import {createPatternFromSelection, cutPatternBySelection, updateSelection} from "../store/patterns/selection/actions";
+import {setMaskParams} from "../store/patterns/mask/actions";
+import {updateSelection} from "../store/patterns/selection/actions";
 import {load, save} from "../store/patterns/import/actions";
-import {doublePattern, setHeight, setWidth} from "../store/patterns/pattern/actions";
+import {setHeight, setWidth} from "../store/patterns/pattern/actions";
 import {MaskParams} from "../store/patterns/mask/types";
 import {Segments} from "../store/patterns/selection/types";
 import {withTranslation, WithTranslation} from "react-i18next";
-import {AddPatternHelp} from "./tutorial/tooltips/AddPatternHelp";
-import {whyDidYouRender} from "../utils/props";
-import {Resizable, ResizableBox} from 'react-resizable';
-import 'react-resizable/css/styles.css';
-import {UserHotkeyTrigger} from "./Hotkeys/UserHotkeyTrigger";
+// import 'react-resizable/css/styles.css'; ???
 import {setActivePattern} from "../store/activePattern";
-import {GlobalHotkeys} from "./Hotkeys/GlobalHotkeys";
 import {DragAndDrop} from "./_shared/File/DragAndDrop/DragAndDrop";
 import {readImageFile} from "./_shared/File/helpers";
 import {imageToImageData} from "../utils/canvas/helpers/imageData";
@@ -35,8 +30,6 @@ export interface PatternsActionProps {
     addPattern(config?: PatternConfig)
 
     removePattern(id: string)
-
-    updateMask(id: string, imageData: ImageData)
 
     setMaskParams(id: string, params: MaskParams)
 
@@ -152,7 +145,6 @@ const mapDispatchToProps: MapDispatchToProps<PatternsActionProps, PatternsOwnPro
     updateSelection,
     setWidth,
     setHeight,
-    updateMask,
     save,
     load,
     setActivePattern,

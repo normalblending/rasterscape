@@ -1,35 +1,100 @@
 import {handleActions} from "redux-actions";
-import {BrushParams, EBrushType, SetBrushParamsAction} from "./types";
-import {EBrushAction} from "./actions";
-import {ParamConfig} from "../../components/_shared/Params";
-import {getBrushParamsConfig} from "./helpers";
+import {BrushParams, EBrushShapeType, EBrushType} from "./types";
+import {
+    EBrushAction,
+    SetBrushShapeParamsAction,
+    SetBrushPatternParamsAction,
+    SetBrushSelectParamsAction,
+    SetBrushTypeAction
+} from "./actions";
 import {ECompositeOperation} from "../compositeOperations";
 
 export interface BrushState {
     params: BrushParams
-    paramsConfig: ParamConfig[]
 }
 
 export const brushReducer = handleActions<BrushState>({
-    [EBrushAction.SET_PARAMS]: (state: BrushState, action: SetBrushParamsAction) => {
+    [EBrushAction.SET_TYPE]: (state: BrushState, action: SetBrushTypeAction) => {
         const params = {
             ...state.params,
-            ...action.params
+            brushType: action.brushType,
         };
         return {
             ...state,
-            params
+            params,
         }
-    }
+    },
+    [EBrushAction.SET_PATTERN_PARAMS]: (state: BrushState, action: SetBrushPatternParamsAction) => {
+        const params = {
+            ...state.params,
+            paramsByType: {
+                ...state.params.paramsByType,
+                [EBrushType.Pattern]: {
+                    ...state.params.paramsByType[EBrushType.Pattern],
+                    ...action.params
+                }
+            },
+        };
+        return {
+            ...state,
+            params,
+        }
+    },
+    [EBrushAction.SET_FORM_PARAMS]: (state: BrushState, action: SetBrushShapeParamsAction) => {
+        const params = {
+            ...state.params,
+            paramsByType: {
+                ...state.params.paramsByType,
+                [EBrushType.Shape]: {
+                    ...state.params.paramsByType[EBrushType.Shape],
+                    ...action.params
+                }
+            },
+        };
+        return {
+            ...state,
+            params,
+        }
+    },
+    [EBrushAction.SET_SELECT_PARAMS]: (state: BrushState, action: SetBrushSelectParamsAction) => {
+        const params = {
+            ...state.params,
+            paramsByType: {
+                ...state.params.paramsByType,
+                [EBrushType.Select]: {
+                    ...state.params.paramsByType[EBrushType.Select],
+                    ...action.params
+                }
+            },
+        };
+        return {
+            ...state,
+            params,
+        }
+    },
 }, {
     params: {
-        patternSize: 1,
-        size: 43,
-        opacity: 1,
-        type: EBrushType.Circle,
-        compositeOperation: ECompositeOperation.SourceOver
+        brushType: EBrushType.Shape,
+        paramsByType: {
+            [EBrushType.Shape]: {
+                size: 43,
+                opacity: 1,
+                compositeOperation: ECompositeOperation.SourceOver,
+                shapeType: EBrushShapeType.Circle
+            },
+            [EBrushType.Pattern]: {
+                size: 1,
+                opacity: 1,
+                patternId: null,
+                compositeOperation: ECompositeOperation.SourceOver
+            },
+            [EBrushType.Select]: {
+                size: 1,
+                opacity: 1,
+                compositeOperation: ECompositeOperation.SourceOver
+            },
+        },
     },
-    paramsConfig: getBrushParamsConfig()
 });
 
 

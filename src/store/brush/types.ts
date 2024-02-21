@@ -1,40 +1,43 @@
-import {Action} from "redux";
 import {ECompositeOperation} from "../compositeOperations";
 
 export enum EBrushType {
+    Shape = "Shape",
+    Select = "Select",
+    Pattern = "Pattern",
+}
+export enum EBrushShapeType {
     Square = "Square",
     Circle = "Circle",
-    Pattern = "Pattern",
+}
+
+export interface BrushPatternParams {
+    compositeOperation: ECompositeOperation
+    size: number
+    opacity: number
+
+    patternId: string
+}
+
+export interface BrushShapeParams {
+    compositeOperation: ECompositeOperation
+    size: number
+    opacity: number
+    shapeType: EBrushShapeType
+}
+
+export interface BrushSelectParams {
+    compositeOperation: ECompositeOperation
+    size: number
+    opacity: number
 }
 
 export interface BrushParams {
-    size: number
-    patternSize: number
-    opacity: number
-    type: EBrushType
-    pattern: string
-    compositeOperation: ECompositeOperation
-}
-
-export interface SetBrushParamsAction extends Action {
-    params: Partial<BrushParams>
-}
-
-
-export interface SetSizeAction extends Action {
-    size: number
-}
-
-export interface SetOpacityAction extends Action {
-    opacity: number
-}
-
-export interface SetTypeAction extends Action {
     brushType: EBrushType
-}
-
-export interface SetPatternSizeAction extends Action {
-    patternSize: number
+    paramsByType: {
+        [EBrushType.Pattern]: BrushPatternParams
+        [EBrushType.Shape]: BrushShapeParams
+        [EBrushType.Select]: BrushSelectParams
+    }
 }
 
 

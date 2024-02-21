@@ -1,0 +1,17 @@
+export enum EVideoAction {
+    SET_VIDEO_PARAMS = 'pattern/video/set-video-params',
+    SET_VIDEO_OFFSET = 'pattern/video/set-video-offset',
+    SET_EDGE_MODE = 'pattern/video/set-edge-mode',
+    SET_MIRROR_MODE = 'pattern/video/set-mirror-mode',
+    SET_CAMERA_AXIS = 'pattern/video/set-camera-axis',
+    SET_DEVICE = 'pattern/video/set-device',
+    SET_STACK_TYPE = 'pattern/video/set-stack-type',
+    SET_CHANGE_FUNCTION = 'pattern/video/set-change-function',
+    SET_STACK_SIZE = 'pattern/video/set-stack-size',
+    SET_DEPTH = 'pattern/video/set-depth',
+    SET_CUT_OFFSET = 'pattern/video/set-cut-offset',
+    START_CAMERA = 'pattern/video/start-camera',
+    STOP_CAMERA = 'pattern/video/stop-camera',
+    START_UPDATING = 'pattern/video/start-updating',
+    STOP_UPDATING = 'pattern/video/stop-updating',
+}

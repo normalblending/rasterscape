@@ -71,7 +71,7 @@ export const HistoryControlsComponent: React.FC<HistoryControlsProps> = (props) 
 
 const mapStateToProps: MapStateToProps<HistoryControlsStateProps, HistoryControlsOwnProps, AppState> = (state, {patternId}) => ({
     history: state.patterns[patternId]?.history.value,
-    isVideoPlaying: state.patterns[patternId]?.video?.params.on && !state.patterns[patternId]?.video?.params.pause,
+    isVideoPlaying: state.patterns[patternId]?.video?.params.updatingOn,// && !state.patterns[patternId]?.video?.params.pause,
     meDrawer: isMeDrawer(state.patterns[patternId].room?.value)
 });
 

@@ -10,7 +10,8 @@ import {patternValues} from "../../../../store/patterns/values";
 import {Cursors} from "./cursors";
 import {createCanvas, HelperCanvas} from "../../../../utils/canvas/helpers/base";
 import {DrawToolProps} from "./types";
-import {BrushParams} from "../../../../store/brush/types";
+import {BrushParams, BrushPatternParams} from "../../../../store/brush/types";
+import {patternsService} from "../../../../store";
 
 export const brushPattern = function () {
 
@@ -25,20 +26,20 @@ export const brushPattern = function () {
             coordinates,
         } = drawToolProps;
 
-        const {patternSize, opacity, compositeOperation} = toolParams as BrushParams;
+        const {size: patternSize, opacity, compositeOperation} = toolParams as BrushPatternParams;
         const brushPattern = toolPattern;
         const destinationPattern = targetPattern;
 
-        if (destinationPattern.current.imageData.width !== helperCanvas1.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas1.canvas.height) {
-            helperCanvas1.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas1.canvas.height = destinationPattern.current.imageData.height;
-        }
-
-        if (destinationPattern.current.imageData.width !== helperCanvas2.canvas.width ||
-            destinationPattern.current.imageData.height !== helperCanvas2.canvas.height) {
-            helperCanvas2.canvas.width = destinationPattern.current.imageData.width;
-            helperCanvas2.canvas.height = destinationPattern.current.imageData.height;
+        if (
+            targetPattern.width !== helperCanvas1.canvas.width ||
+            targetPattern.height !== helperCanvas1.canvas.height ||
+            targetPattern.width !== helperCanvas2.canvas.width ||
+            targetPattern.height !== helperCanvas2.canvas.height
+        ) {
+            helperCanvas1.canvas.width = targetPattern.width;
+            helperCanvas1.canvas.height = targetPattern.height;
+            helperCanvas2.canvas.width = targetPattern.width;
+            helperCanvas2.canvas.height = targetPattern.height;
         }
 
         const patternBrush = (ev) => {
@@ -58,7 +59,7 @@ export const brushPattern = function () {
                 destinationPattern?.rotation?.value?.rotateDrawAreaElement
             ) ? destinationPattern?.rotation?.value : null;
 
-            const brushPatternImage = patternValues.values[brushPattern?.id];
+            const brushPatternImage = patternValues.values[brushPattern?.id]?.current;
 
             if (!brushPatternImage) return;
 
@@ -127,7 +128,7 @@ export const brushPattern = function () {
 
                 const brushPattern = toolPattern;
                 const pattern = destinationPattern;
-                const {patternSize} = toolParams as BrushParams;
+                const {size: patternSize} = toolParams as BrushPatternParams;
 
                 const patternRotation = (
                     pattern?.config.rotation &&
@@ -135,10 +136,10 @@ export const brushPattern = function () {
                 ) ? pattern?.rotation?.value : null;
 
                 const brushRotation = brushPattern?.config.rotation ? brushPattern?.rotation?.value : null;
-                const brushPatternImage = patternValues.values[brushPattern?.id];
+                // const brushPatternImage = patternsService.pattern[brushPattern?.id]?.current;
 
-                const width = patternSize * (brushPatternImage?.width);
-                const height = patternSize * (brushPatternImage?.height);
+                const width = patternSize * (brushPattern?.width);
+                const height = patternSize * (brushPattern?.height);
                 const xd = patternSize * (brushRotation?.offset?.xd || 0);
                 const yd = patternSize * (brushRotation?.offset?.yd || 0);
                 const xc = patternSize * (brushRotation?.offset?.xc || 0);

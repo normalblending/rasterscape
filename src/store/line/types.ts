@@ -33,7 +33,7 @@ export interface LineParams {
     opacity: number
     type: ELineType
     compositeOperation: ECompositeOperation
-    pattern: string
+    patternId: string
 
     cap: ELineCapType
     join: ELineJoinType
@@ -45,4 +45,8 @@ export interface LineParams {
 
 export interface SetLineParamsAction extends Action {
     params: LineParams
+}
+
+export interface SetLineTypeAction extends Action {
+    lineType: ELineType
 }

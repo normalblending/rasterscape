@@ -5,3 +5,12 @@ declare module "worker-loader*" {
 
     export = WebpackWorker;
 }
+
+declare module '*.wasm' {
+    export = ArrayBuffer;
+}
+
+declare module '*.glsl' {
+    const value: string
+    export default value
+}

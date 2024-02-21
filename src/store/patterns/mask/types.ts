@@ -5,10 +5,8 @@ import {FunctionState} from "../../../utils/patterns/function";
 
 export interface MaskParams {
     inverse?: boolean
-    black?: boolean
-    opacity?: number
 }
 
-export type MaskValue = CanvasState;
+export type MaskValue = { };
 
 export type MaskState = FunctionState<MaskValue, MaskParams>;

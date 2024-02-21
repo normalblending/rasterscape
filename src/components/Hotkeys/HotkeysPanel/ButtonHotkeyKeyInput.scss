@@ -1,0 +1,18 @@
+.shortcut-input-container {
+
+  position: relative;
+  margin-right: 14px;
+  flex: 0 0 auto;
+  display: flex;
+  width: 100%;
+
+  .shortcut-input {
+
+    margin-right: 3px;
+    //top: 1px;
+
+    &:focus {
+      color: red;
+    }
+  }
+}

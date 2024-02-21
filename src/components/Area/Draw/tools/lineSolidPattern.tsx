@@ -18,22 +18,22 @@ const getPatternStrokeStyle = (ctx, x, y, patternSize, linePattern: PatternState
     patternStrokeStyle.setTransform(
         matrix
             .translateSelf(
-                patternMouseCentered ? (x - linePattern.current.imageData.width / 2) : 0,
-                patternMouseCentered ? (y - linePattern.current.imageData.height / 2) : 0,
+                patternMouseCentered ? (x - linePattern.width / 2) : 0,
+                patternMouseCentered ? (y - linePattern.height / 2) : 0,
             )
             .translateSelf(
                 rotation?.value?.offset?.xd || 0,
                 -rotation?.value?.offset?.yd || 0,
             )
             .translateSelf(
-                linePattern.current.imageData.width / 2 + (rotation?.value?.offset?.xc || 0),
-                linePattern.current.imageData.height / 2 - (rotation?.value?.offset?.yc || 0),
+                linePattern.width / 2 + (rotation?.value?.offset?.xc || 0),
+                linePattern.height / 2 - (rotation?.value?.offset?.yc || 0),
             )
             .rotateSelf(rotation?.value?.angle || 0)
             .scaleSelf(patternSize)
             .translateSelf(
-                -linePattern.current.imageData.width / 2 - (rotation?.value?.offset?.xc || 0),
-                -linePattern.current.imageData.height / 2 + (rotation?.value?.offset?.yc || 0),
+                -linePattern.width / 2 - (rotation?.value?.offset?.xc || 0),
+                -linePattern.height / 2 + (rotation?.value?.offset?.yc || 0),
             )
     );
     return patternStrokeStyle;
@@ -59,7 +59,7 @@ export const lineSolidPattern = function () {
         const linePattern = toolPattern;
         const {size, patternSize, opacity, compositeOperation, cap, join, patternMouseCentered} = toolParams as LineParams;
 
-        const {width, height} = pattern.current.imageData;
+        const {width, height} = pattern;
 
         return {
             draw: (ev) => {
@@ -69,7 +69,7 @@ export const lineSolidPattern = function () {
 
                 const newPrevPoints = {};
 
-                const linePatternImage = patternValues.values[linePattern?.id];
+                const linePatternImage = patternValues.values[linePattern?.id]?.current;
 
                 if (!linePatternImage || !linePattern) return;
 
@@ -94,7 +94,7 @@ export const lineSolidPattern = function () {
                             canvases[index] = createCanvas(width, height);
 
 
-                            const context = canvases[index].context;
+                            const context = canvases[index]?.context;
 
                             if (!context) return;
 
@@ -107,7 +107,9 @@ export const lineSolidPattern = function () {
                     coordinates
                         .forEach(({x, y, id: index}) => {
 
-                            const context = canvases[index].context;
+                            const context = canvases[index]?.context;
+                            if (!context) return;
+
                             canvases[index].clear();
 
                             newPrevPoints[index] = {x, y};
@@ -115,7 +117,7 @@ export const lineSolidPattern = function () {
                             context.lineWidth = size;
                             context.lineJoin = join;
                             context.lineCap = cap;
-                            context.globalAlpha = opacity;
+                            context.globalAlpha = size ? opacity : 0; // нулеввой размер почему то не устанавливается
 
                             context.strokeStyle = getPatternStrokeStyle(ctx, x, y, patternSize, linePattern, linePatternImage, patternMouseCentered);
 

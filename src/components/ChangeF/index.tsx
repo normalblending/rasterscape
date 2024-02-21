@@ -16,6 +16,7 @@ import {enumToSelectItems} from "../../utils/utils";
 import {SelectButtons} from "../_shared/buttons/complex/SelectButtons";
 import {WithTranslation, withTranslation} from "react-i18next";
 import {ChangeFItem} from "./ChangeFItem";
+import './styles.scss';
 
 export interface ChangeFStateProps {
     cfs: string[]
@@ -118,6 +119,7 @@ const ChangeFComponent: React.FC<ChangeFProps> = (props) => {
                         hkLabel={'cf.mode'}
                         getText={getModeText}
                         onChange={handleModeChange}
+                        maxKeysCount={1}
                     />
                 )}
             </div>
